@@ -61,6 +61,18 @@ def fstring_var_name(fstring: str) -> str:
     return fstring.split("=", maxsplit=1)[0].strip()
 
 
+def is_multiline(string: str) -> bool:
+    """Check if a string contains one or more newline characters.
+
+    Args:
+        string: The string to check.
+
+    Returns:
+        `True` if the string contains at least one newline character; `False` otherwise.
+    """
+    return "\n" in string
+
+
 def make_linked_badge_markdown(
     image_url: str,
     link_url: str,

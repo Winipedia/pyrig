@@ -39,43 +39,43 @@ class FeatureRequestConfigFile(YMLDictConfigFile):
         return {
             "name": "Feature Request",
             "description": "Suggest a new feature",
-            "title": "[Feature]: ",
             "labels": ["enhancement"],
+            "title": "[Feature]: ",
             "body": [
                 {
                     "type": "textarea",
-                    "id": "summary",
                     "attributes": {
                         "label": "Summary",
                         "description": "Brief explanation of the feature",
                     },
+                    "id": "summary",
                     "validations": {"required": True},
                 },
                 {
                     "type": "textarea",
-                    "id": "use_case",
                     "attributes": {
                         "label": "Use Case",
                         "description": "Why do you need this feature?",
                     },
+                    "id": "use_case",
                     "validations": {"required": True},
                 },
                 {
                     "type": "textarea",
-                    "id": "proposed",
                     "attributes": {
                         "label": "Proposed Solution",
                         "description": "How might this feature work?",
                     },
+                    "id": "proposed",
                     "validations": {"required": False},
                 },
                 {
                     "type": "textarea",
-                    "id": "alternatives",
                     "attributes": {
                         "label": "Alternatives Considered",
                         "description": "Other solutions you've considered",
                     },
+                    "id": "alternatives",
                     "validations": {"required": False},
                 },
             ],

@@ -78,15 +78,15 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
         Returns:
             Top-level workflow configuration with `name`, `on`,
-            `run-name`, `defaults`, `env`, and `jobs` keys populated
-            from the overridable methods.
+            `defaults`, `env`, `run-name`, and `jobs` keys populated from
+            the overridable methods.
         """
         return {
             "name": self.workflow_name(),
             "on": self.workflow_triggers(),
-            "run-name": self.run_name(),
             "defaults": self.defaults(),
             "env": self.global_env(),
+            "run-name": self.run_name(),
             "jobs": self.jobs(),
         }
 
@@ -178,11 +178,11 @@ class WorkflowConfigFile(YMLDictConfigFile):
             job_config["if"] = if_condition
         if needs is not None:
             job_config["needs"] = needs
-        if strategy is not None:
-            job_config["strategy"] = strategy
         if permissions is not None:
             job_config["permissions"] = permissions
         job_config["runs-on"] = runs_on
+        if strategy is not None:
+            job_config["strategy"] = strategy
         if steps is not None:
             job_config["steps"] = steps
         job_config.update(job)
@@ -224,14 +224,14 @@ class WorkflowConfigFile(YMLDictConfigFile):
         }
         if if_condition is not None:
             step_config["if"] = if_condition
-        if env is not None:
-            step_config["env"] = env
         if run is not None:
             step_config["run"] = run
         if uses is not None:
             step_config["uses"] = uses
         if with_ is not None:
             step_config["with"] = with_
+        if env is not None:
+            step_config["env"] = env
 
         step_config.update(step)
 
@@ -276,15 +276,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         prefix = name.split("_")[0]
         name = name.removeprefix(f"{prefix}_")
         return snake_to_kebab_case(name)
-
-    def on_workflow_dispatch(self) -> dict[str, Any]:
-        """Create a manual `workflow_dispatch` trigger.
-
-        Returns:
-            Trigger configuration that allows manually starting the workflow
-            from the GitHub Actions UI or API.
-        """
-        return {"workflow_dispatch": {}}
 
     def on_push(self, branches: list[str] | None = None) -> dict[str, Any]:
         """Create a `push` trigger.
@@ -343,9 +334,11 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Trigger configuration for `workflow_run` events with
             `types: [completed]`.
         """
-        configs: dict[str, Any] = {"workflows": workflows, "types": ["completed"]}
+        configs: dict[str, Any] = {}
         if branches is not None:
             configs["branches"] = branches
+        configs["types"] = ["completed"]
+        configs["workflows"] = workflows
         return {"workflow_run": configs}
 
     def strategy_matrix_os_and_python_version(
@@ -772,15 +765,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.insert_expression(self.github_token_var())
 
-    def insert_repository(self) -> str:
-        """Return the `${{ github.repository }}` expression.
-
-        Returns:
-            GitHub Actions expression for the current repository in
-            `owner/repo` form (e.g. `"acme/my-package"`).
-        """
-        return self.insert_expression("github.repository")
-
     def insert_matrix_os(self) -> str:
         """Return the expression that resolves to the current matrix OS value.
 
@@ -822,56 +806,61 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return f"${{{{ {var} }}}}"
 
-    def combined_if(self, *conditions: str, operator: str) -> str:
-        """Combine multiple GitHub Actions expressions with a logical operator.
-
-        Strips any existing `${{ }}` wrappers from each condition, joins
-        them with the given operator, and re-wraps the result.
-
-        Args:
-            *conditions: Individual condition expressions, with or without
-                `${{ }}` wrappers.
-            operator: Logical operator to join conditions,
-                e.g. `"&&"` or `"||"`.
-
-        Returns:
-            Single GitHub Actions expression combining all conditions.
-        """
-        bare_conditions = [
-            condition.strip().removeprefix("${{").removesuffix("}}").strip()
-            for condition in conditions
-        ]
-        return self.insert_expression(f" {operator} ".join(bare_conditions))
-
-    def if_workflow_run_is_success(self) -> str:
-        """Build a condition that is true when the triggering workflow run succeeded.
-
-        Returns:
-            GitHub Actions expression checking
-            `github.event.workflow_run.conclusion == 'success'`.
-        """
-        return self.insert_expression(
-            "github.event.workflow_run.conclusion == 'success'",
-        )
-
-    def if_workflow_run_is_push_triggered(self) -> str:
-        """Build a condition that is true when the triggering run was a push event.
-
-        Returns:
-            GitHub Actions expression checking
-            `github.event.workflow_run.event == 'push'`.
-        """
-        return self.insert_expression("github.event.workflow_run.event == 'push'")
-
     def if_workflow_run_is_success_and_push_triggered(self) -> str:
         """Build a condition true for a successful, push-triggered workflow run.
 
         Returns:
-            GitHub Actions expression that is true when the triggering workflow
-            run both succeeded and was triggered by a push event.
+            GitHub Actions condition, true when the triggering workflow run
+            both succeeded and was itself triggered by a push event.
         """
         return self.combined_if(
             self.if_workflow_run_is_success(),
             self.if_workflow_run_is_push_triggered(),
             operator="&&",
         )
+
+    def if_workflow_run_is_success(self) -> str:
+        """Build a condition that is true when the triggering workflow run succeeded.
+
+        Not wrapped in `${{ }}`: GitHub evaluates a job/step `if:` value as
+        an expression automatically.
+
+        Returns:
+            Bare GitHub Actions condition checking
+            `github.event.workflow_run.conclusion == 'success'`.
+        """
+        return "github.event.workflow_run.conclusion == 'success'"
+
+    def if_workflow_run_is_push_triggered(self) -> str:
+        """Build a condition that is true when the triggering run was a push event.
+
+        Not wrapped in `${{ }}`: GitHub evaluates a job/step `if:` value as
+        an expression automatically.
+
+        Returns:
+            Bare GitHub Actions condition checking
+            `github.event.workflow_run.event == 'push'`.
+        """
+        return "github.event.workflow_run.event == 'push'"
+
+    def combined_if(self, *conditions: str, operator: str) -> str:
+        """Combine bare GitHub Actions conditions with a logical operator.
+
+        One condition per line: the embedded newlines make the YAML dumper
+        render this as a literal block scalar automatically, so a long
+        combined condition stays within a linter's line-length limit.
+        GitHub evaluates a bare (without `${{ }}`) job/step `if:` value as
+        an expression automatically, and only the bare form supports
+        splitting a condition across multiple lines — a `${{ }}`-wrapped
+        multi-line value is read as a literal string instead of being
+        evaluated.
+
+        Args:
+            *conditions: Bare condition expressions (no `${{ }}` wrapper).
+            operator: Logical operator to join conditions with, e.g. `"&&"`
+                or `"||"`.
+
+        Returns:
+            The combined condition, one input condition per line.
+        """
+        return f" {operator}\n".join(conditions)

@@ -1,35 +1,35 @@
-"""Tests for RepoSettingsConfigFile."""
+"""Tests for RepositorySettingsConfigFile."""
 
 from pathlib import Path
 
 from pyrig.rig.configs.version_control.remote.settings import (
-    RepoSettingsConfigFile,
+    RepositorySettingsConfigFile,
 )
 
 
-class TestRepoSettingsConfigFile:
+class TestRepositorySettingsConfigFile:
     """Test class."""
 
     def test_repository_key(self) -> None:
         """Test method."""
-        assert RepoSettingsConfigFile.I.repository_key() == "repository"
+        assert RepositorySettingsConfigFile.I.repository_key() == "repository"
 
     def test_rulesets_key(self) -> None:
         """Test method."""
-        assert RepoSettingsConfigFile.I.rulesets_key() == "rulesets"
+        assert RepositorySettingsConfigFile.I.rulesets_key() == "rulesets"
 
     def test_parent_path(self) -> None:
         """Test method."""
-        assert RepoSettingsConfigFile.I.parent_path() == Path(".github")
+        assert RepositorySettingsConfigFile.I.parent_path() == Path(".github")
 
     def test_stem(self) -> None:
         """Test method."""
-        assert RepoSettingsConfigFile.I.stem() == "settings"
+        assert RepositorySettingsConfigFile.I.stem() == "settings"
 
     def test__configs(self) -> None:
         """Test method."""
-        configs = RepoSettingsConfigFile.I.configs()
+        configs = RepositorySettingsConfigFile.I.configs()
         assert isinstance(configs, dict)
-        assert RepoSettingsConfigFile.I.repository_key() in configs
-        assert RepoSettingsConfigFile.I.rulesets_key() in configs
-        assert isinstance(configs[RepoSettingsConfigFile.I.rulesets_key()], list)
+        assert RepositorySettingsConfigFile.I.repository_key() in configs
+        assert RepositorySettingsConfigFile.I.rulesets_key() in configs
+        assert isinstance(configs[RepositorySettingsConfigFile.I.rulesets_key()], list)

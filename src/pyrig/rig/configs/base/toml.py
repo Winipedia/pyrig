@@ -52,7 +52,7 @@ class TOMLConfigFile(DictConfigFile):
         """
         configs = self.prettify_dict(configs)
         with open_path_with_utf8(self.path(), mode="w") as f:
-            tomlkit.dump(configs, f, sort_keys=False)
+            tomlkit.dump(configs, f)
 
     def prettify_dict(self, configs: dict[str, Any]) -> Table:
         """Convert a configuration dict to a tomlkit `Table`.

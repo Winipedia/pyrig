@@ -619,7 +619,7 @@ wheels = [
 
 [[package]]
 name = "mkdocstrings"
-version = "1.0.5"
+version = "1.0.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jinja2" },
@@ -629,9 +629,9 @@ dependencies = [
     { name = "mkdocs-autorefs" },
     { name = "pymdown-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/46/8c/05934c546eb38321e5f24e786b24c7a0dc5f2b35968f6e04dce9cfbb738d/mkdocstrings-1.0.5.tar.gz", hash = "sha256:3a9528223afd6bf459ea85541b600ef3542826bbeb4ab534553f4b3c4e6e5e48", size = 100318, upload-time = "2026-07-10T10:49:10.026Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/53/71/f85bdf13355073ae15a7375f09879375a830553552e58c1c4b7e0bbc5c8b/mkdocstrings-1.0.6.tar.gz", hash = "sha256:a0b8c2bdd29a6416c80d717aa369bbf7831946bd9f23c2a66db1b1dbe7693dbd", size = 100649, upload-time = "2026-07-11T19:38:05.732Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a1/82/2a2d44f2c09563d321ab2690835f066267fe000623c90c0caf44e296cbbb/mkdocstrings-1.0.5-py3-none-any.whl", hash = "sha256:150eff6e8c370cc8d2ba4e452ece1275fe83ad34d8cc5884a89a0ed141618c49", size = 35543, upload-time = "2026-07-10T10:49:08.689Z" },
+    { url = "https://files.pythonhosted.org/packages/5d/5b/4c1902e8bdd5c4db63284e9d101dece4038d4025d6d88850ffe0a1578980/mkdocstrings-1.0.6-py3-none-any.whl", hash = "sha256:2703708697487d1b6d6d7b412e176fa436edf120c1bf81dc9e126b12d00893c7", size = 35787, upload-time = "2026-07-11T19:38:04.417Z" },
 ]
 
 [package.optional-dependencies]
@@ -904,13 +904,13 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "18.4.0"
+version = "18.5.0"
 source = { editable = "." }
 dependencies = [
     { name = "inquirerpy" },
     { name = "packaging" },
     { name = "pyrig-runtime" },
-    { name = "pyyaml" },
+    { name = "ruamel-yaml" },
     { name = "spdx-matcher" },
     { name = "tomlkit" },
     { name = "typer" },
@@ -946,7 +946,7 @@ requires-dist = [
     { name = "inquirerpy", specifier = ">=0.3.4" },
     { name = "packaging", specifier = ">=26.2" },
     { name = "pyrig-runtime", specifier = ">=3.5.2" },
-    { name = "pyyaml", specifier = ">=6.0.3" },
+    { name = "ruamel-yaml", specifier = ">=0.19.1" },
     { name = "spdx-matcher", specifier = ">=0.1.4" },
     { name = "tomlkit", specifier = ">=0.15.0" },
     { name = "typer", specifier = ">=0.26.8" },
@@ -1208,6 +1208,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c0/8f/0722ca900cc807c13a6a0c696dacf35430f72e0ec571c4275d2371fca3e9/rich-15.0.0.tar.gz", hash = "sha256:edd07a4824c6b40189fb7ac9bc4c52536e9780fbbfbddf6f1e2502c31b068c36", size = 230680, upload-time = "2026-04-12T08:24:00.75Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/82/3b/64d4899d73f91ba49a8c18a8ff3f0ea8f1c1d75481760df8c68ef5235bf5/rich-15.0.0-py3-none-any.whl", hash = "sha256:33bd4ef74232fb73fe9279a257718407f169c09b78a87ad3d296f548e27de0bb", size = 310654, upload-time = "2026-04-12T08:24:02.83Z" },
+]
+
+[[package]]
+name = "ruamel-yaml"
+version = "0.19.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/c7/3b/ebda527b56beb90cb7652cb1c7e4f91f48649fbcd8d2eb2fb6e77cd3329b/ruamel_yaml-0.19.1.tar.gz", hash = "sha256:53eb66cd27849eff968ebf8f0bf61f46cdac2da1d1f3576dd4ccee9b25c31993", size = 142709, upload-time = "2026-01-02T16:50:31.84Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b8/0c/51f6841f1d84f404f92463fc2b1ba0da357ca1e3db6b7fbda26956c3b82a/ruamel_yaml-0.19.1-py3-none-any.whl", hash = "sha256:27592957fedf6e0b62f281e96effd28043345e0e66001f97683aa9a40c667c93", size = 118102, upload-time = "2026-01-02T16:50:29.201Z" },
 ]
 
 [[package]]

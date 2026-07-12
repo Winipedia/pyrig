@@ -11,7 +11,7 @@ repo = "local"
 
 [[repos.hooks]]
 id = "format-code"
-name = "format-code"
+name = "format code"
 entry = "uv run ruff format"
 language = "system"
 always_run = true
@@ -22,7 +22,7 @@ stages = [
 
 [[repos.hooks]]
 id = "lint-code"
-name = "lint-code"
+name = "lint code"
 entry = "uv run ruff check --fix"
 language = "system"
 always_run = true
@@ -33,7 +33,7 @@ stages = [
 
 [[repos.hooks]]
 id = "lint-markdown"
-name = "lint-markdown"
+name = "lint markdown"
 entry = "uv run rumdl check --fix"
 language = "system"
 always_run = true
@@ -44,7 +44,7 @@ stages = [
 
 [[repos.hooks]]
 id = "fix-spelling"
-name = "fix-spelling"
+name = "fix spelling"
 entry = "uv run typos --write-changes"
 language = "system"
 always_run = true
@@ -55,7 +55,7 @@ stages = [
 
 [[repos.hooks]]
 id = "check-secrets"
-name = "check-secrets"
+name = "check secrets"
 entry = "uv run detect-secrets-hook"
 language = "system"
 always_run = true
@@ -66,7 +66,7 @@ stages = [
 
 [[repos.hooks]]
 id = "check-security"
-name = "check-security"
+name = "check security"
 entry = "uv run bandit -r src/pyrig"
 language = "system"
 always_run = true
@@ -77,7 +77,7 @@ stages = [
 
 [[repos.hooks]]
 id = "check-types"
-name = "check-types"
+name = "check types"
 entry = "uv run ty check"
 language = "system"
 always_run = true
@@ -88,7 +88,7 @@ stages = [
 
 [[repos.hooks]]
 id = "check-dependencies"
-name = "check-dependencies"
+name = "check dependencies"
 entry = "uv run deptry"
 language = "system"
 always_run = true
@@ -99,7 +99,7 @@ stages = [
 
 [[repos.hooks]]
 id = "synchronize-project"
-name = "synchronize-project"
+name = "synchronize project"
 entry = "uv run pyrig sync"
 language = "system"
 always_run = true
@@ -110,7 +110,7 @@ stages = [
 
 [[repos.hooks]]
 id = "update-package-manager"
-name = "update-package-manager"
+name = "update package manager"
 entry = "uv self update"
 language = "system"
 always_run = true
@@ -124,7 +124,7 @@ stages = [
 
 [[repos.hooks]]
 id = "update-dependencies"
-name = "update-dependencies"
+name = "update dependencies"
 entry = "uv lock --upgrade"
 language = "system"
 always_run = true
@@ -138,7 +138,7 @@ stages = [
 
 [[repos.hooks]]
 id = "install-dependencies"
-name = "install-dependencies"
+name = "install dependencies"
 entry = "uv sync"
 language = "system"
 always_run = true
@@ -152,7 +152,7 @@ stages = [
 
 [[repos.hooks]]
 id = "audit-dependencies"
-name = "audit-dependencies"
+name = "audit dependencies"
 entry = "uv run pip-audit"
 language = "system"
 always_run = true

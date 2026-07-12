@@ -65,7 +65,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.job(
             self.job_documentation,
-            permissions={"pages": "write", "id-token": "write"},
+            permissions={"id-token": "write", "pages": "write"},
             steps=self.steps_documentation(),
         )
 
@@ -130,7 +130,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return self.step(
             self.step_configure_pages,
             uses="actions/configure-pages@main",
-            with_={"token": self.insert_repo_token(), "enablement": "true"},
+            with_={"enablement": "true", "token": self.insert_repo_token()},
             step=step,
         )
 

@@ -35,11 +35,10 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         triggers.
 
         Returns:
-            Trigger configuration dict with `workflow_dispatch`,
-            `pull_request`, `push`, and `schedule` entries.
+            Trigger configuration dict with `pull_request`, `push`,
+            `schedule`, and `workflow_dispatch` entries.
         """
         return {
-            **self.on_workflow_dispatch(),
             **self.on_pull_request(),
             **self.on_push(),
             **self.on_schedule(cron=" ".join(map(str, self.cron_schedule()))),

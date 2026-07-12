@@ -4,6 +4,9 @@ from collections.abc import Callable
 
 import pytest
 
+from pyrig.rig.configs.version_control.remote.configure import (
+    ConfigureRepositoryConfigFile,
+)
 from pyrig.rig.configs.version_control.remote.workflows.release import (
     ReleaseWorkflowConfigFile,
 )
@@ -29,8 +32,9 @@ class TestReleaseWorkflowConfigFile:
     ) -> None:
         """Test method."""
         step = my_test_release_workflow().step_apply_repository_settings()
-        assert "run" in step
-        assert "env" in step
+        function = ConfigureRepositoryConfigFile.I.apply_repository_settings_function()
+        assert function in step["run"]
+        assert step["env"]["GH_TOKEN"]
 
     def test_step_apply_rulesets(
         self,
@@ -38,8 +42,28 @@ class TestReleaseWorkflowConfigFile:
     ) -> None:
         """Test method."""
         step = my_test_release_workflow().step_apply_rulesets()
-        assert "run" in step
-        assert "env" in step
+        assert ConfigureRepositoryConfigFile.I.apply_rulesets_function() in step["run"]
+        assert step["env"]["GH_TOKEN"]
+
+    def test_run_configure_repository_function(
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        workflow = my_test_release_workflow()
+        result = workflow.run_configure_repository_function("some_function")
+        assert "bash" in result
+        assert ConfigureRepositoryConfigFile.I.path().as_posix() in result
+        assert "some_function" in result
+
+    def test_configure_repository_env(
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_release_workflow().configure_repository_env()
+        assert "GH_TOKEN" in result
+        assert "REPO" not in result
 
     def test_steps_configure_repository(
         self,
@@ -59,8 +83,8 @@ class TestReleaseWorkflowConfigFile:
         assert len(result) == 1, "Expected job to have one key"
         job_config = next(iter(result.values()))
         expected = (
-            "${{ github.event.workflow_run.conclusion == 'success' "
-            "&& github.event.workflow_run.event == 'push' }}"
+            "github.event.workflow_run.conclusion == 'success' &&\n"
+            "github.event.workflow_run.event == 'push'"
         )
         assert job_config["if"] == expected
 
