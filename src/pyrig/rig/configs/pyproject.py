@@ -273,7 +273,7 @@ class PyprojectConfigFile(TOMLConfigFile):
         Returns:
             Latest stable Python version as a string (e.g., `"3.14.4"`).
         """
-        return resource_content("LATEST_PYTHON_VERSION", resources)
+        return resource_content("LATEST_PYTHON_VERSION", resources).strip()
 
     def requires_python(self) -> str:
         """Read the requires-python constraint from `pyproject.toml`.
