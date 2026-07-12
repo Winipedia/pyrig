@@ -109,7 +109,6 @@ class PyprojectConfigFile(TOMLConfigFile):
                 PythonLinter.I.config_name(): {
                     "lint": {
                         "select": ["ALL"],
-                        "ignore": ["ANN401"],
                         "per-file-ignores": {
                             f"{ProjectTester.I.package_name()}/**/*.py": ["S101"],
                         },

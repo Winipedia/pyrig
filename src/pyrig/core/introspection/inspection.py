@@ -2,12 +2,11 @@
 
 import inspect
 from collections.abc import Iterable
-from typing import Any
 
 from pyrig_runtime.core.introspection.inspection import unwrap_obj
 
 
-def def_line_sorted[T](objs: Iterable[T]) -> list[T]:
+def def_line_sorted[T: object](objs: Iterable[T]) -> list[T]:
     """Sort objects by their source definition line number.
 
     Args:
@@ -19,7 +18,7 @@ def def_line_sorted[T](objs: Iterable[T]) -> list[T]:
     return sorted(objs, key=def_line)
 
 
-def def_line(obj: Any) -> int:
+def def_line(obj: object) -> int:
     """Return the 1-based source line where an object is defined.
 
     For properties, classmethods, staticmethods, and decorated callables, the

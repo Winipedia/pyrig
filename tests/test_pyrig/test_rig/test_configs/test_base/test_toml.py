@@ -5,6 +5,8 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+import tomlkit
+from tomlkit import TOMLDocument
 
 from pyrig.rig.configs.base.toml import TOMLConfigFile
 
@@ -36,46 +38,67 @@ def my_test_toml_config_file(
 class TestTOMLConfigFile:
     """Test class."""
 
-    def test_prettify_value(
-        self,
-        my_test_toml_config_file: type[TOMLConfigFile],
-    ) -> None:
-        """Test method."""
-        # scalar passthrough
-        assert my_test_toml_config_file().prettify_value("hello") == "hello"
-        assert my_test_toml_config_file().prettify_value(1) == 1
-        assert my_test_toml_config_file().prettify_value(value=True) is True
-
-        # list of scalars becomes multiline array
-        result = my_test_toml_config_file().prettify_value(["a", "b"])
-        assert list(result) == ["a", "b"]
-
-        # dict becomes inline table
-        result = my_test_toml_config_file().prettify_value({"k": "v"})
-        assert result["k"] == "v"
-
-        # nested: list of dicts with nested lists
-        result = my_test_toml_config_file().prettify_value(
-            [{"repo": "local", "hooks": [{"id": "test"}]}],
-        )
-        assert result[0]["repo"] == "local"
-        assert result[0]["hooks"][0]["id"] == "test"
-
-    def test_prettify_dict(
-        self,
-        my_test_toml_config_file: type[TOMLConfigFile],
-    ) -> None:
-        """Test method."""
-        expected = {"key": ["value"]}
-        actual = my_test_toml_config_file().prettify_dict({"key": ["value"]})
-        assert actual == expected, f"Expected {expected}, got {actual}"
-
     def test_pretty_dump(self, my_test_toml_config_file: type[TOMLConfigFile]) -> None:
         """Test method."""
-        my_test_toml_config_file().pretty_dump({"key": ["value"]})
-        assert my_test_toml_config_file().load() == {"key": ["value"]}, (
-            "Expected dump to work"
+        my_test_toml_config_file().pretty_dump(
+            {
+                "key": ["value"],
+                "repos": [{"repo": "local", "hooks": [{"id": "test"}]}],
+            },
         )
+        loaded = my_test_toml_config_file().load()
+        assert loaded == {
+            "key": ["value"],
+            "repos": [{"repo": "local", "hooks": [{"id": "test"}]}],
+        }, "Expected dump to work"
+
+        # arrays are forced onto multiple lines
+        text = my_test_toml_config_file().path().read_text()
+        assert "key = [\n" in text, "Expected array to be forced multiline"
+
+    def test_pretty_dump_preserves_comments_on_merge(
+        self,
+        my_test_toml_config_file: type[TOMLConfigFile],
+    ) -> None:
+        """Test method."""
+        instance = my_test_toml_config_file()
+        instance.path().write_text(
+            '# top comment\nkey = ["value"]\n# standalone comment\n',
+        )
+        loaded = instance.load()
+        loaded["extra"] = "added"
+        instance.pretty_dump(loaded)
+
+        text = instance.path().read_text()
+        assert "# top comment" in text, "Expected top-level comment to survive"
+        assert "# standalone comment" in text, "Expected standalone comment to survive"
+        assert 'extra = "added"' in text, "Expected the new key to be written"
+
+    def test_document(self, my_test_toml_config_file: type[TOMLConfigFile]) -> None:
+        """Test method."""
+        doc = my_test_toml_config_file().document(
+            {"project": {"name": "demo"}, "repos": [{"repo": "local"}]},
+        )
+        assert isinstance(doc, TOMLDocument)
+        assert doc["project"]["name"] == "demo"
+        assert doc["repos"][0]["repo"] == "local"
+
+        # a fresh dict is already forced multiline by document() itself
+        doc = my_test_toml_config_file().document({"deps": ["a", "b"]})
+        assert doc["deps"].as_string() == '[\n    "a",\n    "b",\n]'
+
+    def test_to_multiline(
+        self,
+        my_test_toml_config_file: type[TOMLConfigFile],
+    ) -> None:
+        """Test method."""
+        instance = my_test_toml_config_file()
+        array = tomlkit.array()
+        array.extend(["a", "b"])
+        assert array.as_string() == '["a", "b"]'
+
+        instance.to_multiline(array)
+        assert array.as_string() == '[\n    "a",\n    "b",\n]'
 
     def test__load(self, my_test_toml_config_file: type[TOMLConfigFile]) -> None:
         """Test method."""

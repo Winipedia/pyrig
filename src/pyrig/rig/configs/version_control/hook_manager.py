@@ -144,11 +144,10 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         id_: str,
         args: Args,
         *,
+        stages: list[str],
         language: str = "system",
         pass_filenames: bool = False,
         always_run: bool = True,
-        stages: list[str],
-        **kwargs: Any,
     ) -> dict[str, Any]:
         """Build a single prek hook configuration entry.
 
@@ -170,8 +169,6 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 of whether any files match the optional `files` filter.
                 Defaults to `True`.
             stages: Git stages in which the hook should run.
-            **kwargs: Additional prek hook fields merged in verbatim (e.g.
-                `files`, `exclude`).
 
         Returns:
             Hook configuration dict ready for inclusion in the `hooks` list.
@@ -184,6 +181,5 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
             "always_run": always_run,
             "pass_filenames": pass_filenames,
             "stages": stages,
-            **kwargs,
         }
         return hook

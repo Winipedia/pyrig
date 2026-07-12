@@ -6,7 +6,8 @@ Supports round-trip preservation of comments, key order, and formatting.
 from typing import Any
 
 import tomlkit
-from tomlkit.items import Table
+from tomlkit import TOMLDocument
+from tomlkit.items import Array
 
 from pyrig.core.strings import open_path_with_utf8, read_text_utf8
 from pyrig.rig.configs.base.config_file import DictConfigFile
@@ -16,9 +17,12 @@ class TOMLConfigFile(DictConfigFile):
     """Base class for TOML configuration files.
 
     File I/O uses tomlkit, preserving formatting, key order, and comments on
-    round-trip reads and writes. Nested structures are consistently rendered
-    using idiomatic TOML constructs (tables, array-of-tables, and multiline
-    arrays) instead of compact inline literals.
+    round-trip reads and writes. Every array is forced onto multiple lines
+    (one item per line) instead of tomlkit's default of always keeping
+    arrays on a single line, since long inline arrays are unreadable and get
+    reformatted by the linter anyway. Tables and arrays-of-tables need no
+    special handling: tomlkit already converts dicts and lists of dicts to
+    idiomatic TOML natively.
     """
 
     def _dump(self, configs: dict[str, Any]) -> None:
@@ -45,61 +49,53 @@ class TOMLConfigFile(DictConfigFile):
     def pretty_dump(self, configs: dict[str, Any]) -> None:
         """Write configuration to the TOML file using idiomatic TOML formatting.
 
-        Key order is preserved.
+        Key order is preserved. A `configs` that is already a
+        `tomlkit.TOMLDocument` (as returned by `merge_configs()`) is written
+        as-is, so any comments or formatting already on disk survive
+        untouched; only its arrays are mutated in place to force multiline.
+        A plain dict (e.g. a freshly assembled `configs()`) is first turned
+        into a document via tomlkit's own conversion.
 
         Args:
             configs: Configuration dict to write.
         """
-        configs = self.prettify_dict(configs)
         with open_path_with_utf8(self.path(), mode="w") as f:
-            tomlkit.dump(configs, f)
+            tomlkit.dump(self.document(configs), f)
 
-    def prettify_dict(self, configs: dict[str, Any]) -> Table:
-        """Convert a configuration dict to a tomlkit `Table`.
+    def document(self, configs: dict[str, Any]) -> TOMLDocument:
+        """Convert a plain dict into a `tomlkit.TOMLDocument`.
 
         Args:
             configs: Configuration dict to convert.
 
         Returns:
-            A tomlkit `Table` with all values converted to their tomlkit
-            representations.
+            A `TOMLDocument` with the same content, using tomlkit's native
+            dict-to-table and list-of-dicts-to-array-of-tables conversion.
         """
-        t = tomlkit.table()
-        for k, v in configs.items():
-            t.add(k, self.prettify_value(v))
-        return t
+        if not isinstance(configs, TOMLDocument):
+            doc = tomlkit.document()
+            doc.update(configs)
+            configs = doc
+        self.to_multiline(configs)
+        return configs
 
-    def prettify_value(self, value: Any) -> Any:
-        """Recursively convert a Python value to its tomlkit representation.
+    def to_multiline(self, value: object) -> None:
+        """Recursively force every tomlkit array onto multiple lines.
 
-        Handles four cases:
-
-        - **List of dicts**: converted to a tomlkit array of tables
-          (`[[section]]` syntax).
-        - **Other lists**: converted to a tomlkit multiline array with each
-          element recursively converted.
-        - **Dicts**: converted to a tomlkit `Table`.
-        - **Scalars** (str, int, float, bool, etc.): returned unchanged.
-
-        All nesting is converted regardless of depth.
+        Mutates `Array` instances already in the document in place instead
+        of rebuilding them, so anything else in the document is left
+        untouched.
 
         Args:
-            value: The Python value to convert.
-
-        Returns:
-            The tomlkit-typed representation of `value`, or `value` unchanged
-            if it is a scalar.
+            value: A tomlkit document, table, array, or scalar to walk.
         """
-        if isinstance(value, list):
-            if value and all(isinstance(item, dict) for item in value):
-                aot = tomlkit.aot()
-                for item in value:
-                    aot.append(self.prettify_dict(item))
-                return aot
-            arr = tomlkit.array().multiline(multiline=True)
+        if isinstance(value, Array):
+            value.multiline(multiline=True)
             for item in value:
-                arr.append(self.prettify_value(item))
-            return arr
-        if isinstance(value, dict):
-            return self.prettify_dict(value)
-        return value
+                self.to_multiline(item)
+        elif isinstance(value, dict):
+            for v in value.values():
+                self.to_multiline(v)
+        elif isinstance(value, list):
+            for item in value:
+                self.to_multiline(item)

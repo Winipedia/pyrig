@@ -35,7 +35,7 @@ def test_init_project_calls_pyrigger(mocker: MockerFixture) -> None:
     pyrigger_init_project_mock.assert_called_once()
 
 
-def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
+def test_init_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:  # noqa: PLR0915
     """Test function."""
     # on Actions windows-latest temp path is on another drive so add path fails
     # so we use a tmp dir in the current dir
@@ -65,16 +65,19 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
     python_version = str(PyprojectConfigFile.I.first_supported_python_version())
 
     with chdir(src_project_dir):
-        # Create a clean environment dict without VIRTUAL_ENV to force
-        # to create a new virtual environment instead of reusing the current one
-        clean_env = os.environ.copy()
-        venv = clean_env.pop("VIRTUAL_ENV", None)
+        # Strip VIRTUAL_ENV and the outer venv's bin dir from PATH so
+        # subprocesses create a new virtual environment instead of reusing
+        # the current one, and commands like `pyrig` from the dev environment
+        # aren't found when testing that they're absent.
+        venv = os.environ.get("VIRTUAL_ENV")
+        monkeypatch.delenv("VIRTUAL_ENV", raising=False)
         if venv:
-            # Strip the outer venv's bin dir from PATH so commands like `pyrig`
-            # from the dev environment aren't found when testing that they're absent.
-            path_entries = clean_env.get("PATH", "").split(os.pathsep)
-            clean_env["PATH"] = os.pathsep.join(
-                p for p in path_entries if not p.lower().startswith(venv.lower())
+            path_entries = os.environ.get("PATH", "").split(os.pathsep)
+            monkeypatch.setenv(
+                "PATH",
+                os.pathsep.join(
+                    p for p in path_entries if not p.lower().startswith(venv.lower())
+                ),
             )
 
         # Initialize git repo in the test project directory
@@ -87,7 +90,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         VersionController.I.config_args("--local", "user.name", "Test User").run()
 
         args = PackageManager.I.args("init", "--python", python_version)
-        args.run(env=clean_env)
+        args.run()
 
         # Add pyrig wheel as a dev dependency and plugins
         plugins = tuple(
@@ -95,9 +98,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         )
 
         # add plugins
-        PackageManager.I.add_dev_dependencies_args(wheel_path, *plugins).run(
-            env=clean_env,
-        )
+        PackageManager.I.add_dev_dependencies_args(wheel_path, *plugins).run()
 
         # uv add converts absolute paths to relative paths, which breaks when
         # the project is copied to a different location (e.g., in the
@@ -117,27 +118,27 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
 
         # Sync to update the lock file with the new absolute path
         args = PackageManager.I.install_dependencies_args()
-        args.run(env=clean_env)
+        args.run()
 
         # Verify pyrig was installed correctly
         # also checks if the init process works
         args = PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=init))
-        res = args.run(env=clean_env)
+        res = args.run()
         assert res.returncode == 0
 
         # run tests with no cov
         args = PackageManager.I.run_args(*ProjectTester.I.test_args(), "--no-cov")
-        res = args.run(env=clean_env, check=False)
+        res = args.run(check=False)
         assert res.returncode == pytest.ExitCode.NO_TESTS_COLLECTED
 
         # with cov
         args = PackageManager.I.run_args(*ProjectTester.I.test_args())
-        res = args.run(env=clean_env, check=False)
+        res = args.run(check=False)
         assert res.returncode == pytest.ExitCode.TESTS_FAILED
 
         # assert the packages own cli is available
         args = PackageManager.I.run_args(project_name, "--help")
-        res = args.run(env=clean_env)
+        res = args.run()
         stdout = res.stdout
         expected = project_name
         assert expected in stdout.lower(), (
@@ -146,7 +147,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
 
         # assert calling version works
         args = PackageManager.I.run_args(project_name, version.__name__)
-        res = args.run(env=clean_env)
+        res = args.run()
         assert res.returncode == 0
         stdout = res.stdout
         expected = f"{project_name} 0.1.0"
@@ -158,15 +159,15 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         for cf in ConfigFile.concrete_subclasses():
             assert cf().path().exists()
 
-        PackageManager.I.run_args(*Pyrigger.I.args("--help")).run(env=clean_env)
+        PackageManager.I.run_args(*Pyrigger.I.args("--help")).run()
 
         # rm all dev deps
         PackageManager.I.args(
             "remove",
             "--dev",
             *{*plugins, *Tool.subclasses_dev_dependencies()},
-        ).run(env=clean_env)
-        PackageManager.I.args("sync").run(env=clean_env)
+        ).run()
+        PackageManager.I.args("sync").run()
 
         pyproject_content = pyproject_toml.read_text("utf-8")
         assert "pyrig-codecov" not in pyproject_content
@@ -176,11 +177,11 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
                 "--no-dev",
                 "--no-sync",
                 *Pyrigger.I.args("--help"),
-            ).run(env=clean_env)
+            ).run()
 
         PackageManager.I.run_args(
             "--no-dev",
             "--no-sync",
             project_name,
             version.__name__,
-        ).run(env=clean_env)
+        ).run()

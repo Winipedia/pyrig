@@ -2,7 +2,6 @@
 
 import logging
 import subprocess  # nosec: B404
-from collections.abc import Sequence
 from functools import cache
 from pathlib import Path
 from typing import Any, Self
@@ -39,30 +38,33 @@ class Args(tuple[str, ...]):
         """
         return super().__new__(cls, args)
 
-    def run(self, *args: str, **kwargs: Any) -> subprocess.CompletedProcess[Any]:
+    def run(self, *args: str, check: bool = True) -> subprocess.CompletedProcess[Any]:
         """Execute the command with any extra positional arguments appended.
 
         Args:
             *args: Additional command-line arguments appended to the command.
-            **kwargs: Keyword arguments forwarded to the subprocess runner.
+            check: Whether to raise an exception on non-zero exit.
 
         Returns:
             The completed process result.
         """
-        return run_subprocess((*self, *args), **kwargs)
+        return run_subprocess(*self, *args, check=check)
 
-    def run_cached(self, *args: str, **kwargs: Any) -> subprocess.CompletedProcess[Any]:
+    def run_cached(
+        self,
+        *args: str,
+        check: bool = True,
+    ) -> subprocess.CompletedProcess[Any]:
         """Execute the command, caching the result for identical arguments.
 
         Args:
             *args: Additional command-line arguments appended to the command.
-            **kwargs: Keyword arguments forwarded to the subprocess runner.
-                All values must be hashable.
+            check: Whether to raise an exception on non-zero exit.
 
         Returns:
             The completed process result.
         """
-        return run_subprocess_cached((*self, *args), **kwargs)
+        return run_subprocess_cached(*self, *args, check=check)
 
     def __str__(self) -> str:
         """Return the command as a single space-separated string."""
@@ -84,8 +86,8 @@ class Args(tuple[str, ...]):
 
 @cache
 def run_subprocess_cached(
-    args: tuple[str, ...],
-    **kwargs: Any,
+    *args: str,
+    check: bool = True,
 ) -> subprocess.CompletedProcess[Any]:
     """Execute a subprocess command and cache the result.
 
@@ -93,22 +95,19 @@ def run_subprocess_cached(
     spawning a new process.
 
     Args:
-        args: Command and arguments as a tuple (e.g., `("git", "status")`).
-        **kwargs: Keyword arguments forwarded to the subprocess runner.
-            All values must be hashable.
+        *args: Command and arguments (e.g., `"git"`, `"status"`).
+        check: Whether to raise an exception on non-zero exit.
 
     Returns:
         The completed process result.
     """
-    return run_subprocess(args, **kwargs)
+    return run_subprocess(*args, check=check)
 
 
 def run_subprocess(
-    args: Sequence[str],
-    *,
+    *args: str,
     check: bool = True,
-    **kwargs: Any,
-) -> subprocess.CompletedProcess[Any]:
+) -> subprocess.CompletedProcess[str]:
     """Execute a subprocess command with automatic failure logging.
 
     The command always runs without a shell in the current working directory,
@@ -117,10 +116,9 @@ def run_subprocess(
     `ERROR` level before the error propagates.
 
     Args:
-        args: Command and arguments as a sequence (e.g., `["git", "status"]`).
+        *args: Command and arguments (e.g., `"git"`, `"status"`).
         check: When `True` (the default), raise `subprocess.CalledProcessError`
             on a non-zero exit.
-        **kwargs: Additional keyword arguments forwarded to `subprocess.run`.
 
     Returns:
         The completed process, with `stdout` and `stderr` as decoded strings.
@@ -137,7 +135,6 @@ def run_subprocess(
             cwd=Path(),
             shell=False,
             text=True,
-            **kwargs,
         )
     except subprocess.CalledProcessError as e:
         logger.exception(

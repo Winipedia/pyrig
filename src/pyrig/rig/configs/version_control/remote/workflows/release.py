@@ -1,5 +1,6 @@
 """Workflow configuration for automated GitHub release creation."""
 
+from types import MethodType
 from typing import Any
 
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
@@ -42,7 +43,18 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             branches=[VersionController.I.default_branch()],
         )
 
-    def job(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
+    def job(  # noqa: PLR0913
+        self,
+        method: MethodType,
+        *,
+        needs: list[str] | None = None,
+        strategy: dict[str, Any] | None = None,
+        permissions: dict[str, Any] | None = None,
+        runs_on: str = WorkflowConfigFile.UBUNTU_LATEST,
+        if_condition: str | None = None,
+        steps: list[dict[str, Any]] | None = None,
+        job: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Build a job gated on the workflow having been triggered by a push.
 
         Every job built through this method only runs when the run that
@@ -50,16 +62,31 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         a push.
 
         Args:
-            *args: Positional arguments forwarded to the base implementation.
-            **kwargs: Keyword arguments forwarded to the base implementation.
+            method: Method to build the job.
+            needs: IDs of jobs that must complete before this job starts.
+            strategy: Matrix or other strategy configuration.
+            permissions: Job-level permissions override.
+            runs_on: Runner label. Defaults to `ubuntu-latest`.
+            if_condition: GitHub Actions conditional expression controlling
+                whether the job runs.
+            steps: Ordered list of step configurations.
+            job: Additional job-level keys to merge into the configuration.
 
         Returns:
             Dict mapping the derived job ID to its configuration.
         """
+        if_condition = (
+            if_condition or self.if_workflow_run_is_success_and_push_triggered()
+        )
         return super().job(
-            *args,
-            if_condition=self.if_workflow_run_is_success_and_push_triggered(),
-            **kwargs,
+            method,
+            needs=needs,
+            strategy=strategy,
+            permissions=permissions,
+            runs_on=runs_on,
+            if_condition=if_condition,
+            steps=steps,
+            job=job,
         )
 
     def jobs(self) -> dict[str, Any]:
