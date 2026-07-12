@@ -1,12 +1,9 @@
 """Type-safe construction of version control CLI commands."""
 
-import logging
 from functools import cache
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
-
-logger = logging.getLogger(__name__)
 
 
 class VersionController(Tool):
@@ -47,6 +44,20 @@ class VersionController(Tool):
             The repository owner as a string.
         """
         return cls()._repo_owner()  # noqa: SLF001
+
+    def _repo_owner(self) -> str:
+        """Return the repository owner, falling back to the git user name.
+
+        When no remote origin is configured, falls back to the configured
+        git `user.name`, stripping any spaces from it (with a warning logged)
+        since a repository owner must be URL-safe.
+
+        Returns:
+            The repository owner as a string.
+        """
+        if self.remote_url():
+            return self.owner_from_remote_url()
+        return self.username().replace(" ", "")
 
     def default_branch(self) -> str:
         """Return `'main'` as the default branch name for new repositories."""
@@ -228,7 +239,7 @@ class VersionController(Tool):
         Raises:
             subprocess.CalledProcessError: If no remote origin is configured.
         """
-        url = self.remote_url(check=True)
+        url = self.remote_url()
         # possible formats:
         # ssh://git@github.com/owner/repo.git
         # git@github.com:owner/repo.git
@@ -236,11 +247,9 @@ class VersionController(Tool):
         url = url.split("github.com", 1)[-1]  # split off the domain, keep the path
         url = url.removeprefix("/").removeprefix(":")
         # the url left must have the format: owner/repo.git
-        owner = url.split("/")[0]
-        logger.debug("Extracted owner from remote URL: %s", owner)
-        return owner
+        return url.split("/")[0]
 
-    def remote_url(self, *, check: bool = True) -> str:
+    def remote_url(self) -> str:
         """Return the remote origin URL configured for this repository.
 
         Args:
@@ -257,7 +266,7 @@ class VersionController(Tool):
                 command exits with a non-zero status.
         """
         return (
-            self.config_remote_origin_url_args().run_cached(check=check).stdout.strip()
+            self.config_remote_origin_url_args().run_cached(check=False).stdout.strip()
         )
 
     def username(self) -> str:
@@ -281,36 +290,3 @@ class VersionController(Tool):
             subprocess.CalledProcessError: If `user.email` is not configured.
         """
         return self.config_get_user_email_args().run_cached().stdout.strip()
-
-    def _repo_owner(self) -> str:
-        """Return the repository owner, falling back to the git user name.
-
-        When no remote origin is configured, falls back to the configured
-        git `user.name`, stripping any spaces from it (with a warning logged)
-        since a repository owner must be URL-safe.
-
-        Returns:
-            The repository owner as a string.
-        """
-        url = self.remote_url(check=False)
-        if not url:
-            owner = self.username()
-            logger.warning(
-                "No remote url found, using username from %s as repository owner: '%s'",
-                self.name(),
-                owner,
-            )
-            if " " in owner:
-                logger.warning(
-                    "Repository owner '%s' contains spaces.",
-                    owner,
-                )
-                owner = owner.replace(" ", "")
-                logger.warning(
-                    "Spaces removed from the owner to ensure URL safety: '%s'",
-                    owner,
-                )
-        else:
-            owner = self.owner_from_remote_url()
-
-        return owner

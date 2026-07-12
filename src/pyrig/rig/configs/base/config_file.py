@@ -1,6 +1,5 @@
 """Core load, merge, validate, and dump lifecycle for configuration files."""
 
-import logging
 from abc import abstractmethod
 from collections.abc import Iterable, Iterator
 from functools import cache
@@ -16,8 +15,6 @@ from pyrig.core.iterate import (
     nested_structure_is_subset,
 )
 from pyrig.rig import configs
-
-logger = logging.getLogger(__name__)
 
 
 class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
@@ -126,7 +123,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             Parsed configuration as a dict or list.
         """
         instance = cls()
-        logger.debug("Loading %s", instance)
         return instance._load()
 
     @classmethod
@@ -189,7 +185,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
                 conflict in the file.
         """
         path = self.path()
-        logger.debug("Validating %s", self)
         if not path.exists():
             self.create_file()
             self.dump(self.configs())
