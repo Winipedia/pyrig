@@ -7,7 +7,7 @@ from typing import Any
 from pyrig_runtime.core.introspection.inspection import unwrap_obj
 
 
-def def_line_sorted(objs: Iterable[Any]) -> list[Any]:
+def def_line_sorted[T](objs: Iterable[T]) -> list[T]:
     """Sort objects by their source definition line number.
 
     Args:
