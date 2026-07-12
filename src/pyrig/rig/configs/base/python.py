@@ -13,14 +13,14 @@ from pyrig.rig.configs.base.string_ import StringConfigFile
 
 
 class PythonConfigFile(StringConfigFile):
-    """Abstract base class for Python (`.py`) source files.
+    r"""Abstract base class for Python (`.py`) source files.
 
     The extension is always `"py"`.
 
     Subclasses must implement:
         - `parent_path`: Directory that will contain the `.py` file.
         - `stem`: Filename without its extension.
-        - `lines`: Python source lines required to be present in the file.
+        - `content`: Python source required to be present in the file.
 
     Example:
         >>> from pathlib import Path
@@ -33,8 +33,8 @@ class PythonConfigFile(StringConfigFile):
         ...     def stem(self) -> str:
         ...         return "my_module"
         ...
-        ...     def lines(self) -> list[str]:
-        ...         return ["from typing import Any", "import sys"]
+        ...     def content(self) -> str:
+        ...         return "from typing import Any\nimport sys"
     """
 
     def _dump(self, configs: list[Any]) -> None:

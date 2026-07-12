@@ -30,25 +30,20 @@ class TestConfigureRepositoryConfigFile:
         """Test method."""
         assert ConfigureRepositoryConfigFile.I.stem() == "configure"
 
-    def test_lines(self) -> None:
+    def test_content(self) -> None:
         """Test method."""
         script = ConfigureRepositoryConfigFile.I
-        content = "\n".join(script.lines())
-        assert content == "\n".join(
-            [
-                *script.split_lines(script.global_content()),
-                "",
-                *script.split_lines(script.apply_repository_settings_script()),
-                "",
-                *script.split_lines(script.apply_rulesets_script()),
-                "",
-                script.dispatch(),
-            ],
-        )
+        content = script.content()
+        assert script.repo_variable() in content
+        assert script.apply_repository_settings_function() in content
+        assert script.apply_rulesets_function() in content
+        assert "gh api" in content
+        # the footer must come last so the functions are defined before it runs
+        assert content.endswith(script.footer_content())
 
-    def test_dispatch(self) -> None:
+    def test_footer_content(self) -> None:
         """Test method."""
-        assert ConfigureRepositoryConfigFile.I.dispatch() == '"$@"'
+        assert ConfigureRepositoryConfigFile.I.footer_content() == '"$@"'
 
     def test_global_content(self) -> None:
         """Test method."""

@@ -97,7 +97,6 @@ class TestLicenseConfigFile:
         # Should return empty string
         assert LicenseConfigFile.I.extension() == "", "Expected ''"
 
-    def test_lines(self) -> None:
+    def test_content(self) -> None:
         """Test method."""
-        # Should return empty string
-        assert isinstance(LicenseConfigFile.I.lines(), list)
+        assert isinstance(LicenseConfigFile.I.content(), str)

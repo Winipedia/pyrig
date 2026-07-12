@@ -55,9 +55,7 @@ class TestScratchConfigFile:
         """Test method."""
         assert ScratchConfigFile.I.parent_path() == Path()
 
-    def test_lines(self) -> None:
+    def test_content(self) -> None:
         """Test method."""
-        lines = ScratchConfigFile.I.lines()
-        assert isinstance(lines, list)
-        for line in lines:
-            assert isinstance(line, str)
+        content = ScratchConfigFile.I.content()
+        assert isinstance(content, str)

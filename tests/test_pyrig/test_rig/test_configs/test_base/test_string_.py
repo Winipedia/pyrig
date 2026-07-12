@@ -25,9 +25,9 @@ def my_test_string_config_file(
             """Get the parent path."""
             return Path()
 
-        def lines(self) -> list[str]:
+        def content(self) -> str:
             """Get the content string."""
-            return ["Test content."]
+            return "Test content."
 
         def extension(self) -> str:
             """Get the file extension."""
@@ -87,6 +87,11 @@ class TestStringConfigFile:
         lines = ["Test content.", "Second line."]
         string = my_test_string_config_file().join_lines(lines)
         assert string == "Test content.\nSecond line."
+
+    def test_content(self, my_test_string_config_file: type[StringConfigFile]) -> None:
+        """Test method."""
+        content = my_test_string_config_file().content()
+        assert content == "Test content."
 
     def test_lines(self, my_test_string_config_file: type[StringConfigFile]) -> None:
         """Test method."""

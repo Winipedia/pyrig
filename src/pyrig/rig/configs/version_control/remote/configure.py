@@ -31,7 +31,7 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         """Return `"configure"`."""
         return "configure"
 
-    def lines(self) -> list[str]:
+    def content(self) -> str:
         """Return the required shell function definitions.
 
         Returns:
@@ -39,15 +39,13 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
             and `apply_rulesets_function()` as shell functions, and finally
             `dispatch()`, which lets the script be run directly.
         """
-        return [
-            *self.split_lines(self.global_content()),
-            "",
-            *self.split_lines(self.apply_repository_settings_script()),
-            "",
-            *self.split_lines(self.apply_rulesets_script()),
-            "",
-            self.dispatch(),
-        ]
+        return f"""{self.global_content()}
+
+{self.apply_repository_settings_script()}
+
+{self.apply_rulesets_script()}
+
+{self.footer_content()}"""
 
     def global_content(self) -> str:
         """Return the content defined outside any function, shared by all of them.
@@ -66,7 +64,7 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         """Return `"repo"`, the shell variable name holding `owner/repo`."""
         return "repo"
 
-    def dispatch(self) -> str:
+    def footer_content(self) -> str:
         """Return the line that invokes the function named by the script's arguments.
 
         Placed at the end of the script, after every function is defined.

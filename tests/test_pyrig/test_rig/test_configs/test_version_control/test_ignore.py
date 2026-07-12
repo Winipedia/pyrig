@@ -64,7 +64,7 @@ class TestVersionControllerIgnoreConfigFile:
         result = VersionControllerIgnoreConfigFile.I.extension()
         assert result == "", f"Expected empty string, got {result}"
 
-    def test_lines(
+    def test_content(
         self,
         my_test_gitignore_config_file: type[VersionControllerIgnoreConfigFile],
         tmp_path: Path,
@@ -72,10 +72,10 @@ class TestVersionControllerIgnoreConfigFile:
         """Test method."""
         with chdir(tmp_path):
             my_test_gitignore_config_file().create_file()
-            lines = my_test_gitignore_config_file().lines()
-            assert "__pycache__/" in lines
-            assert ".env" in lines
-            assert ".scratch.py" in lines
+            content = my_test_gitignore_config_file().content()
+            assert "__pycache__/" in content
+            assert ".env" in content
+            assert ".scratch.py" in content
 
     def test_standard_ignore_lines(self) -> None:
         """Test method."""

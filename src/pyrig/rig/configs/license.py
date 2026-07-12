@@ -50,13 +50,13 @@ class LicenseConfigFile(StringConfigFile):
         """
         return file_has_content(self.path())
 
-    def lines(self) -> list[str]:
-        """Return the MIT license text as individual lines.
+    def content(self) -> str:
+        """Return the MIT license text.
 
         Returns:
-            Lines comprising the complete MIT license with year and owner substituted.
+            The complete MIT license with year and owner substituted.
         """
-        return self.split_lines(self.license())
+        return self.license()
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""

@@ -56,14 +56,14 @@ class SecurityConfigFile(MarkdownConfigFile):
         """
         return file_has_content(self.path())
 
-    def lines(self) -> list[str]:
-        """Return the security policy template as a list of lines.
+    def content(self) -> str:
+        """Return the security policy template content.
 
         Returns:
-            Lines of the security policy template, with the contact method
+            The security policy template, with the contact method
             placeholder filled in.
         """
-        return self.split_lines(self.template_with_contact_method())
+        return self.template_with_contact_method()
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""

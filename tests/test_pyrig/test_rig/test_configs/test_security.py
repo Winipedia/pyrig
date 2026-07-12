@@ -25,17 +25,17 @@ class TestSecurityConfigFile:
         result = SecurityConfigFile.I.parent_path()
         assert result == Path()
 
-    def test_lines(self, mocker: MockerFixture) -> None:
+    def test_content(self, mocker: MockerFixture) -> None:
         """Test method."""
         email_mock = mocker.patch.object(
             VersionController,
             VersionController.email.__name__,
             return_value="some.email@here.com",
         )
-        result = SecurityConfigFile.I.lines()
+        result = SecurityConfigFile.I.content()
         email_mock.assert_called_once()
         assert len(result) > 0
-        assert any("some.email@here.com" in line for line in result)
+        assert "some.email@here.com" in result
 
     def test_template_with_contact_method(self, mocker: MockerFixture) -> None:
         """Test method."""

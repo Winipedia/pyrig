@@ -22,12 +22,11 @@ class ScratchConfigFile(PythonConfigFile):
         """Check whether `.scratch.py` exists, ignoring its content."""
         return self.path().exists()
 
-    def lines(self) -> list[str]:
+    def content(self) -> str:
         """Return a one-line module docstring followed by a trailing newline."""
-        return [
-            '"""This file is for scratch work and is ignored by version control."""',
-            "",
-        ]
+        return (
+            '"""This file is for scratch work and is ignored by version control."""\n'
+        )
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""

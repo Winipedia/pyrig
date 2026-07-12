@@ -30,9 +30,9 @@ def my_test_python_package_config_file(
             """Get the parent path under the package root."""
             return PackageManager.I.package_root() / "parent_package"
 
-        def lines(self) -> list[str]:
+        def content(self) -> str:
             """Get the content string."""
-            return ['"""Test content."""']
+            return '"""Test content."""'
 
     return MyTestPythonPackageConfigFile
 

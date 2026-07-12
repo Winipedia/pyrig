@@ -33,15 +33,15 @@ class PythonVersionConfigFile(StringConfigFile):
         """
         return ""
 
-    def lines(self) -> list[str]:
-        """Return the file content as a list of lines.
+    def content(self) -> str:
+        """Return the minimum supported Python version, with a trailing newline.
 
         Returns:
-            A two-element list containing the minimum supported Python
-            version string (e.g., `"3.8"`) followed by an empty string that
-            produces a trailing newline when the lines are joined.
+            The minimum supported Python version string (e.g., `"3.8"`),
+            derived from the `requires-python` constraint in
+            `pyproject.toml`, followed by a trailing newline.
         """
-        return [str(PyprojectConfigFile.I.first_supported_python_version()), ""]
+        return f"{PyprojectConfigFile.I.first_supported_python_version()}\n"
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
