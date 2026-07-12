@@ -45,6 +45,15 @@ class SecurityConfigFile(MarkdownConfigFile):
     replace or extend the generated template with their own policy.
     """
 
+    def content(self) -> str:
+        """Return the security policy template content.
+
+        Returns:
+            The security policy template, with the contact method
+            placeholder filled in.
+        """
+        return self.template_with_contact_method()
+
     def is_correct(self) -> bool:
         """Return whether SECURITY.md has non-empty content.
 
@@ -55,15 +64,6 @@ class SecurityConfigFile(MarkdownConfigFile):
             FileNotFoundError: If the file does not exist.
         """
         return file_has_content(self.path())
-
-    def content(self) -> str:
-        """Return the security policy template content.
-
-        Returns:
-            The security policy template, with the contact method
-            placeholder filled in.
-        """
-        return self.template_with_contact_method()
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""

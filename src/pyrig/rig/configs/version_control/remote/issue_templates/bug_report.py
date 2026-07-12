@@ -13,14 +13,6 @@ class BugReportConfigFile(YMLDictConfigFile):
     bug reports.
     """
 
-    def parent_path(self) -> Path:
-        """Return `Path(".github/ISSUE_TEMPLATE")`."""
-        return Path(".github/ISSUE_TEMPLATE")
-
-    def stem(self) -> str:
-        """Return `"bug_report"` as the filename stem."""
-        return "bug_report"
-
     def _configs(self) -> dict[str, Any]:
         """Return the GitHub issue form definition for bug reports.
 
@@ -100,3 +92,11 @@ class BugReportConfigFile(YMLDictConfigFile):
                 },
             ],
         }
+
+    def parent_path(self) -> Path:
+        """Return `Path(".github/ISSUE_TEMPLATE")`."""
+        return Path(".github/ISSUE_TEMPLATE")
+
+    def stem(self) -> str:
+        """Return `"bug_report"` as the filename stem."""
+        return "bug_report"

@@ -34,14 +34,6 @@ class RemoteVersionController(Tool):
         """
         return Group.TOOLING
 
-    def repository(self) -> str:
-        """Return `"owner/repo"` for this repository.
-
-        Returns:
-            The repository owner and project name joined with `/`.
-        """
-        return f"{VersionController.I.repo_owner()}/{PackageManager.I.project_name()}"
-
     def image_url(self) -> str:
         """Return the shields.io badge image URL showing the repository's star count.
 
@@ -133,6 +125,14 @@ class RemoteVersionController(Tool):
         """
         return f"{self.url_base()}/{self.repository()}"
 
+    def repository(self) -> str:
+        """Return `"owner/repo"` for this repository.
+
+        Returns:
+            The repository owner and project name joined with `/`.
+        """
+        return f"{VersionController.I.repo_owner()}/{PackageManager.I.project_name()}"
+
     def url_base(self) -> str:
         """Return the base URL for GitHub.
 
@@ -140,6 +140,14 @@ class RemoteVersionController(Tool):
             `https://github.com`.
         """
         return "https://github.com"
+
+    def access_token_key(self) -> str:
+        """Return the environment variable name for the repository access token.
+
+        Returns:
+            `'REPO_TOKEN'`.
+        """
+        return "REPO_TOKEN"
 
     def running_in_ci(self) -> bool:
         """Detect whether the code is running inside a GitHub Actions environment.
@@ -151,11 +159,3 @@ class RemoteVersionController(Tool):
             `True` if running inside GitHub Actions, `False` otherwise.
         """
         return os.getenv("GITHUB_ACTIONS", "false") == "true"
-
-    def access_token_key(self) -> str:
-        """Return the environment variable name for the repository access token.
-
-        Returns:
-            `'REPO_TOKEN'`.
-        """
-        return "REPO_TOKEN"

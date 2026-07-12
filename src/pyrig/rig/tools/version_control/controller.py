@@ -43,21 +43,15 @@ class VersionController(Tool):
         Returns:
             The repository owner as a string.
         """
-        return cls()._repo_owner()  # noqa: SLF001
+        return cls().resolve_repo_owner()
 
-    def _repo_owner(self) -> str:
-        """Return the repository owner, falling back to the git user name.
-
-        When no remote origin is configured, falls back to the configured
-        git `user.name`, stripping any spaces from it (with a warning logged)
-        since a repository owner must be URL-safe.
+    def resolve_repo_owner(self) -> str:
+        """Return the repository owner.
 
         Returns:
             The repository owner as a string.
         """
-        if self.remote_url():
-            return self.owner_from_remote_url()
-        return self.username().replace(" ", "")
+        return self.remote_repo_owner() or self.normalized_username()
 
     def default_branch(self) -> str:
         """Return `'main'` as the default branch name for new repositories."""
@@ -226,7 +220,7 @@ class VersionController(Tool):
         """
         return self.args("config", *args)
 
-    def owner_from_remote_url(self) -> str:
+    def remote_repo_owner(self) -> str:
         """Return the repository owner parsed from the remote origin URL.
 
         Supports HTTPS (`https://github.com/owner/repo.git`) and SSH
@@ -234,10 +228,8 @@ class VersionController(Tool):
         remote formats.
 
         Returns:
-            The repository owner as a string.
-
-        Raises:
-            subprocess.CalledProcessError: If no remote origin is configured.
+            The repository owner as a string, or an empty string if no
+            remote origin is configured.
         """
         url = self.remote_url()
         # possible formats:
@@ -252,22 +244,24 @@ class VersionController(Tool):
     def remote_url(self) -> str:
         """Return the remote origin URL configured for this repository.
 
-        Args:
-            check: When `True` (the default), raises `subprocess.CalledProcessError`
-                if the underlying command fails (e.g. no remote is configured).
-                When `False`, returns an empty string on failure instead.
-
         Returns:
             The remote URL string in HTTPS or SSH format, or an empty string
-            when `check=False` and the command fails.
-
-        Raises:
-            subprocess.CalledProcessError: When `check=True` and the underlying
-                command exits with a non-zero status.
+            if no remote origin is configured.
         """
         return (
             self.config_remote_origin_url_args().run_cached(check=False).stdout.strip()
         )
+
+    def normalized_username(self) -> str:
+        """Return the git `user.name` with spaces removed.
+
+        Returns:
+            The configured git user name string with spaces removed.
+
+        Raises:
+            subprocess.CalledProcessError: If `user.name` is not configured.
+        """
+        return self.username().replace(" ", "")
 
     def username(self) -> str:
         """Return the git `user.name` from the active configuration.

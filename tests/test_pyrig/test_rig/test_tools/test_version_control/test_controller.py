@@ -1,8 +1,11 @@
 """module."""
 
+from contextlib import chdir
+from pathlib import Path
+
 from pytest_mock import MockerFixture
 
-from pyrig.core.subprocesses import Args
+from pyrig.core.subprocesses import Args, run_subprocess_cached
 from pyrig.rig.tools.version_control.controller import VersionController
 
 
@@ -20,19 +23,27 @@ class TestVersionController:
         """Test method."""
         assert VersionController.I.link_url() == "https://git-scm.com"
 
-    def test_owner_from_remote_url(self) -> None:
+    def test_remote_repo_owner(self, mocker: MockerFixture) -> None:
         """Test method."""
-        assert VersionController.I.owner_from_remote_url() == "Winipedia"
+        assert VersionController.I.remote_repo_owner() == "Winipedia"
+
+        # make sure empty string return passes through as empty string
+        mock_remote_url = mocker.patch.object(
+            VersionController,
+            VersionController.remote_url.__name__,
+            return_value="",
+        )
+        assert VersionController.I.remote_repo_owner() == ""
+        mock_remote_url.assert_called_once()
 
     def test_commit_with_msg_args(self) -> None:
         """Test method."""
         result = VersionController.I.commit_with_msg_args(msg="Initial commit")
         assert result == ("git", "commit", "-m", "Initial commit")
 
-    def test__repo_owner(self, mocker: MockerFixture) -> None:
+    def test_resolve_repo_owner(self, mocker: MockerFixture) -> None:
         """Test method."""
-        result = VersionController()._repo_owner(  # noqa: SLF001
-        )
+        result = VersionController().resolve_repo_owner()
         assert result == "Winipedia"
 
         # mock remote_url to return empty string
@@ -46,28 +57,24 @@ class TestVersionController:
             VersionController.username.__name__,
             return_value="Test User",
         )
-        result = VersionController()._repo_owner(  # noqa: SLF001
-        )
+        result = VersionController().resolve_repo_owner()
         owner = result
         assert owner == "TestUser"
         username_mock.assert_called_once()
         remote_mock.assert_called_once()
 
         username_mock.return_value = "TestUser"
-        result = VersionController()._repo_owner(  # noqa: SLF001
-        )
+        result = VersionController().resolve_repo_owner()
         assert result == "TestUser"
 
         # make it return a https remote url
         remote_mock.return_value = "https://github.com/OWNER/REPO.git"
-        result = VersionController()._repo_owner(  # noqa: SLF001
-        )
+        result = VersionController().resolve_repo_owner()
         assert result == "OWNER"
 
         # make it return a ssh remote url
         remote_mock.return_value = "git@github.com:OWNER/REPO.git"
-        result = VersionController()._repo_owner(  # noqa: SLF001
-        )
+        result = VersionController().resolve_repo_owner()
         assert result == "OWNER"
 
     def test_group(self) -> None:
@@ -174,9 +181,16 @@ class TestVersionController:
         result = VersionController.I.repo_owner()
         assert isinstance(result, str)
 
-    def test_remote_url(self) -> None:
+    def test_remote_url(self, tmp_path: Path) -> None:
         """Test method."""
         assert "github" in VersionController.I.remote_url()
+
+        # make sure no remote given gets us empty string
+        with chdir(tmp_path):
+            run_subprocess_cached.cache_clear()
+            result = VersionController.I.remote_url()
+            run_subprocess_cached.cache_clear()
+            assert result == ""
 
     def test_username(self, mocker: MockerFixture) -> None:
         """Test method."""
@@ -188,3 +202,17 @@ class TestVersionController:
         result = VersionController.I.username()
         run_mock.assert_called_once()
         assert result == "Some User"
+
+    def test_normalized_username(self, mocker: MockerFixture) -> None:
+        """Test method."""
+        result = VersionController.I.normalized_username()
+        assert result == "Winipedia"
+
+        mock_run = mocker.patch.object(
+            Args,
+            Args.run_cached.__name__,
+            return_value=mocker.Mock(stdout="Some User\n"),
+        )
+        result = VersionController.I.normalized_username()
+        mock_run.assert_called_once()
+        assert result == "SomeUser"

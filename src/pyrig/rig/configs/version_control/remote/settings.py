@@ -16,18 +16,10 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
     """Configuration file for GitHub repository settings and branch protection rulesets.
 
     Manages `.github/settings.json`, containing the general repository settings
-    and the branch protection rulesets to apply to the default branch. The
-    release workflow reads this file and applies its contents to the repository
-    via the GitHub CLI.
+    and the branch protection rulesets to apply to the default branch. Its
+    contents are applied to the repository via the GitHub CLI by a generated
+    script that the release workflow invokes.
     """
-
-    def parent_path(self) -> Path:
-        """Return `Path(".github")`, the standard GitHub configuration directory."""
-        return Path(".github")
-
-    def stem(self) -> str:
-        """Return `"settings"`."""
-        return "settings"
 
     def _configs(self) -> dict[str, Any]:
         """Build the required repository settings and branch protection ruleset.
@@ -102,6 +94,14 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
                 },
             ],
         }
+
+    def parent_path(self) -> Path:
+        """Return `Path(".github")`, the standard GitHub configuration directory."""
+        return Path(".github")
+
+    def stem(self) -> str:
+        """Return `"settings"`."""
+        return "settings"
 
     def repository_key(self) -> str:
         """Return `"repository"`, the top-level key for the repo settings."""

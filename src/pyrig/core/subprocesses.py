@@ -105,12 +105,10 @@ def run_subprocess(
     *args: str,
     check: bool = True,
 ) -> subprocess.CompletedProcess[str]:
-    """Execute a subprocess command with automatic failure logging.
+    """Execute a subprocess command.
 
     The command always runs without a shell in the current working directory,
-    capturing stdout and stderr and decoding them as text. On a non-zero exit
-    with `check=True`, the command, exit code, stdout, and stderr are logged at
-    `ERROR` level before the error propagates.
+    capturing stdout and stderr and decoding them as text.
 
     Args:
         *args: Command and arguments (e.g., `"git"`, `"status"`).
