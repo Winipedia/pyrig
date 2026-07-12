@@ -143,7 +143,7 @@ class TestPyprojectConfigFile:
             "inquirerpy",
             "packaging",
             pyrig_runtime.__name__,
-            "pyyaml",
+            "ruamel_yaml",
             "spdx_matcher",
             "tomlkit",
             "typer",

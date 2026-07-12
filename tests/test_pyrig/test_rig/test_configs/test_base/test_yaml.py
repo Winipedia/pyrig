@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from pyrig.rig.configs.base.yaml import YAMLConfigFile
+from pyrig.rig.configs.base.yaml import _YAML, YAMLConfigFile, _represent_str
 
 
 @pytest.fixture
@@ -59,9 +59,32 @@ class TestYAMLConfigFile:
             "Expected dump to work"
         )
 
+    def test__dump_multiline_string_as_literal_block(
+        self,
+        my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test method."""
+        config_file = my_test_yaml_config_file()
+        value = "line1\nline2"
+        config_file.dump({"key": value})
+        content = config_file.path().read_text()
+        assert '"key": |-' in content, "Expected a literal block scalar"
+        assert config_file.load() == {"key": value}, "Expected round-trip to work"
+
     def test_extension(
         self,
         my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         assert my_test_yaml_config_file().extension() == "yaml", "Expected yaml"
+
+
+def test__represent_str() -> None:
+    """Test function."""
+    single_line = _represent_str(_YAML.representer, "value")
+    assert single_line.style == '"', "Expected a double-quoted scalar"
+    assert single_line.value == "value", "Expected the value to be unchanged"
+
+    multi_line = _represent_str(_YAML.representer, "line1\nline2")
+    assert multi_line.style == "|", "Expected a literal block scalar"
+    assert multi_line.value == "line1\nline2", "Expected the value to be unchanged"

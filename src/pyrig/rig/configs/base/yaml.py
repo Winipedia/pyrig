@@ -2,17 +2,59 @@
 
 from typing import Any
 
-import yaml
+from ruamel.yaml import YAML
+from ruamel.yaml.scalarstring import DoubleQuotedScalarString, LiteralScalarString
 
-from pyrig.core.strings import open_path_with_utf8, read_text_utf8
+from pyrig.core.strings import is_multiline, open_path_with_utf8, read_text_utf8
 from pyrig.rig.configs.base.config_file import ConfigFile
+
+
+def _represent_str(representer: Any, data: str) -> Any:
+    """Represent a string in YAML.
+
+    Represents multi-line strings as literal block scalars and single-line
+    strings as double-quoted scalars.
+
+    Args:
+        representer: The YAML representer.
+        data: The string to represent.
+
+    Returns:
+        The YAML representation of the string
+    """
+    if is_multiline(data):
+        return representer.represent_literal_scalarstring(LiteralScalarString(data))
+    return representer.represent_double_quoted_scalarstring(
+        DoubleQuotedScalarString(data),
+    )
+
+
+_YAML = YAML()
+_YAML.indent(mapping=2, sequence=4, offset=2)
+_YAML.explicit_start = True
+_YAML.explicit_end = True
+_YAML.width = 4096
+_YAML.compact_seq_map = False
+_YAML.representer.add_representer(str, _represent_str)
 
 
 class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
     """Base class for YAML configuration files.
 
-    Parses and serializes YAML content using PyYAML's safe-mode functions,
-    which refuse to construct or represent arbitrary Python objects.
+    Parses and serializes YAML content using `ruamel.yaml`, which refuses to
+    construct or represent arbitrary Python objects (only ruamel.yaml's
+    separate, deprecated "unsafe" mode does that). Sequences are indented
+    under their parent key, a mapping inside a sequence item starts on its
+    own line below the `-` rather than sharing its line, and long scalars
+    are never line-wrapped by the dumper, so line length is governed by the
+    actual content and a linter, not by ruamel.yaml silently folding a
+    value.
+
+    Every plain `str` is double-quoted automatically (e.g. GitHub Actions'
+    `on:` key needs no special handling), and any string containing a
+    newline is written as a literal block scalar automatically (e.g. a
+    multi-line shell script), so subclasses never need to reach for
+    `ruamel.yaml.scalarstring` themselves.
 
     Subclasses must implement `parent_path()`, `stem()`, and `_configs()`.
 
@@ -34,24 +76,15 @@ class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
     def _dump(self, configs: ConfigT) -> None:
         """Write configuration to the YAML file, preserving key order.
 
-        Non-ASCII characters are written literally rather than escaped.
-
         Args:
             configs: Configuration dict or list to serialize and write.
         """
         with open_path_with_utf8(self.path(), mode="w") as f:
-            yaml.safe_dump(
-                configs,
-                f,
-                sort_keys=False,
-                allow_unicode=True,
-                explicit_start=True,
-                explicit_end=True,
-            )
+            _YAML.dump(configs, f)
 
     def _load(self) -> ConfigT:
         """Read and parse the YAML file from disk, returning a dict or list."""
-        return yaml.safe_load(read_text_utf8(self.path()))
+        return _YAML.load(read_text_utf8(self.path()))
 
     def extension(self) -> str:
         """Return `"yaml"`, the fixed extension for YAML files."""

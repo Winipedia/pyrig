@@ -7,6 +7,7 @@ import pytest
 from pyrig.core.strings import (
     file_has_content,
     fstring_var_name,
+    is_multiline,
     make_linked_badge_markdown,
     open_path_with_utf8,
     read_text_utf8,
@@ -162,3 +163,15 @@ def test_fstring_var_name() -> None:
     """Test function."""
     var = "value"
     assert fstring_var_name(f"{var=}") == "var"
+
+
+def test_is_multiline() -> None:
+    """Test function."""
+    assert is_multiline("single line") is False
+    assert is_multiline("first line\nsecond line") is True
+    assert (
+        is_multiline("""first line
+second line""")
+        is True
+    )
+    assert is_multiline("""One line only""") is False

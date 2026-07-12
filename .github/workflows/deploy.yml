@@ -1,70 +1,81 @@
 ---
-name: Deploy
-'on':
-  workflow_run:
-    workflows:
-    - Release
-    types:
-    - completed
-run-name: Deploy
-defaults:
-  run:
-    shell: bash
-env:
-  PYTHONDONTWRITEBYTECODE: 1
-  UV_NO_SYNC: 1
-jobs:
-  documentation:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    permissions:
-      pages: write
-      id-token: write
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Repository
-      id: checkout-repository
-      uses: actions/checkout@main
-    - name: Setup Package Manager
-      id: setup-package-manager
-      uses: astral-sh/setup-uv@main
-      with:
-        python-version: '3.14'
-    - name: Install Dependencies
-      id: install-dependencies
-      run: uv sync
-    - name: Build Documentation
-      id: build-documentation
-      run: uv run mkdocs build
-    - name: Configure Pages
-      id: configure-pages
-      uses: actions/configure-pages@main
-      with:
-        token: ${{ secrets.REPO_TOKEN }}
-        enablement: 'true'
-    - name: Upload Documentation
-      id: upload-documentation
-      uses: actions/upload-pages-artifact@main
-      with:
-        path: site
-    - name: Deploy Documentation
-      id: deploy-documentation
-      uses: actions/deploy-pages@main
-  package:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Repository
-      id: checkout-repository
-      uses: actions/checkout@main
-    - name: Setup Package Manager
-      id: setup-package-manager
-      uses: astral-sh/setup-uv@main
-      with:
-        python-version: '3.14'
-    - name: Build Package
-      id: build-package
-      run: uv build
-    - name: Publish Package
-      id: publish-package
-      run: uv publish --token ${{ secrets.PYPI_TOKEN }}
+"name": "Deploy"
+"on":
+  "workflow_run":
+    "types":
+      - "completed"
+    "workflows":
+      - "Release"
+"defaults":
+  "run":
+    "shell": "bash"
+"env":
+  "PYTHONDONTWRITEBYTECODE": 1
+  "UV_NO_SYNC": 1
+"run-name": "Deploy"
+"jobs":
+  "documentation":
+    "if": "github.event.workflow_run.conclusion == 'success'"
+    "permissions":
+      "id-token": "write"
+      "pages": "write"
+    "runs-on": "ubuntu-latest"
+    "steps":
+      -
+        "name": "Checkout Repository"
+        "id": "checkout-repository"
+        "uses": "actions/checkout@main"
+      -
+        "name": "Setup Package Manager"
+        "id": "setup-package-manager"
+        "uses": "astral-sh/setup-uv@main"
+        "with":
+          "python-version": "3.14"
+      -
+        "name": "Install Dependencies"
+        "id": "install-dependencies"
+        "run": "uv sync"
+      -
+        "name": "Build Documentation"
+        "id": "build-documentation"
+        "run": "uv run mkdocs build"
+      -
+        "name": "Configure Pages"
+        "id": "configure-pages"
+        "uses": "actions/configure-pages@main"
+        "with":
+          "enablement": "true"
+          "token": "${{ secrets.REPO_TOKEN }}"
+      -
+        "name": "Upload Documentation"
+        "id": "upload-documentation"
+        "uses": "actions/upload-pages-artifact@main"
+        "with":
+          "path": "site"
+      -
+        "name": "Deploy Documentation"
+        "id": "deploy-documentation"
+        "uses": "actions/deploy-pages@main"
+  "package":
+    "if": "github.event.workflow_run.conclusion == 'success'"
+    "runs-on": "ubuntu-latest"
+    "steps":
+      -
+        "name": "Checkout Repository"
+        "id": "checkout-repository"
+        "uses": "actions/checkout@main"
+      -
+        "name": "Setup Package Manager"
+        "id": "setup-package-manager"
+        "uses": "astral-sh/setup-uv@main"
+        "with":
+          "python-version": "3.14"
+      -
+        "name": "Build Package"
+        "id": "build-package"
+        "run": "uv build"
+      -
+        "name": "Publish Package"
+        "id": "publish-package"
+        "run": "uv publish --token ${{ secrets.PYPI_TOKEN }}"
 ...

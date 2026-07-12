@@ -7,6 +7,7 @@ at various git stages.
 from pathlib import Path
 from typing import Any
 
+from pyrig.core.strings import reformat_name
 from pyrig.core.subprocesses import (
     Args,
 )
@@ -140,7 +141,7 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
 
     def hook(  # noqa: PLR0913
         self,
-        name: str,
+        id_: str,
         args: Args,
         *,
         language: str = "system",
@@ -151,11 +152,14 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
     ) -> dict[str, Any]:
         """Build a single prek hook configuration entry.
 
-        The `id` and `name` fields are both set to `name`; the `entry` field
-        is `args` converted to a space-separated string.
+        The `name` field is derived from `id_` (e.g. `"format-code"` becomes
+        `"format code"`, matching the lowercase, space-separated naming
+        convention used across the pre-commit hook ecosystem); the `entry`
+        field is `args` converted to a space-separated string.
 
         Args:
-            name: Hook identifier used for both the `id` and `name` fields.
+            id_: Hook identifier, used as-is for the `id` field and with
+                hyphens replaced by spaces for the `name` field.
             args: Command and arguments for the hook `entry` field.
             language: Execution environment for the hook. `"system"` means
                 the tool must already be installed on the host rather than
@@ -173,8 +177,8 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
             Hook configuration dict ready for inclusion in the `hooks` list.
         """
         hook: dict[str, Any] = {
-            "id": name,
-            "name": name,
+            "id": id_,
+            "name": reformat_name(id_, split_on="-", join_on=" "),
             "entry": str(args),
             "language": language,
             "always_run": always_run,

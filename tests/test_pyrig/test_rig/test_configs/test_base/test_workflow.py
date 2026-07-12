@@ -49,13 +49,6 @@ def my_test_workflow(
 class TestWorkflowConfigFile:
     """Test class."""
 
-    def test_insert_repository(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        assert my_test_workflow().insert_repository() == "${{ github.repository }}"
-
     def test_shell_insert_expression(self) -> None:
         """Test method."""
         assert (
@@ -100,12 +93,13 @@ class TestWorkflowConfigFile:
 
     def test_combined_if(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        conditions = ["condition1", "condition2"]
-        conditions = [
-            my_test_workflow().insert_expression(condition) for condition in conditions
-        ]
-        result = my_test_workflow().combined_if(*conditions, operator="&&")
-        expected = "${{ condition1 && condition2 }}"
+        result = my_test_workflow().combined_if(
+            "condition1",
+            "condition2",
+            "condition3",
+            operator="&&",
+        )
+        expected = "condition1 &&\ncondition2 &&\ncondition3"
         assert result == expected, f"Expected '{expected}', got {result}"
 
     def test_steps_core_installed_setup(
@@ -209,14 +203,6 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().name_from_method(self.test_name_from_method)
         assert result == "Name From Method"
-
-    def test_on_workflow_dispatch(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().on_workflow_dispatch()
-        assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in result"
 
     def test_on_push(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -445,7 +431,7 @@ class TestWorkflowConfigFile:
         """Test method."""
         assert (
             my_test_workflow().if_workflow_run_is_push_triggered()
-            == "${{ github.event.workflow_run.event == 'push' }}"
+            == "github.event.workflow_run.event == 'push'"
         )
 
     def test_if_workflow_run_is_success_and_push_triggered(
@@ -455,5 +441,8 @@ class TestWorkflowConfigFile:
         """Test method."""
         workflow = my_test_workflow()
         result = workflow.if_workflow_run_is_success_and_push_triggered()
-        expected = "${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' }}"  # noqa: E501
+        expected = (
+            "github.event.workflow_run.conclusion == 'success' &&\n"
+            "github.event.workflow_run.event == 'push'"
+        )
         assert result == expected

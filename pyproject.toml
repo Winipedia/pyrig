@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "18.4.0"
+version = "18.5.0"
 description = "A tool that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -8,7 +8,7 @@ dependencies = [
     "inquirerpy>=0.3.4",
     "packaging>=26.2",
     "pyrig-runtime>=3.5.2",
-    "pyyaml>=6.0.3",
+    "ruamel-yaml>=0.19.1",
     "spdx-matcher>=0.1.4",
     "tomlkit>=0.15.0",
     "typer>=0.26.8",
@@ -98,6 +98,30 @@ requires = [
 ]
 build-backend = "uv_build"
 
+[tool.deptry]
+root = "src"
+
+[tool.deptry.per_rule_ignores]
+DEP002 = [
+    "pyrig-runtime",
+]
+
+[tool.pytest]
+testpaths = [
+    "tests",
+]
+addopts = [
+    "--cov=pyrig",
+    "--cov-branch",
+    "--cov-fail-under=100",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=xml",
+]
+filterwarnings = [
+    "error",
+]
+strict = true
+
 [tool.ruff.lint]
 select = [
     "ALL",
@@ -116,27 +140,3 @@ convention = "google"
 
 [tool.ruff.format]
 docstring-code-format = true
-
-[tool.pytest]
-testpaths = [
-    "tests",
-]
-addopts = [
-    "--cov=pyrig",
-    "--cov-branch",
-    "--cov-fail-under=100",
-    "--cov-report=term-missing:skip-covered",
-    "--cov-report=xml",
-]
-filterwarnings = [
-    "error",
-]
-strict = true
-
-[tool.deptry]
-root = "src"
-
-[tool.deptry.per_rule_ignores]
-DEP002 = [
-    "pyrig-runtime",
-]

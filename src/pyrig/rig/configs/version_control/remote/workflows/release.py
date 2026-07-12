@@ -3,8 +3,8 @@
 from typing import Any
 
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
-from pyrig.rig.configs.version_control.remote.settings import (
-    RepoSettingsConfigFile,
+from pyrig.rig.configs.version_control.remote.configure import (
+    ConfigureRepositoryConfigFile,
 )
 from pyrig.rig.configs.version_control.remote.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
@@ -124,23 +124,23 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     ) -> dict[str, Any]:
         """Build a step that patches general repository settings via the GitHub API.
 
-        Reads the `repository` key from the settings file and sends it as a
-        `PATCH /repos/{owner}/{repo}` request using `gh api`.
+        Sources the generated repository-settings script and calls its
+        `settings` function, which reads the `repository` key from the
+        settings file and sends it as a `PATCH /repos/{owner}/{repo}`
+        request using `gh api`.
 
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that pipes the repository settings dict into `gh api`.
+            Step that runs `settings` from the settings script.
         """
-        repo = self.insert_repository()
-        key = RepoSettingsConfigFile.I.repository_key()
-        path = RepoSettingsConfigFile.I.path().as_posix()
-        run = f"jq '.{key}' {path} | gh api --method PATCH \"repos/{repo}\" --input -"
         return self.step(
             self.step_apply_repository_settings,
-            run=run,
-            env={"GH_TOKEN": self.insert_repo_token()},
+            run=self.run_configure_repository_function(
+                ConfigureRepositoryConfigFile.I.apply_repository_settings_function(),
+            ),
+            env=self.configure_repository_env(),
             step=step,
         )
 
@@ -151,34 +151,49 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     ) -> dict[str, Any]:
         """Build a step that upserts all rulesets from the settings file.
 
-        For each ruleset in the `rulesets` array, looks up whether a ruleset
-        with that name already exists. Sends the full ruleset configuration
-        with `gh api`, using `POST` to create it if no matching ruleset was
-        found or `PUT` to update it in place otherwise.
+        Sources the generated repository-settings script and calls its
+        `rulesets` function, which looks up whether a ruleset with each
+        name already exists and sends the full configuration with `gh api`,
+        using `POST` to create it or `PUT` to update it in place.
 
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step containing the shell loop that upserts each ruleset.
+            Step that runs `rulesets` from the settings script.
         """
-        repo = self.insert_repository()
-        key = RepoSettingsConfigFile.I.rulesets_key()
-        path = RepoSettingsConfigFile.I.path().as_posix()
-        run = f"""\
-REPO="{repo}"
-jq -c '.{key}[]' {path} | while read ruleset; do
-  ID=$(gh api "repos/$REPO/rulesets" |
-    jq -r --argjson r "$ruleset" '.[] | select(.name==$r.name) | .id')
-  if [ -z "$ID" ]; then METHOD="POST"; else METHOD="PUT"; fi
-  gh api --method "$METHOD" "repos/$REPO/rulesets${{ID:+/$ID}}" --input - <<< "$ruleset"
-done"""
         return self.step(
             self.step_apply_rulesets,
-            run=run,
-            env={"GH_TOKEN": self.insert_repo_token()},
+            run=self.run_configure_repository_function(
+                ConfigureRepositoryConfigFile.I.apply_rulesets_function(),
+            ),
+            env=self.configure_repository_env(),
             step=step,
         )
+
+    def run_configure_repository_function(self, function: str) -> str:
+        """Build a `run` command that invokes a function from the settings script.
+
+        Args:
+            function: Name of the function to invoke.
+
+        Returns:
+            Shell command that runs `ConfigureRepositoryConfigFile`'s script
+            directly, passing `function` as its argument.
+        """
+        path = ConfigureRepositoryConfigFile.I.path().as_posix()
+        return f"bash {path} {function}"
+
+    def configure_repository_env(self) -> dict[str, str]:
+        """Return the environment variables the settings script's functions require.
+
+        Returns:
+            Dict with `GH_TOKEN`, read automatically by `gh`. The repository
+            itself is hardcoded into the generated script, not passed in.
+        """
+        return {
+            "GH_TOKEN": self.insert_repo_token(),
+        }
 
     def step_create_tag(
         self,
@@ -288,9 +303,9 @@ done"""
             self.step_create_release,
             uses="ncipollo/release-action@main",
             with_={
-                "tag": version,
-                "name": version,
                 "body": self.insert_changelog(),
+                "name": version,
+                "tag": version,
             },
             step=step,
         )

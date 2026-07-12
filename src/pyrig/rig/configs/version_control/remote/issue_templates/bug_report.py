@@ -42,60 +42,60 @@ class BugReportConfigFile(YMLDictConfigFile):
         return {
             "name": "Bug Report",
             "description": "Report a bug",
-            "title": "[Bug]: ",
             "labels": ["bug"],
+            "title": "[Bug]: ",
             "body": [
                 {
                     "type": "textarea",
-                    "id": "description",
                     "attributes": {
                         "label": "Description",
                         "description": "A clear description of the bug",
                     },
+                    "id": "description",
                     "validations": {"required": True},
                 },
                 {
                     "type": "textarea",
-                    "id": "steps",
                     "attributes": {
                         "label": "Steps to Reproduce",
-                        "value": "1. \n2. \n3. \n",
+                        "value": "1.\n2.\n3.",
                     },
+                    "id": "steps",
                     "validations": {"required": True},
                 },
                 {
                     "type": "textarea",
-                    "id": "expected",
                     "attributes": {
                         "label": "Expected Behavior",
                     },
+                    "id": "expected",
                     "validations": {"required": True},
                 },
                 {
                     "type": "textarea",
-                    "id": "actual",
                     "attributes": {
                         "label": "Actual Behavior",
                     },
+                    "id": "actual",
                     "validations": {"required": True},
                 },
                 {
                     "type": "textarea",
-                    "id": "environment",
                     "attributes": {
                         "label": "Environment",
                         "description": "OS, version, relevant dependencies",
                     },
+                    "id": "environment",
                     "validations": {"required": False},
                 },
                 {
                     "type": "textarea",
-                    "id": "logs",
                     "attributes": {
                         "label": "Logs",
                         "description": "Relevant log output (auto-formatted as code)",
                         "render": "shell",
                     },
+                    "id": "logs",
                     "validations": {"required": False},
                 },
             ],

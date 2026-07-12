@@ -34,6 +34,14 @@ class RemoteVersionController(Tool):
         """
         return Group.TOOLING
 
+    def repository(self) -> str:
+        """Return `"owner/repo"` for this repository.
+
+        Returns:
+            The repository owner and project name joined with `/`.
+        """
+        return f"{VersionController.I.repo_owner()}/{PackageManager.I.project_name()}"
+
     def image_url(self) -> str:
         """Return the shields.io badge image URL showing the repository's star count.
 
@@ -41,11 +49,7 @@ class RemoteVersionController(Tool):
             URL in the format
             `https://img.shields.io/github/stars/{owner}/{repo}?style=social`.
         """
-        owner, repo = (
-            VersionController.I.repo_owner(),
-            PackageManager.I.project_name(),
-        )
-        return f"https://img.shields.io/github/stars/{owner}/{repo}?style=social"
+        return f"https://img.shields.io/github/stars/{self.repository()}?style=social"
 
     def link_url(self) -> str:
         """Return the URL this tool's badge should link to.
@@ -119,11 +123,7 @@ class RemoteVersionController(Tool):
         Returns:
             shields.io URL that renders the current workflow status as a badge.
         """
-        owner, repo = (
-            VersionController.I.repo_owner(),
-            PackageManager.I.project_name(),
-        )
-        return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yml?label={label}&logo=github"
+        return f"https://img.shields.io/github/actions/workflow/status/{self.repository()}/{workflow_name}.yml?label={label}&logo=github"
 
     def repo_url(self) -> str:
         """Construct the HTTPS GitHub repository URL.
@@ -131,11 +131,7 @@ class RemoteVersionController(Tool):
         Returns:
             URL in the format `https://github.com/{owner}/{repo}`.
         """
-        owner, repo = (
-            VersionController.I.repo_owner(),
-            PackageManager.I.project_name(),
-        )
-        return f"{self.url_base()}/{owner}/{repo}"
+        return f"{self.url_base()}/{self.repository()}"
 
     def url_base(self) -> str:
         """Return the base URL for GitHub.

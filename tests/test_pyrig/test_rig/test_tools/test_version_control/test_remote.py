@@ -8,6 +8,10 @@ from pyrig.rig.tools.version_control.remote import (
 class TestRemoteVersionController:
     """Test class."""
 
+    def test_repository(self) -> None:
+        """Test method."""
+        assert RemoteVersionController.I.repository() == "Winipedia/pyrig"
+
     def test_image_url(self) -> None:
         """Test method."""
         assert (

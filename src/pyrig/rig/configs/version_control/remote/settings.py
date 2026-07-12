@@ -12,7 +12,7 @@ from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
 
 
-class RepoSettingsConfigFile(JSONDictConfigFile):
+class RepositorySettingsConfigFile(JSONDictConfigFile):
     """Configuration file for GitHub repository settings and branch protection rulesets.
 
     Manages `.github/settings.json`, containing the general repository settings

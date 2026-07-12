@@ -1,36 +1,40 @@
 ---
-name: Feature Request
-description: Suggest a new feature
-title: '[Feature]: '
-labels:
-- enhancement
-body:
-- type: textarea
-  id: summary
-  attributes:
-    label: Summary
-    description: Brief explanation of the feature
-  validations:
-    required: true
-- type: textarea
-  id: use_case
-  attributes:
-    label: Use Case
-    description: Why do you need this feature?
-  validations:
-    required: true
-- type: textarea
-  id: proposed
-  attributes:
-    label: Proposed Solution
-    description: How might this feature work?
-  validations:
-    required: false
-- type: textarea
-  id: alternatives
-  attributes:
-    label: Alternatives Considered
-    description: Other solutions you've considered
-  validations:
-    required: false
+"name": "Feature Request"
+"description": "Suggest a new feature"
+"labels":
+  - "enhancement"
+"title": "[Feature]: "
+"body":
+  -
+    "type": "textarea"
+    "attributes":
+      "label": "Summary"
+      "description": "Brief explanation of the feature"
+    "id": "summary"
+    "validations":
+      "required": true
+  -
+    "type": "textarea"
+    "attributes":
+      "label": "Use Case"
+      "description": "Why do you need this feature?"
+    "id": "use_case"
+    "validations":
+      "required": true
+  -
+    "type": "textarea"
+    "attributes":
+      "label": "Proposed Solution"
+      "description": "How might this feature work?"
+    "id": "proposed"
+    "validations":
+      "required": false
+  -
+    "type": "textarea"
+    "attributes":
+      "label": "Alternatives Considered"
+      "description": "Other solutions you've considered"
+    "id": "alternatives"
+    "validations":
+      "required": false
 ...

@@ -96,6 +96,16 @@ class PyprojectConfigFile(TOMLConfigFile):
                 "build-backend": PackageManager.I.build_backend(),
             },
             "tool": {
+                DependencyChecker.I.config_name(): {
+                    "root": PackageManager.I.source_root().as_posix(),
+                    "per_rule_ignores": {"DEP002": [Pyrigger.I.runtime_dependency()]},
+                },
+                ProjectTester.I.config_name(): {
+                    "testpaths": [ProjectTester.I.package_root().as_posix()],
+                    "addopts": list(ProjectTester.I.additional_args()),
+                    "filterwarnings": ["error"],
+                    "strict": True,
+                },
                 PythonLinter.I.config_name(): {
                     "lint": {
                         "select": ["ALL"],
@@ -108,16 +118,6 @@ class PyprojectConfigFile(TOMLConfigFile):
                     "format": {
                         "docstring-code-format": True,
                     },
-                },
-                ProjectTester.I.config_name(): {
-                    "testpaths": [ProjectTester.I.package_root().as_posix()],
-                    "addopts": list(ProjectTester.I.additional_args()),
-                    "filterwarnings": ["error"],
-                    "strict": True,
-                },
-                DependencyChecker.I.config_name(): {
-                    "root": PackageManager.I.source_root().as_posix(),
-                    "per_rule_ignores": {"DEP002": [Pyrigger.I.runtime_dependency()]},
                 },
             },
         }

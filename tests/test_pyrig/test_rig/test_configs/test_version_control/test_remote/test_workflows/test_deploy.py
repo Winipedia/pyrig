@@ -13,7 +13,7 @@ class TestDeployWorkflowConfigFile:
         result = DeployWorkflowConfigFile.I.job(self.test_job, steps=[])
         assert len(result) == 1, "Expected job to have one key"
         job_config = next(iter(result.values()))
-        expected = "${{ github.event.workflow_run.conclusion == 'success' }}"
+        expected = "github.event.workflow_run.conclusion == 'success'"
         assert job_config["if"] == expected
 
     def test_stem(self) -> None:
