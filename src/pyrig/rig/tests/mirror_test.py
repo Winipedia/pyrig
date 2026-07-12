@@ -5,7 +5,6 @@ corresponding test counterpart, without overwriting tests that already exist.
 """
 
 import inspect
-import logging
 from abc import abstractmethod
 from collections.abc import Iterable, Iterator
 from importlib import import_module
@@ -39,8 +38,6 @@ from pyrig.rig import tests
 from pyrig.rig.configs.base.package import PythonPackageConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.testing.project import ProjectTester
-
-logger = logging.getLogger(__name__)
 
 
 class MirrorTestConfigFile(PythonPackageConfigFile):
