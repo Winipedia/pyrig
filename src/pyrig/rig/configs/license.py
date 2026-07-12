@@ -80,8 +80,8 @@ class LicenseConfigFile(StringConfigFile):
         mit_license = self.license_template()
         year = datetime.now(tz=UTC).year
         owner = VersionController.I.repo_owner()
-        mit_license = mit_license.replace("[year]", str(year))
-        return mit_license.replace("[fullname]", owner)
+        mit_license = mit_license.replace("[year]", str(year), 1)
+        return mit_license.replace("[fullname]", owner, 1)
 
     def license_template(self) -> str:
         """Return the raw MIT license template text."""

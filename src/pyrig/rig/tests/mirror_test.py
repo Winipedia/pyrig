@@ -4,8 +4,8 @@ Ensures every module, class, function, and method in the project has a
 corresponding test counterpart, without overwriting tests that already exist.
 """
 
+import inspect
 import logging
-import re
 from abc import abstractmethod
 from collections.abc import Iterable, Iterator
 from importlib import import_module
@@ -376,7 +376,12 @@ def {test_func_name}() -> None:
 
         For each untested source class, method skeletons are placed inside the
         existing test class body if one is already present in the content, or
-        into a newly appended test class otherwise.
+        into a newly appended test class otherwise. An existing class is located
+        by its exact current source text (rather than a line number or a
+        hardcoded skeleton shape), so the insertion point does not depend on the
+        class's docstring, decorators, or any other content already inside it,
+        and stays correct even when several classes in the same file need new
+        methods in the same pass.
 
         Args:
             test_module_content: Existing test module content to extend.
@@ -391,66 +396,32 @@ def {test_func_name}() -> None:
         for (
             test_class_name,
             test_method_names,
+            source,
         ) in self.untested_class_and_method_names(
             module=module,
             test_module=test_module,
             module_members=module_members,
             test_module_members=test_module_members,
         ):
-            test_cls_skeleton = self.extract_test_class_skeleton_from_content(
-                test_module_content,
-                test_class_name=test_class_name,
-                default=self.test_class_skeleton(test_class_name),
+            source_exists = source is not None
+
+            test_cls_skeleton = (
+                source if source_exists else self.test_class_skeleton(test_class_name)
             )
+
             test_cls_content = test_cls_skeleton + "".join(
                 self.test_method_skeleton(name) for name in test_method_names
             )
-            parts = test_module_content.split(test_cls_skeleton)
-            parts.insert(1, test_cls_content)
-            test_module_content = "".join(parts)
+            if source_exists:
+                test_module_content = test_module_content.replace(
+                    source.strip(),
+                    test_cls_content.strip(),
+                    1,
+                )
+                continue
+            test_module_content += test_cls_content
 
         return test_module_content
-
-    def extract_test_class_skeleton_from_content(
-        self,
-        test_module_content: str,
-        test_class_name: str,
-        default: str,
-    ) -> str:
-        """Extract the skeleton of a specific test class from the test module content.
-
-        Args:
-            test_module_content: The full test module content to search.
-            test_class_name: The name of the test class whose skeleton to extract.
-            default: The value to return if the class skeleton is not found.
-
-        Returns:
-            The matched class skeleton string if found; `default` otherwise.
-        """
-        pattern = self.class_skeleton_pattern(test_class_name)
-        match = pattern.search(test_module_content)
-        return match.group(0) if match is not None else default
-
-    def class_skeleton_pattern(self, test_class_name: str) -> re.Pattern[str]:
-        """Return a regex pattern that matches the skeleton of a specific test class.
-
-        The pattern matches the class definition line followed by any
-        triple-quoted docstring, using either quote style, in place of the
-        default skeleton docstring.
-
-        Args:
-            test_class_name: The name of the test class whose skeleton to build a
-                pattern for.
-
-        Returns:
-            Compiled regex pattern matching the class skeleton.
-        """
-        cls_skeleton = self.test_class_skeleton(test_class_name)
-        pattern_str = cls_skeleton.replace(
-            self.test_class_skeleton_docstring(),
-            r"(?:\"\"\".*?\"\"\"|\'\'\'.*?\'\'\')",
-        )
-        return re.compile(pattern_str, flags=re.DOTALL)
 
     def untested_class_and_method_names(
         self,
@@ -458,7 +429,7 @@ def {test_func_name}() -> None:
         test_module: ModuleType,
         module_members: Iterable[Any],
         test_module_members: Iterable[Any],
-    ) -> Iterator[tuple[str, Iterator[str]]]:
+    ) -> Iterator[tuple[str, Iterator[str], str | None]]:
         """Yield test class/method pairs for source classes that have untested methods.
 
         Only methods defined directly on a source class are considered; inherited
@@ -474,8 +445,11 @@ def {test_func_name}() -> None:
             test_module_members: Members of the test module.
 
         Yields:
-            `(test_class_name, missing_test_methods)` tuples, where
-            `missing_test_methods` is itself an iterator of method name strings.
+            `(test_class_name, missing_test_methods, source)` tuples, where
+            `missing_test_methods` is itself an iterator of method name strings,
+            and `source` is the existing test class's exact current source text
+            (from `inspect.getsource`), or `None` if no test class with that
+            name exists yet.
 
         Note:
             Each yielded inner iterator must be fully consumed before advancing
@@ -526,9 +500,13 @@ def {test_func_name}() -> None:
             has_untested_methods, untested_test_methods_names = iterator_has_items(
                 untested_test_methods_names,
             )
-            if has_untested_methods:
-                logger.debug("Class %s has untested methods", supposed_test_class_name)
-                yield supposed_test_class_name, untested_test_methods_names
+            if not has_untested_methods:
+                continue
+
+            test_class = getattr(test_module, supposed_test_class_name, None)
+            source = inspect.getsource(test_class) if test_class is not None else None
+
+            yield supposed_test_class_name, untested_test_methods_names, source
 
     def test_class_skeleton(self, test_class_name: str) -> str:
         """Generate skeleton code for a test class.
@@ -542,19 +520,11 @@ def {test_func_name}() -> None:
         Returns:
             Python source code for the skeleton test class definition.
         """
-        return f"""
+        return f'''
 
 class {test_class_name}:
-    {self.test_class_skeleton_docstring()}
-"""
-
-    def test_class_skeleton_docstring(self) -> str:
-        """Return the default docstring for a skeleton test class.
-
-        Returns:
-            A minimal test class docstring string.
-        """
-        return '"""Test class."""'
+    """Test class."""
+'''
 
     def test_method_skeleton(self, test_method_name: str) -> str:
         """Generate skeleton code for a test method.

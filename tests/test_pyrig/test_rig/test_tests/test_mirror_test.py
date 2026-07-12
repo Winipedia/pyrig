@@ -7,6 +7,7 @@ from pathlib import Path
 from types import ModuleType
 
 import pytest
+from pyrig_runtime.core.introspection.inspection import obj_members
 
 from pyrig.core.introspection.modules import reimport_module
 from pyrig.rig import tests
@@ -113,42 +114,6 @@ class TestMirrorTestConfigFile:
         """Test method."""
         assert my_test_mirror_test_config_file().test_module_prefix() == "test_"
 
-    def test_class_skeleton_pattern(
-        self,
-        my_test_mirror_test_config_file: type[MirrorTestConfigFile],
-    ) -> None:
-        """Test method."""
-        content = """
-sdjshfjsabckdcjsbcbdjsabda
-
-
-
-class SomeClass:
-    '''Some docstring.
-
-    that is multiline.
-    '''
-
-
-sahckabcjscjsjdjdjshidw
-sahgcjsachsavcbschjbvsacjksabc
-"""
-        cls_name = "SomeClass"
-        pattern = my_test_mirror_test_config_file().class_skeleton_pattern(cls_name)
-        match = pattern.search(content)
-        assert match is not None
-        assert (
-            match.group(0)
-            == """
-
-class SomeClass:
-    '''Some docstring.
-
-    that is multiline.
-    '''
-"""
-        )
-
     def test_validate(
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
@@ -173,61 +138,6 @@ class SomeClass:
             # assert two lines between docstring and first class
             assert '"""\n\n\ndef test_mirror_function' in content
             assert "NotImplementedError\n\n\nclass TestMirrorClass:" in content
-
-    def test_extract_test_class_skeleton_from_content(
-        self,
-        my_test_mirror_test_config_file: type[MirrorTestConfigFile],
-    ) -> None:
-        """Test method."""
-        test_module_content = """import something
-
-
-def test_mirror_function():
-    pass
-
-
-class TestMirrorClass:
-    '''Some docstring.
-
-    that is multiline.
-    '''
-
-    def test_mirror_method(self):
-        pass
-
-
-def test_another_function():
-    pass
-"""
-        test_class_name = "TestMirrorClass"
-        skeleton = (
-            my_test_mirror_test_config_file().extract_test_class_skeleton_from_content(
-                test_module_content,
-                test_class_name,
-                default="",
-            )
-        )
-        assert (
-            skeleton
-            == """
-
-class TestMirrorClass:
-    '''Some docstring.
-
-    that is multiline.
-    '''
-"""
-        )
-
-    def test_test_class_skeleton_docstring(
-        self,
-        my_test_mirror_test_config_file: type[MirrorTestConfigFile],
-    ) -> None:
-        """Test method."""
-        assert (
-            my_test_mirror_test_config_file().test_class_skeleton_docstring()
-            == '"""Test class."""'
-        )
 
     def test_concrete_subclasses(self) -> None:
         """Test method."""
@@ -466,6 +376,215 @@ class TestMirrorClass:
         assert "def test_mirror_function" in content
         assert "class TestMirrorClass" in content
 
+    def test_test_module_content_with_class_skeletons_decorated_class(
+        self,
+        tmp_path: Path,
+        create_module: Callable[[Path], ModuleType],
+        create_package: Callable[[Path], ModuleType],
+    ) -> None:
+        """Test method.
+
+        Regression test: a test class decorated with `@pytest.mark.skip` (or
+        anything else besides the exact auto-generated skeleton shape) must not
+        cause a duplicate class definition to be appended, which would silently
+        shadow the original class's existing tests. `skip` is used here (rather
+        than e.g. `slow`) because it is a pytest builtin and needs no marker
+        registration, unlike a custom marker.
+        """
+        source_path = Path("decorated_case/source_module.py")
+        test_path = Path("decorated_case/test_source_module.py")
+        with chdir(tmp_path):
+            for path in (source_path, test_path):
+                for parent in path.parents:
+                    if parent == Path():
+                        break
+                    create_package(parent)
+            source_module = create_module(source_path)
+            test_module = create_module(test_path)
+
+            source_path.write_text("""
+class Foo:
+    def bar(self):
+        pass
+
+    def baz(self):
+        pass
+""")
+            test_path.write_text('''"""Test module."""
+
+import pytest
+
+
+@pytest.mark.skip(reason="example decorator for the regression test")
+class TestFoo:
+    """Test class."""
+
+    def test_bar(self) -> None:
+        """Test method."""
+        assert True
+''')
+            source_module = reimport_module(source_module)
+            test_module = reimport_module(test_module)
+
+            config = MirrorTestConfigFile.generate_subclass(source_module)()
+            result = config.test_module_content_with_class_skeletons(
+                test_path.read_text(),
+                module=source_module,
+                test_module=test_module,
+                module_members=tuple(obj_members(source_module)),
+                test_module_members=tuple(obj_members(test_module)),
+            )
+
+        assert result.count("class TestFoo:") == 1
+        assert "def test_bar" in result
+        assert "def test_baz" in result
+        compile(result, "<test>", "exec")
+
+    def test_test_module_content_with_class_skeletons_multiple_classes(
+        self,
+        tmp_path: Path,
+        create_module: Callable[[Path], ModuleType],
+        create_package: Callable[[Path], ModuleType],
+    ) -> None:
+        """Test method.
+
+        Two classes both needing new methods in the same pass must each get
+        their own new method, without either landing in the wrong class.
+        """
+        source_path = Path("multi_class_case/source_module.py")
+        test_path = Path("multi_class_case/test_source_module.py")
+        with chdir(tmp_path):
+            for path in (source_path, test_path):
+                for parent in path.parents:
+                    if parent == Path():
+                        break
+                    create_package(parent)
+            source_module = create_module(source_path)
+            test_module = create_module(test_path)
+
+            source_path.write_text("""
+class Alpha:
+    def existing_a(self):
+        pass
+
+    def new_a(self):
+        pass
+
+
+class Beta:
+    def existing_b(self):
+        pass
+
+    def new_b(self):
+        pass
+""")
+            test_path.write_text('''"""Test module."""
+
+
+class TestAlpha:
+    """Test class."""
+
+    def test_existing_a(self) -> None:
+        """Test method."""
+        assert True
+
+
+class TestBeta:
+    """Test class."""
+
+    def test_existing_b(self) -> None:
+        """Test method."""
+        assert True
+''')
+            source_module = reimport_module(source_module)
+            test_module = reimport_module(test_module)
+
+            config = MirrorTestConfigFile.generate_subclass(source_module)()
+            result = config.test_module_content_with_class_skeletons(
+                test_path.read_text(),
+                module=source_module,
+                test_module=test_module,
+                module_members=tuple(obj_members(source_module)),
+                test_module_members=tuple(obj_members(test_module)),
+            )
+
+        assert result.count("class TestAlpha:") == 1
+        assert result.count("class TestBeta:") == 1
+        assert "def test_new_a" in result
+        assert "def test_new_b" in result
+        # the new method for Beta must not have landed inside Alpha's body
+        assert "test_new_b" not in result.split("class TestBeta:")[0]
+        # exactly the original two blank lines must separate the classes --
+        # not three, which would mean the class's original trailing
+        # whitespace got preserved *and* an extra one got added on top of it
+        assert "raise NotImplementedError\n\n\nclass TestBeta:" in result
+        assert "\n\n\n\nclass TestBeta:" not in result
+        compile(result, "<test>", "exec")
+
+    def test_test_module_content_with_class_skeletons_no_trailing_newline(
+        self,
+        tmp_path: Path,
+        create_module: Callable[[Path], ModuleType],
+        create_package: Callable[[Path], ModuleType],
+    ) -> None:
+        """Test method.
+
+        Regression test: when the existing test class is the last thing in a
+        file that itself has no trailing newline, `inspect.getsource()` still
+        returns text ending in a newline, which must not prevent the new
+        method from being inserted.
+        """
+        source_path = Path("no_trailing_newline_case/source_module.py")
+        test_path = Path("no_trailing_newline_case/test_source_module.py")
+        with chdir(tmp_path):
+            for path in (source_path, test_path):
+                for parent in path.parents:
+                    if parent == Path():
+                        break
+                    create_package(parent)
+            source_module = create_module(source_path)
+            test_module = create_module(test_path)
+
+            source_path.write_text("""
+class Gamma:
+    def existing(self):
+        pass
+
+    def new_one(self):
+        pass
+""")
+            no_trailing_newline_content = '''"""Test module."""
+
+
+class TestGamma:
+    """Test class."""
+
+    def test_existing(self) -> None:
+        """Test method."""
+        assert True'''
+            test_path.write_text(no_trailing_newline_content)
+            source_module = reimport_module(source_module)
+            test_module = reimport_module(test_module)
+
+            config = MirrorTestConfigFile.generate_subclass(source_module)()
+            result = config.test_module_content_with_class_skeletons(
+                no_trailing_newline_content,
+                module=source_module,
+                test_module=test_module,
+                module_members=tuple(obj_members(source_module)),
+                test_module_members=tuple(obj_members(test_module)),
+            )
+
+        assert result.count("class TestGamma:") == 1
+        assert "def test_new_one" in result
+        # a blank line must still separate the existing and new methods
+        assert "assert True\n\n    def test_new_one" in result
+        # the file's original (missing) trailing newline is preserved as-is,
+        # not doubled into an extra blank line
+        assert result.endswith("raise NotImplementedError")
+        assert not result.endswith("\n\n")
+        compile(result, "<test>", "exec")
+
     def test_untested_class_and_method_names(
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
@@ -482,6 +601,8 @@ class TestMirrorClass:
                 ),
             )
         assert len(untested_class_and_method_names) > 0
+        # the test module was just created empty, so no test class exists yet
+        assert all(source is None for _, _, source in untested_class_and_method_names)
 
     def test_test_class_skeleton(
         self,
