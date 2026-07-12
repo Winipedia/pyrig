@@ -23,8 +23,8 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     set in the environment.
     """
 
-    def content(self) -> str:
-        """Return the required shell script content.
+    def script_content(self) -> str:
+        """Return the required shell script content, below the shared header.
 
         Returns:
             The shared setup code, the `settings` and `rulesets` shell
@@ -57,7 +57,7 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         """
         settings_path = RepositorySettingsConfigFile.I.path().as_posix()
         repository_key = RepositorySettingsConfigFile.I.repository_key()
-        endpoint = f"repos/${self.repo_variable()}"
+        endpoint = f"repos/${{{self.repo_variable()}}}"
         return f"""{self.apply_repository_settings_function()}() {{
   jq '.{repository_key}' {settings_path} | gh api "{endpoint}" -X PATCH --input -
 }}"""
@@ -76,13 +76,19 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         """
         settings_path = RepositorySettingsConfigFile.I.path().as_posix()
         rulesets_key = RepositorySettingsConfigFile.I.rulesets_key()
+        repo_ref = f"${{{self.repo_variable()}}}"
+        endpoint_ref = "${endpoint}"
+        id_ref = "${id}"
+        ruleset_ref = "${ruleset}"
+        method_ref = "${method}"
         return f"""{self.apply_rulesets_function()}() {{
-  local endpoint="repos/${self.repo_variable()}/rulesets"
+  local endpoint="repos/{repo_ref}/rulesets"
   jq -c '.{rulesets_key}[]' {settings_path} | while read -r ruleset; do
-    id=$(gh api "$endpoint" |
-      jq -r --argjson r "$ruleset" '.[] | select(.name==$r.name) | .id')
-    if [ -z "$id" ]; then method="POST"; else method="PUT"; fi
-    gh api "$endpoint${{id:+/$id}}" -X "$method" --input - <<<"$ruleset"
+    id=$(gh api "{endpoint_ref}" |
+      jq -r --argjson r "{ruleset_ref}" '.[] | select(.name==$r.name) | .id')
+    if [[ -z "{id_ref}" ]]; then method="POST"; else method="PUT"; fi
+    url="{endpoint_ref}${{id:+/{id_ref}}}"
+    gh api "${{url}}" -X "{method_ref}" --input - <<<"{ruleset_ref}"
   done
 }}"""
 
