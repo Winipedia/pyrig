@@ -39,9 +39,9 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         """
         return file_has_content(self.path())
 
-    def lines(self) -> list[str]:
-        """Return the completed Contributor Covenant text as lines."""
-        return self.split_lines(self.code_of_conduct())
+    def content(self) -> str:
+        """Return the completed Contributor Covenant text."""
+        return self.code_of_conduct()
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""

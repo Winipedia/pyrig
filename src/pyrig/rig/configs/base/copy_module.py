@@ -51,13 +51,13 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             The module to copy.
         """
 
-    def lines(self) -> list[str]:
-        """Read the source module's file content as a list of lines.
+    def content(self) -> str:
+        """Read the source module's file content.
 
         Returns:
-            Source code of the module split into individual lines.
+            Source code of the module.
         """
-        return self.split_lines(module_content(self.copy_module()))
+        return module_content(self.copy_module())
 
     def parent_path(self) -> Path:
         """Return the directory that will contain the copied module file.

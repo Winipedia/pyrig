@@ -17,19 +17,17 @@ class APIDocsConfigFile(MarkdownConfigFile):
     public members, their signatures, docstrings, and source links.
     """
 
-    def lines(self) -> list[str]:
+    def content(self) -> str:
         """Build the API reference page content.
 
         Returns:
-            Lines comprising the `# API` heading and the mkdocstrings `:::`
-            directive for the project's package.
+            The `# API` heading and the mkdocstrings `:::` directive for the
+            project's package.
         """
-        return [
-            "# API",
-            "",
-            f"::: {PackageManager.I.package_name()}",
-            "",
-        ]
+        return f"""# API
+
+::: {PackageManager.I.package_name()}
+"""
 
     def parent_path(self) -> Path:
         """Return the MkDocs documentation source directory."""

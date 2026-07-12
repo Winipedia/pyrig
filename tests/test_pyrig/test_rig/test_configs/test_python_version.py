@@ -24,7 +24,7 @@ class TestPythonVersionConfigFile:
         """Test method."""
         assert PythonVersionConfigFile.I.parent_path() == Path()
 
-    def test_lines(self) -> None:
+    def test_content(self) -> None:
         """Test method."""
-        lines = PythonVersionConfigFile.I.lines()
-        assert lines == ["3.12", ""]
+        content = PythonVersionConfigFile.I.content()
+        assert content == "3.12\n"

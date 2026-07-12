@@ -4,14 +4,14 @@ from pyrig.rig.configs.base.string_ import StringConfigFile
 
 
 class ShellConfigFile(StringConfigFile):
-    """Abstract base for shell script (`.sh`) configuration files.
+    r"""Abstract base for shell script (`.sh`) configuration files.
 
     Fixes the file extension to `"sh"`.
 
     Subclasses must implement:
         - `parent_path`: Directory containing the `.sh` file.
         - `stem`: Filename without its extension.
-        - `lines`: Required shell script content as a list of lines.
+        - `content`: Required shell script content.
 
     Example:
         >>> from pathlib import Path
@@ -24,8 +24,8 @@ class ShellConfigFile(StringConfigFile):
         ...     def stem(self) -> str:
         ...         return "greet"
         ...
-        ...     def lines(self) -> list[str]:
-        ...         return ["greet() {", '  echo "Hello, $1"', "}"]
+        ...     def content(self) -> str:
+        ...         return 'greet() {\n  echo "Hello, $1"\n}'
     """
 
     def extension(self) -> str:

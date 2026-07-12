@@ -6,6 +6,7 @@ Manages README.md as a badge-augmented Markdown file at the project root.
 from pathlib import Path
 
 from pyrig.rig.configs.base.badges import BadgesConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 
 
 class ReadmeConfigFile(BadgesConfigFile):
@@ -18,3 +19,11 @@ class ReadmeConfigFile(BadgesConfigFile):
     def stem(self) -> str:
         """Return `"README"` as the filename stem."""
         return "README"
+
+    def heading(self) -> str:
+        """Return the heading text for the project name.
+
+        Returns:
+            Heading text to use in the Markdown file.
+        """
+        return f"{PackageManager.I.project_name()}"

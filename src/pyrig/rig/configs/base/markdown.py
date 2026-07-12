@@ -4,14 +4,14 @@ from pyrig.rig.configs.base.string_ import StringConfigFile
 
 
 class MarkdownConfigFile(StringConfigFile):
-    """Abstract base for Markdown (`.md`) configuration files.
+    r"""Abstract base for Markdown (`.md`) configuration files.
 
     Fixes the file extension to `"md"`.
 
     Subclasses must implement:
         - `parent_path`: Directory containing the `.md` file.
         - `stem`: Filename without its extension.
-        - `lines`: Required Markdown content as a list of lines.
+        - `content`: Required Markdown content.
 
     Example:
         >>> from pathlib import Path
@@ -24,8 +24,8 @@ class MarkdownConfigFile(StringConfigFile):
         ...     def stem(self) -> str:
         ...         return "README"
         ...
-        ...     def lines(self) -> list[str]:
-        ...         return ["# My Project", "", "Description here."]
+        ...     def content(self) -> str:
+        ...         return "# My Project\n\nDescription here."
     """
 
     def extension(self) -> str:

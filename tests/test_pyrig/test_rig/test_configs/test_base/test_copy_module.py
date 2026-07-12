@@ -106,16 +106,15 @@ class TestCopyModuleConfigFile:
         parent_path = my_test_copy_module_config_file().parent_path()
         assert isinstance(parent_path, Path), "Expected Path"
 
-    def test_lines(
+    def test_content(
         self,
         my_test_copy_module_config_file: type[CopyModuleConfigFile],
     ) -> None:
         """Test method."""
-        lines = my_test_copy_module_config_file().lines()
-        content_str = "\n".join(lines)
-        assert len(content_str) > 0, "Expected non-empty string"
+        content = my_test_copy_module_config_file().content()
+        assert len(content) > 0, "Expected non-empty string"
         # Verify it contains the module content
-        assert "Test module content" in content_str, "Expected module content in string"
+        assert "Test module content" in content, "Expected module content in string"
 
     def test_stem(
         self,

@@ -65,17 +65,17 @@ class TestCodeOfConductConfigFile:
         result = CodeOfConductConfigFile.I.parent_path()
         assert result == Path()
 
-    def test_lines(self, mocker: MockerFixture) -> None:
+    def test_content(self, mocker: MockerFixture) -> None:
         """Test method."""
         email_mock = mocker.patch.object(
             VersionController,
             VersionController.email.__name__,
             return_value="some.email@here.com",
         )
-        lines = CodeOfConductConfigFile.I.lines()
+        content = CodeOfConductConfigFile.I.content()
         email_mock.assert_called_once()
-        assert len(lines) > 1
-        assert "<some.email@here.com>." in lines
+        assert len(content) > 1
+        assert "<some.email@here.com>." in content
 
     def test_code_of_conduct_template(self) -> None:
         """Test method."""

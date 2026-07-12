@@ -23,7 +23,7 @@ class TestPullRequestTemplateConfigFile:
         result = PullRequestTemplateConfigFile.I.parent_path()
         assert result == Path(".github")
 
-    def test_lines(self) -> None:
+    def test_content(self) -> None:
         """Test method."""
-        result = PullRequestTemplateConfigFile.I.lines()
+        result = PullRequestTemplateConfigFile.I.content()
         assert len(result) > 0

@@ -16,8 +16,7 @@ class TestAPIDocsConfigFile:
         """Test method."""
         assert APIDocsConfigFile.I.parent_path() == Path("docs")
 
-    def test_lines(self) -> None:
+    def test_content(self) -> None:
         """Test method."""
-        lines = APIDocsConfigFile.I.lines()
-        content_str = "\n".join(lines)
-        assert ":::" in content_str
+        content = APIDocsConfigFile.I.content()
+        assert ":::" in content

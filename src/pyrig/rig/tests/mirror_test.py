@@ -99,13 +99,13 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             )
         )
 
-    def lines(self) -> list[Any]:
-        """Return the complete test module content as a list of lines.
+    def content(self) -> str:
+        """Return the complete test module content.
 
         Returns:
-            All lines of the test module source, ready to be written to disk.
+            The full test module source, ready to be written to disk.
         """
-        return self.split_lines(self.test_module_content_with_skeletons())
+        return self.test_module_content_with_skeletons()
 
     def merge_configs(self) -> list[Any]:
         """Return the full test module content, already merged with existing content.

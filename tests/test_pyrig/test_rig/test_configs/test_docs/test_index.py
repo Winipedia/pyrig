@@ -17,8 +17,6 @@ class TestIndexConfigFile:
         parent_path = IndexConfigFile.I.parent_path()
         assert parent_path == Path("docs")
 
-    def test_lines(self) -> None:
+    def test_heading(self) -> None:
         """Test method."""
-        lines = IndexConfigFile.I.lines()
-        content_str = "\n".join(lines)
-        assert isinstance(content_str, str)
+        assert IndexConfigFile.I.heading() == "Home"

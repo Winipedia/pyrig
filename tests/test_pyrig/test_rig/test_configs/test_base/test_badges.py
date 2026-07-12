@@ -103,11 +103,15 @@ class TestBadgesConfigFile:
         assert f"> {correct_description}" in result
         assert false_description not in result
 
-    def test_lines(self) -> None:
+    def test_heading(self) -> None:
         """Test method."""
-        lines = ReadmeConfigFile().lines()
-        content_str = "\n".join(lines)
-        assert isinstance(content_str, str)
+        heading = ReadmeConfigFile().heading()
+        assert isinstance(heading, str)
+
+    def test_content(self) -> None:
+        """Test method."""
+        content = ReadmeConfigFile().content()
+        assert isinstance(content, str)
 
     def test_badges(self) -> None:
         """Test method."""

@@ -65,9 +65,9 @@ class ContributingConfigFile(MarkdownConfigFile):
         """
         return file_has_content(self.path())
 
-    def lines(self) -> list[str]:
-        """Return the contributing template content as lines."""
-        return self.split_lines(CONTRIBUTING_TEMPLATE)
+    def content(self) -> str:
+        """Return the contributing template content."""
+        return CONTRIBUTING_TEMPLATE
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""

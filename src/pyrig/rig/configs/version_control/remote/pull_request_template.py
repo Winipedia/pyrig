@@ -40,9 +40,9 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
         """Return `"pull_request_template"` as the filename stem."""
         return "pull_request_template"
 
-    def lines(self) -> list[str]:
-        """Return the required starter template content as a list of lines."""
-        return self.split_lines(PULL_REQUEST_TEMPLATE)
+    def content(self) -> str:
+        """Return the required starter template content."""
+        return PULL_REQUEST_TEMPLATE
 
     def is_correct(self) -> bool:
         """Return whether the file has non-empty content.

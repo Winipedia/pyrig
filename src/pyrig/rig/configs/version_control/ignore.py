@@ -35,8 +35,8 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         """Return an empty string, so no trailing dot is appended to `.gitignore`."""
         return ""
 
-    def lines(self) -> list[str]:
-        """Build the required lines for `.gitignore`.
+    def content(self) -> str:
+        """Build the required content for `.gitignore`.
 
         Returns:
             The standard gitignore baseline, followed by pyrig-specific
@@ -48,7 +48,7 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         additional = [
             line for line in self.additional_ignore_lines() if line not in standard_set
         ]
-        return [*standard, *additional, ""]
+        return self.join_lines([*standard, *additional, ""])
 
     def additional_ignore_lines(self) -> list[str]:
         """Return the pyrig-specific lines to add to the gitignore baseline.

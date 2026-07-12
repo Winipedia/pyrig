@@ -346,7 +346,7 @@ class TestMirrorClass:
             parent_path = my_test_mirror_test_config_file().parent_path()
             assert parent_path == TESTS_MIRROR_MODULE_PATH.parent
 
-    def test_lines(
+    def test_content(
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
         tmp_path: Path,
@@ -354,10 +354,9 @@ class TestMirrorClass:
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            # create the file first to not trigger dump in content_str
+            # create the file first to not trigger dump in content
             create_module(my_test_mirror_test_config_file().test_path())
-            lines = my_test_mirror_test_config_file().lines()
-            content = "\n".join(lines)
+            content = my_test_mirror_test_config_file().content()
             assert "def test_mirror_method" in content
             assert "def test_mirror_function" in content
             assert "class TestMirrorClass" in content
