@@ -37,7 +37,7 @@ from pyrig.core.strings import reformat_name
 from pyrig.rig import tests
 from pyrig.rig.configs.base.package import PythonPackageConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.testing.project import ProjectTester
+from pyrig.rig.tools.project_tester import ProjectTester
 
 
 class MirrorTestConfigFile(PythonPackageConfigFile):

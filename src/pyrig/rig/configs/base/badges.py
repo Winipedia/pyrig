@@ -132,7 +132,7 @@ class BadgesConfigFile(MarkdownConfigFile):
 
         The result includes badges for each registered tool, a license badge in
         the `"project-info"` group, and CI/CD workflow status badges for the
-        health check and deploy workflows in the `"ci/cd"` group.
+        health check and deploy workflows in the `"project-status"` group.
 
         Returns:
             Category name to list of badge Markdown strings, with keys `"ci/cd"`,
@@ -140,22 +140,21 @@ class BadgesConfigFile(MarkdownConfigFile):
         """
         badge_groups = Tool.grouped_badges()
 
-        badge_groups[Group.PROJECT_INFO].extend(
-            [
-                LicenseConfigFile.I.license_badge(),
-            ],
-        )
-        badge_groups[Group.CI_CD].extend(
-            [
-                RemoteVersionController.I.cicd_badge(
-                    HealthCheckWorkflowConfigFile.I.stem(),
-                    "CI",
-                ),
-                RemoteVersionController.I.cicd_badge(
-                    DeployWorkflowConfigFile.I.stem(),
-                    "CD",
-                ),
-            ],
-        )
+        badge_groups[Group.PROJECT_INFO] = [
+            *badge_groups[Group.PROJECT_INFO],
+            LicenseConfigFile.I.license_badge(),
+        ]
+
+        badge_groups[Group.PROJECT_STATUS] = [
+            RemoteVersionController.I.cicd_badge(
+                HealthCheckWorkflowConfigFile.I.stem(),
+                "CI",
+            ),
+            RemoteVersionController.I.cicd_badge(
+                DeployWorkflowConfigFile.I.stem(),
+                "CD",
+            ),
+            *badge_groups[Group.PROJECT_STATUS],
+        ]
 
         return badge_groups

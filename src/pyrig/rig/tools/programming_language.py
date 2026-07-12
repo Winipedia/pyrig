@@ -10,7 +10,7 @@ import typer
 from pyrig.core.introspection.packages import make_init_files
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.testing.project import ProjectTester
+from pyrig.rig.tools.project_tester import ProjectTester
 
 
 class ProgrammingLanguage(Tool):

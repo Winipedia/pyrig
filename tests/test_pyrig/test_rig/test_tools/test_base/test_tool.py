@@ -1,19 +1,29 @@
 """Tests module."""
 
+from pytest_mock import MockerFixture
+
 from pyrig.rig import tools
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.testing.coverage import CoverageTester
+from pyrig.rig.tools.project_tester import ProjectTester
 
 
 class TestTool:
     """Test class."""
 
-    def test_config_name(self) -> None:
+    def test_config_name(self, mocker: MockerFixture) -> None:
         """Test method."""
         assert PackageManager.I.config_name() == "uv"
-        assert CoverageTester.I.config_name() == "pytest_cov"
+        assert ProjectTester.I.config_name() == "pytest"
+
+        mock = mocker.patch.object(
+            PackageManager,
+            PackageManager.name.__name__,
+            return_value="my-tool",
+        )
+        assert PackageManager.I.config_name() == "my_tool"
+        mock.assert_called_once()
 
     def test_groups(self) -> None:
         """Test method."""
