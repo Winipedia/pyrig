@@ -10,8 +10,9 @@ rulesets() {
     id=$(gh api "$endpoint" |
       jq -r --argjson r "$ruleset" '.[] | select(.name==$r.name) | .id')
     if [ -z "$id" ]; then method="POST"; else method="PUT"; fi
-    gh api "$endpoint${id:+/$id}" -X "$method" --input - <<< "$ruleset"
+    gh api "$endpoint${id:+/$id}" -X "$method" --input - <<<"$ruleset"
   done
 }
+
 
 "$@"

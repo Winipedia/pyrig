@@ -192,6 +192,8 @@ class TestVersionController:
             run_subprocess_cached.cache_clear()
             assert result == ""
 
+        assert "github" in VersionController.I.remote_url()
+
     def test_username(self, mocker: MockerFixture) -> None:
         """Test method."""
         run_mock = mocker.patch.object(

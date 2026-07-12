@@ -63,7 +63,7 @@ def mirror_function():
 """)
         module = reimport_module(module)
 
-    class MyTestMirrorTestConfigFile(config_file_factory(MirrorTestConfigFile)):  # ty:ignore[unsupported-base]
+    class MyTestMirrorTestConfigFile(config_file_factory(MirrorTestConfigFile.L)):  # ty:ignore[unsupported-base]
         """Test mirror test config file with tmp_path override."""
 
         def mirror_module(self) -> ModuleType:
