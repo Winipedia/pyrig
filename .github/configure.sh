@@ -14,5 +14,4 @@ rulesets() {
   done
 }
 
-
 "$@"
