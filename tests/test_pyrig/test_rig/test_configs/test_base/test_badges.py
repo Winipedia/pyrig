@@ -24,6 +24,10 @@ class TestBadgesConfigFile:
         assert VersionController.I.repo_owner()
         assert VersionController.I.repo_owner()
 
+        ReadmeConfigFile.configs.cache_clear()
+        ReadmeConfigFile.load.cache_clear()
+        PyprojectConfigFile.configs.cache_clear()
+        PyprojectConfigFile.load.cache_clear()
         with chdir(tmp_project_root_path):
             LicenseConfigFile().validate()
             PyprojectConfigFile().validate()
@@ -70,6 +74,9 @@ class TestBadgesConfigFile:
 
         # clear the cache so other tests have the correct readme configs again
         ReadmeConfigFile.configs.cache_clear()
+        ReadmeConfigFile.load.cache_clear()
+        PyprojectConfigFile.configs.cache_clear()
+        PyprojectConfigFile.load.cache_clear()
 
     def test_replace_badges(self, mocker: MockerFixture) -> None:
         """Test method."""

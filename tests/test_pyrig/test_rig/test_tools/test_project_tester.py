@@ -35,7 +35,11 @@ class TestProjectTester:
 
     def test_dev_dependencies(self) -> None:
         """Test method."""
-        assert ProjectTester.I.dev_dependencies() == ("pytest", "pytest-cov")
+        assert ProjectTester.I.dev_dependencies() == (
+            "pytest",
+            "pytest-cov",
+            "pytest-randomly",
+        )
 
     def test_image_url(self) -> None:
         """Test method."""
