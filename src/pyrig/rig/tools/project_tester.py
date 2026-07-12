@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
-from pyrig.rig.tools.testing.coverage import CoverageTester
+from pyrig.rig.tools.package_manager import PackageManager
 
 
 class ProjectTester(Tool):
@@ -17,13 +17,12 @@ class ProjectTester(Tool):
 
     def group(self) -> str:
         """Return `Group.TESTING`."""
-        return Group.TESTING
+        return Group.PROJECT_STATUS
 
     def image_url(self) -> str:
-        """Return the badge image URL for `pytest`."""
-        return (
-            "https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest"
-        )
+        """Return the badge image URL, with a label and color set by the threshold."""
+        hue, saturation, lightness = self.color()
+        return f"https://img.shields.io/badge/coverage->={self.threshold()}%25-hsl({hue},{saturation}%25,{lightness}%25)?logo=codecov&logoColor=white"
 
     def link_url(self) -> str:
         """Return the URL of the pytest project page."""
@@ -33,9 +32,35 @@ class ProjectTester(Tool):
         """Return `'pytest'`."""
         return "pytest"
 
+    def dev_dependencies(self) -> tuple[str, ...]:
+        """Return `('pytest', 'pytest-cov')`."""
+        return (*super().dev_dependencies(), "pytest-cov")
+
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return `('.pytest_cache/',)`."""
-        return (".pytest_cache/",)
+        return (".pytest_cache/", ".coverage")
+
+    def color(self) -> tuple[int, int, int]:
+        """Return the badge color derived from the coverage threshold.
+
+        Interpolates the hue on a red-to-green spectrum where a threshold of
+        0% is red (hue 0), 50% is yellow (hue 60), and 100% is green (hue 120).
+
+        Returns:
+            An `(hue, saturation, lightness)` tuple.
+        """
+        hue = int((self.threshold() / 100) * 120)
+        return hue, 80, 45
+
+    def threshold(self) -> int:
+        """Return the minimum required coverage percentage.
+
+        Subclasses may override this to enforce a different threshold.
+
+        Returns:
+            90
+        """
+        return 90
 
     def additional_args(self) -> Args:
         """Return additional pytest command arguments to include in the config.
@@ -47,7 +72,12 @@ class ProjectTester(Tool):
         Returns:
             The pytest-cov CLI flags to append to the test run.
         """
-        return CoverageTester.I.additional_test_args()
+        return Args(
+            f"--cov={PackageManager.I.package_name()}",
+            "--cov-branch",
+            f"--cov-fail-under={self.threshold()}",
+            "--cov-report=term-missing:skip-covered",
+        )
 
     def package_root(self) -> Path:
         """Return the path to the top-level tests package."""

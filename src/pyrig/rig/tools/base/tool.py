@@ -79,8 +79,7 @@ class Tool(DependencySubclass):
     def groups(cls) -> tuple[str, ...]:
         """Return the display order of the `Group` categories."""
         return (
-            Group.CI_CD,
-            Group.TESTING,
+            Group.PROJECT_STATUS,
             Group.CODE_QUALITY,
             Group.TOOLING,
             Group.PROJECT_INFO,
@@ -184,8 +183,7 @@ class Tool(DependencySubclass):
 class Group:
     """Named constants for the categories tool badges are grouped under."""
 
-    CI_CD = "ci/cd"
     CODE_QUALITY = "code-quality"
     PROJECT_INFO = "project-info"
+    PROJECT_STATUS = "project-status"
     TOOLING = "tooling"
-    TESTING = "testing"
