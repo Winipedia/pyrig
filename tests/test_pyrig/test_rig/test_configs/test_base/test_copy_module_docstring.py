@@ -72,11 +72,33 @@ class TestCopyModuleDocstringConfigFile:
         ],
     ) -> None:
         """Test method."""
-        content = my_test_copy_module_only_docstring_config_file().content()
+        config = my_test_copy_module_only_docstring_config_file()
+        module = config.copy_module()
 
-        # assert its only the docstring
-        # note with extra newline at the end
-        assert content == '"""Test module content."""\n'
+        # plain docstring, wrapped in double triple quotes, trailing newline added
+        module.__doc__ = "Test module content."
+        assert config.content() == '"""Test module content."""\n'
+
+        # a docstring containing `"""` falls back to single triple quotes
+        module.__doc__ = 'Contains """ inside.'
+        assert config.content() == "'''Contains \"\"\" inside.'''\n"
+
+        # a docstring containing `'''` keeps the default double triple quotes
+        module.__doc__ = "Contains ''' inside."
+        assert config.content() == '"""Contains \'\'\' inside."""\n'
+
+        # a docstring containing both falls back to escaping instead of
+        # producing invalid syntax
+        module.__doc__ = "Contains \"\"\" and ''' inside."
+        assert config.content() == "'''Contains \"\"\" and \\'\\'\\' inside.'''\n"
+
+        # multiline docstrings keep their real newlines, not `\n` escapes
+        module.__doc__ = "Line one.\n\nLine two."
+        assert config.content() == '"""Line one.\n\nLine two."""\n'
+
+        # no docstring falls back to `default_docstring`
+        module.__doc__ = None
+        assert config.content() == f'"""{config.default_docstring()}"""\n'
 
     def test_is_correct(
         self,

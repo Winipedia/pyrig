@@ -4,6 +4,8 @@ Extends module-copying config infrastructure to restrict output to just
 the docstring, rather than the full module source.
 """
 
+import ast
+
 from pyrig.core.introspection.modules import module_has_docstring
 from pyrig.rig.configs.base.copy_module import CopyModuleConfigFile
 
@@ -29,23 +31,22 @@ class CopyModuleDocstringConfigFile(CopyModuleConfigFile):
     def content(self) -> str:
         """Return the source module's docstring as file content.
 
-        The docstring is wrapped in triple quotes to form a valid Python
-        module-level docstring. Double triple quotes are used unless the docstring
-        already contains a double-triple-quote sequence, in which case single
-        triple quotes are used instead. If the source module has no docstring,
-        `default_docstring` provides the fallback content.
+        Rendered via `ast.unparse`, which picks a quote style that avoids
+        escaping when possible and falls back to escaping otherwise, so the
+        result is always a valid Python module-level docstring regardless of
+        what quote characters the docstring itself contains. If the source
+        module has no docstring, `default_docstring` provides the fallback
+        content.
 
         Returns:
             A valid Python module-level docstring.
         """
         docstring = self.copy_module().__doc__ or self.default_docstring()
-        double_triple_quotes, single_triple_quotes = '"""', "'''"
-        triple_quotes = (
-            double_triple_quotes
-            if double_triple_quotes not in docstring
-            else single_triple_quotes
+        module = ast.Module(
+            body=[ast.Expr(value=ast.Constant(value=docstring))],
+            type_ignores=[],
         )
-        return f"{triple_quotes}{docstring}{triple_quotes}\n"
+        return f"{ast.unparse(module)}\n"
 
     def default_docstring(self) -> str:
         """Return the default module docstring `"Module description."`."""
