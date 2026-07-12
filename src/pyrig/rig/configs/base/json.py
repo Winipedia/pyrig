@@ -26,7 +26,11 @@ class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
             configs: Configuration dict or list to serialize and write.
         """
         with open_path_with_utf8(self.path(), mode="w") as f:
-            json.dump(configs, f, indent=4)
+            json.dump(
+                configs,
+                f,
+                indent=4,
+            )
 
     def _load(self) -> ConfigT:
         """Read and parse the JSON file from disk.
