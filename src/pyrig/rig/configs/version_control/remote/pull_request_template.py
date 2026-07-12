@@ -32,14 +32,6 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
     generated template without it being overwritten on later validation.
     """
 
-    def parent_path(self) -> Path:
-        """Return the `.github` directory."""
-        return Path(".github")
-
-    def stem(self) -> str:
-        """Return `"pull_request_template"` as the filename stem."""
-        return "pull_request_template"
-
     def content(self) -> str:
         """Return the required starter template content."""
         return PULL_REQUEST_TEMPLATE
@@ -55,3 +47,11 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
             FileNotFoundError: If the file does not exist.
         """
         return file_has_content(self.path())
+
+    def parent_path(self) -> Path:
+        """Return the `.github` directory."""
+        return Path(".github")
+
+    def stem(self) -> str:
+        """Return `"pull_request_template"` as the filename stem."""
+        return "pull_request_template"

@@ -14,6 +14,10 @@ class IndexConfigFile(BadgesConfigFile):
     MkDocs nav shows a short label for the landing page.
     """
 
+    def heading(self) -> str:
+        """Return `"Home"` as the heading text."""
+        return "Home"
+
     def parent_path(self) -> Path:
         """Return the MkDocs documentation source directory."""
         return DocsBuilder.I.docs_dir()
@@ -21,11 +25,3 @@ class IndexConfigFile(BadgesConfigFile):
     def stem(self) -> str:
         """Return the filename stem `"index"`."""
         return "index"
-
-    def heading(self) -> str:
-        """Return `"Home"`, replacing the inherited project-name heading.
-
-        Returns:
-            `"Home"`.
-        """
-        return "Home"

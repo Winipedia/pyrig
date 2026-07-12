@@ -80,6 +80,14 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             The file stem, e.g. `"pyproject"` for `pyproject.toml`.
         """
 
+    def __str__(self) -> str:
+        """Add the file path to the string representation.
+
+        Returns:
+            The class's string representation, followed by the file path in parentheses.
+        """
+        return f"{super().__str__()} ({self.path()})"
+
     @classmethod
     def discovery_module(cls) -> ModuleType:
         """Return the `pyrig.rig.configs` package, scoping discovery to config files.
@@ -212,6 +220,22 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         path.touch()
         typer.echo(f"Created {self}")
 
+    def path(self) -> Path:
+        """Return the full path to the config file."""
+        return self.parent_path() / self.filename()
+
+    def filename(self) -> str:
+        """Return the filename of the config file, including extension.
+
+        Returns:
+            The config file's filename, e.g. `"config.toml"`.
+        """
+        return f"{self.stem()}{self.extension_separator()}{self.extension()}"
+
+    def extension_separator(self) -> str:
+        """Return the character separating the stem from the extension, `"."`."""
+        return "."
+
     def dump(self, configs: ConfigT) -> None:
         """Write configuration to disk and keep the load cache consistent.
 
@@ -262,22 +286,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         """
         return merge_nested_structures(subset=self.configs(), superset=self.load())
 
-    def path(self) -> Path:
-        """Return the full path to the config file."""
-        return self.parent_path() / self.filename()
-
-    def filename(self) -> str:
-        """Return the filename of the config file, including extension.
-
-        Returns:
-            The config file's filename, e.g. `"config.toml"`.
-        """
-        return f"{self.stem()}{self.extension_separator()}{self.extension()}"
-
-    def extension_separator(self) -> str:
-        """Return the character separating the stem from the extension, `"."`."""
-        return "."
-
     def priority(self) -> float:
         """Return the validation priority for this config file.
 
@@ -300,14 +308,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             `True` if the file is git-ignored; `False` otherwise.
         """
         return False
-
-    def __str__(self) -> str:
-        """Add the file path to the string representation.
-
-        Returns:
-            The class's string representation, followed by the file path in parentheses.
-        """
-        return f"{super().__str__()} ({self.path()})"
 
 
 class ListConfigFile(ConfigFile[list[str]]):

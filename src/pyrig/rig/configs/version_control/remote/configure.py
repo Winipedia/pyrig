@@ -23,21 +23,13 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     set in the environment.
     """
 
-    def parent_path(self) -> Path:
-        """Return `Path(".github")`."""
-        return Path(".github")
-
-    def stem(self) -> str:
-        """Return `"configure"`."""
-        return "configure"
-
     def content(self) -> str:
-        """Return the required shell function definitions.
+        """Return the required shell script content.
 
         Returns:
-            The shared `global_content()`, `apply_repository_settings_function()`
-            and `apply_rulesets_function()` as shell functions, and finally
-            `dispatch()`, which lets the script be run directly.
+            The shared setup code, the `settings` and `rulesets` shell
+            function definitions, and the trailing dispatch line that lets
+            the script be run directly.
         """
         return f"""{self.global_content()}
 
@@ -47,42 +39,13 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
 
 {self.footer_content()}"""
 
-    def global_content(self) -> str:
-        """Return the content defined outside any function, shared by all of them.
+    def parent_path(self) -> Path:
+        """Return `Path(".github")`."""
+        return Path(".github")
 
-        Defined once at the top of the script rather than inside each
-        function, since both `settings()` and `rulesets()` reference the
-        `repo_variable()` variable. Any other variable or setup shared
-        across functions in the future would also be returned here.
-
-        Returns:
-            Currently just the `repo_variable()` variable assignment.
-        """
-        return f'{self.repo_variable()}="{RemoteVersionController.I.repository()}"'
-
-    def repo_variable(self) -> str:
-        """Return `"repo"`, the shell variable name holding `owner/repo`."""
-        return "repo"
-
-    def footer_content(self) -> str:
-        """Return the line that invokes the function named by the script's arguments.
-
-        Placed at the end of the script, after every function is defined.
-        Lets the script be run directly, e.g. `bash configure.sh settings`,
-        instead of requiring it to be sourced first.
-
-        Returns:
-            `'"$@"'`.
-        """
-        return '"$@"'
-
-    def apply_repository_settings_function(self) -> str:
-        """Return `"settings"`, the function name."""
-        return "settings"
-
-    def apply_rulesets_function(self) -> str:
-        """Return `"rulesets"`, the function name."""
-        return "rulesets"
+    def stem(self) -> str:
+        """Return `"configure"`."""
+        return "configure"
 
     def apply_repository_settings_script(self) -> str:
         """Return the `settings` shell function as a multi-line string.
@@ -97,6 +60,10 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         return f"""{self.apply_repository_settings_function()}() {{
   jq '.{repository_key}' {settings_path} | gh api "{endpoint}" -X PATCH --input -
 }}"""
+
+    def apply_repository_settings_function(self) -> str:
+        """Return `"settings"`, the function name."""
+        return "settings"
 
     def apply_rulesets_script(self) -> str:
         """Return the `rulesets` shell function as a multi-line string.
@@ -117,3 +84,36 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     gh api "$endpoint${{id:+/$id}}" -X "$method" --input - <<< "$ruleset"
   done
 }}"""
+
+    def apply_rulesets_function(self) -> str:
+        """Return `"rulesets"`, the function name."""
+        return "rulesets"
+
+    def footer_content(self) -> str:
+        """Return the line that invokes the function named by the script's arguments.
+
+        Placed at the end of the script, after every function is defined.
+        Lets the script be run directly, e.g. `bash configure.sh settings`,
+        instead of requiring it to be sourced first.
+
+        Returns:
+            `'"$@"'`.
+        """
+        return '"$@"'
+
+    def global_content(self) -> str:
+        """Return the content defined outside any function, shared by all of them.
+
+        Defined once at the top of the script rather than inside each
+        function, since both `settings()` and `rulesets()` reference the
+        `repo_variable()` variable. Any other variable or setup shared
+        across functions in the future would also be returned here.
+
+        Returns:
+            Currently just the `repo_variable()` variable assignment.
+        """
+        return f'{self.repo_variable()}="{RemoteVersionController.I.repository()}"'
+
+    def repo_variable(self) -> str:
+        """Return `"repo"`, the shell variable name holding `owner/repo`."""
+        return "repo"

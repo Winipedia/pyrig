@@ -13,6 +13,12 @@ class ScratchConfigFile(PythonConfigFile):
     checks only that the file exists, not what it contains.
     """
 
+    def content(self) -> str:
+        """Return a one-line module docstring followed by a trailing newline."""
+        return (
+            '"""This file is for scratch work and is ignored by version control."""\n'
+        )
+
     def create_file(self) -> None:
         """Create `.scratch.py` and remove the root `main.py`, if present."""
         super().create_file()
@@ -21,12 +27,6 @@ class ScratchConfigFile(PythonConfigFile):
     def is_correct(self) -> bool:
         """Check whether `.scratch.py` exists, ignoring its content."""
         return self.path().exists()
-
-    def content(self) -> str:
-        """Return a one-line module docstring followed by a trailing newline."""
-        return (
-            '"""This file is for scratch work and is ignored by version control."""\n'
-        )
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""

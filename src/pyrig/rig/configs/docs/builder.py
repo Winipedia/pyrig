@@ -89,5 +89,5 @@ class DocsBuilderConfigFile(YMLDictConfigFile):
         return Path()
 
     def stem(self) -> str:
-        """Return `'mkdocs'` as the configuration file stem."""
+        """Return the MkDocs tool name as the configuration file stem."""
         return DocsBuilder.I.name()

@@ -19,22 +19,6 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
     `.scratch.py`). Additions already present in the baseline are not duplicated.
     """
 
-    def parent_path(self) -> Path:
-        """Return the project root as the parent directory."""
-        return Path()
-
-    def stem(self) -> str:
-        """Return `'.gitignore'`, the full filename with no extension to split off."""
-        return ".gitignore"
-
-    def extension(self) -> str:
-        """Return an empty string, since `.gitignore` has no extension."""
-        return ""
-
-    def extension_separator(self) -> str:
-        """Return an empty string, so no trailing dot is appended to `.gitignore`."""
-        return ""
-
     def content(self) -> str:
         """Build the required content for `.gitignore`.
 
@@ -49,6 +33,22 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
             line for line in self.additional_ignore_lines() if line not in standard_set
         ]
         return self.join_lines([*standard, *additional, ""])
+
+    def extension(self) -> str:
+        """Return an empty string, since `.gitignore` has no extension."""
+        return ""
+
+    def extension_separator(self) -> str:
+        """Return an empty string, so no trailing dot is appended to `.gitignore`."""
+        return ""
+
+    def parent_path(self) -> Path:
+        """Return the project root as the parent directory."""
+        return Path()
+
+    def stem(self) -> str:
+        """Return `'.gitignore'`, the full filename with no extension to split off."""
+        return ".gitignore"
 
     def additional_ignore_lines(self) -> list[str]:
         """Return the pyrig-specific lines to add to the gitignore baseline.

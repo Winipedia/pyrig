@@ -17,20 +17,6 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
     Runs automatically when the release workflow completes successfully.
     """
 
-    def stem(self) -> str:
-        """Return `"deploy"`, the workflow file's stem."""
-        return "deploy"
-
-    def workflow_triggers(self) -> dict[str, Any]:
-        """Return a `workflow_run` trigger for completion of the release workflow.
-
-        Returns:
-            Trigger configuration dict with a `workflow_run` entry.
-        """
-        return self.on_workflow_run(
-            workflows=[ReleaseWorkflowConfigFile.I.workflow_name()],
-        )
-
     def job(  # noqa: PLR0913
         self,
         method: MethodType,
@@ -79,6 +65,20 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             Dict containing the documentation job.
         """
         return {**self.job_documentation()}
+
+    def stem(self) -> str:
+        """Return `"deploy"`, the workflow file's stem."""
+        return "deploy"
+
+    def workflow_triggers(self) -> dict[str, Any]:
+        """Return a `workflow_run` trigger for completion of the release workflow.
+
+        Returns:
+            Trigger configuration dict with a `workflow_run` entry.
+        """
+        return self.on_workflow_run(
+            workflows=[ReleaseWorkflowConfigFile.I.workflow_name()],
+        )
 
     def job_documentation(self) -> dict[str, Any]:
         """Build the job that builds and deploys the documentation site.
@@ -160,26 +160,6 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             step=step,
         )
 
-    def step_upload_documentation(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that uploads the `site/` directory as a Pages artifact.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step using `actions/upload-pages-artifact@main`.
-        """
-        return self.step(
-            self.step_upload_documentation,
-            uses="actions/upload-pages-artifact@main",
-            with_={"path": DocsBuilder.I.site_dir().as_posix()},
-            step=step,
-        )
-
     def step_deploy_documentation(
         self,
         *,
@@ -199,5 +179,25 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return self.step(
             self.step_deploy_documentation,
             uses="actions/deploy-pages@main",
+            step=step,
+        )
+
+    def step_upload_documentation(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that uploads the `site/` directory as a Pages artifact.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step using `actions/upload-pages-artifact@main`.
+        """
+        return self.step(
+            self.step_upload_documentation,
+            uses="actions/upload-pages-artifact@main",
+            with_={"path": DocsBuilder.I.site_dir().as_posix()},
             step=step,
         )

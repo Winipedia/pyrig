@@ -12,6 +12,10 @@ from pyrig.rig.tools.package_manager import PackageManager
 class ReadmeConfigFile(BadgesConfigFile):
     """README.md configuration manager."""
 
+    def heading(self) -> str:
+        """Return the project name as the heading text."""
+        return f"{PackageManager.I.project_name()}"
+
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
         return Path()
@@ -19,11 +23,3 @@ class ReadmeConfigFile(BadgesConfigFile):
     def stem(self) -> str:
         """Return `"README"` as the filename stem."""
         return "README"
-
-    def heading(self) -> str:
-        """Return the heading text for the project name.
-
-        Returns:
-            Heading text to use in the Markdown file.
-        """
-        return f"{PackageManager.I.project_name()}"

@@ -29,7 +29,7 @@ from pyrig.rig.tools.version_control.hook_manager import (
 
 
 class VersionControlHookManagerConfigFile(TOMLConfigFile):
-    """Manages `prek.toml` for version control hook configuration.
+    """Configuration manager for `prek.toml`, the version control hook pipeline.
 
     Declares a single `local` repository entry containing hooks that cover
     the full code-quality pipeline, all running against tools already

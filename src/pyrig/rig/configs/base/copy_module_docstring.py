@@ -24,10 +24,6 @@ class CopyModuleDocstringConfigFile(CopyModuleConfigFile):
         - `copy_module`: Return the source module whose docstring will be copied.
     """
 
-    def is_correct(self) -> bool:
-        """Return `True` if the source module has a docstring, `False` otherwise."""
-        return module_has_docstring(self.copy_module())
-
     def content(self) -> str:
         """Return the source module's docstring as file content.
 
@@ -47,6 +43,10 @@ class CopyModuleDocstringConfigFile(CopyModuleConfigFile):
             type_ignores=[],
         )
         return f"{ast.unparse(module)}\n"
+
+    def is_correct(self) -> bool:
+        """Return `True` if the source module has a docstring, `False` otherwise."""
+        return module_has_docstring(self.copy_module())
 
     def default_docstring(self) -> str:
         """Return the default module docstring `"Module description."`."""

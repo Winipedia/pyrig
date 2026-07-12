@@ -30,6 +30,14 @@ class LicenseConfigFile(StringConfigFile):
     detects the SPDX license identifier from the file content.
     """
 
+    def content(self) -> str:
+        """Return the MIT license text.
+
+        Returns:
+            The complete MIT license with year and owner substituted.
+        """
+        return self.license()
+
     def extension(self) -> str:
         """Return an empty string — LICENSE has no file extension."""
         return ""
@@ -49,14 +57,6 @@ class LicenseConfigFile(StringConfigFile):
             FileNotFoundError: If the LICENSE file does not exist.
         """
         return file_has_content(self.path())
-
-    def content(self) -> str:
-        """Return the MIT license text.
-
-        Returns:
-            The complete MIT license with year and owner substituted.
-        """
-        return self.license()
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""

@@ -14,18 +14,6 @@ class FeatureRequestConfigFile(YMLDictConfigFile):
     what they want, why they need it, and how it might work.
     """
 
-    def parent_path(self) -> Path:
-        """Return the directory containing the feature request template file.
-
-        Returns:
-            `Path(".github/ISSUE_TEMPLATE")`.
-        """
-        return Path(".github/ISSUE_TEMPLATE")
-
-    def stem(self) -> str:
-        """Return `"feature_request"` as the filename stem."""
-        return "feature_request"
-
     def _configs(self) -> dict[str, Any]:
         """Return the GitHub issue form definition for feature requests.
 
@@ -80,3 +68,15 @@ class FeatureRequestConfigFile(YMLDictConfigFile):
                 },
             ],
         }
+
+    def parent_path(self) -> Path:
+        """Return the directory containing the feature request template file.
+
+        Returns:
+            `Path(".github/ISSUE_TEMPLATE")`.
+        """
+        return Path(".github/ISSUE_TEMPLATE")
+
+    def stem(self) -> str:
+        """Return `"feature_request"` as the filename stem."""
+        return "feature_request"

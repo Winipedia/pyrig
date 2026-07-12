@@ -192,28 +192,6 @@ class PyprojectConfigFile(TOMLConfigFile):
         )
         return sorted({*dependencies, *additional})
 
-    def project_description(self) -> str:
-        """Read the project description from `pyproject.toml`.
-
-        Returns:
-            Description string from `pyproject.toml`. Defaults to uv's initial
-            scaffold value, `"Add your description here"`, if absent.
-        """
-        return (
-            self.load()
-            .get("project", {})
-            .get("description", "Add your description here")
-        )
-
-    def project_version(self) -> str:
-        """Read the project version from `pyproject.toml`.
-
-        Returns:
-            Version string from `pyproject.toml`, or `"0.1.0"` if absent
-            (matching uv's initial scaffold value).
-        """
-        return self.load().get("project", {}).get("version", "0.1.0")
-
     def first_supported_python_version(self) -> Version:
         """Return the minimum Python version required by the project.
 
@@ -315,3 +293,25 @@ class PyprojectConfigFile(TOMLConfigFile):
             .get("project", {})
             .get("requires-python", f">={current_version}")
         )
+
+    def project_description(self) -> str:
+        """Read the project description from `pyproject.toml`.
+
+        Returns:
+            Description string from `pyproject.toml`. Defaults to uv's initial
+            scaffold value, `"Add your description here"`, if absent.
+        """
+        return (
+            self.load()
+            .get("project", {})
+            .get("description", "Add your description here")
+        )
+
+    def project_version(self) -> str:
+        """Read the project version from `pyproject.toml`.
+
+        Returns:
+            Version string from `pyproject.toml`, or `"0.1.0"` if absent
+            (matching uv's initial scaffold value).
+        """
+        return self.load().get("project", {}).get("version", "0.1.0")

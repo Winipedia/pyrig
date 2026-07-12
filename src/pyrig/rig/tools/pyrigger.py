@@ -45,22 +45,6 @@ class Pyrigger(Tool):
         """
         return snake_to_kebab_case(pyrig.__name__)
 
-    def cmd_args(self, *args: str, cmd: FunctionType) -> Args:
-        """Construct `Args` for a top-level pyrig CLI command.
-
-        Derives the command name from `cmd.__name__`, converted from
-        snake_case to kebab-case (e.g. `my_command` becomes `my-command`).
-
-        Args:
-            *args: Additional arguments appended after the command name.
-            cmd: Callable whose `__name__` is used as the command name.
-
-        Returns:
-            Args for `pyrig <cmd_name> [args...]`.
-        """
-        cmd_name = snake_to_kebab_case(cmd.__name__)
-        return self.args(cmd_name, *args)
-
     def group_cmd_args(self, *args: str, group: str, cmd: FunctionType) -> Args:
         """Construct `Args` for a pyrig CLI subcommand within a command group.
 
@@ -82,8 +66,8 @@ class Pyrigger(Tool):
     def init_project(self) -> None:
         """Run the ordered project initialization sequence with a progress bar.
 
-        The process stops immediately if any step exits with a non-zero
-        return code.
+        Each step can independently choose to tolerate a non-zero return
+        code; otherwise the process stops immediately at the failing step.
 
         Note:
             Intended to be run once during initial project setup, not as
@@ -129,6 +113,21 @@ class Pyrigger(Tool):
                 {},
             ),
         ]
+
+    def cmd_args(self, *args: str, cmd: FunctionType) -> Args:
+        """Construct `Args` for a top-level pyrig CLI command.
+
+        Derives the command name from `cmd.__name__`, converted from
+        snake_case to kebab-case (e.g. `my_command` becomes `my-command`).
+
+        Args:
+            *args: Additional arguments appended after the command name.
+            cmd: Callable whose `__name__` is used as the command name.
+
+        Returns:
+            Args for `pyrig <cmd_name> [args...]`.
+        """
+        return self.args(snake_to_kebab_case(cmd.__name__), *args)
 
     def runtime_dependency(self) -> str:
         """Return the package name of pyrig's runtime dependency.
