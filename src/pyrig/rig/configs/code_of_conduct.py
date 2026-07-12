@@ -63,6 +63,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         return self.code_of_conduct_template().replace(
             "[INSERT CONTACT METHOD]",
             self.contact_method(),
+            1,
         )
 
     def code_of_conduct_template(self) -> str:

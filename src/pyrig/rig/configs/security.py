@@ -81,7 +81,7 @@ class SecurityConfigFile(MarkdownConfigFile):
             filled in.
         """
         contact_method = self.contact_method()
-        return SECURITY_TEMPLATE.replace("[INSERT CONTACT METHOD]", contact_method)
+        return SECURITY_TEMPLATE.replace("[INSERT CONTACT METHOD]", contact_method, 1)
 
     def contact_method(self) -> str:
         """Return the contact email address for security reports.
