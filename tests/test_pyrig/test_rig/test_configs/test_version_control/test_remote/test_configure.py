@@ -30,16 +30,16 @@ class TestConfigureRepositoryConfigFile:
         """Test method."""
         assert ConfigureRepositoryConfigFile.I.stem() == "configure"
 
-    def test_content(self) -> None:
+    def test_script_content(self) -> None:
         """Test method."""
         script = ConfigureRepositoryConfigFile.I
-        content = script.content()
+        content = script.script_content()
         assert script.repo_variable() in content
         assert script.apply_repository_settings_function() in content
         assert script.apply_rulesets_function() in content
         assert "gh api" in content
         # the footer must come last so the functions are defined before it runs
-        assert content.endswith(script.footer_content())
+        assert content.rstrip("\n").endswith(script.footer_content())
 
     def test_footer_content(self) -> None:
         """Test method."""
@@ -61,13 +61,15 @@ class TestConfigureRepositoryConfigFile:
         script = ConfigureRepositoryConfigFile.I
         result = script.apply_repository_settings_script()
         assert result.startswith(f"{script.apply_repository_settings_function()}() {{")
-        assert "$repo" in result
+        assert "${repo}" in result
 
     def test_apply_rulesets_script(self) -> None:
         """Test method."""
         script = ConfigureRepositoryConfigFile.I
         result = script.apply_rulesets_script()
         assert result.startswith(f"{script.apply_rulesets_function()}() {{")
-        assert "$repo" in result
-        assert 'gh api "$endpoint" |' in result
-        assert 'gh api "$endpoint${id:+/$id}"' in result
+        assert "${repo}" in result
+        assert 'gh api "${endpoint}" |' in result
+        assert 'url="${endpoint}${id:+/${id}}"' in result
+        assert 'gh api "${url}"' in result
+        assert "[[ -z" in result
