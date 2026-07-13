@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.rig.tools.project_tester import ProjectTester
+from pyrig.rig.tools.testing.project import ProjectTester
 
 
 class TestProjectTester:

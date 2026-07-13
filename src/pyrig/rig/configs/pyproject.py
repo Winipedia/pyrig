@@ -20,11 +20,11 @@ from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.toml import TOMLConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.dependencies.checker import DependencyChecker
-from pyrig.rig.tools.docs_builder import DocsBuilder
+from pyrig.rig.tools.docs.builder import DocsBuilder
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.pyrigger import Pyrigger
+from pyrig.rig.tools.testing.project import ProjectTester
 from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote import (
     RemoteVersionController,
@@ -50,8 +50,12 @@ class PyprojectConfigFile(TOMLConfigFile):
         # pyproject.toml sometimes has info other config files need and vice versa.
         # to avoid local imports of PyprojectConfigFile spread across the project
         # we centralize local imports of the other config files here.
-        from pyrig.rig.configs.license import LicenseConfigFile  # noqa: PLC0415
-        from pyrig.rig.configs.readme import ReadmeConfigFile  # noqa: PLC0415
+        from pyrig.rig.configs.community.license import (  # noqa: PLC0415
+            LicenseConfigFile,
+        )
+        from pyrig.rig.configs.readme import (  # noqa: PLC0415
+            ReadmeConfigFile,
+        )
 
         return {
             "project": {

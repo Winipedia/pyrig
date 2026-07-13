@@ -1,6 +1,6 @@
 """Test module."""
 
-from pyrig.rig.tools.secrets_checker import SecretsChecker
+from pyrig.rig.tools.security.secrets import SecretsChecker
 
 
 class TestSecretsChecker:

@@ -10,7 +10,7 @@ import typer
 from pyrig.core.introspection.packages import make_init_files
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.project_tester import ProjectTester
+from pyrig.rig.tools.testing.project import ProjectTester
 
 
 class ProgrammingLanguage(Tool):
@@ -54,13 +54,10 @@ class ProgrammingLanguage(Tool):
             Directories where `__init__.py` files were created. Empty if all
             already existed.
         """
-        paths = make_init_files(
+        return make_init_files(
             self.namespace_package_paths(),
             content=self.standard_init_content(),
         )
-        for path in paths:
-            typer.echo(f"Created: {path}")
-        return paths
 
     def namespace_package_paths(self) -> Iterator[Path]:
         """Yield project directories that lack an `__init__.py` file.

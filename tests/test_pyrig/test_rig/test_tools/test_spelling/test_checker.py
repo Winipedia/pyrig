@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.rig.tools.spell_checker import SpellChecker
+from pyrig.rig.tools.spelling.checker import SpellChecker
 
 
 class TestSpellChecker:

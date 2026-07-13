@@ -6,7 +6,7 @@ from pathlib import Path
 from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.base.badges import BadgesConfigFile
-from pyrig.rig.configs.license import LicenseConfigFile
+from pyrig.rig.configs.community.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.readme import ReadmeConfigFile
 from pyrig.rig.tools.pyrigger import Pyrigger

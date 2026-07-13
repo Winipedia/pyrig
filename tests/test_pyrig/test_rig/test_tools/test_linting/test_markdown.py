@@ -21,6 +21,14 @@ class TestMarkdownLinter:
         """Test method."""
         assert MarkdownLinter.I.version_control_ignore_paths() == (".rumdl_cache/",)
 
+    def test_extension(self) -> None:
+        """Test method."""
+        assert MarkdownLinter.I.extension() == "md"
+
+    def test_regex(self) -> None:
+        """Test method."""
+        assert MarkdownLinter.I.regex() == r"\.md$"
+
     def test_group(self) -> None:
         """Test method."""
         result = MarkdownLinter.I.group()

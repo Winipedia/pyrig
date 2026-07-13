@@ -25,12 +25,20 @@ class TestYAMLLinter:
         result = YAMLLinter.I.name()
         assert result == "ryl"
 
+    def test_extension(self) -> None:
+        """Test method."""
+        assert YAMLLinter.I.extension() == "yaml"
+
+    def test_regex(self) -> None:
+        """Test method."""
+        assert YAMLLinter.I.regex() == r"\.ya?ml$"
+
     def test_check_args(self) -> None:
         """Test method."""
         result = YAMLLinter.I.check_args()
-        assert result == ("ryl", "check", ".", "-d", "'extends: default'")
+        assert result == ("ryl", "check", "-d", "'extends: default'")
 
     def test_check_fix_args(self) -> None:
         """Test method."""
         result = YAMLLinter.I.check_fix_args()
-        assert result == ("ryl", "check", ".", "-d", "'extends: default'", "--fix")
+        assert result == ("ryl", "check", "-d", "'extends: default'", "--fix")

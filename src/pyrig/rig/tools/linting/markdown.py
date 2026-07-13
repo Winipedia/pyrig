@@ -1,10 +1,11 @@
 """Wrapper around the rumdl Markdown linter tool."""
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.base.file import FileTool
+from pyrig.rig.tools.base.tool import Group
 
 
-class MarkdownLinter(Tool):
+class MarkdownLinter(FileTool):
     """Type-safe wrapper for the rumdl markdown linter.
 
     Constructs rumdl command-line arguments for linting and auto-fixing
@@ -30,6 +31,10 @@ class MarkdownLinter(Tool):
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return `('.rumdl_cache/',)`, rumdl's cache directory."""
         return (".rumdl_cache/",)
+
+    def extension(self) -> str:
+        """Return `'md'`, the Markdown file extension."""
+        return "md"
 
     def check_fix_args(self, *args: str) -> Args:
         """Construct rumdl check arguments with auto-fix enabled.

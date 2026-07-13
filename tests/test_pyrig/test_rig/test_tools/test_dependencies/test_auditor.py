@@ -28,7 +28,7 @@ class TestDependencyAuditor:
         """Test method."""
         assert DependencyAuditor.I.name() == "pip-audit"
 
-    def test_audit_args(self) -> None:
+    def test_check_args(self) -> None:
         """Test method."""
-        args = DependencyAuditor.I.audit_args("--format", "json")
+        args = DependencyAuditor.I.check_args("--format", "json")
         assert isinstance(args, Args)

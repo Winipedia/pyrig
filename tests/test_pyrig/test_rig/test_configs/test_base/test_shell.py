@@ -27,7 +27,7 @@ def my_test_shell_config_file(
 
         def script_content(self) -> str:
             """Get the script content."""
-            return 'greet() {\n  echo "Hello, ${1}"\n}'
+            return 'greet() {\n  echo "Hello, $1"\n}'
 
     return MyTestShellConfigFile
 
@@ -61,7 +61,7 @@ class TestShellConfigFile:
     ) -> None:
         """Test method."""
         script = my_test_shell_config_file()
-        assert script.script_content() == 'greet() {\n  echo "Hello, ${1}"\n}'
+        assert script.script_content() == 'greet() {\n  echo "Hello, $1"\n}'
 
     def test_content(self, my_test_shell_config_file: type[ShellConfigFile]) -> None:
         """Test method."""

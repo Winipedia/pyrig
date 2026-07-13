@@ -10,7 +10,7 @@ import pytest
 
 from pyrig.core.introspection.modules import reimport_module
 from pyrig.rig.configs.base.copy_module_docstring import CopyModuleDocstringConfigFile
-from pyrig.rig.configs.license import LicenseConfigFile
+from pyrig.rig.configs.community.license import LicenseConfigFile
 from pyrig.rig.tools.version_control.controller import VersionController
 
 

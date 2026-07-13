@@ -90,6 +90,8 @@ dev = [
     "ruff>=0.15.21",
     "rumdl>=0.2.30",
     "ryl",
+    "shellcheck-py",
+    "shfmt-py",
     "ty>=0.0.58",
     "typos>=1.48.0",
 ]

@@ -4,6 +4,7 @@ from collections.abc import Iterable, Iterator
 from pathlib import Path
 from types import ModuleType
 
+import typer
 from pyrig_runtime.core.introspection.packages import walk_package
 
 from pyrig.core.strings import write_text_utf8
@@ -36,7 +37,11 @@ def make_init_files(paths: Iterable[Path], content: str) -> tuple[Path, ...]:
         Tuple of paths where `__init__.py` files were created.
         Empty if all already existed.
     """
-    return tuple(path for path in paths if make_init_file(path, content))
+    return tuple(
+        path
+        for path, created in (make_init_file(path, content) for path in paths)
+        if created
+    )
 
 
 def make_package_dir(path: Path, root: Path, content: str) -> None:
@@ -56,10 +61,10 @@ def make_package_dir(path: Path, root: Path, content: str) -> None:
     relative = path.relative_to(root)
     path.mkdir(parents=True, exist_ok=True)
     for p in (relative, *relative.parents):
-        make_init_file(root / p, content=content)
+        _path, _created = make_init_file(root / p, content=content)
 
 
-def make_init_file(path: Path, content: str) -> bool:
+def make_init_file(path: Path, content: str) -> tuple[Path, bool]:
     """Create an `__init__.py` file in the specified directory.
 
     No-op if `__init__.py` already exists in the directory.
@@ -74,7 +79,8 @@ def make_init_file(path: Path, content: str) -> bool:
     path = path / "__init__.py"
 
     if path.exists():
-        return False
+        return path, False
 
     write_text_utf8(path, content)
-    return True
+    typer.echo(f"Created: {path}")
+    return path, True

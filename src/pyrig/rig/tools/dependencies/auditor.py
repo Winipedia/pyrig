@@ -8,7 +8,7 @@ class DependencyAuditor(Tool):
     """`pip-audit` command wrapper.
 
     Intentionally minimal so that downstream projects can subclass and
-    override `audit_args` to apply project-specific flags such as custom
+    override `check_args` to apply project-specific flags such as custom
     ignore lists or output formats.
     """
 
@@ -28,7 +28,7 @@ class DependencyAuditor(Tool):
         """Return `"pip-audit"`."""
         return "pip-audit"
 
-    def audit_args(self, *args: str) -> Args:
+    def check_args(self, *args: str) -> Args:
         """Build the `pip-audit` command.
 
         Args:
