@@ -187,8 +187,15 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
 
         Python linting must precede Python formatting, since autofixes can
         leave code that still needs reformatting. YAML linting shares the
-        Python lint hook's priority since the two never touch the same
-        files; Markdown linting runs after Python formatting completes.
+        Python lint hook's priority since Ruff has no YAML support at all.
+
+        Markdown linting deliberately does *not* share that priority even
+        though Ruff ignores Markdown by default today: Ruff can format
+        Python code fences inside Markdown files if `preview` mode and
+        `extend-include` are ever turned on in `pyproject.toml`, which
+        would make `ruff format` and `rumdl` mutate the same files. Keeping
+        `lint-markdown` on its own priority means that config change can
+        never silently race with this one.
 
         Args:
             priority: Priority shared by `lint-python` and `lint-yaml`;
