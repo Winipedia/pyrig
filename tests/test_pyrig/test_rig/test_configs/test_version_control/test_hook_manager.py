@@ -34,7 +34,9 @@ class TestVersionControlHookManagerConfigFile:
 
     def test_hook_types(self) -> None:
         """Test method."""
-        assert VersionControlHookManagerConfigFile.I.hook_types() == [
+        assert VersionControlHookManagerConfigFile.I.hook_types(
+            VersionControlHookManagerConfigFile.I.hooks(),
+        ) == [
             "post-checkout",
             "post-merge",
             "post-rewrite",
@@ -182,8 +184,9 @@ class TestVersionControlHookManagerConfigFile:
             "check-types",
             "check-dependencies",
             "check-shell",
+            "check-json",
         }
-        # All five checks are read-only and independent, so they share one
+        # All six checks are read-only and independent, so they share one
         # priority and run concurrently.
         assert all(hook["priority"] == priority for hook in hooks)
         # detect-secrets-hook can't usefully scan genuinely binary content
@@ -199,6 +202,8 @@ class TestVersionControlHookManagerConfigFile:
         assert "pass_filenames" not in by_id["check-security"]
         assert by_id["check-shell"]["types"] == ["shell"]
         assert "pass_filenames" not in by_id["check-shell"]
+        assert by_id["check-json"]["types"] == ["json"]
+        assert "pass_filenames" not in by_id["check-json"]
         # check-types and check-dependencies keep pass_filenames=False -
         # whole-program analysis needs the actual scan to cover the whole
         # project regardless of what changed - but no longer override
@@ -228,17 +233,19 @@ class TestVersionControlHookManagerConfigFile:
             "lint-markdown",
             "lint-yaml",
             "format-shell",
+            "format-json",
         }
         assert by_id["lint-python"]["priority"] == priority
         # Lint fixes must run before formatting: they can leave code that
         # still needs reformatting.
         assert by_id["lint-python"]["priority"] < by_id["format-python"]["priority"]
-        # YAML, Markdown, and Shell never overlap Python's file scope
-        # (each hook's own `files` filter guarantees it), so all three are
+        # YAML, Markdown, Shell, and JSON never overlap Python's file scope
+        # (each hook's own `types` filter guarantees it), so all four are
         # safe to share the lint-python priority and run concurrently.
         assert by_id["lint-yaml"]["priority"] == by_id["lint-python"]["priority"]
         assert by_id["lint-markdown"]["priority"] == by_id["lint-python"]["priority"]
         assert by_id["format-shell"]["priority"] == by_id["lint-python"]["priority"]
+        assert by_id["format-json"]["priority"] == by_id["lint-python"]["priority"]
         # Every hook here targets one self-contained file type with no
         # cross-file dependencies, so all of them rely on prek's default
         # of passing matched filenames instead of rescanning the whole
@@ -250,6 +257,7 @@ class TestVersionControlHookManagerConfigFile:
             "lint-markdown",
             "lint-yaml",
             "format-shell",
+            "format-json",
         ):
             assert "pass_filenames" not in by_id[hook_id]
             assert "always_run" not in by_id[hook_id]
@@ -260,6 +268,7 @@ class TestVersionControlHookManagerConfigFile:
         assert by_id["lint-markdown"]["types"] == ["markdown"]
         assert by_id["lint-yaml"]["types"] == ["yaml"]
         assert by_id["format-shell"]["types"] == ["shell"]
+        assert by_id["format-json"]["types"] == ["json"]
 
     def test_update_types_hooks(self) -> None:
         """Test method."""

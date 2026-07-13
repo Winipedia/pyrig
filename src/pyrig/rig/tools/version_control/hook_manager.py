@@ -14,10 +14,16 @@ class VersionControlHookManager(Tool):
     def group(self) -> str:
         """Return the badge group this tool belongs to.
 
+        `prek` doesn't itself inspect or rewrite any file; it's the
+        orchestrator that invokes the actual linters, formatters, and
+        checkers as git hooks. That's the same role `VersionController`
+        (`git`) and `PackageManager` (`uv`) play, both grouped here rather
+        than under `Group.CODE_QUALITY`.
+
         Returns:
-            `Group.CODE_QUALITY`.
+            `Group.TOOLING`.
         """
-        return Group.CODE_QUALITY
+        return Group.TOOLING
 
     def image_url(self) -> str:
         """Return the badge image URL for prek.

@@ -18,7 +18,7 @@ class MarkdownLinter(FileTool):
 
     def image_url(self) -> str:
         """Return the badge image URL for rumdl."""
-        return "https://img.shields.io/badge/markdown-rumdl-darkgreen"
+        return f"https://img.shields.io/badge/Markdown-{self.shield_name()}-darkgreen"
 
     def link_url(self) -> str:
         """Return the URL of the rumdl project page."""

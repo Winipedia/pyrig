@@ -15,7 +15,7 @@ class ShellFormatter(FileTool):
 
     def image_url(self) -> str:
         """Return the badge image URL for shfmt."""
-        return "https://img.shields.io/badge/shell-shfmt-orange"
+        return f"https://img.shields.io/badge/shell-{self.shield_name()}-orange"
 
     def link_url(self) -> str:
         """Return the URL of the shfmt project page."""

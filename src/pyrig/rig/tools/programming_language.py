@@ -31,7 +31,7 @@ class ProgrammingLanguage(Tool):
 
     def image_url(self) -> str:
         """Return the Shields.io badge image URL for Python."""
-        return "https://img.shields.io/badge/Language-Python-3776AB?logo=python&logoColor=white"
+        return f"https://img.shields.io/badge/Language-Python-3776AB?logo={self.name()}&logoColor=white"
 
     def link_url(self) -> str:
         """Return the URL of the official Python website."""

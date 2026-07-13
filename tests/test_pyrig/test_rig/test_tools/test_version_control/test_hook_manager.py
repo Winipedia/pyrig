@@ -45,7 +45,7 @@ class TestVersionControlHookManager:
         """Test method."""
         result = VersionControlHookManager.I.group()
         assert isinstance(result, str)
-        assert result == "code-quality"
+        assert result == "tooling"
 
     def test_name(self) -> None:
         """Test method."""

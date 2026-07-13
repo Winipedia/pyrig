@@ -10,7 +10,7 @@ class TestMarkdownLinter:
         """Test method."""
         assert (
             MarkdownLinter.I.image_url()
-            == "https://img.shields.io/badge/markdown-rumdl-darkgreen"
+            == "https://img.shields.io/badge/Markdown-rumdl-darkgreen"
         )
 
     def test_link_url(self) -> None:

@@ -18,7 +18,7 @@ class DependencyAuditor(Tool):
 
     def image_url(self) -> str:
         """Return the Shields.io badge URL advertising `pip-audit`."""
-        return "https://img.shields.io/badge/security-pip--audit-blue?logo=python"
+        return f"https://img.shields.io/badge/security-{self.shield_name()}-blue?logo=python"
 
     def link_url(self) -> str:
         """Return the URL of the `pip-audit` project page."""

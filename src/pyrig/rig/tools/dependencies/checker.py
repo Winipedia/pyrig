@@ -15,7 +15,7 @@ class DependencyChecker(FileTool):
 
     def image_url(self) -> str:
         """Return the Shields.io badge URL advertising `deptry`."""
-        return "https://img.shields.io/badge/dependencies-deptry-blue"
+        return f"https://img.shields.io/badge/dependencies-{self.shield_name()}-blue"
 
     def link_url(self) -> str:
         """Return the URL of the `deptry` project page."""

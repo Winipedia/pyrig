@@ -23,7 +23,7 @@ class VersionController(Tool):
 
     def image_url(self) -> str:
         """Return the Shields.io badge image URL for Git."""
-        return "https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white"
+        return f"https://img.shields.io/badge/Git-F05032?logo={self.name()}&logoColor=white"
 
     def link_url(self) -> str:
         """Return the URL of the Git homepage."""

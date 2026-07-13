@@ -14,7 +14,7 @@ class ShellLinter(FileTool):
 
     def image_url(self) -> str:
         """Return the badge image URL for ShellCheck."""
-        return "https://img.shields.io/badge/shell-shellcheck-blue"
+        return f"https://img.shields.io/badge/shell-{self.shield_name()}-blue"
 
     def link_url(self) -> str:
         """Return the URL of the ShellCheck project page."""

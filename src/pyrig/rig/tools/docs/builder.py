@@ -26,7 +26,7 @@ class DocsBuilder(Tool):
 
     def image_url(self) -> str:
         """Return the badge image URL."""
-        return "https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white"
+        return f"https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo={self.name()}&logoColor=white"
 
     def link_url(self) -> str:
         """Return the expected GitHub Pages URL for this project."""

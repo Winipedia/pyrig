@@ -31,7 +31,7 @@ class Pyrigger(Tool):
 
     def image_url(self) -> str:
         """Return the badge image URL for pyrig."""
-        return f"https://img.shields.io/badge/built%20with-{self.name()}-3776AB?logo=buildkite&logoColor=black"
+        return f"https://img.shields.io/badge/built%20with-{self.shield_name()}-3776AB?logo=buildkite&logoColor=black"
 
     def link_url(self) -> str:
         """Return the badge link URL for pyrig."""
