@@ -35,6 +35,7 @@ from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hook_manager import (
     VersionControlHookManager,
 )
+from pyrig.rig.tools.version_control.merge_conflict import MergeConflictChecker
 
 
 class VersionControlHookManagerConfigFile(TOMLConfigFile):
@@ -166,30 +167,40 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
     def check_hooks(self, priority: int) -> list[dict[str, Any]]:
         """Return the read-only checks that validate the fully-fixed project.
 
-        All six checks share one priority: none of them mutate files or
+        All seven checks share one priority: none of them mutate files or
         depend on each other, so prek can run them concurrently.
         `check-shell` (ShellCheck) and `check-json` (check-json) belong here
         rather than in `update_type_hooks` because neither has an autofix
         mode; they only ever report, so they are checks, not fixers, even
         though their target file types are otherwise single-file-type like
-        Python/Markdown/YAML.
+        Python/Markdown/YAML. `check-merge-conflict` is a check for the same
+        reason: a leftover conflict marker means the merge was never
+        actually resolved, so there's no safe automatic fix, only a report.
 
-        `check-secrets` and `check-security` rely on prek's default of
-        passing matched filenames, for opposite reasons from each other:
-        `detect-secrets-hook` does nothing at all when given zero files
-        (it does not scan a default target the way most of these tools
-        do), while `bandit` scans whichever files it's told to look at
-        and otherwise wastes a whole source-tree walk. `check-secrets`'s
+        `check-secrets`, `check-merge-conflict`, and `check-security` all
+        rely on prek's default of passing matched filenames, but for three
+        different reasons. `check-secrets` needs it because
+        `detect-secrets-hook` does nothing at all when given zero files (it
+        does not scan a default target the way most of these tools do).
+        `check-merge-conflict` needs it for a different reason entirely:
+        `check-merge-conflict` itself only ever scans anything while git is
+        in an active, unresolved-merge state (checked internally, not via
+        its arguments) - confirmed from its source rather than assumed -
+        so passing it the matched files targets exactly the files actually
+        being resolved in that merge; `always_run` would be pointless here
+        since the tool no-ops outside a merge regardless. `check-secrets`'s
         `types` filter costs no real coverage even though secrets can hide
         in binary artifacts: `detect-secrets-hook` requires a file to
         decode as text to scan it at all, confirmed by testing a secret
-        embedded in genuinely binary content, which it missed regardless
-        of the file's extension. `check-security`'s `-c pyproject.toml`
-        reads that file's `[tool.bandit]` section (`exclude_dirs =
-        ["tests"]`) rather than restricting `types`: bandit has no notion
-        of test code, so it would otherwise flag things like assert
-        statements (`B101`) that `pyproject.toml` already tells Ruff to
-        ignore under `tests/`.
+        embedded in genuinely binary content, which it missed regardless of
+        the file's extension. `check-merge-conflict` shares that same
+        `types=["text"]` scope for the same reason - a conflict marker is
+        equally a property of text in general, not of any single language.
+        `check-security`'s `-c pyproject.toml` reads that file's
+        `[tool.bandit]` section (`exclude_dirs = ["tests"]`) rather than
+        restricting `types`: bandit has no notion of test code, so it would
+        otherwise flag things like assert statements (`B101`) that
+        `pyproject.toml` already tells Ruff to ignore under `tests/`.
 
         `check-types` and `check-dependencies` keep `pass_filenames=False`
         (both need whole-program analysis - unresolved imports, cross-file
@@ -207,7 +218,7 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         for why that one type is just `python`, not `python`/`pyi`).
 
         Args:
-            priority: Priority shared by all five check hooks.
+            priority: Priority shared by all seven check hooks.
 
         Returns:
             Hook configuration entries for the check stage.
@@ -219,6 +230,13 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 stages=["pre-commit"],
                 priority=priority,
                 types=SecretsChecker.I.types(),
+            ),
+            self.hook(
+                "check-merge-conflict",
+                PackageManager.I.run_args(*MergeConflictChecker.I.check_args()),
+                stages=["pre-commit"],
+                priority=priority,
+                types=MergeConflictChecker.I.types(),
             ),
             self.hook(
                 "check-security",

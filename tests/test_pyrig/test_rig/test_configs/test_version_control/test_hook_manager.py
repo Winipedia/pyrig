@@ -180,13 +180,14 @@ class TestVersionControlHookManagerConfigFile:
         by_id = {hook["id"]: hook for hook in hooks}
         assert set(by_id) == {
             "check-secrets",
+            "check-merge-conflict",
             "check-security",
             "check-types",
             "check-dependencies",
             "check-shell",
             "check-json",
         }
-        # All six checks are read-only and independent, so they share one
+        # All seven checks are read-only and independent, so they share one
         # priority and run concurrently.
         assert all(hook["priority"] == priority for hook in hooks)
         # detect-secrets-hook can't usefully scan genuinely binary content
@@ -194,6 +195,12 @@ class TestVersionControlHookManagerConfigFile:
         # real coverage while letting a binary-only commit skip this hook.
         assert by_id["check-secrets"]["types"] == ["text"]
         assert "pass_filenames" not in by_id["check-secrets"]
+        # check-merge-conflict only ever scans anything while git is in an
+        # active, unresolved-merge state (checked internally by the tool,
+        # confirmed from its source), so like check-secrets it just needs
+        # the matched files from that merge, not a whole-project scan.
+        assert by_id["check-merge-conflict"]["types"] == ["text"]
+        assert "pass_filenames" not in by_id["check-merge-conflict"]
         # bandit's tests/ exclusion now comes from its own config file
         # (`-c pyproject.toml`, read via `[tool.bandit] exclude_dirs`), not
         # from restricting which files match, so it only needs a type

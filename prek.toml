@@ -152,6 +152,19 @@ stages = [
 priority = 6
 
 [[repos.hooks]]
+id = "check-merge-conflict"
+name = "check merge conflict"
+entry = "uv run check-merge-conflict"
+language = "system"
+types = [
+    "text",
+]
+stages = [
+    "pre-commit",
+]
+priority = 6
+
+[[repos.hooks]]
 id = "check-security"
 name = "check security"
 entry = "uv run bandit -c pyproject.toml"
