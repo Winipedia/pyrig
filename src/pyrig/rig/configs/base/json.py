@@ -29,8 +29,11 @@ class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
             json.dump(
                 configs,
                 f,
-                indent=4,
+                indent=2,
+                ensure_ascii=False,
+                allow_nan=False,
             )
+            f.write("\n")
 
     def _load(self) -> ConfigT:
         """Read and parse the JSON file from disk.

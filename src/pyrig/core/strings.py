@@ -18,7 +18,7 @@ def open_path_with_utf8(path: Path, *, mode: str = "r") -> IO[Any]:
     Returns:
         The opened file object.
     """
-    return path.open(mode=mode, encoding=UTF_8_ENCODING)
+    return path.open(mode=mode, encoding=UTF_8_ENCODING, newline="\n")
 
 
 def read_text_utf8(path: Path) -> str:
