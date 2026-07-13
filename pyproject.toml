@@ -117,9 +117,6 @@ DEP002 = [
 ]
 
 [tool.pytest]
-testpaths = [
-    "tests",
-]
 addopts = [
     "--cov=pyrig",
     "--cov-branch",
@@ -131,6 +128,12 @@ filterwarnings = [
     "error",
 ]
 strict = true
+testpaths = [
+    "tests",
+]
+
+[tool.ruff.format]
+docstring-code-format = true
 
 [tool.ruff.lint]
 select = [
@@ -144,6 +147,3 @@ select = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
-
-[tool.ruff.format]
-docstring-code-format = true

@@ -11,6 +11,7 @@ from pyrig_runtime.core.strings import (
 )
 from pyrig_runtime.rig.cli import main
 
+from pyrig.core.iterate import deep_sort_dict
 from pyrig.core.resources import (
     resource_content,
 )
@@ -100,33 +101,37 @@ class PyprojectConfigFile(TOMLConfigFile):
                 "requires": PackageManager.I.build_system_requires(),
                 "build-backend": PackageManager.I.build_backend(),
             },
-            "tool": {
-                SecurityLinter.I.config_name(): {
-                    "exclude_dirs": [
-                        ProjectTester.I.package_root().as_posix(),
-                    ],
-                },
-                DependencyChecker.I.config_name(): {
-                    "root": PackageManager.I.source_root().as_posix(),
-                    "per_rule_ignores": {"DEP002": [Pyrigger.I.runtime_dependency()]},
-                },
-                ProjectTester.I.config_name(): {
-                    "testpaths": [ProjectTester.I.package_root().as_posix()],
-                    "addopts": list(ProjectTester.I.additional_args()),
-                    "filterwarnings": ["error"],
-                    "strict": True,
-                },
-                PythonLinter.I.config_name(): {
-                    "lint": {
-                        "select": ["ALL"],
-                        "per-file-ignores": {
-                            f"{ProjectTester.I.package_name()}/**/*.py": ["S101"],
-                        },
-                        "pydocstyle": {"convention": PythonLinter.I.pydocstyle()},
+            "tool": deep_sort_dict(self.tool_configs()),
+        }
+
+    def tool_configs(self) -> dict[str, Any]:
+        """Assemble the required `tool` section of `pyproject.toml`."""
+        return {
+            SecurityLinter.I.config_name(): {
+                "exclude_dirs": [
+                    ProjectTester.I.package_root().as_posix(),
+                ],
+            },
+            DependencyChecker.I.config_name(): {
+                "root": PackageManager.I.source_root().as_posix(),
+                "per_rule_ignores": {"DEP002": [Pyrigger.I.runtime_dependency()]},
+            },
+            ProjectTester.I.config_name(): {
+                "testpaths": [ProjectTester.I.package_root().as_posix()],
+                "addopts": list(ProjectTester.I.additional_args()),
+                "filterwarnings": ["error"],
+                "strict": True,
+            },
+            PythonLinter.I.config_name(): {
+                "lint": {
+                    "select": ["ALL"],
+                    "per-file-ignores": {
+                        f"{ProjectTester.I.package_name()}/**/*.py": ["S101"],
                     },
-                    "format": {
-                        "docstring-code-format": True,
-                    },
+                    "pydocstyle": {"convention": PythonLinter.I.pydocstyle()},
+                },
+                "format": {
+                    "docstring-code-format": True,
                 },
             },
         }

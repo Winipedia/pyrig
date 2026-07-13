@@ -283,3 +283,12 @@ class TestPyprojectConfigFile:
         assert Version(
             latest_version_str,
         ) == PyprojectConfigFile.I.latest_python_version(level="micro")
+
+    def test_tool_configs(self) -> None:
+        """Test method."""
+        assert isinstance(PyprojectConfigFile.I.tool_configs(), dict)
+        assert (
+            PyprojectConfigFile.I._configs()["tool"]  # noqa: SLF001
+            == PyprojectConfigFile.I.tool_configs()
+        )
+        assert len(PyprojectConfigFile.I.tool_configs()) > 0
