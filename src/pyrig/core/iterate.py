@@ -210,6 +210,23 @@ def both_dicts_or_lists(a: object, b: object) -> bool:
     return both_dicts(a, b) or both_lists(a, b)
 
 
+@overload
+def deep_sort_dict[T](value: list[T]) -> list[T]: ...
+@overload
+def deep_sort_dict[K, V](value: dict[K, V]) -> dict[K, V]: ...
+@overload
+def deep_sort_dict[T](value: T) -> T: ...
+def deep_sort_dict(value: Any) -> Any:
+    """Recursively sort a nested dict by keys."""
+    if isinstance(value, dict):
+        return {key: deep_sort_dict(item) for key, item in sorted(value.items())}
+
+    if isinstance(value, list):
+        return [deep_sort_dict(item) for item in value]
+
+    return value
+
+
 def both_dicts(a: object, b: object) -> bool:
     """Return whether `a` and `b` are both dicts.
 
