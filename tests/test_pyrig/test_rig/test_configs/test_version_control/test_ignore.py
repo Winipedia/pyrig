@@ -42,6 +42,8 @@ class TestVersionControllerIgnoreConfigFile:
             "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore",
             timeout=(3, 10),
         ).text
+        # remove trailing whitespace from each line
+        text = "\n".join(line.rstrip() for line in text.splitlines()) + "\n"
         assert "__pycache__/" in text
         assert ".env" in text
         assert VersionControllerIgnoreConfigFile.I.standard_ignore_text() == text

@@ -272,10 +272,30 @@ class TestVersionControlHookManagerConfigFile:
 
     def test_update_types_hooks(self) -> None:
         """Test method."""
+        priority = 3
         hooks = VersionControlHookManagerConfigFile.I.update_types_hooks(
-            priority=3,
+            priority=priority,
         )
-        assert [hook["id"] for hook in hooks] == ["fix-spelling"]
+        assert [hook["id"] for hook in hooks] == [
+            "fix-spelling",
+            "fix-trailing-whitespace",
+            "fix-end-of-file",
+        ]
+        by_id = {hook["id"]: hook for hook in hooks}
+        # All three hooks here can mutate the same file (types=["text"]),
+        # so they must run strictly sequentially rather than sharing a
+        # priority - concurrent writes to one file would race. Content
+        # fixes (spelling) precede purely cosmetic ones (whitespace, EOF),
+        # so the cosmetic pass is always the final word on formatting.
+        assert (
+            by_id["fix-spelling"]["priority"]
+            == priority
+            < by_id["fix-trailing-whitespace"]["priority"]
+            < by_id["fix-end-of-file"]["priority"]
+        )
+        assert by_id["fix-trailing-whitespace"]["types"] == ["text"]
+        assert by_id["fix-end-of-file"]["types"] == ["text"]
+        assert by_id["fix-spelling"]["types"] == ["text"]
 
     def test_generate_hooks(self) -> None:
         """Test method."""

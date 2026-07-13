@@ -17,8 +17,10 @@ from pyrig.rig.configs.base.toml import TOMLConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.dependencies.auditor import DependencyAuditor
 from pyrig.rig.tools.dependencies.checker import DependencyChecker
+from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.formatting.json import JSONFormatter
 from pyrig.rig.tools.formatting.shell import ShellFormatter
+from pyrig.rig.tools.formatting.trailing_whitespace import TrailingWhitespaceFormatter
 from pyrig.rig.tools.linting.json import JSONLinter
 from pyrig.rig.tools.linting.markdown import MarkdownLinter
 from pyrig.rig.tools.linting.python import PythonLinter
@@ -336,15 +338,36 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         ]
 
     def update_types_hooks(self, priority: int) -> list[dict[str, Any]]:
-        """Return the hook that fixes spelling across every file type.
+        """Return the hooks that fix concerns spanning every file type.
 
-        Runs after generation and before `update_type_hooks`, since spelling
+        Runs after generation and before `update_type_hooks`, since these
         fixes can touch any file, including ones the single-file-type
-        fixers fix afterward. Scans the whole project itself rather than
-        specific files, so it overrides prek's defaults accordingly.
+        fixers fix afterward. All three hooks here scope to `types=["text"]`
+        and can therefore mutate the very same file, so - unlike
+        `check_hooks`'s read-only checks - they can't share a priority and
+        run concurrently: two hook processes racing to write the same file
+        would corrupt it.
+
+        None of the three actually depends on another's output - each
+        touches a disjoint aspect of the file (word content, per-line
+        trailing spaces, the file's trailing newline count) - so, unlike
+        `lint-python` needing to precede `format-python`, no order here is
+        forced by correctness. The order below is a deliberate house
+        convention instead, applying the same principle as that
+        lint-before-format pair: content-modifying fixes run before purely
+        cosmetic ones, so the cosmetic pass is always the final, uncontested
+        word on the file's formatting. `fix-spelling` (the only one that
+        changes actual word content) runs first; `fix-trailing-whitespace`
+        then `fix-end-of-file` run last, in that relative order, matching
+        the near-universal convention in `pre-commit-hooks` configs -
+        `end-of-file-fixer` is a whole-file concern, so it fittingly acts
+        last, after per-line whitespace has already been normalized. Each
+        hook still relies on prek's default of scanning only matched files
+        rather than the whole project.
 
         Args:
-            priority: Priority assigned to this stage's hook.
+            priority: Priority assigned to the first hook in the chain; each
+                subsequent hook runs one priority higher.
 
         Returns:
             Hook configuration entries for the cross-file-type fix stage.
@@ -354,8 +377,24 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 "fix-spelling",
                 PackageManager.I.run_args(*SpellChecker.I.check_fix_args()),
                 stages=["pre-commit"],
-                priority=priority,
+                priority=(fix_spelling_priority := priority),
                 types=SpellChecker.I.types(),
+            ),
+            self.hook(
+                "fix-trailing-whitespace",
+                PackageManager.I.run_args(*TrailingWhitespaceFormatter.I.format_args()),
+                stages=["pre-commit"],
+                priority=(
+                    fix_trailing_whitespace_priority := fix_spelling_priority + 1
+                ),
+                types=TrailingWhitespaceFormatter.I.types(),
+            ),
+            self.hook(
+                "fix-end-of-file",
+                PackageManager.I.run_args(*EndOfFileFormatter.I.format_args()),
+                stages=["pre-commit"],
+                priority=fix_trailing_whitespace_priority + 1,
+                types=EndOfFileFormatter.I.types(),
             ),
         ]
 
