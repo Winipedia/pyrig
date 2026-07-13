@@ -6,7 +6,9 @@ from pyrig.rig.configs.base.shell import ShellConfigFile
 from pyrig.rig.configs.version_control.remote.settings import (
     RepositorySettingsConfigFile,
 )
-from pyrig.rig.tools.version_control.remote import RemoteVersionController
+from pyrig.rig.tools.version_control.remote.controller import (
+    RemoteVersionController,
+)
 
 
 class ConfigureRepositoryConfigFile(ShellConfigFile):

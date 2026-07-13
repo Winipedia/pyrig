@@ -36,3 +36,7 @@ class TestSpellChecker:
         """Test method."""
         result = SpellChecker.I.check_fix_args()
         assert result == ("typos", "--write-changes")
+
+    def test_types(self) -> None:
+        """Test method."""
+        assert SpellChecker.I.types() == ["text"]

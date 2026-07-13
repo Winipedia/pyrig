@@ -33,13 +33,9 @@ class TestShellLinter:
         result = ShellLinter.I.dev_dependencies()
         assert result == ("shellcheck-py",)
 
-    def test_extension(self) -> None:
+    def test_types(self) -> None:
         """Test method."""
-        assert ShellLinter.I.extension() == "sh"
-
-    def test_regex(self) -> None:
-        """Test method."""
-        assert ShellLinter.I.regex() == r"\.sh$"
+        assert ShellLinter.I.types() == ["shell"]
 
     def test_check_args(self) -> None:
         """Test method."""

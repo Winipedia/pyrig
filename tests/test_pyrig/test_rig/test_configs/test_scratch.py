@@ -40,11 +40,6 @@ class TestScratchConfigFile:
         """Test method."""
         assert ScratchConfigFile.I.version_control_ignored() is True
 
-    def test_is_correct(self) -> None:
-        """Test method."""
-        ScratchConfigFile.I.validate()
-        assert ScratchConfigFile.I.is_correct()
-
     def test_stem(self) -> None:
         """Test method."""
         assert ScratchConfigFile.I.stem() == ".scratch"

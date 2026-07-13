@@ -7,7 +7,9 @@ from pyrig.rig.configs.base.yml import YMLDictConfigFile
 from pyrig.rig.tools.docs.builder import DocsBuilder
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
-from pyrig.rig.tools.version_control.remote import RemoteVersionController
+from pyrig.rig.tools.version_control.remote.controller import (
+    RemoteVersionController,
+)
 
 
 class DocsBuilderConfigFile(YMLDictConfigFile):

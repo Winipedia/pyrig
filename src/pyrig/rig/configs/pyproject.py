@@ -22,11 +22,12 @@ from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.dependencies.checker import DependencyChecker
 from pyrig.rig.tools.docs.builder import DocsBuilder
 from pyrig.rig.tools.linting.python import PythonLinter
+from pyrig.rig.tools.linting.security import SecurityLinter
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.testing.project import ProjectTester
 from pyrig.rig.tools.version_control.controller import VersionController
-from pyrig.rig.tools.version_control.remote import (
+from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,
 )
 
@@ -100,6 +101,11 @@ class PyprojectConfigFile(TOMLConfigFile):
                 "build-backend": PackageManager.I.build_backend(),
             },
             "tool": {
+                SecurityLinter.I.config_name(): {
+                    "exclude_dirs": [
+                        ProjectTester.I.package_root().as_posix(),
+                    ],
+                },
                 DependencyChecker.I.config_name(): {
                     "root": PackageManager.I.source_root().as_posix(),
                     "per_rule_ignores": {"DEP002": [Pyrigger.I.runtime_dependency()]},

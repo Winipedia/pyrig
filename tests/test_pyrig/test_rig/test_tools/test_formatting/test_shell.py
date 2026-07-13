@@ -1,9 +1,6 @@
 """module."""
 
-from pytest_mock import MockerFixture
-
 from pyrig.rig.tools.formatting.shell import ShellFormatter
-from pyrig.rig.tools.linting.shell import ShellLinter
 
 
 class TestShellFormatter:
@@ -36,21 +33,9 @@ class TestShellFormatter:
         result = ShellFormatter.I.dev_dependencies()
         assert result == ("shfmt-py",)
 
-    def test_extension(self, mocker: MockerFixture) -> None:
+    def test_types(self) -> None:
         """Test method."""
-        # Delegates to ShellLinter rather than coincidentally returning
-        # the same literal, so patch it to prove that.
-        mock = mocker.patch.object(
-            ShellLinter,
-            ShellLinter.extension.__name__,
-            return_value="mocked-extension",
-        )
-        assert ShellFormatter.I.extension() == "mocked-extension"
-        mock.assert_called_once()
-
-    def test_regex(self) -> None:
-        """Test method."""
-        assert ShellFormatter.I.regex() == r"\.sh$"
+        assert ShellFormatter.I.types() == ["shell"]
 
     def test_format_args(self) -> None:
         """Test method."""

@@ -7,6 +7,10 @@ from pyrig.rig.tools.dependencies.checker import DependencyChecker
 class TestDependencyChecker:
     """Test class."""
 
+    def test_types(self) -> None:
+        """Test method."""
+        assert DependencyChecker.I.types() == ["python", "pyproject"]
+
     def test_check_args(self) -> None:
         """Test method."""
         assert DependencyChecker.I.check_args() == Args("deptry")

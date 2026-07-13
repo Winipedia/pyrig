@@ -11,10 +11,6 @@ from pyrig.rig.tools.version_control.controller import VersionController
 class TestSecurityConfigFile:
     """Test class."""
 
-    def test_is_correct(self) -> None:
-        """Test method."""
-        assert SecurityConfigFile.I.is_correct()
-
     def test_stem(self) -> None:
         """Test method."""
         result = SecurityConfigFile.I.stem()
@@ -59,3 +55,14 @@ class TestSecurityConfigFile:
         result = SecurityConfigFile.I.contact_method()
         email_mock.assert_called_once()
         assert result == "<some.email@here.com>"
+
+    def test_is_correct(self) -> None:
+        """Test method."""
+        assert SecurityConfigFile.I.is_correct()
+
+    def test_contact_method_placeholder(self) -> None:
+        """Test method."""
+        assert (
+            SecurityConfigFile.I.contact_method_placeholder()
+            == "[INSERT CONTACT METHOD]"
+        )

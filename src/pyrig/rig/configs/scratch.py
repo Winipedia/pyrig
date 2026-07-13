@@ -24,10 +24,6 @@ class ScratchConfigFile(PythonConfigFile):
         super().create_file()
         self.delete_root_main()
 
-    def is_correct(self) -> bool:
-        """Check whether `.scratch.py` exists, ignoring its content."""
-        return self.path().exists()
-
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
         return Path()

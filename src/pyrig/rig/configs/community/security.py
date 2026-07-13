@@ -6,7 +6,6 @@ covers vulnerability reporting guidelines and response expectations.
 
 from pathlib import Path
 
-from pyrig.core.strings import file_has_content
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.tools.version_control.controller import VersionController
 
@@ -55,15 +54,17 @@ class SecurityConfigFile(MarkdownConfigFile):
         return self.template_with_contact_method()
 
     def is_correct(self) -> bool:
-        """Return whether SECURITY.md has non-empty content.
+        """Check whether SECURITY.md has non-empty content.
+
+        Overrides the default content-comparison check with a simpler
+        non-emptiness test.
 
         Returns:
-            `True` if the file is non-empty; `False` if it is empty.
-
-        Raises:
-            FileNotFoundError: If the file does not exist.
+            `True` if the file has non-empty content; `False` if the file
+            is empty.
         """
-        return file_has_content(self.path())
+        content = self.read_content().strip()
+        return bool(content) and self.contact_method_placeholder() not in content
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
@@ -81,7 +82,11 @@ class SecurityConfigFile(MarkdownConfigFile):
             filled in.
         """
         contact_method = self.contact_method()
-        return SECURITY_TEMPLATE.replace("[INSERT CONTACT METHOD]", contact_method, 1)
+        return SECURITY_TEMPLATE.replace(
+            self.contact_method_placeholder(),
+            contact_method,
+            1,
+        )
 
     def contact_method(self) -> str:
         """Return the contact email address for security reports.
@@ -91,3 +96,11 @@ class SecurityConfigFile(MarkdownConfigFile):
             `<user@example.com>`.
         """
         return f"<{VersionController.I.email()}>"
+
+    def contact_method_placeholder(self) -> str:
+        """Return the placeholder for the contact method in the template.
+
+        Returns:
+            The `[INSERT CONTACT METHOD]` placeholder string.
+        """
+        return "[INSERT CONTACT METHOD]"

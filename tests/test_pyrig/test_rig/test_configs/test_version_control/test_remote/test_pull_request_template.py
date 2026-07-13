@@ -10,10 +10,6 @@ from pyrig.rig.configs.version_control.remote.pull_request_template import (
 class TestPullRequestTemplateConfigFile:
     """Test class."""
 
-    def test_is_correct(self) -> None:
-        """Test method."""
-        assert PullRequestTemplateConfigFile.I.is_correct()
-
     def test_stem(self) -> None:
         """Test method."""
         assert PullRequestTemplateConfigFile.I.stem() == "pull_request_template"

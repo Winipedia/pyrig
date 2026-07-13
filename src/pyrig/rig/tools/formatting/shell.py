@@ -29,16 +29,9 @@ class ShellFormatter(FileTool):
         """Return `('shfmt-py',)`, the PyPI package providing `shfmt`."""
         return ("shfmt-py",)
 
-    def extension(self) -> str:
-        """Return the shell script file extension.
-
-        Delegates to `ShellLinter` rather than repeating the same value:
-        whether a file *is* a shell script is a correctness question, and
-        checking correctness is the more fundamental concern than
-        formatting it, so `ShellLinter` is the higher-authority definition
-        of what counts as a shell script for this project's tooling.
-        """
-        return ShellLinter.I.extension()
+    def types(self) -> list[str]:
+        """Return the list of file types that `shfmt` can format."""
+        return ShellLinter.I.types()
 
     def format_args(self, *args: str) -> Args:
         """Construct shfmt formatting arguments at maximum strictness.

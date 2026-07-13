@@ -21,13 +21,9 @@ class TestPythonLinter:
         """Test method."""
         assert PythonLinter.I.version_control_ignore_paths() == (".ruff_cache/",)
 
-    def test_extension(self) -> None:
+    def test_types(self) -> None:
         """Test method."""
-        assert PythonLinter.I.extension() == "py"
-
-    def test_regex(self) -> None:
-        """Test method."""
-        assert PythonLinter.I.regex() == r"\.pyi?$"
+        assert PythonLinter.I.types() == ["python"]
 
     def test_pydocstyle(self) -> None:
         """Test method."""

@@ -25,6 +25,10 @@ class TestSecretsChecker:
         """Test method."""
         assert SecretsChecker.I.name() == "detect-secrets"
 
+    def test_types(self) -> None:
+        """Test method."""
+        assert SecretsChecker.I.types() == ["text"]
+
     def test_check_args(self) -> None:
         """Test method."""
         assert SecretsChecker.I.check_args("arg1", "arg2") == (

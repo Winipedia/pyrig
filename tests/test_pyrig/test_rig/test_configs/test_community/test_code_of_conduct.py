@@ -29,10 +29,6 @@ class TestCodeOfConductConfigFile:
         assert len(code_of_conduct) > 0
         assert CodeOfConductConfigFile.I.code_of_conduct_template() == code_of_conduct
 
-    def test_is_correct(self) -> None:
-        """Test method."""
-        assert CodeOfConductConfigFile.I.is_correct()
-
     def test_code_of_conduct(self, mocker: MockerFixture) -> None:
         """Test method."""
         email_mock = mocker.patch.object(
@@ -83,3 +79,14 @@ class TestCodeOfConductConfigFile:
         assert isinstance(code_of_conduct, str)
         assert "[INSERT CONTACT METHOD]" in code_of_conduct
         assert len(code_of_conduct) > 0
+
+    def test_is_correct(self) -> None:
+        """Test method."""
+        assert CodeOfConductConfigFile.I.is_correct()
+
+    def test_contact_method_placeholder(self) -> None:
+        """Test method."""
+        assert (
+            CodeOfConductConfigFile.I.contact_method_placeholder()
+            == "[INSERT CONTACT METHOD]"
+        )

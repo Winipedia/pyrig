@@ -28,9 +28,9 @@ class ShellLinter(FileTool):
         """Return `('shellcheck-py',)`, the PyPI package providing `shellcheck`."""
         return ("shellcheck-py",)
 
-    def extension(self) -> str:
-        """Return `'sh'`, the shell script file extension."""
-        return "sh"
+    def types(self) -> list[str]:
+        """Return the list of file types that `shellcheck` can lint."""
+        return ["shell"]
 
     def check_args(self, *args: str) -> Args:
         """Construct ShellCheck check arguments at maximum strictness.

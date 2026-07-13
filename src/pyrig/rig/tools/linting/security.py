@@ -1,10 +1,11 @@
 """Security scanner command construction and badge metadata."""
 
+from pathlib import Path
+
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.file import FileTool
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.linting.python import PythonLinter
-from pyrig.rig.tools.package_manager import PackageManager
 
 
 class SecurityLinter(FileTool):
@@ -30,27 +31,21 @@ class SecurityLinter(FileTool):
         """Return `'bandit'`."""
         return "bandit"
 
-    def extension(self) -> str:
-        """Return the Python source file extension.
+    def types(self) -> list[str]:
+        """Return the list of file types that `bandit` can scan."""
+        return PythonLinter.I.types()
 
-        Delegates to `PythonLinter` rather than repeating the same value:
-        whether a file *is* Python is a language-identity question, and
-        `PythonLinter` (ruff) is the higher-authority definition of what
-        counts as Python for this project's tooling. `regex()` is
-        overridden separately, since it also has to scope matches to the
-        package root, not just the extension.
+    def check_config_args(self, path: Path, *args: str) -> Args:
+        """Construct `bandit` arguments with a specific configuration file.
+
+        Args:
+            path: Path to the configuration file.
+            *args: Additional `bandit` arguments.
+
+        Returns:
+            Args for `bandit -c [path] [args]`.
         """
-        return PythonLinter.I.extension()
-
-    def regex(self) -> str:
-        """Return a regex matching Python files under the package root.
-
-        Scoped to the package root rather than every `.py` file: bandit
-        has no notion of test code, so it flags things like assert
-        statements (`B101`) that `pyproject.toml` already tells Ruff to
-        ignore under `tests/`.
-        """
-        return rf"^{PackageManager.I.package_root().as_posix()}/.*\.pyi?$"
+        return self.args("-c", path.as_posix(), *args)
 
     def check_args(self, *args: str) -> Args:
         """Construct `bandit` arguments.
