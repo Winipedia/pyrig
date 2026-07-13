@@ -34,7 +34,7 @@ class YAMLLinter(FileTool):
         `regex()` is overridden separately, since it also has to match
         the `.yml` spelling, not just `.yaml`.
         """
-        return "yaml"
+        return "yml"
 
     def regex(self) -> str:
         """Return a regex matching YAML files."""
