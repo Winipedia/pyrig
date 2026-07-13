@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pytest_mock import MockerFixture
 
-from pyrig.rig.configs.security import SecurityConfigFile
+from pyrig.rig.configs.community.security import SecurityConfigFile
 from pyrig.rig.tools.version_control.controller import VersionController
 
 

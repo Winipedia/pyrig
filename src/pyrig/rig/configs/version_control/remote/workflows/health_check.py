@@ -8,8 +8,8 @@ from pyrig.rig.cli.subcommands import mk
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.tools.dependencies.auditor import DependencyAuditor
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.pyrigger import Pyrigger
+from pyrig.rig.tools.testing.project import ProjectTester
 from pyrig.rig.tools.version_control.hook_manager import (
     VersionControlHookManager,
 )
@@ -199,7 +199,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.step(
             self.step_run_dependency_audit,
-            run=str(PackageManager.I.run_args(*DependencyAuditor.I.audit_args())),
+            run=str(PackageManager.I.run_args(*DependencyAuditor.I.check_args())),
             step=step,
         )
 

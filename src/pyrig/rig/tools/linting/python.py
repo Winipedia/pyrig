@@ -1,10 +1,11 @@
 """Command-line wrapper for the Python linter and formatter."""
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.base.file import FileTool
+from pyrig.rig.tools.base.tool import Group
 
 
-class PythonLinter(Tool):
+class PythonLinter(FileTool):
     """`ruff` command wrapper for linting, auto-fixing, and formatting."""
 
     def group(self) -> str:
@@ -26,6 +27,18 @@ class PythonLinter(Tool):
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return `ruff`'s cache directory as the only path to ignore."""
         return (".ruff_cache/",)
+
+    def extension(self) -> str:
+        """Return `'py'`, the primary Python source file extension.
+
+        `regex()` is overridden separately, since it also has to match
+        `.pyi` stub files, not just `.py`.
+        """
+        return "py"
+
+    def regex(self) -> str:
+        """Return a regex matching Python source files."""
+        return r"\.pyi?$"
 
     def check_fix_args(self, *args: str) -> Args:
         """Build a `ruff check` command with auto-fix enabled.

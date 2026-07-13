@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.rig.configs.contributing import ContributingConfigFile
+from pyrig.rig.configs.community.contributing import ContributingConfigFile
 
 
 class TestContributingConfigFile:

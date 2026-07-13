@@ -16,15 +16,17 @@ from pyrig.rig.cli.subcommands import sync
 from pyrig.rig.configs.base.toml import TOMLConfigFile
 from pyrig.rig.tools.dependencies.auditor import DependencyAuditor
 from pyrig.rig.tools.dependencies.checker import DependencyChecker
+from pyrig.rig.tools.formatting.shell import ShellFormatter
 from pyrig.rig.tools.linting.markdown import MarkdownLinter
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.linting.security import SecurityLinter
+from pyrig.rig.tools.linting.shell import ShellLinter
 from pyrig.rig.tools.linting.yaml import YAMLLinter
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
-from pyrig.rig.tools.secrets_checker import SecretsChecker
-from pyrig.rig.tools.spell_checker import SpellChecker
-from pyrig.rig.tools.type_checker import TypeChecker
+from pyrig.rig.tools.security.secrets import SecretsChecker
+from pyrig.rig.tools.spelling.checker import SpellChecker
+from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hook_manager import (
     VersionControlHookManager,
 )
@@ -99,6 +101,10 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         upgrading the lockfile, which must precede installing dependencies,
         which must precede auditing them.
 
+        Every hook here scans or acts on the whole project rather than
+        specific files, so all four override prek's defaults to
+        `pass_filenames=False, always_run=True`.
+
         Args:
             priority: Priority assigned to the first hook in the chain; each
                 subsequent hook runs one priority higher.
@@ -118,6 +124,8 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 PackageManager.I.update_self_args(),
                 stages=transition_stages,
                 priority=(update_package_manager_priority := priority),
+                pass_filenames=False,
+                always_run=True,
             ),
             self.hook(
                 "update-dependencies",
@@ -126,6 +134,8 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 priority=(
                     update_dependencies_priority := update_package_manager_priority + 1
                 ),
+                pass_filenames=False,
+                always_run=True,
             ),
             self.hook(
                 "install-dependencies",
@@ -134,23 +144,47 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 priority=(
                     install_dependencies_priority := update_dependencies_priority + 1
                 ),
+                pass_filenames=False,
+                always_run=True,
             ),
             self.hook(
                 "audit-dependencies",
-                PackageManager.I.run_args(*DependencyAuditor.I.audit_args()),
+                PackageManager.I.run_args(*DependencyAuditor.I.check_args()),
                 stages=transition_stages,
                 priority=install_dependencies_priority + 1,
+                pass_filenames=False,
+                always_run=True,
             ),
         ]
 
     def check_hooks(self, priority: int) -> list[dict[str, Any]]:
         """Return the read-only checks that validate the fully-fixed project.
 
-        All four checks share one priority: none of them mutate files or
+        All five checks share one priority: none of them mutate files or
         depend on each other, so prek can run them concurrently.
+        `check-shell` (ShellCheck) belongs here rather than in
+        `update_type_hooks` because ShellCheck has no autofix mode; it only
+        ever reports, so it is a check, not a fixer, even though its target
+        file type is otherwise single-file-type like Python/Markdown/YAML.
+
+        `check-secrets` and `check-security` rely on prek's default of
+        passing matched filenames, for opposite reasons from each other:
+        `detect-secrets-hook` does nothing at all when given zero files
+        (it does not scan a default target the way most of these tools
+        do), while `bandit` scans whichever files it's told to look at
+        and otherwise wastes a whole source-tree walk. `check-security`'s
+        `files` filter is scoped to the package root rather than every
+        `.py` file, matching bandit's previous `-r <package root>` scan:
+        bandit has no notion of test code, so it flags things like assert
+        statements (`B101`) that `pyproject.toml` already tells Ruff to
+        ignore under `tests/`. `check-types` and `check-dependencies`
+        override that default back to `pass_filenames=False,
+        always_run=True`: both need whole-program analysis (unresolved
+        imports, cross-file usages) that restricting to changed files
+        would silently break.
 
         Args:
-            priority: Priority shared by all four check hooks.
+            priority: Priority shared by all five check hooks.
 
         Returns:
             Hook configuration entries for the check stage.
@@ -167,40 +201,60 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 PackageManager.I.run_args(*SecurityLinter.I.check_args()),
                 stages=["pre-commit"],
                 priority=priority,
+                files=SecurityLinter.I.regex(),
             ),
             self.hook(
                 "check-types",
                 PackageManager.I.run_args(*TypeChecker.I.check_args()),
                 stages=["pre-commit"],
                 priority=priority,
+                pass_filenames=False,
+                always_run=True,
             ),
             self.hook(
                 "check-dependencies",
                 PackageManager.I.run_args(*DependencyChecker.I.check_args()),
                 stages=["pre-commit"],
                 priority=priority,
+                pass_filenames=False,
+                always_run=True,
+            ),
+            self.hook(
+                "check-shell",
+                PackageManager.I.run_args(*ShellLinter.I.check_args()),
+                stages=["pre-commit"],
+                priority=priority,
+                files=ShellLinter.I.regex(),
             ),
         ]
 
     def update_type_hooks(self, priority: int) -> list[dict[str, Any]]:
-        """Return the hooks that each fix a single file type.
+        r"""Return the hooks that each fix a single file type.
+
+        Every hook here relies on prek's default of passing matched
+        filenames rather than scanning the whole project: each tool's own
+        scope is a single, self-contained file type with no cross-file
+        dependencies to miss, unlike `check-types`/`check-dependencies` in
+        `check_hooks`, which override that default. `ruff format` in
+        particular *requires* this: given a Markdown file directly it
+        errors outright rather than skipping it, so `format-python`'s
+        `\.pyi?$` filter isn't just an optimization.
 
         Python linting must precede Python formatting, since autofixes can
-        leave code that still needs reformatting. YAML linting shares the
-        Python lint hook's priority since Ruff has no YAML support at all.
-
-        Markdown linting deliberately does *not* share that priority even
-        though Ruff ignores Markdown by default today: Ruff can format
-        Python code fences inside Markdown files if `preview` mode and
-        `extend-include` are ever turned on in `pyproject.toml`, which
-        would make `ruff format` and `rumdl` mutate the same files. Keeping
-        `lint-markdown` on its own priority means that config change can
-        never silently race with this one.
+        leave code that still needs reformatting. Every other hook here
+        shares the base priority: `lint-yaml`, `lint-markdown`, and
+        `format-shell` each pass a `files` filter scoped to their own
+        wholly disjoint file type, so prek never hands any of them a file
+        one of the others would also touch - not just because Ruff
+        ignores Markdown by default today, but because prek's own file
+        matching would keep a `.md` file from ever reaching `ruff format`
+        even if `preview` mode and `extend-include` were turned on in
+        `pyproject.toml` to format Python code fences inside Markdown.
 
         Args:
-            priority: Priority shared by `lint-python` and `lint-yaml`;
-                `format-python` and `lint-markdown` run at increasing
-                priorities after it.
+            priority: Priority shared by every hook here except
+                `format-python`, which runs one priority after
+                `lint-python`.
 
         Returns:
             Hook configuration entries for the single-file-type fix stage.
@@ -211,24 +265,35 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 PackageManager.I.run_args(*PythonLinter.I.check_fix_args()),
                 stages=["pre-commit"],
                 priority=(lint_python_priority := priority),
+                files=PythonLinter.I.regex(),
             ),
             self.hook(
                 "format-python",
                 PackageManager.I.run_args(*PythonLinter.I.format_args()),
                 stages=["pre-commit"],
-                priority=(format_python_priority := lint_python_priority + 1),
+                priority=lint_python_priority + 1,
+                files=PythonLinter.I.regex(),
             ),
             self.hook(
                 "lint-markdown",
                 PackageManager.I.run_args(*MarkdownLinter.I.check_fix_args()),
                 stages=["pre-commit"],
-                priority=format_python_priority + 1,
+                priority=priority,
+                files=MarkdownLinter.I.regex(),
             ),
             self.hook(
                 "lint-yaml",
                 PackageManager.I.run_args(*YAMLLinter.I.check_fix_args()),
                 stages=["pre-commit"],
                 priority=priority,
+                files=YAMLLinter.I.regex(),
+            ),
+            self.hook(
+                "format-shell",
+                PackageManager.I.run_args(*ShellFormatter.I.format_args()),
+                stages=["pre-commit"],
+                priority=priority,
+                files=ShellFormatter.I.regex(),
             ),
         ]
 
@@ -237,7 +302,8 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
 
         Runs after generation and before `update_type_hooks`, since spelling
         fixes can touch any file, including ones the single-file-type
-        fixers fix afterward.
+        fixers fix afterward. Scans the whole project itself rather than
+        specific files, so it overrides prek's defaults accordingly.
 
         Args:
             priority: Priority assigned to this stage's hook.
@@ -251,6 +317,8 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 PackageManager.I.run_args(*SpellChecker.I.check_fix_args()),
                 stages=["pre-commit"],
                 priority=priority,
+                pass_filenames=False,
+                always_run=True,
             ),
         ]
 
@@ -259,6 +327,8 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
 
         Runs at the lowest priority so every hook after it - fixers and
         checks alike - operates on canonical, up-to-date project files.
+        Regenerates the whole project itself rather than acting on
+        specific files, so it overrides prek's defaults accordingly.
 
         Args:
             priority: Priority assigned to this stage's hook.
@@ -272,6 +342,8 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=sync)),
                 stages=["pre-commit"],
                 priority=priority,
+                pass_filenames=False,
+                always_run=True,
             ),
         ]
 
@@ -294,8 +366,9 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         stages: list[str],
         priority: int,
         language: str = "system",
-        pass_filenames: bool = False,
-        always_run: bool = True,
+        pass_filenames: bool = True,
+        always_run: bool = False,
+        files: str | None = None,
     ) -> dict[str, Any]:
         """Build a single prek hook configuration entry.
 
@@ -303,6 +376,13 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         `"format code"`, matching the lowercase, space-separated naming
         convention used across the pre-commit hook ecosystem); the `entry`
         field is `args` converted to a space-separated string.
+
+        `pass_filenames` and `always_run` mirror prek's own defaults (`True`
+        and `False` respectively), and like `files`, are only written into
+        the hook entry when the caller overrides away from that default -
+        matching how the tools' own upstream `.pre-commit-hooks.yaml`
+        manifests read (e.g. `bandit`'s omits both entirely, `deptry`'s
+        sets both since it wants the opposite of each).
 
         Args:
             id_: Hook identifier, used as-is for the `id` field and with
@@ -314,11 +394,22 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 the tool must already be installed on the host rather than
                 fetched remotely by prek. Defaults to `"system"`.
             pass_filenames: When `True`, prek appends the matched filenames
-                to the hook command at runtime. Defaults to `False`.
+                to the hook command at runtime. Defaults to `True`, prek's
+                own default.
             always_run: When `True`, the hook runs on every commit regardless
-                of whether any files match the optional `files` filter.
-                Defaults to `True`.
+                of whether any files match the optional `files` filter. Set
+                `True` for a tool that scans the whole project itself
+                rather than specific files. Defaults to `False`, prek's own
+                default.
             stages: Git stages in which the hook should run.
+            files: Regex restricting which tracked files count as a match
+                for this hook. Needed alongside the default
+                `pass_filenames=True` for a tool that cannot scan a
+                directory itself (e.g. ShellCheck) or that would otherwise
+                need to walk the whole project (e.g. shfmt, which does not
+                respect `.gitignore`). Omitted from the hook entry entirely
+                when `None`, since TOML has no null value to serialize it
+                as.
 
         Returns:
             Hook configuration dict ready for inclusion in the `hooks` list.
@@ -328,9 +419,13 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
             "name": reformat_name(id_, split_on="-", join_on=" "),
             "entry": str(args),
             "language": language,
-            "always_run": always_run,
-            "pass_filenames": pass_filenames,
-            "stages": stages,
-            "priority": priority,
         }
+        if files is not None:
+            hook["files"] = files
+        if always_run:
+            hook["always_run"] = always_run
+        if not pass_filenames:
+            hook["pass_filenames"] = pass_filenames
+        hook["stages"] = stages
+        hook["priority"] = priority
         return hook

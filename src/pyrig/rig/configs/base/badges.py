@@ -5,7 +5,7 @@ from abc import abstractmethod
 from typing import Any
 
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
-from pyrig.rig.configs.license import LicenseConfigFile
+from pyrig.rig.configs.community.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.version_control.remote.workflows.deploy import (
     DeployWorkflowConfigFile,

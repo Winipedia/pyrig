@@ -33,7 +33,7 @@ class ShellConfigFile(StringConfigFile):
         ...         return "greet"
         ...
         ...     def script_content(self) -> str:
-        ...         return 'greet() {\n  echo "Hello, ${1}"\n}'
+        ...         return 'greet() {\n  echo "Hello, $1"\n}'
     """
 
     @abstractmethod

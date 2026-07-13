@@ -1,12 +1,11 @@
 """Wrapper around the ryl YAML linter tool."""
 
-from pathlib import Path
-
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.base.file import FileTool
+from pyrig.rig.tools.base.tool import Group
 
 
-class YAMLLinter(Tool):
+class YAMLLinter(FileTool):
     """Type-safe wrapper for the ryl YAML linter.
 
     Constructs ryl command-line arguments for linting and auto-fixing YAML
@@ -29,6 +28,18 @@ class YAMLLinter(Tool):
         """Return `'ryl'`, the executable name for this tool's CLI command."""
         return "ryl"
 
+    def extension(self) -> str:
+        """Return `'yaml'`, the primary YAML file extension.
+
+        `regex()` is overridden separately, since it also has to match
+        the `.yml` spelling, not just `.yaml`.
+        """
+        return "yaml"
+
+    def regex(self) -> str:
+        """Return a regex matching YAML files."""
+        return r"\.ya?ml$"
+
     def check_fix_args(self, *args: str) -> Args:
         """Construct ryl check arguments with auto-fix enabled.
 
@@ -44,12 +55,15 @@ class YAMLLinter(Tool):
         """Construct ryl check arguments.
 
         No custom rule configuration is passed, so ryl runs its own default
-        rule set.
+        rule set. No target path is baked in either, since ryl errors on a
+        file it doesn't recognize (e.g. a non-YAML file), so callers are
+        expected to supply the specific files to check.
 
         Args:
-            *args: Additional arguments forwarded to `ryl check`.
+            *args: Additional arguments forwarded to `ryl check`, typically
+                the file paths to check.
 
         Returns:
-            Args for `ryl check`.
+            Args for `ryl check -d 'extends: default'`.
         """
-        return self.args("check", Path().as_posix(), "-d", "'extends: default'", *args)
+        return self.args("check", "-d", "'extends: default'", *args)

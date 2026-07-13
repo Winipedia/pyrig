@@ -11,7 +11,7 @@ from packaging.version import Version
 from pyrig_runtime.core.strings import dependency_requirement_as_module_name
 from pytest_mock import MockerFixture
 
-from pyrig.rig.configs.license import LicenseConfigFile
+from pyrig.rig.configs.community.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import (
     PyprojectConfigFile,
 )

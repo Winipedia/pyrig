@@ -5,7 +5,7 @@ from pathlib import Path
 import requests
 from pytest_mock import MockerFixture
 
-from pyrig.rig.configs.license import LicenseConfigFile
+from pyrig.rig.configs.community.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 

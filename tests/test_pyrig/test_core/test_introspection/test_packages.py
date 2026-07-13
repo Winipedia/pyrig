@@ -20,9 +20,13 @@ def test_make_init_file(tmp_path: Path) -> None:
     with chdir(tmp_path):
         path = Path.cwd() / "__init__.py"
         assert not path.exists()
-        make_init_file(Path.cwd(), content="Hello")
+        path, created = make_init_file(Path.cwd(), content="Hello")
+        assert created
         assert path.exists()
         assert path.read_text() == "Hello"
+
+        path, created = make_init_file(Path.cwd(), content="Hello")
+        assert not created
 
 
 def test_make_package_dir(tmp_path: Path) -> None:
@@ -58,8 +62,13 @@ def test_make_init_files(tmp_path: Path) -> None:
         assert not folder_init.exists()
         folder.mkdir()
         folder2.mkdir()
-        make_init_files((Path(),), content="")
+        paths = make_init_files((Path(),), content="")
+        assert len(paths) == 1
         assert Path("__init__.py").exists()
-        make_init_files((folder, folder2), content="")
+        paths = make_init_files((folder, folder2), content="")
+        assert len(paths) == 2  # noqa: PLR2004
         assert folder_init.exists()
         assert (folder2 / "__init__.py").exists()
+
+        paths = make_init_files((Path(), folder, folder2), content="")
+        assert len(paths) == 0

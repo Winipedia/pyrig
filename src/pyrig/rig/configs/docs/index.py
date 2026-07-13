@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from pyrig.rig.configs.base.badges import BadgesConfigFile
-from pyrig.rig.tools.docs_builder import DocsBuilder
+from pyrig.rig.tools.docs.builder import DocsBuilder
 
 
 class IndexConfigFile(BadgesConfigFile):

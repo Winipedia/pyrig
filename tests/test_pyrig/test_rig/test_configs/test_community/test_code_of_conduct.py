@@ -5,7 +5,7 @@ from pathlib import Path
 import requests
 from pytest_mock import MockerFixture
 
-from pyrig.rig.configs.code_of_conduct import CodeOfConductConfigFile
+from pyrig.rig.configs.community.code_of_conduct import CodeOfConductConfigFile
 from pyrig.rig.tools.version_control.controller import VersionController
 
 
