@@ -94,9 +94,11 @@ class Tool(DependencySubclass):
             duplicates if multiple tools share a dependency.
         """
         return sorted(
-            dep
-            for subclass in cls.concrete_subclasses()
-            for dep in subclass().dev_dependencies()
+            {
+                dep
+                for subclass in cls.concrete_subclasses()
+                for dep in subclass().dev_dependencies()
+            },
         )
 
     @classmethod
