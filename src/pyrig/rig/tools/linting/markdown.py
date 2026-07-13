@@ -32,9 +32,9 @@ class MarkdownLinter(FileTool):
         """Return `('.rumdl_cache/',)`, rumdl's cache directory."""
         return (".rumdl_cache/",)
 
-    def extension(self) -> str:
-        """Return `'md'`, the Markdown file extension."""
-        return "md"
+    def types(self) -> list[str]:
+        """Return the list of file types that `rumdl` can lint."""
+        return ["markdown"]
 
     def check_fix_args(self, *args: str) -> Args:
         """Construct rumdl check arguments with auto-fix enabled.

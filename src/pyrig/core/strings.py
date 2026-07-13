@@ -8,22 +8,6 @@ from typing import IO, Any
 UTF_8_ENCODING = "utf-8"
 
 
-def file_has_content(path: Path) -> bool:
-    """Check whether a file has non-empty content.
-
-    Args:
-        path: Path to the file to check.
-
-    Returns:
-        `True` if the file has non-empty content; `False` if the file is
-        empty (zero bytes).
-
-    Raises:
-        FileNotFoundError: If the file does not exist.
-    """
-    return path.stat().st_size > 0
-
-
 def open_path_with_utf8(path: Path, *, mode: str = "r") -> IO[Any]:
     """Open a file with UTF-8 encoding.
 

@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.rig.tools.version_control.remote import (
+from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,
 )
 

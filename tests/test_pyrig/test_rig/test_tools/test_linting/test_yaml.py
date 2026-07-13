@@ -25,13 +25,9 @@ class TestYAMLLinter:
         result = YAMLLinter.I.name()
         assert result == "ryl"
 
-    def test_extension(self) -> None:
+    def test_types(self) -> None:
         """Test method."""
-        assert YAMLLinter.I.extension() == "yaml"
-
-    def test_regex(self) -> None:
-        """Test method."""
-        assert YAMLLinter.I.regex() == r"\.ya?ml$"
+        assert YAMLLinter.I.types() == ["yaml"]
 
     def test_check_args(self) -> None:
         """Test method."""

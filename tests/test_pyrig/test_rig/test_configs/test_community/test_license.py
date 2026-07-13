@@ -62,10 +62,6 @@ class TestLicenseConfigFile:
             == "[![License](https://img.shields.io/github/license/Winipedia/pyrig)](https://github.com/Winipedia/pyrig/blob/main/LICENSE)"
         )
 
-    def test_is_correct(self) -> None:
-        """Test method."""
-        assert LicenseConfigFile.I.is_correct()
-
     def test_license_template(self) -> None:
         """Test method."""
         mit_license = LicenseConfigFile.I.license_template()
@@ -100,3 +96,15 @@ class TestLicenseConfigFile:
     def test_content(self) -> None:
         """Test method."""
         assert isinstance(LicenseConfigFile.I.content(), str)
+
+    def test_is_correct(self) -> None:
+        """Test method."""
+        assert LicenseConfigFile.I.is_correct()
+
+    def test_year_placeholder(self) -> None:
+        """Test method."""
+        assert LicenseConfigFile.I.year_placeholder() == "[year]"
+
+    def test_fullname_placeholder(self) -> None:
+        """Test method."""
+        assert LicenseConfigFile.I.fullname_placeholder() == "[fullname]"

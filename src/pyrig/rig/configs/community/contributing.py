@@ -6,7 +6,6 @@ issue reporting and the pull request workflow.
 
 from pathlib import Path
 
-from pyrig.core.strings import file_has_content
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 
 CONTRIBUTING_TEMPLATE = """# Contributing
@@ -52,22 +51,6 @@ class ContributingConfigFile(MarkdownConfigFile):
     def content(self) -> str:
         """Return the contributing template content."""
         return CONTRIBUTING_TEMPLATE
-
-    def is_correct(self) -> bool:
-        """Return whether CONTRIBUTING.md has non-empty content.
-
-        Any non-empty file at the expected path is considered correct, even
-        if its content no longer matches the template, since the template is
-        a starting point that users are expected to customize.
-
-        Returns:
-            `True` if the file has non-empty content; `False` if the file is
-            empty.
-
-        Raises:
-            FileNotFoundError: If the file does not exist.
-        """
-        return file_has_content(self.path())
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""

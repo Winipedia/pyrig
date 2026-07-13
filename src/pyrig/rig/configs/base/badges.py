@@ -14,7 +14,7 @@ from pyrig.rig.configs.version_control.remote.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
 )
 from pyrig.rig.tools.base.tool import Group, Tool
-from pyrig.rig.tools.version_control.remote import (
+from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,
 )
 

@@ -28,17 +28,9 @@ class YAMLLinter(FileTool):
         """Return `'ryl'`, the executable name for this tool's CLI command."""
         return "ryl"
 
-    def extension(self) -> str:
-        """Return `'yaml'`, the primary YAML file extension.
-
-        `regex()` is overridden separately, since it also has to match
-        the `.yml` spelling, not just `.yaml`.
-        """
-        return "yml"
-
-    def regex(self) -> str:
-        """Return a regex matching YAML files."""
-        return r"\.ya?ml$"
+    def types(self) -> list[str]:
+        """Return the list of file types that `ryl` can lint."""
+        return ["yaml"]
 
     def check_fix_args(self, *args: str) -> Args:
         """Construct ryl check arguments with auto-fix enabled.

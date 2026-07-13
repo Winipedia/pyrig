@@ -9,7 +9,6 @@ from pyrig.core.resources import (
     resource_content,
 )
 from pyrig.core.strings import (
-    file_has_content,
     make_linked_badge_markdown,
 )
 from pyrig.rig import resources
@@ -18,7 +17,7 @@ from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
-from pyrig.rig.tools.version_control.remote import (
+from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,
 )
 
@@ -46,21 +45,29 @@ class LicenseConfigFile(StringConfigFile):
         """Return an empty string — no separator is needed without an extension."""
         return ""
 
-    def is_correct(self) -> bool:
-        """Check whether the LICENSE file has non-empty content.
-
-        Returns:
-            `True` if the LICENSE file has non-empty content; `False` if
-            the file is empty.
-
-        Raises:
-            FileNotFoundError: If the LICENSE file does not exist.
-        """
-        return file_has_content(self.path())
-
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
         return Path()
+
+    def is_correct(self) -> bool:
+        """Check whether the LICENSE file has non-empty content.
+
+        Overrides the default content-comparison check with a simpler
+        non-emptiness test.
+
+        Returns:
+            `True` if the file has non-empty content; `False` if the file
+            is empty.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
+        """
+        content = self.read_content().strip()
+        return (
+            bool(content)
+            and self.year_placeholder() not in content
+            and self.fullname_placeholder() not in content
+        )
 
     def priority(self) -> float:
         """Return a priority one step above `PyprojectConfigFile`'s.
@@ -80,8 +87,8 @@ class LicenseConfigFile(StringConfigFile):
         mit_license = self.license_template()
         year = datetime.now(tz=UTC).year
         owner = VersionController.I.repo_owner()
-        mit_license = mit_license.replace("[year]", str(year), 1)
-        return mit_license.replace("[fullname]", owner, 1)
+        mit_license = mit_license.replace(self.year_placeholder(), str(year), 1)
+        return mit_license.replace(self.fullname_placeholder(), owner, 1)
 
     def license_template(self) -> str:
         """Return the raw MIT license template text."""
@@ -124,3 +131,19 @@ class LicenseConfigFile(StringConfigFile):
         """
         licenses, _ = analyse_license_text(self.read_content())
         return next(iter(licenses["licenses"]), "LicenseRef-Custom")
+
+    def year_placeholder(self) -> str:
+        """Return the placeholder for the year in the license text.
+
+        Returns:
+            The `[year]` placeholder string.
+        """
+        return "[year]"
+
+    def fullname_placeholder(self) -> str:
+        """Return the placeholder for the repository owner in the license text.
+
+        Returns:
+            The `[fullname]` placeholder string.
+        """
+        return "[fullname]"

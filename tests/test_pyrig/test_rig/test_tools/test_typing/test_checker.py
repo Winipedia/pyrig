@@ -1,10 +1,25 @@
 """module."""
 
+from pytest_mock import MockerFixture
+
+from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.typing.checker import TypeChecker
 
 
 class TestTypeChecker:
     """Test class."""
+
+    def test_types(self, mocker: MockerFixture) -> None:
+        """Test method."""
+        # Delegates to PythonLinter rather than coincidentally returning
+        # the same value, so patch it to prove that.
+        mock = mocker.patch.object(
+            PythonLinter,
+            PythonLinter.types.__name__,
+            return_value=["mocked-type"],
+        )
+        assert TypeChecker.I.types() == ["mocked-type"]
+        mock.assert_called_once()
 
     def test_image_url(self) -> None:
         """Test method."""

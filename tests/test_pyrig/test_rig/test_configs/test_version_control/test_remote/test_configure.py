@@ -5,7 +5,9 @@ from pathlib import Path
 from pyrig.rig.configs.version_control.remote.configure import (
     ConfigureRepositoryConfigFile,
 )
-from pyrig.rig.tools.version_control.remote import RemoteVersionController
+from pyrig.rig.tools.version_control.remote.controller import (
+    RemoteVersionController,
+)
 
 
 class TestConfigureRepositoryConfigFile:

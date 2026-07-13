@@ -28,17 +28,19 @@ class PythonLinter(FileTool):
         """Return `ruff`'s cache directory as the only path to ignore."""
         return (".ruff_cache/",)
 
-    def extension(self) -> str:
-        """Return `'py'`, the primary Python source file extension.
+    def types(self) -> list[str]:
+        """Return the list of file types that `ruff` can lint and format.
 
-        `regex()` is overridden separately, since it also has to match
-        `.pyi` stub files, not just `.py`.
+        Deliberately excludes `pyi`: `identify` tags a `.pyi` stub file as
+        `pyi`, not `python` - a separate, non-overlapping tag - but a
+        pyrig-scaffolded project is a pure-Python, inline-typed project by
+        default (see the generated `py.typed` marker), with no native
+        build backend for the one case that actually justifies a `.pyi`
+        file (a C/Rust extension with no `.py` source to annotate). A
+        project that adds one is already customizing well past pyrig's
+        defaults and can add `pyi` back here too.
         """
-        return "py"
-
-    def regex(self) -> str:
-        """Return a regex matching Python source files."""
-        return r"\.pyi?$"
+        return ["python"]
 
     def check_fix_args(self, *args: str) -> Args:
         """Build a `ruff check` command with auto-fix enabled.

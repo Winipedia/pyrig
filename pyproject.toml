@@ -102,6 +102,11 @@ requires = [
 ]
 build-backend = "uv_build"
 
+[tool.bandit]
+exclude_dirs = [
+    "tests",
+]
+
 [tool.deptry]
 root = "src"
 

@@ -8,10 +8,6 @@ from pyrig.rig.configs.community.contributing import ContributingConfigFile
 class TestContributingConfigFile:
     """Test class."""
 
-    def test_is_correct(self) -> None:
-        """Test method."""
-        assert ContributingConfigFile.I.is_correct()
-
     def test_stem(self) -> None:
         """Test method."""
         result = ContributingConfigFile.I.stem()

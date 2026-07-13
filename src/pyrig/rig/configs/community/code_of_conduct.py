@@ -9,7 +9,6 @@ from pathlib import Path
 from pyrig.core.resources import (
     resource_content,
 )
-from pyrig.core.strings import file_has_content
 from pyrig.rig import resources
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.tools.version_control.controller import VersionController
@@ -41,7 +40,8 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         Raises:
             FileNotFoundError: If the file does not exist.
         """
-        return file_has_content(self.path())
+        content = self.read_content().strip()
+        return bool(content) and self.contact_method_placeholder() not in content
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
@@ -61,7 +61,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
             Contributor Covenant 2.1 text with the contact method in place.
         """
         return self.code_of_conduct_template().replace(
-            "[INSERT CONTACT METHOD]",
+            self.contact_method_placeholder(),
             self.contact_method(),
             1,
         )
@@ -82,3 +82,11 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
             `<user@example.com>`.
         """
         return f"<{VersionController.I.email()}>"
+
+    def contact_method_placeholder(self) -> str:
+        """Return the placeholder for the contact method in the covenant text.
+
+        Returns:
+            The `[INSERT CONTACT METHOD]` placeholder string.
+        """
+        return "[INSERT CONTACT METHOD]"

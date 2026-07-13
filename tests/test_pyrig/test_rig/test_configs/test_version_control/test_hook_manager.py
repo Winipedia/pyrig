@@ -10,7 +10,6 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig.configs.version_control.hook_manager import (
     VersionControlHookManagerConfigFile,
 )
-from pyrig.rig.tools.package_manager import PackageManager
 
 
 @pytest.fixture
@@ -89,14 +88,23 @@ class TestVersionControlHookManagerConfigFile:
         assert "pass_filenames" not in hook
         assert "always_run" not in hook
 
-        hook_with_files = VersionControlHookManagerConfigFile.I.hook(
+        hook_with_types = VersionControlHookManagerConfigFile.I.hook(
             "test",
             Args("test"),
             priority=1,
             stages=["some-stage"],
-            files=r"\.sh$",
+            types=["shell"],
         )
-        assert hook_with_files["files"] == r"\.sh$"
+        assert hook_with_types["types"] == ["shell"]
+
+        hook_with_types_or = VersionControlHookManagerConfigFile.I.hook(
+            "test",
+            Args("test"),
+            priority=1,
+            stages=["some-stage"],
+            types_or=["python", "pyi"],
+        )
+        assert hook_with_types_or["types_or"] == ["python", "pyi"]
 
         hook_with_overrides = VersionControlHookManagerConfigFile.I.hook(
             "test",
@@ -175,36 +183,37 @@ class TestVersionControlHookManagerConfigFile:
             "check-dependencies",
             "check-shell",
         }
-        # All checks are read-only and independent, so they share one
+        # All five checks are read-only and independent, so they share one
         # priority and run concurrently.
         assert all(hook["priority"] == priority for hook in hooks)
-        # ShellCheck cannot scan a directory itself and errors on zero
-        # files, so it relies on prek's default of passing only the
-        # matched files - no override needed, so no such key is present.
-        assert "pass_filenames" not in by_id["check-shell"]
-        assert "always_run" not in by_id["check-shell"]
-        assert by_id["check-shell"]["files"] == r"\.sh$"
-        # detect-secrets-hook does nothing at all with zero files, so it
-        # relies on prek's default of passing the matched files; it scans
-        # every file type, so nothing restricts which files match either.
+        # detect-secrets-hook can't usefully scan genuinely binary content
+        # anyway (confirmed by testing), so restricting to text costs no
+        # real coverage while letting a binary-only commit skip this hook.
+        assert by_id["check-secrets"]["types"] == ["text"]
         assert "pass_filenames" not in by_id["check-secrets"]
-        assert "always_run" not in by_id["check-secrets"]
-        assert "files" not in by_id["check-secrets"]
-        # bandit has no notion of test code, so it must be scoped to the
-        # package root only, not every `.py` file, to avoid flagging
-        # assert statements (B101) the way tests are expected to use them.
+        # bandit's tests/ exclusion now comes from its own config file
+        # (`-c pyproject.toml`, read via `[tool.bandit] exclude_dirs`), not
+        # from restricting which files match, so it only needs a type
+        # filter, same shape as check-shell.
+        assert by_id["check-security"]["types"] == ["python"]
         assert "pass_filenames" not in by_id["check-security"]
-        assert "always_run" not in by_id["check-security"]
-        assert by_id["check-security"]["files"] == (
-            rf"^{PackageManager.I.package_root().as_posix()}/.*\.pyi?$"
-        )
-        # mypy-style whole-program analysis: both must override prek's
-        # default and always scan the whole project, since restricting to
-        # changed files would silently miss cross-file breakage.
+        assert by_id["check-shell"]["types"] == ["shell"]
+        assert "pass_filenames" not in by_id["check-shell"]
+        # check-types and check-dependencies keep pass_filenames=False -
+        # whole-program analysis needs the actual scan to cover the whole
+        # project regardless of what changed - but no longer override
+        # always_run: the type filter alone gates whether the hook runs at
+        # all, skipping it entirely on a commit that touches none of its
+        # relevant file types, since such a commit cannot have introduced
+        # the kind of breakage these two exist to catch. check-dependencies
+        # needs types_or (python or pyproject, either sufficient); the
+        # single-type check-types just needs types.
+        assert by_id["check-types"]["types"] == ["python"]
         assert by_id["check-types"]["pass_filenames"] is False
-        assert by_id["check-types"]["always_run"] is True
+        assert "always_run" not in by_id["check-types"]
+        assert by_id["check-dependencies"]["types_or"] == ["python", "pyproject"]
         assert by_id["check-dependencies"]["pass_filenames"] is False
-        assert by_id["check-dependencies"]["always_run"] is True
+        assert "always_run" not in by_id["check-dependencies"]
 
     def test_update_type_hooks(self) -> None:
         """Test method."""
@@ -235,28 +244,29 @@ class TestVersionControlHookManagerConfigFile:
         # of passing matched filenames instead of rescanning the whole
         # project on every commit - no override needed, so none of these
         # keys are present.
-        for hook_id, files in (
-            ("lint-python", r"\.pyi?$"),
-            ("format-python", r"\.pyi?$"),
-            ("lint-markdown", r"\.md$"),
-            ("lint-yaml", r"\.ya?ml$"),
-            ("format-shell", r"\.sh$"),
+        for hook_id in (
+            "lint-python",
+            "format-python",
+            "lint-markdown",
+            "lint-yaml",
+            "format-shell",
         ):
             assert "pass_filenames" not in by_id[hook_id]
             assert "always_run" not in by_id[hook_id]
-            assert by_id[hook_id]["files"] == files
+        # Every hook here has exactly one relevant type, so plain `types`
+        # is enough; none of them need `types_or`.
+        assert by_id["lint-python"]["types"] == ["python"]
+        assert by_id["format-python"]["types"] == ["python"]
+        assert by_id["lint-markdown"]["types"] == ["markdown"]
+        assert by_id["lint-yaml"]["types"] == ["yaml"]
+        assert by_id["format-shell"]["types"] == ["shell"]
 
     def test_update_types_hooks(self) -> None:
         """Test method."""
-        priority = 3
         hooks = VersionControlHookManagerConfigFile.I.update_types_hooks(
-            priority=priority,
+            priority=3,
         )
         assert [hook["id"] for hook in hooks] == ["fix-spelling"]
-        assert all(hook["priority"] == priority for hook in hooks)
-        # Scans the whole project itself, so it overrides prek's defaults.
-        assert all(hook["pass_filenames"] is False for hook in hooks)
-        assert all(hook["always_run"] is True for hook in hooks)
 
     def test_generate_hooks(self) -> None:
         """Test method."""
