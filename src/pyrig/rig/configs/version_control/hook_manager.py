@@ -81,7 +81,10 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         return sorted({stage for hook in hooks for stage in hook["stages"]})
 
     def hooks(self) -> list[dict[str, Any]]:
-        """Return every hook configuration entry in the pipeline."""
+        """Return every hook configuration entry in the pipeline.
+
+        Sorted via `sort_hooks` purely for readability of the generated file.
+        """
         generate_hooks = self.generate_hooks(priority=0)
         update_types_hooks = self.update_types_hooks(
             priority=self.highest_priority(generate_hooks) + 1,
@@ -93,13 +96,15 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
             priority=self.highest_priority(update_type_hooks) + 1,
         )
         transition_hooks = self.transition_hooks(priority=0)
-        return [
-            *generate_hooks,
-            *update_types_hooks,
-            *update_type_hooks,
-            *check_hooks,
-            *transition_hooks,
-        ]
+        return self.sort_hooks(
+            [
+                *generate_hooks,
+                *update_types_hooks,
+                *update_type_hooks,
+                *check_hooks,
+                *transition_hooks,
+            ],
+        )
 
     def transition_hooks(self, priority: int) -> list[dict[str, Any]]:
         """Return the hooks that run on push, checkout, merge, and rewrite.
@@ -278,6 +283,29 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 types=JSONLinter.I.types(),
             ),
         ]
+
+    def sort_hooks(self, hooks: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Return the given hooks sorted by stages, then priority, then id.
+
+        Purely cosmetic: prek reads `stages`/`priority`/`types` off each
+        hook entry directly regardless of where it sits in the list, so
+        this has no effect on execution. It just keeps the generated file
+        readable - hooks for the same git stage(s) sit together, ordered by
+        ascending execution priority, with `id` breaking ties between
+        hooks that share both (e.g. `check_hooks`'s seven concurrent
+        checks).
+
+        Args:
+            hooks: Hook configuration entries to sort.
+
+        Returns:
+            The same hooks, sorted by ascending `stages`, then ascending
+            `priority`, then ascending `id`.
+        """
+        return sorted(
+            hooks,
+            key=lambda hook: (hook["stages"], hook["priority"], hook["id"]),
+        )
 
     def update_type_hooks(self, priority: int) -> list[dict[str, Any]]:
         """Return the hooks that each fix a single file type.
