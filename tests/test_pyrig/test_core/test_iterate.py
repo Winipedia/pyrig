@@ -134,7 +134,7 @@ def test_deep_sort_dict() -> None:
         "a": {"d": 4, "c": 3},
         "e": [{"g": 7, "f": 6}, {"i": 9, "h": 8}],
     }
-    sorted_dict = deep_sort_dict(unsorted)
+    sorted_dict: dict[str, Any] = deep_sort_dict(unsorted)
     assert list(sorted_dict.keys()) == ["a", "b", "e"]
     assert list(sorted_dict["a"].keys()) == ["c", "d"]
     assert list(sorted_dict["e"][0].keys()) == ["f", "g"]
