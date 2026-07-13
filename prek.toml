@@ -35,6 +35,32 @@ stages = [
 priority = 1
 
 [[repos.hooks]]
+id = "fix-trailing-whitespace"
+name = "fix trailing whitespace"
+entry = "uv run trailing-whitespace-fixer"
+language = "system"
+types = [
+    "text",
+]
+stages = [
+    "pre-commit",
+]
+priority = 2
+
+[[repos.hooks]]
+id = "fix-end-of-file"
+name = "fix end of file"
+entry = "uv run end-of-file-fixer"
+language = "system"
+types = [
+    "text",
+]
+stages = [
+    "pre-commit",
+]
+priority = 3
+
+[[repos.hooks]]
 id = "lint-python"
 name = "lint python"
 entry = "uv run ruff check --fix"
@@ -45,7 +71,7 @@ types = [
 stages = [
     "pre-commit",
 ]
-priority = 2
+priority = 4
 
 [[repos.hooks]]
 id = "format-python"
@@ -58,7 +84,7 @@ types = [
 stages = [
     "pre-commit",
 ]
-priority = 3
+priority = 5
 
 [[repos.hooks]]
 id = "format-shell"
@@ -71,7 +97,7 @@ types = [
 stages = [
     "pre-commit",
 ]
-priority = 2
+priority = 4
 
 [[repos.hooks]]
 id = "lint-yaml"
@@ -84,7 +110,7 @@ types = [
 stages = [
     "pre-commit",
 ]
-priority = 2
+priority = 4
 
 [[repos.hooks]]
 id = "format-json"
@@ -97,7 +123,7 @@ types = [
 stages = [
     "pre-commit",
 ]
-priority = 2
+priority = 4
 
 [[repos.hooks]]
 id = "lint-markdown"
@@ -110,7 +136,7 @@ types = [
 stages = [
     "pre-commit",
 ]
-priority = 2
+priority = 4
 
 [[repos.hooks]]
 id = "check-secrets"
@@ -123,7 +149,7 @@ types = [
 stages = [
     "pre-commit",
 ]
-priority = 4
+priority = 6
 
 [[repos.hooks]]
 id = "check-security"
@@ -136,7 +162,7 @@ types = [
 stages = [
     "pre-commit",
 ]
-priority = 4
+priority = 6
 
 [[repos.hooks]]
 id = "check-types"
@@ -150,7 +176,7 @@ pass_filenames = false
 stages = [
     "pre-commit",
 ]
-priority = 4
+priority = 6
 
 [[repos.hooks]]
 id = "check-dependencies"
@@ -165,7 +191,7 @@ pass_filenames = false
 stages = [
     "pre-commit",
 ]
-priority = 4
+priority = 6
 
 [[repos.hooks]]
 id = "check-shell"
@@ -178,7 +204,7 @@ types = [
 stages = [
     "pre-commit",
 ]
-priority = 4
+priority = 6
 
 [[repos.hooks]]
 id = "check-json"
@@ -191,7 +217,7 @@ types = [
 stages = [
     "pre-commit",
 ]
-priority = 4
+priority = 6
 
 [[repos.hooks]]
 id = "update-package-manager"
