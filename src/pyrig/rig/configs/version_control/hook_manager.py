@@ -4,6 +4,7 @@ Declares the hook pipeline that enforces code quality and dependency hygiene
 at various git stages.
 """
 
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
@@ -72,78 +73,211 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
 
     def hooks(self) -> list[dict[str, Any]]:
         """Return every hook configuration entry in the pipeline."""
+        generate_hooks = self.generate_hooks(priority=0)
+        update_types_hooks = self.update_types_hooks(
+            priority=self.highest_priority(generate_hooks) + 1,
+        )
+        update_type_hooks = self.update_type_hooks(
+            priority=self.highest_priority(update_types_hooks) + 1,
+        )
+        check_hooks = self.check_hooks(
+            priority=self.highest_priority(update_type_hooks) + 1,
+        )
+        transition_hooks = self.transition_hooks(priority=0)
+        return [
+            *generate_hooks,
+            *update_types_hooks,
+            *update_type_hooks,
+            *check_hooks,
+            *transition_hooks,
+        ]
+
+    def transition_hooks(self, priority: int) -> list[dict[str, Any]]:
+        """Return the hooks that run on push, checkout, merge, and rewrite.
+
+        Kept strictly sequential: updating the package manager must precede
+        upgrading the lockfile, which must precede installing dependencies,
+        which must precede auditing them.
+
+        Args:
+            priority: Priority assigned to the first hook in the chain; each
+                subsequent hook runs one priority higher.
+
+        Returns:
+            Hook configuration entries for the transition-stage pipeline.
+        """
+        transition_stages = [
+            "post-checkout",
+            "post-merge",
+            "post-rewrite",
+            "pre-push",
+        ]
         return [
             self.hook(
-                "format-code",
-                PackageManager.I.run_args(*PythonLinter.I.format_args()),
-                stages=["pre-commit"],
+                "update-package-manager",
+                PackageManager.I.update_self_args(),
+                stages=transition_stages,
+                priority=(update_package_manager_priority := priority),
             ),
             self.hook(
-                "lint-code",
-                PackageManager.I.run_args(*PythonLinter.I.check_fix_args()),
-                stages=["pre-commit"],
+                "update-dependencies",
+                PackageManager.I.update_dependencies_args(),
+                stages=transition_stages,
+                priority=(
+                    update_dependencies_priority := update_package_manager_priority + 1
+                ),
             ),
             self.hook(
-                "lint-markdown",
-                PackageManager.I.run_args(*MarkdownLinter.I.check_fix_args()),
-                stages=["pre-commit"],
+                "install-dependencies",
+                PackageManager.I.install_dependencies_args(),
+                stages=transition_stages,
+                priority=(
+                    install_dependencies_priority := update_dependencies_priority + 1
+                ),
             ),
             self.hook(
-                "lint-yaml",
-                PackageManager.I.run_args(*YAMLLinter.I.check_fix_args()),
-                stages=["pre-commit"],
+                "audit-dependencies",
+                PackageManager.I.run_args(*DependencyAuditor.I.audit_args()),
+                stages=transition_stages,
+                priority=install_dependencies_priority + 1,
             ),
-            self.hook(
-                "fix-spelling",
-                PackageManager.I.run_args(*SpellChecker.I.check_fix_args()),
-                stages=["pre-commit"],
-            ),
+        ]
+
+    def check_hooks(self, priority: int) -> list[dict[str, Any]]:
+        """Return the read-only checks that validate the fully-fixed project.
+
+        All four checks share one priority: none of them mutate files or
+        depend on each other, so prek can run them concurrently.
+
+        Args:
+            priority: Priority shared by all four check hooks.
+
+        Returns:
+            Hook configuration entries for the check stage.
+        """
+        return [
             self.hook(
                 "check-secrets",
                 PackageManager.I.run_args(*SecretsChecker.I.check_args()),
                 stages=["pre-commit"],
+                priority=priority,
             ),
             self.hook(
                 "check-security",
                 PackageManager.I.run_args(*SecurityLinter.I.check_args()),
                 stages=["pre-commit"],
+                priority=priority,
             ),
             self.hook(
                 "check-types",
                 PackageManager.I.run_args(*TypeChecker.I.check_args()),
                 stages=["pre-commit"],
+                priority=priority,
             ),
             self.hook(
                 "check-dependencies",
                 PackageManager.I.run_args(*DependencyChecker.I.check_args()),
                 stages=["pre-commit"],
+                priority=priority,
             ),
+        ]
+
+    def update_type_hooks(self, priority: int) -> list[dict[str, Any]]:
+        """Return the hooks that each fix a single file type.
+
+        Python linting must precede Python formatting, since autofixes can
+        leave code that still needs reformatting. YAML linting shares the
+        Python lint hook's priority since the two never touch the same
+        files; Markdown linting runs after Python formatting completes.
+
+        Args:
+            priority: Priority shared by `lint-python` and `lint-yaml`;
+                `format-python` and `lint-markdown` run at increasing
+                priorities after it.
+
+        Returns:
+            Hook configuration entries for the single-file-type fix stage.
+        """
+        return [
+            self.hook(
+                "lint-python",
+                PackageManager.I.run_args(*PythonLinter.I.check_fix_args()),
+                stages=["pre-commit"],
+                priority=(lint_python_priority := priority),
+            ),
+            self.hook(
+                "format-python",
+                PackageManager.I.run_args(*PythonLinter.I.format_args()),
+                stages=["pre-commit"],
+                priority=(format_python_priority := lint_python_priority + 1),
+            ),
+            self.hook(
+                "lint-markdown",
+                PackageManager.I.run_args(*MarkdownLinter.I.check_fix_args()),
+                stages=["pre-commit"],
+                priority=format_python_priority + 1,
+            ),
+            self.hook(
+                "lint-yaml",
+                PackageManager.I.run_args(*YAMLLinter.I.check_fix_args()),
+                stages=["pre-commit"],
+                priority=priority,
+            ),
+        ]
+
+    def update_types_hooks(self, priority: int) -> list[dict[str, Any]]:
+        """Return the hook that fixes spelling across every file type.
+
+        Runs after generation and before `update_type_hooks`, since spelling
+        fixes can touch any file, including ones the single-file-type
+        fixers fix afterward.
+
+        Args:
+            priority: Priority assigned to this stage's hook.
+
+        Returns:
+            Hook configuration entries for the cross-file-type fix stage.
+        """
+        return [
+            self.hook(
+                "fix-spelling",
+                PackageManager.I.run_args(*SpellChecker.I.check_fix_args()),
+                stages=["pre-commit"],
+                priority=priority,
+            ),
+        ]
+
+    def generate_hooks(self, priority: int) -> list[dict[str, Any]]:
+        """Return the hook that regenerates the project's managed files.
+
+        Runs at the lowest priority so every hook after it - fixers and
+        checks alike - operates on canonical, up-to-date project files.
+
+        Args:
+            priority: Priority assigned to this stage's hook.
+
+        Returns:
+            Hook configuration entries for the generation stage.
+        """
+        return [
             self.hook(
                 "synchronize-project",
                 PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=sync)),
                 stages=["pre-commit"],
-            ),
-            self.hook(
-                "update-package-manager",
-                PackageManager.I.update_self_args(),
-                stages=["pre-push", "post-checkout", "post-merge", "post-rewrite"],
-            ),
-            self.hook(
-                "update-dependencies",
-                PackageManager.I.update_dependencies_args(),
-                stages=["pre-push", "post-checkout", "post-merge", "post-rewrite"],
-            ),
-            self.hook(
-                "install-dependencies",
-                PackageManager.I.install_dependencies_args(),
-                stages=["pre-push", "post-checkout", "post-merge", "post-rewrite"],
-            ),
-            self.hook(
-                "audit-dependencies",
-                PackageManager.I.run_args(*DependencyAuditor.I.audit_args()),
-                stages=["pre-push", "post-checkout", "post-merge", "post-rewrite"],
+                priority=priority,
             ),
         ]
+
+    def highest_priority(self, hooks: Iterable[dict[str, Any]]) -> int:
+        """Return the highest `priority` value among the given hooks.
+
+        Args:
+            hooks: Hook configuration entries to inspect.
+
+        Returns:
+            The maximum `priority` value found.
+        """
+        return max(hook["priority"] for hook in hooks)
 
     def hook(  # noqa: PLR0913
         self,
@@ -151,6 +285,7 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         args: Args,
         *,
         stages: list[str],
+        priority: int,
         language: str = "system",
         pass_filenames: bool = False,
         always_run: bool = True,
@@ -166,6 +301,8 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
             id_: Hook identifier, used as-is for the `id` field and with
                 hyphens replaced by spaces for the `name` field.
             args: Command and arguments for the hook `entry` field.
+            priority: Hook execution priority. Hooks with lower values run
+                first. Defaults to `0`.
             language: Execution environment for the hook. `"system"` means
                 the tool must already be installed on the host rather than
                 fetched remotely by prek. Defaults to `"system"`.
@@ -187,5 +324,6 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
             "always_run": always_run,
             "pass_filenames": pass_filenames,
             "stages": stages,
+            "priority": priority,
         }
         return hook

@@ -10,48 +10,16 @@ default_install_hook_types = [
 repo = "local"
 
 [[repos.hooks]]
-id = "format-code"
-name = "format code"
-entry = "uv run ruff format"
+id = "synchronize-project"
+name = "synchronize project"
+entry = "uv run pyrig sync"
 language = "system"
 always_run = true
 pass_filenames = false
 stages = [
     "pre-commit",
 ]
-
-[[repos.hooks]]
-id = "lint-code"
-name = "lint code"
-entry = "uv run ruff check --fix"
-language = "system"
-always_run = true
-pass_filenames = false
-stages = [
-    "pre-commit",
-]
-
-[[repos.hooks]]
-id = "lint-markdown"
-name = "lint markdown"
-entry = "uv run rumdl check --fix"
-language = "system"
-always_run = true
-pass_filenames = false
-stages = [
-    "pre-commit",
-]
-
-[[repos.hooks]]
-id = "lint-yaml"
-name = "lint yaml"
-entry = "uv run ryl check . -d 'extends: default' --fix"
-language = "system"
-always_run = true
-pass_filenames = false
-stages = [
-    "pre-commit",
-]
+priority = 0
 
 [[repos.hooks]]
 id = "fix-spelling"
@@ -63,6 +31,55 @@ pass_filenames = false
 stages = [
     "pre-commit",
 ]
+priority = 1
+
+[[repos.hooks]]
+id = "lint-python"
+name = "lint python"
+entry = "uv run ruff check --fix"
+language = "system"
+always_run = true
+pass_filenames = false
+stages = [
+    "pre-commit",
+]
+priority = 2
+
+[[repos.hooks]]
+id = "format-python"
+name = "format python"
+entry = "uv run ruff format"
+language = "system"
+always_run = true
+pass_filenames = false
+stages = [
+    "pre-commit",
+]
+priority = 3
+
+[[repos.hooks]]
+id = "lint-markdown"
+name = "lint markdown"
+entry = "uv run rumdl check --fix"
+language = "system"
+always_run = true
+pass_filenames = false
+stages = [
+    "pre-commit",
+]
+priority = 4
+
+[[repos.hooks]]
+id = "lint-yaml"
+name = "lint yaml"
+entry = "uv run ryl check . -d 'extends: default' --fix"
+language = "system"
+always_run = true
+pass_filenames = false
+stages = [
+    "pre-commit",
+]
+priority = 2
 
 [[repos.hooks]]
 id = "check-secrets"
@@ -74,6 +91,7 @@ pass_filenames = false
 stages = [
     "pre-commit",
 ]
+priority = 5
 
 [[repos.hooks]]
 id = "check-security"
@@ -85,6 +103,7 @@ pass_filenames = false
 stages = [
     "pre-commit",
 ]
+priority = 5
 
 [[repos.hooks]]
 id = "check-types"
@@ -96,6 +115,7 @@ pass_filenames = false
 stages = [
     "pre-commit",
 ]
+priority = 5
 
 [[repos.hooks]]
 id = "check-dependencies"
@@ -107,17 +127,7 @@ pass_filenames = false
 stages = [
     "pre-commit",
 ]
-
-[[repos.hooks]]
-id = "synchronize-project"
-name = "synchronize project"
-entry = "uv run pyrig sync"
-language = "system"
-always_run = true
-pass_filenames = false
-stages = [
-    "pre-commit",
-]
+priority = 5
 
 [[repos.hooks]]
 id = "update-package-manager"
@@ -127,11 +137,12 @@ language = "system"
 always_run = true
 pass_filenames = false
 stages = [
-    "pre-push",
     "post-checkout",
     "post-merge",
     "post-rewrite",
+    "pre-push",
 ]
+priority = 0
 
 [[repos.hooks]]
 id = "update-dependencies"
@@ -141,11 +152,12 @@ language = "system"
 always_run = true
 pass_filenames = false
 stages = [
-    "pre-push",
     "post-checkout",
     "post-merge",
     "post-rewrite",
+    "pre-push",
 ]
+priority = 1
 
 [[repos.hooks]]
 id = "install-dependencies"
@@ -155,11 +167,12 @@ language = "system"
 always_run = true
 pass_filenames = false
 stages = [
-    "pre-push",
     "post-checkout",
     "post-merge",
     "post-rewrite",
+    "pre-push",
 ]
+priority = 2
 
 [[repos.hooks]]
 id = "audit-dependencies"
@@ -169,8 +182,9 @@ language = "system"
 always_run = true
 pass_filenames = false
 stages = [
-    "pre-push",
     "post-checkout",
     "post-merge",
     "post-rewrite",
+    "pre-push",
 ]
+priority = 3
