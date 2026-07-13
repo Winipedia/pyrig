@@ -50,6 +50,20 @@ class TestVersionControlHookManagerConfigFile:
             hook_id = hook["id"]
             assert isinstance(hook_id, str)
             assert hook_id
+        by_id = {hook["id"]: hook for hook in hooks}
+        # Each pre-commit stage runs strictly after the previous one, so
+        # that later stages always see the fully-fixed, fully-generated
+        # project.
+        assert (
+            by_id["synchronize-project"]["priority"]
+            < by_id["fix-spelling"]["priority"]
+            < by_id["lint-python"]["priority"]
+            < by_id["check-secrets"]["priority"]
+        )
+        # The push/checkout/merge/rewrite hooks are a separate stage pool
+        # from the pre-commit ones, so they restart from their own base
+        # priority instead of continuing the pre-commit chain.
+        assert by_id["update-package-manager"]["priority"] == 0
 
     def test_stem(self) -> None:
         """Test method."""
@@ -60,8 +74,10 @@ class TestVersionControlHookManagerConfigFile:
         hook = VersionControlHookManagerConfigFile.I.hook(
             "test",
             Args("test"),
+            priority=1,
             stages=["some-stage"],
         )
+        assert hook["priority"] == 1
         assert hook["id"] == "test"
         assert hook["stages"] == ["some-stage"]
 
@@ -91,3 +107,90 @@ class TestVersionControlHookManagerConfigFile:
         assert "hooks" in repo, "Expected 'hooks' key in repo"
         assert isinstance(repo["hooks"], list), "Expected 'hooks' to be a list"
         assert len(repo["hooks"]) > 0, "Expected at least one hook in repo"
+
+    def test_transition_hooks(self) -> None:
+        """Test method."""
+        priority = 3
+        hooks = VersionControlHookManagerConfigFile.I.transition_hooks(
+            priority=priority,
+        )
+        assert [hook["id"] for hook in hooks] == [
+            "update-package-manager",
+            "update-dependencies",
+            "install-dependencies",
+            "audit-dependencies",
+        ]
+        priorities = [hook["priority"] for hook in hooks]
+        # Each step depends on the previous one having already run.
+        assert priorities == [priority, priority + 1, priority + 2, priority + 3]
+        expected_stages = [
+            "post-checkout",
+            "post-merge",
+            "post-rewrite",
+            "pre-push",
+        ]
+        assert all(hook["stages"] == expected_stages for hook in hooks)
+
+    def test_check_hooks(self) -> None:
+        """Test method."""
+        priority = 3
+        hooks = VersionControlHookManagerConfigFile.I.check_hooks(priority=priority)
+        assert {hook["id"] for hook in hooks} == {
+            "check-secrets",
+            "check-security",
+            "check-types",
+            "check-dependencies",
+        }
+        # All checks are read-only and independent, so they share one
+        # priority and run concurrently.
+        assert all(hook["priority"] == priority for hook in hooks)
+
+    def test_update_type_hooks(self) -> None:
+        """Test method."""
+        priority = 3
+        hooks = VersionControlHookManagerConfigFile.I.update_type_hooks(
+            priority=priority,
+        )
+        by_id = {hook["id"]: hook for hook in hooks}
+        assert set(by_id) == {
+            "lint-python",
+            "format-python",
+            "lint-markdown",
+            "lint-yaml",
+        }
+        assert by_id["lint-python"]["priority"] == priority
+        # Lint fixes must run before formatting: they can leave code that
+        # still needs reformatting.
+        assert by_id["lint-python"]["priority"] < by_id["format-python"]["priority"]
+        # YAML never overlaps Python's file scope, so it is safe to share
+        # the lint-python priority and run concurrently with it.
+        assert by_id["lint-yaml"]["priority"] == by_id["lint-python"]["priority"]
+
+    def test_update_types_hooks(self) -> None:
+        """Test method."""
+        priority = 3
+        hooks = VersionControlHookManagerConfigFile.I.update_types_hooks(
+            priority=priority,
+        )
+        assert [hook["id"] for hook in hooks] == ["fix-spelling"]
+        assert all(hook["priority"] == priority for hook in hooks)
+
+    def test_generate_hooks(self) -> None:
+        """Test method."""
+        priority = 3
+        hooks = VersionControlHookManagerConfigFile.I.generate_hooks(
+            priority=priority,
+        )
+        assert [hook["id"] for hook in hooks] == ["synchronize-project"]
+        assert all(hook["priority"] == priority for hook in hooks)
+
+    def test_highest_priority(self) -> None:
+        """Test method."""
+        highest = 5
+        hooks = [
+            {"priority": 3},
+            {"priority": 1},
+            {"priority": highest},
+            {"priority": 2},
+        ]
+        assert VersionControlHookManagerConfigFile.I.highest_priority(hooks) == highest
