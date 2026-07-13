@@ -317,6 +317,21 @@ class TestVersionControlHookManagerConfigFile:
         assert all(hook["pass_filenames"] is False for hook in hooks)
         assert all(hook["always_run"] is True for hook in hooks)
 
+    def test_sort_hooks(self) -> None:
+        """Test method."""
+        hooks = [
+            {"id": "b", "stages": ["pre-commit"], "priority": 2},
+            {"id": "a", "stages": ["pre-commit"], "priority": 2},
+            {"id": "z", "stages": ["pre-push"], "priority": 0},
+            {"id": "c", "stages": ["pre-commit"], "priority": 1},
+        ]
+        result = VersionControlHookManagerConfigFile.I.sort_hooks(hooks)
+        assert isinstance(result, list)
+        # Grouped by stages first ("pre-commit" < "pre-push"), then by
+        # ascending priority within a stages group, then by id to break
+        # the remaining tie between "a" and "b" (both priority 2).
+        assert [hook["id"] for hook in result] == ["c", "a", "b", "z"]
+
     def test_highest_priority(self) -> None:
         """Test method."""
         highest = 5
