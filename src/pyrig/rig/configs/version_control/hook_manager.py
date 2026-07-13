@@ -17,7 +17,9 @@ from pyrig.rig.configs.base.toml import TOMLConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.dependencies.auditor import DependencyAuditor
 from pyrig.rig.tools.dependencies.checker import DependencyChecker
+from pyrig.rig.tools.formatting.json import JSONFormatter
 from pyrig.rig.tools.formatting.shell import ShellFormatter
+from pyrig.rig.tools.linting.json import JSONLinter
 from pyrig.rig.tools.linting.markdown import MarkdownLinter
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.linting.security import SecurityLinter
@@ -52,12 +54,13 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
             Dict with the default hook install types and the `repos` entry
             wrapping the configured hooks.
         """
+        hooks = self.hooks()
         return {
-            "default_install_hook_types": self.hook_types(),
+            "default_install_hook_types": self.hook_types(hooks),
             "repos": [
                 {
                     "repo": "local",
-                    "hooks": self.hooks(),
+                    "hooks": hooks,
                 },
             ],
         }
@@ -70,9 +73,9 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         """Return `"prek"`, the config filename stem."""
         return VersionControlHookManager.I.name()
 
-    def hook_types(self) -> list[str]:
+    def hook_types(self, hooks: list[dict[str, Any]]) -> list[str]:
         """Return the sorted, deduplicated git stages used across all hooks."""
-        return sorted({stage for hook in self.hooks() for stage in hook["stages"]})
+        return sorted({stage for hook in hooks for stage in hook["stages"]})
 
     def hooks(self) -> list[dict[str, Any]]:
         """Return every hook configuration entry in the pipeline."""
@@ -161,12 +164,13 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
     def check_hooks(self, priority: int) -> list[dict[str, Any]]:
         """Return the read-only checks that validate the fully-fixed project.
 
-        All five checks share one priority: none of them mutate files or
+        All six checks share one priority: none of them mutate files or
         depend on each other, so prek can run them concurrently.
-        `check-shell` (ShellCheck) belongs here rather than in
-        `update_type_hooks` because ShellCheck has no autofix mode; it only
-        ever reports, so it is a check, not a fixer, even though its target
-        file type is otherwise single-file-type like Python/Markdown/YAML.
+        `check-shell` (ShellCheck) and `check-json` (check-json) belong here
+        rather than in `update_type_hooks` because neither has an autofix
+        mode; they only ever report, so they are checks, not fixers, even
+        though their target file types are otherwise single-file-type like
+        Python/Markdown/YAML.
 
         `check-secrets` and `check-security` rely on prek's default of
         passing matched filenames, for opposite reasons from each other:
@@ -246,6 +250,13 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 priority=priority,
                 types=ShellLinter.I.types(),
             ),
+            self.hook(
+                "check-json",
+                PackageManager.I.run_args(*JSONLinter.I.check_args()),
+                stages=["pre-commit"],
+                priority=priority,
+                types=JSONLinter.I.types(),
+            ),
         ]
 
     def update_type_hooks(self, priority: int) -> list[dict[str, Any]]:
@@ -262,11 +273,11 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
 
         Python linting must precede Python formatting, since autofixes can
         leave code that still needs reformatting. Every other hook here
-        shares the base priority: `lint-yaml`, `lint-markdown`, and
-        `format-shell` each pass a `files` filter scoped to their own
-        wholly disjoint file type, so prek never hands any of them a file
-        one of the others would also touch - not just because Ruff
-        ignores Markdown by default today, but because prek's own file
+        shares the base priority: `lint-yaml`, `lint-markdown`,
+        `format-shell`, and `format-json` each pass a `types` filter scoped
+        to their own wholly disjoint file type, so prek never hands any of
+        them a file one of the others would also touch - not just because
+        Ruff ignores Markdown by default today, but because prek's own file
         matching would keep a `.md` file from ever reaching `ruff format`
         even if `preview` mode and `extend-include` were turned on in
         `pyproject.toml` to format Python code fences inside Markdown.
@@ -295,11 +306,11 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 types=PythonLinter.I.types(),
             ),
             self.hook(
-                "lint-markdown",
-                PackageManager.I.run_args(*MarkdownLinter.I.check_fix_args()),
+                "format-shell",
+                PackageManager.I.run_args(*ShellFormatter.I.format_args()),
                 stages=["pre-commit"],
                 priority=priority,
-                types=MarkdownLinter.I.types(),
+                types=ShellFormatter.I.types(),
             ),
             self.hook(
                 "lint-yaml",
@@ -309,11 +320,18 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 types=YAMLLinter.I.types(),
             ),
             self.hook(
-                "format-shell",
-                PackageManager.I.run_args(*ShellFormatter.I.format_args()),
+                "format-json",
+                PackageManager.I.run_args(*JSONFormatter.I.format_args()),
                 stages=["pre-commit"],
                 priority=priority,
-                types=ShellFormatter.I.types(),
+                types=JSONFormatter.I.types(),
+            ),
+            self.hook(
+                "lint-markdown",
+                PackageManager.I.run_args(*MarkdownLinter.I.check_fix_args()),
+                stages=["pre-commit"],
+                priority=priority,
+                types=MarkdownLinter.I.types(),
             ),
         ]
 

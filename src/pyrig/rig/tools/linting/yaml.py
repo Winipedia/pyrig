@@ -18,7 +18,7 @@ class YAMLLinter(FileTool):
 
     def image_url(self) -> str:
         """Return the badge image URL for ryl."""
-        return "https://img.shields.io/badge/YAML-ryl-red"
+        return f"https://img.shields.io/badge/YAML-{self.shield_name()}-red"
 
     def link_url(self) -> str:
         """Return the URL of the ryl project page."""

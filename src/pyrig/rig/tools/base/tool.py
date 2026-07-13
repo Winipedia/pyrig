@@ -126,6 +126,19 @@ class Tool(DependencySubclass):
         """
         return Args(self.name(), *args)
 
+    def shield_name(self) -> str:
+        """Return this tool's name escaped for a shields.io static badge segment.
+
+        shields.io's static badge URL splits its path on `-`, so a literal
+        hyphen in the name itself (e.g. `check-json`) must be doubled to
+        `--` to survive as one segment instead of being misread as a field
+        separator.
+
+        Returns:
+            `self.name()` with every `-` doubled.
+        """
+        return self.name().replace("-", "--")
+
     def badge(self) -> str:
         """Return the Markdown badge string for this tool.
 

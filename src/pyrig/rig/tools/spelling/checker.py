@@ -18,7 +18,7 @@ class SpellChecker(FileTool):
 
     def image_url(self) -> str:
         """Return the badge image URL for `typos`."""
-        return "https://img.shields.io/badge/spell--check-typos-blue"
+        return f"https://img.shields.io/badge/spell--check-{self.shield_name()}-blue"
 
     def link_url(self) -> str:
         """Return the URL of the `typos` project page."""

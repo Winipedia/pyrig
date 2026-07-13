@@ -107,3 +107,24 @@ class TestTool:
         # Tool is abstract, test through concrete implementation
         result = PackageManager.I.args("run", "pytest")
         assert result == ("uv", "run", "pytest")
+
+    def test_shield_name(self, mocker: MockerFixture) -> None:
+        """Test method."""
+        assert PackageManager.I.shield_name() == "uv"
+
+        mock = mocker.patch.object(
+            PackageManager,
+            PackageManager.name.__name__,
+            return_value="my-tool",
+        )
+        assert PackageManager.I.shield_name() == "my--tool"
+        mock.assert_called_once()
+
+        mock.return_value = "my_tool"
+        assert PackageManager.I.shield_name() == "my_tool"
+
+        mock.return_value = "my tool"
+        assert PackageManager.I.shield_name() == "my tool"
+
+        mock.return_value = "mytool"
+        assert PackageManager.I.shield_name() == "mytool"

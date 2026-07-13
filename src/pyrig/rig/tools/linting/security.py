@@ -21,7 +21,7 @@ class SecurityLinter(FileTool):
 
     def image_url(self) -> str:
         """Return the badge image URL for `bandit`."""
-        return "https://img.shields.io/badge/security-bandit-yellow.svg"
+        return f"https://img.shields.io/badge/security-{self.shield_name()}-yellow.svg"
 
     def link_url(self) -> str:
         """Return the URL of the `bandit` project page."""

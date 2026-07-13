@@ -19,7 +19,7 @@ class SecretsChecker(FileTool):
 
     def image_url(self) -> str:
         """Return the Shields.io badge URL advertising `detect-secrets`."""
-        return "https://img.shields.io/badge/secrets-detect--secrets-blue"
+        return f"https://img.shields.io/badge/secrets-{self.shield_name()}-blue"
 
     def link_url(self) -> str:
         """Return the URL of the `detect-secrets` project page."""
