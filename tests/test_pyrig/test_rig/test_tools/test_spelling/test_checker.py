@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.spelling.checker import SpellChecker
 
 
@@ -32,11 +33,21 @@ class TestSpellChecker:
         result = SpellChecker.I.check_args()
         assert result == ("typos",)
 
-    def test_check_fix_args(self) -> None:
+    def test_version_control_hooks(self) -> None:
         """Test method."""
-        result = SpellChecker.I.check_fix_args()
-        assert result == ("typos", "--write-changes")
+        assert SpellChecker.I.version_control_hooks() == (
+            SpellChecker.I.check_spelling_hook(),
+        )
 
-    def test_types(self) -> None:
+    def test_check_spelling_hook(self) -> None:
         """Test method."""
-        assert SpellChecker.I.types() == ["text"]
+        # spelling is checked after the project has been synchronized
+        hook = SpellChecker.I.check_spelling_hook()
+        sync_hook = Pyrigger.I.synchronize_project_hook()
+        assert hook["priority"] > sync_hook["priority"]
+        assert hook["types"] == ["text"]
+        assert hook["args"] == ["--write-changes"]
+
+    def test_fix_spelling(self) -> None:
+        """Test method."""
+        assert SpellChecker.I.fix_spelling() == SpellChecker.I.check_args()

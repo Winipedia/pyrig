@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.linting.yaml import YAMLLinter
 
 
@@ -25,16 +26,24 @@ class TestYAMLLinter:
         result = YAMLLinter.I.name()
         assert result == "ryl"
 
-    def test_types(self) -> None:
-        """Test method."""
-        assert YAMLLinter.I.types() == ["yaml"]
-
     def test_check_args(self) -> None:
         """Test method."""
         result = YAMLLinter.I.check_args()
-        assert result == ("ryl", "check", "-d", "'extends: default'")
+        assert result == ("ryl", "check")
 
-    def test_check_fix_args(self) -> None:
+    def test_version_control_hooks(self) -> None:
         """Test method."""
-        result = YAMLLinter.I.check_fix_args()
-        assert result == ("ryl", "check", "-d", "'extends: default'", "--fix")
+        assert YAMLLinter.I.version_control_hooks() == (YAMLLinter.I.check_yaml_hook(),)
+
+    def test_check_yaml_hook(self) -> None:
+        """Test method."""
+        # YAML linting runs after the sequential text-fixing chain
+        hook = YAMLLinter.I.check_yaml_hook()
+        eof_hook = EndOfFileFormatter.I.format_end_of_file_hook()
+        assert hook["priority"] > eof_hook["priority"]
+        assert hook["types"] == ["yaml"]
+        assert hook["args"] == ["--fix", "--config-data", "extends: default"]
+
+    def test_lint_yaml(self) -> None:
+        """Test method."""
+        assert YAMLLinter.I.lint_yaml() == YAMLLinter.I.check_args()

@@ -1,12 +1,14 @@
 """Static type checker command construction and badge metadata."""
 
+from typing import Any
+
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.file import FileTool
-from pyrig.rig.tools.base.tool import Group
+from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.linting.python import PythonLinter
+from pyrig.rig.tools.version_control.hook_manager import VersionControlHookManager
 
 
-class TypeChecker(FileTool):
+class TypeChecker(Tool):
     """Type-safe wrapper for the `ty` static type checker."""
 
     def group(self) -> str:
@@ -25,19 +27,6 @@ class TypeChecker(FileTool):
         """Return `'ty'`."""
         return "ty"
 
-    def types(self) -> list[str]:
-        """Return the file types `ty` type-checks.
-
-        Delegates to `PythonLinter` rather than repeating the same value:
-        `ty` type-checks the same Python source `PythonLinter` (ruff)
-        lints, so `PythonLinter` is the higher-authority definition of
-        what counts as Python for this project's tooling. Only used to
-        gate whether this hook runs at all - `ty` always type-checks the
-        whole project once triggered, since a change to one file can
-        break usages in another file that this commit never touched.
-        """
-        return PythonLinter.I.types()
-
     def check_args(self, *args: str) -> Args:
         """Build the command for running `ty check`.
 
@@ -48,3 +37,38 @@ class TypeChecker(FileTool):
             Args for `ty check [args]`.
         """
         return self.args("check", *args)
+
+    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
+        """Return the type checking hook.
+
+        Returns:
+            `check_types_hook`, wrapped in a single-element tuple.
+        """
+        return (self.check_types_hook(),)
+
+    def check_types_hook(self) -> dict[str, Any]:
+        """Return the hook metadata for type checking Python source.
+
+        Anchors the checks tier: it runs after Python formatting, and every
+        other check ties its own priority to this one via `hook_priority`
+        rather than each picking its own, so the whole tier runs together.
+
+        Returns:
+            Hook metadata dict for `ty check`.
+        """
+        return VersionControlHookManager.I.hook(
+            self.check_types,
+            priority=VersionControlHookManager.I.increase_priority(
+                PythonLinter.I.format_python_hook(),
+            ),
+            types=["python"],
+            pass_filenames=False,
+        )
+
+    def check_types(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `ty check`.
+        """
+        return self.check_args()

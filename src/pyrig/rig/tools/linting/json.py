@@ -1,11 +1,14 @@
 """Wrapper around the check-json JSON syntax linter tool."""
 
+from typing import Any
+
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.file import FileTool
-from pyrig.rig.tools.base.tool import Group
+from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.typing.checker import TypeChecker
+from pyrig.rig.tools.version_control.hook_manager import VersionControlHookManager
 
 
-class JSONLinter(FileTool):
+class JSONLinter(Tool):
     """Type-safe wrapper for the check-json JSON syntax linter.
 
     Constructs check-json command-line arguments for validating that JSON
@@ -33,10 +36,6 @@ class JSONLinter(FileTool):
         """Return `('pre-commit-hooks',)`, the PyPI package providing `check-json`."""
         return ("pre-commit-hooks",)
 
-    def types(self) -> list[str]:
-        """Return the list of file types that `check-json` can lint."""
-        return ["json"]
-
     def check_args(self, *args: str) -> Args:
         """Construct check-json arguments.
 
@@ -51,3 +50,36 @@ class JSONLinter(FileTool):
             Args for `check-json`.
         """
         return self.args(*args)
+
+    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
+        """Return the JSON validation hook.
+
+        Returns:
+            `check_json_hook`, wrapped in a single-element tuple.
+        """
+        return (self.check_json_hook(),)
+
+    def check_json_hook(self) -> dict[str, Any]:
+        """Return the hook metadata for validating JSON syntax.
+
+        Ties its priority to `TypeChecker.check_types_hook` so it runs
+        alongside the rest of the checks tier rather than after it.
+
+        Returns:
+            Hook metadata dict for `check-json`.
+        """
+        return VersionControlHookManager.I.hook(
+            self.check_json,
+            priority=VersionControlHookManager.I.hook_priority(
+                TypeChecker.I.check_types_hook(),
+            ),
+            types=["json"],
+        )
+
+    def check_json(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `check-json`.
+        """
+        return self.check_args()

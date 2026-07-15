@@ -64,7 +64,7 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         )
         return [
             f"# {Pyrigger.I.name()} stuff",
-            *Tool.subclasses_version_control_ignore_paths(),
+            *Tool.subclasses_version_control_ignore_patterns(),
             *config_file_paths,
         ]
 

@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.formatting.json import JSONFormatter
 
 
@@ -36,16 +37,26 @@ class TestJSONFormatter:
         result = JSONFormatter.I.dev_dependencies()
         assert result == ("pre-commit-hooks",)
 
-    def test_types(self) -> None:
-        """Test method."""
-        assert JSONFormatter.I.types() == ["json"]
-
     def test_format_args(self) -> None:
         """Test method."""
         result = JSONFormatter.I.format_args()
-        assert result == (
-            "pretty-format-json",
-            "--autofix",
-            "--no-ensure-ascii",
-            "--no-sort-keys",
+        assert result == ("pretty-format-json",)
+
+    def test_version_control_hooks(self) -> None:
+        """Test method."""
+        assert JSONFormatter.I.version_control_hooks() == (
+            JSONFormatter.I.format_json_hook(),
         )
+
+    def test_format_json_hook(self) -> None:
+        """Test method."""
+        # JSON formatting runs after the sequential text-fixing chain
+        hook = JSONFormatter.I.format_json_hook()
+        eof_hook = EndOfFileFormatter.I.format_end_of_file_hook()
+        assert hook["priority"] > eof_hook["priority"]
+        assert hook["types"] == ["json"]
+        assert hook["args"] == ["--autofix", "--no-ensure-ascii", "--no-sort-keys"]
+
+    def test_format_json(self) -> None:
+        """Test method."""
+        assert JSONFormatter.I.format_json() == JSONFormatter.I.format_args()

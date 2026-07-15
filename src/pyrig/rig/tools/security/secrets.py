@@ -1,11 +1,14 @@
 """Secrets scanner command construction and badge metadata."""
 
+from typing import Any
+
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.file import FileTool
-from pyrig.rig.tools.base.tool import Group
+from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.typing.checker import TypeChecker
+from pyrig.rig.tools.version_control.hook_manager import VersionControlHookManager
 
 
-class SecretsChecker(FileTool):
+class SecretsChecker(Tool):
     """Wrapper for the `detect-secrets` secrets scanner.
 
     Constructs `detect-secrets-hook` command-line arguments for scanning the
@@ -29,19 +32,6 @@ class SecretsChecker(FileTool):
         """Return `'detect-secrets'`."""
         return "detect-secrets"
 
-    def types(self) -> list[str]:
-        """Return `['text']`, the file types `detect-secrets` can usefully scan.
-
-        Confirmed by testing rather than assumed: a real secret embedded in
-        genuinely binary content (undecodable as UTF-8, mixed with random
-        noise) goes undetected regardless of extension, since
-        `detect-secrets` requires the whole file to decode as text. So
-        restricting to `text` costs no real coverage - those files were
-        already unscannable - while letting a commit that touches no text
-        files skip this hook entirely.
-        """
-        return ["text"]
-
     def check_args(self, *args: str) -> Args:
         """Construct `detect-secrets-hook` arguments for scanning for secrets.
 
@@ -52,3 +42,36 @@ class SecretsChecker(FileTool):
             Args for `detect-secrets-hook [args]`.
         """
         return Args("detect-secrets-hook", *args)
+
+    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
+        """Return the secrets scanning hook.
+
+        Returns:
+            `check_secrets_hook`, wrapped in a single-element tuple.
+        """
+        return (self.check_secrets_hook(),)
+
+    def check_secrets_hook(self) -> dict[str, Any]:
+        """Return the hook metadata for scanning for committed secrets.
+
+        Ties its priority to `TypeChecker.check_types_hook` so it runs
+        alongside the rest of the checks tier rather than after it.
+
+        Returns:
+            Hook metadata dict for `detect-secrets-hook`.
+        """
+        return VersionControlHookManager.I.hook(
+            self.check_secrets,
+            priority=VersionControlHookManager.I.hook_priority(
+                TypeChecker.I.check_types_hook(),
+            ),
+            types=["text"],
+        )
+
+    def check_secrets(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `detect-secrets-hook`.
+        """
+        return self.check_args()

@@ -1,12 +1,14 @@
 """Wrapper around the shfmt shell script formatter tool."""
 
+from typing import Any
+
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.file import FileTool
-from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.linting.shell import ShellLinter
+from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
+from pyrig.rig.tools.version_control.hook_manager import VersionControlHookManager
 
 
-class ShellFormatter(FileTool):
+class ShellFormatter(Tool):
     """A formatter for shell commands."""
 
     def group(self) -> str:
@@ -29,10 +31,6 @@ class ShellFormatter(FileTool):
         """Return `('shfmt-py',)`, the PyPI package providing `shfmt`."""
         return ("shfmt-py",)
 
-    def types(self) -> list[str]:
-        """Return the list of file types that `shfmt` can format."""
-        return ShellLinter.I.types()
-
     def format_args(self, *args: str) -> Args:
         """Construct shfmt formatting arguments at maximum strictness.
 
@@ -50,12 +48,45 @@ class ShellFormatter(FileTool):
         Returns:
             Args for `shfmt -i 2 -ci -ln bash -w`.
         """
-        return self.args(
-            "-i",
-            "2",
-            "-ci",
-            "-ln",
-            "bash",
-            "-w",
-            *args,
+        return self.args(*args)
+
+    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
+        """Return the shell formatting hook.
+
+        Returns:
+            `format_shell_hook`, wrapped in a single-element tuple.
+        """
+        return (self.format_shell_hook(),)
+
+    def format_shell_hook(self) -> dict[str, Any]:
+        """Return the hook metadata for formatting shell scripts.
+
+        Runs after the sequential text-fixing chain, alongside the other
+        file-type-specific fixers.
+
+        Returns:
+            Hook metadata dict for `shfmt`.
+        """
+        return VersionControlHookManager.I.hook(
+            self.format_shell,
+            priority=VersionControlHookManager.I.increase_priority(
+                EndOfFileFormatter.I.format_end_of_file_hook(),
+            ),
+            types=["shell"],
+            args=[
+                "--indent",
+                "2",
+                "--case-indent",
+                "--language-dialect",
+                "bash",
+                "--write",
+            ],
         )
+
+    def format_shell(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `shfmt`.
+        """
+        return self.format_args()

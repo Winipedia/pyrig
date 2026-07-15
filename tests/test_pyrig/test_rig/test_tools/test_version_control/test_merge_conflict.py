@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.merge_conflict import MergeConflictChecker
 
 
@@ -36,11 +37,28 @@ class TestMergeConflictChecker:
         result = MergeConflictChecker.I.dev_dependencies()
         assert result == ("pre-commit-hooks",)
 
-    def test_types(self) -> None:
-        """Test method."""
-        assert MergeConflictChecker.I.types() == ["text"]
-
     def test_check_args(self) -> None:
         """Test method."""
         result = MergeConflictChecker.I.check_args()
         assert result == ("check-merge-conflict",)
+
+    def test_version_control_hooks(self) -> None:
+        """Test method."""
+        assert MergeConflictChecker.I.version_control_hooks() == (
+            MergeConflictChecker.I.check_merge_conflict_hook(),
+        )
+
+    def test_check_merge_conflict_hook(self) -> None:
+        """Test method."""
+        # ties into the checks tier rather than running after it
+        hook = MergeConflictChecker.I.check_merge_conflict_hook()
+        types_hook = TypeChecker.I.check_types_hook()
+        assert hook["priority"] == types_hook["priority"]
+        assert hook["types"] == ["text"]
+
+    def test_check_merge_conflict(self) -> None:
+        """Test method."""
+        assert (
+            MergeConflictChecker.I.check_merge_conflict()
+            == MergeConflictChecker.I.check_args()
+        )

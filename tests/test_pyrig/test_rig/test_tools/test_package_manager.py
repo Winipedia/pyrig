@@ -4,6 +4,7 @@ from pathlib import Path
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.version_control.hook_manager import VersionControlHookManager
 
 
 class TestPackageManager:
@@ -43,9 +44,9 @@ class TestPackageManager:
         """Test method."""
         assert PackageManager.I.link_url() == "https://github.com/astral-sh/uv"
 
-    def test_version_control_ignore_paths(self) -> None:
+    def test_version_control_ignore_patterns(self) -> None:
         """Test method."""
-        assert PackageManager.I.version_control_ignore_paths() == (".venv", "dist/")
+        assert PackageManager.I.version_control_ignore_patterns() == (".venv", "dist/")
 
     def test_lock_file(self) -> None:
         """Test method."""
@@ -129,11 +130,6 @@ class TestPackageManager:
         result = PackageManager.I.update_dependencies_args()
         assert result == ("uv", "lock", "--upgrade")
 
-    def test_update_self_args(self) -> None:
-        """Test method."""
-        result = PackageManager.I.update_self_args()
-        assert result == ("uv", "self", "update")
-
     def test_version_args(self) -> None:
         """Test method."""
         result = PackageManager.I.version_args()
@@ -148,3 +144,40 @@ class TestPackageManager:
         """Test method."""
         result = PackageManager.I.build_args()
         assert result == ("uv", "build")
+
+    def test_version_control_hooks(self) -> None:
+        """Test method."""
+        assert PackageManager.I.version_control_hooks() == (
+            PackageManager.I.update_dependencies_hook(),
+            PackageManager.I.install_dependencies_hook(),
+        )
+
+    def test_update_dependencies_hook(self) -> None:
+        """Test method."""
+        hook = PackageManager.I.update_dependencies_hook()
+        assert hook["priority"] == 0
+        assert hook["stages"] == VersionControlHookManager.I.transition_stages()
+        assert hook["always_run"] is True
+        assert hook["pass_filenames"] is False
+
+    def test_update_dependencies(self) -> None:
+        """Test method."""
+        assert (
+            PackageManager.I.update_dependencies()
+            == PackageManager.I.update_dependencies_args()
+        )
+
+    def test_install_dependencies_hook(self) -> None:
+        """Test method."""
+        # installing depends on the lock file update having already run
+        update_hook = PackageManager.I.update_dependencies_hook()
+        install_hook = PackageManager.I.install_dependencies_hook()
+        assert install_hook["priority"] > update_hook["priority"]
+        assert install_hook["stages"] == VersionControlHookManager.I.transition_stages()
+
+    def test_install_dependencies(self) -> None:
+        """Test method."""
+        assert (
+            PackageManager.I.install_dependencies()
+            == PackageManager.I.install_dependencies_args()
+        )

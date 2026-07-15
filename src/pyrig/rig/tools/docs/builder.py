@@ -36,7 +36,7 @@ class DocsBuilder(Tool):
         """Return `'mkdocs'`."""
         return "mkdocs"
 
-    def version_control_ignore_paths(self) -> tuple[str, ...]:
+    def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return the built site output directory, `'/site'`."""
         return (f"/{self.site_dir().as_posix()}",)
 

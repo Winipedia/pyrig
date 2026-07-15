@@ -1,6 +1,7 @@
 """module."""
 
 from pyrig.rig.tools.linting.shell import ShellLinter
+from pyrig.rig.tools.typing.checker import TypeChecker
 
 
 class TestShellLinter:
@@ -33,16 +34,25 @@ class TestShellLinter:
         result = ShellLinter.I.dev_dependencies()
         assert result == ("shellcheck-py",)
 
-    def test_types(self) -> None:
-        """Test method."""
-        assert ShellLinter.I.types() == ["shell"]
-
     def test_check_args(self) -> None:
         """Test method."""
         result = ShellLinter.I.check_args()
-        assert result == (
-            "shellcheck",
-            "--severity=style",
-            "--enable=all",
-            "--shell=bash",
+        assert result == ("shellcheck",)
+
+    def test_version_control_hooks(self) -> None:
+        """Test method."""
+        assert ShellLinter.I.version_control_hooks() == (
+            ShellLinter.I.check_shell_hook(),
         )
+
+    def test_check_shell_hook(self) -> None:
+        """Test method."""
+        # ties into the checks tier rather than running after it
+        hook = ShellLinter.I.check_shell_hook()
+        types_hook = TypeChecker.I.check_types_hook()
+        assert hook["priority"] == types_hook["priority"]
+        assert hook["types"] == ["shell"]
+
+    def test_check_shell(self) -> None:
+        """Test method."""
+        assert ShellLinter.I.check_shell() == ShellLinter.I.check_args()

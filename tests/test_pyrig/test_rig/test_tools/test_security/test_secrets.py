@@ -1,6 +1,7 @@
 """Test module."""
 
 from pyrig.rig.tools.security.secrets import SecretsChecker
+from pyrig.rig.tools.typing.checker import TypeChecker
 
 
 class TestSecretsChecker:
@@ -25,10 +26,6 @@ class TestSecretsChecker:
         """Test method."""
         assert SecretsChecker.I.name() == "detect-secrets"
 
-    def test_types(self) -> None:
-        """Test method."""
-        assert SecretsChecker.I.types() == ["text"]
-
     def test_check_args(self) -> None:
         """Test method."""
         assert SecretsChecker.I.check_args("arg1", "arg2") == (
@@ -36,3 +33,21 @@ class TestSecretsChecker:
             "arg1",
             "arg2",
         )
+
+    def test_version_control_hooks(self) -> None:
+        """Test method."""
+        assert SecretsChecker.I.version_control_hooks() == (
+            SecretsChecker.I.check_secrets_hook(),
+        )
+
+    def test_check_secrets_hook(self) -> None:
+        """Test method."""
+        # ties into the checks tier rather than running after it
+        hook = SecretsChecker.I.check_secrets_hook()
+        types_hook = TypeChecker.I.check_types_hook()
+        assert hook["priority"] == types_hook["priority"]
+        assert hook["types"] == ["text"]
+
+    def test_check_secrets(self) -> None:
+        """Test method."""
+        assert SecretsChecker.I.check_secrets() == SecretsChecker.I.check_args()

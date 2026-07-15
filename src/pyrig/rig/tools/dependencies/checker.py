@@ -1,12 +1,14 @@
 """Detection of unused, missing, and transitive Python dependencies."""
 
+from typing import Any
+
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.file import FileTool
-from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.linting.python import PythonLinter
+from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.typing.checker import TypeChecker
+from pyrig.rig.tools.version_control.hook_manager import VersionControlHookManager
 
 
-class DependencyChecker(FileTool):
+class DependencyChecker(Tool):
     """`deptry` command wrapper."""
 
     def group(self) -> str:
@@ -25,23 +27,6 @@ class DependencyChecker(FileTool):
         """Return `"deptry"`."""
         return "deptry"
 
-    def types(self) -> list[str]:
-        """Return the file types that affect `deptry`'s dependency check.
-
-        Python source plus `pyproject.toml` itself, since `deptry`
-        reconciles imports found in the former against dependencies
-        declared in the latter - a commit that only changes one of the
-        two is still a case it needs to check. Deliberately excludes
-        `pyi`, unlike `PythonLinter`'s own type list: confirmed by testing
-        that `deptry` never scans `.pyi` stub files for imports at all
-        (a stub-only change can't affect its dependency analysis), so
-        delegating to `PythonLinter.types()` wholesale would be wrong
-        here, not just imprecise. Only used to gate whether this hook
-        runs at all - `deptry` always analyzes the whole project once
-        triggered, since it needs the full import graph.
-        """
-        return [*PythonLinter.I.types(), "pyproject"]
-
     def check_args(self, *args: str) -> Args:
         """Build the `deptry` command.
 
@@ -52,3 +37,37 @@ class DependencyChecker(FileTool):
             Args for running `deptry` with the given flags.
         """
         return self.args(*args)
+
+    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
+        """Return the dependency usage check hook.
+
+        Returns:
+            `check_dependencies_hook`, wrapped in a single-element tuple.
+        """
+        return (self.check_dependencies_hook(),)
+
+    def check_dependencies_hook(self) -> dict[str, Any]:
+        """Return the hook metadata for detecting unused or missing dependencies.
+
+        Ties its priority to `TypeChecker.check_types_hook` so it runs
+        alongside the rest of the checks tier rather than after it.
+
+        Returns:
+            Hook metadata dict for `deptry`.
+        """
+        return VersionControlHookManager.I.hook(
+            self.check_dependencies,
+            priority=VersionControlHookManager.I.hook_priority(
+                TypeChecker.I.check_types_hook(),
+            ),
+            types_or=["python", "pyproject"],
+            pass_filenames=False,
+        )
+
+    def check_dependencies(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `deptry`.
+        """
+        return self.check_args()
