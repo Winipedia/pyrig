@@ -9,7 +9,7 @@ from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
-class TestNamingChecker(Tool):
+class ModuleTestNamingChecker(Tool):
     """Type-safe wrapper for the pre-commit-hooks test file naming checker."""
 
     def group(self) -> str:
