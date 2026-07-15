@@ -36,17 +36,17 @@ classifiers = [
     "Topic :: System :: Installation/Setup",
 ]
 keywords = [
-    "pyrig",
-    "project-setup",
-    "scaffolding",
-    "boilerplate",
-    "project-template",
     "automation",
+    "boilerplate",
+    "ci-cd",
+    "code-quality",
     "configuration",
     "developer-tools",
-    "code-quality",
-    "ci-cd",
     "devops",
+    "project-setup",
+    "project-template",
+    "pyrig",
+    "scaffolding",
 ]
 
 [[project.authors]]
