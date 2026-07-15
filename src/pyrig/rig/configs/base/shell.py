@@ -27,7 +27,7 @@ class ShellConfigFile(StringConfigFile):
         >>>
         >>> class GreetScriptFile(ShellConfigFile):
         ...     def parent_path(self) -> Path:
-        ...         return Path(".github/scripts")
+        ...         return Path(".github/")
         ...
         ...     def stem(self) -> str:
         ...         return "greet"

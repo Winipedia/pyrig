@@ -1,6 +1,7 @@
 """Identity and badge metadata for a repository's remote hosting service."""
 
 import os
+from pathlib import Path
 
 from pyrig.core.strings import make_linked_badge_markdown
 from pyrig.rig.tools.base.tool import Group, Tool
@@ -140,6 +141,16 @@ class RemoteVersionController(Tool):
             `https://github.com`.
         """
         return "https://github.com"
+
+    def config_dir(self) -> Path:
+        """Return GitHub's special repository configuration directory.
+
+        Returns:
+            `Path(".github")`, the directory GitHub reads workflows, issue
+            templates, the pull request template, and repository settings
+            from.
+        """
+        return Path(f".{self.name()}")
 
     def access_token_key(self) -> str:
         """Return the environment variable name for the repository access token.

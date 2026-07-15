@@ -3,6 +3,9 @@
 from pathlib import Path
 
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
+from pyrig.rig.tools.version_control.remote.controller import (
+    RemoteVersionController,
+)
 
 PULL_REQUEST_TEMPLATE = """<!--
 Please consider the following:
@@ -36,8 +39,8 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
         return PULL_REQUEST_TEMPLATE
 
     def parent_path(self) -> Path:
-        """Return the `.github` directory."""
-        return Path(".github")
+        """Return the `RemoteVersionController`'s config directory."""
+        return RemoteVersionController.I.config_dir()
 
     def stem(self) -> str:
         """Return `"pull_request_template"` as the filename stem."""

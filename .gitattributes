@@ -1,0 +1,11 @@
+* text=auto eol=lf
+
+*.md diff=markdown
+*.py diff=python
+*.pyi diff=python
+
+uv.lock linguist-generated=true
+
+.gitattributes  export-ignore
+.gitignore      export-ignore
+/.github/**     export-ignore

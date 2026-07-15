@@ -1,12 +1,11 @@
 """Configuration file for the GitHub bug report issue template."""
 
-from pathlib import Path
 from typing import Any
 
-from pyrig.rig.configs.base.yml import YMLDictConfigFile
+from pyrig.rig.configs.base.issue_template import IssueTemplateConfigFile
 
 
-class BugReportConfigFile(YMLDictConfigFile):
+class BugReportConfigFile(IssueTemplateConfigFile):
     """Configuration manager for `.github/ISSUE_TEMPLATE/bug_report.yml`.
 
     Generates and validates the GitHub issue form contributors use to submit
@@ -92,10 +91,6 @@ class BugReportConfigFile(YMLDictConfigFile):
                 },
             ],
         }
-
-    def parent_path(self) -> Path:
-        """Return `Path(".github/ISSUE_TEMPLATE")`."""
-        return Path(".github/ISSUE_TEMPLATE")
 
     def stem(self) -> str:
         """Return `"bug_report"` as the filename stem."""

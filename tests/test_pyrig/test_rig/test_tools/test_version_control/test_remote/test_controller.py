@@ -91,3 +91,7 @@ class TestRemoteVersionController:
             result
             == "https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/health_check.yml?label=CI&logo=github"
         )
+
+    def test_config_dir(self) -> None:
+        """Test method."""
+        assert RemoteVersionController.I.config_dir().as_posix() == ".github"

@@ -43,8 +43,8 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
 """
 
     def parent_path(self) -> Path:
-        """Return `Path(".github")`."""
-        return Path(".github")
+        """Return the `RemoteVersionController`'s config directory."""
+        return RemoteVersionController.I.config_dir()
 
     def stem(self) -> str:
         """Return `"configure"`."""
