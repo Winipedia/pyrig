@@ -8,7 +8,7 @@ from pyrig_runtime.core.strings import kebab_to_snake_case, snake_to_kebab_case
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
-from pyrig.rig.tools.version_control.hook_manager import VersionControlHookManager
+from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
 class PackageManager(Tool):
