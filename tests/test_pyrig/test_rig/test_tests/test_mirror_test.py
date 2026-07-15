@@ -13,6 +13,7 @@ from pyrig.core.introspection.modules import reimport_module
 from pyrig.rig import tests
 from pyrig.rig.tests import mirror_test
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.testing.project import ProjectTester
 
 MIRROR_MODULE_PATH = Path("mirror_test_package/mirror_test_module.py")
@@ -138,6 +139,13 @@ class TestMirrorTestConfigFile:
             # assert two lines between docstring and first class
             assert '"""\n\n\ndef test_mirror_function' in content
             assert "NotImplementedError\n\n\nclass TestMirrorClass:" in content
+
+            PythonLinter.I.check_args(
+                my_test_mirror_test_config_file().test_path().as_posix(),
+            ).run()
+            PythonLinter.I.format_args(
+                my_test_mirror_test_config_file().test_path().as_posix(),
+            ).run()
 
     def test_concrete_subclasses(self) -> None:
         """Test method."""
