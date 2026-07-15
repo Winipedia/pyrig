@@ -59,7 +59,7 @@ stages = [
 groups = [
     "all",
 ]
-priority = 8
+priority = 9
 always_run = true
 pass_filenames = false
 
@@ -98,6 +98,25 @@ groups = [
 priority = 3
 
 [[repos.hooks]]
+id = "fix-mixed-line-ending"
+name = "fix mixed line ending"
+language = "system"
+entry = "mixed-line-ending"
+args = [
+    "--fix=lf",
+]
+types = [
+    "text",
+]
+stages = [
+    "pre-commit",
+]
+groups = [
+    "all",
+]
+priority = 4
+
+[[repos.hooks]]
 id = "fix-trailing-whitespace"
 name = "fix trailing whitespace"
 language = "system"
@@ -111,7 +130,7 @@ stages = [
 groups = [
     "all",
 ]
-priority = 4
+priority = 5
 
 [[repos.hooks]]
 id = "fix-end-of-file"
@@ -127,7 +146,7 @@ stages = [
 groups = [
     "all",
 ]
-priority = 5
+priority = 6
 
 [[repos.hooks]]
 id = "format-json"
@@ -148,7 +167,7 @@ stages = [
 groups = [
     "all",
 ]
-priority = 6
+priority = 7
 
 [[repos.hooks]]
 id = "format-shell"
@@ -172,7 +191,7 @@ stages = [
 groups = [
     "all",
 ]
-priority = 6
+priority = 7
 
 [[repos.hooks]]
 id = "lint-markdown"
@@ -191,7 +210,7 @@ stages = [
 groups = [
     "all",
 ]
-priority = 6
+priority = 7
 
 [[repos.hooks]]
 id = "lint-python"
@@ -210,7 +229,7 @@ stages = [
 groups = [
     "all",
 ]
-priority = 6
+priority = 7
 
 [[repos.hooks]]
 id = "lint-yaml"
@@ -231,7 +250,7 @@ stages = [
 groups = [
     "all",
 ]
-priority = 6
+priority = 7
 
 [[repos.hooks]]
 id = "format-python"
@@ -247,7 +266,7 @@ stages = [
 groups = [
     "all",
 ]
-priority = 7
+priority = 8
 
 [[repos.hooks]]
 id = "check-dependencies"
@@ -264,7 +283,7 @@ stages = [
 groups = [
     "all",
 ]
-priority = 8
+priority = 9
 pass_filenames = false
 
 [[repos.hooks]]
@@ -281,7 +300,7 @@ stages = [
 groups = [
     "all",
 ]
-priority = 8
+priority = 9
 
 [[repos.hooks]]
 id = "check-merge-conflict"
@@ -297,7 +316,7 @@ stages = [
 groups = [
     "all",
 ]
-priority = 8
+priority = 9
 
 [[repos.hooks]]
 id = "check-secrets"
@@ -313,7 +332,7 @@ stages = [
 groups = [
     "all",
 ]
-priority = 8
+priority = 9
 
 [[repos.hooks]]
 id = "check-security"
@@ -333,7 +352,7 @@ stages = [
 groups = [
     "all",
 ]
-priority = 8
+priority = 9
 
 [[repos.hooks]]
 id = "check-shell"
@@ -357,7 +376,7 @@ stages = [
 groups = [
     "all",
 ]
-priority = 8
+priority = 9
 
 [[repos.hooks]]
 id = "check-types"
@@ -373,5 +392,5 @@ stages = [
 groups = [
     "all",
 ]
-priority = 8
+priority = 9
 pass_filenames = false

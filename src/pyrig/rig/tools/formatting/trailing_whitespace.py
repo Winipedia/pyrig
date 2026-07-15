@@ -4,7 +4,7 @@ from typing import Any
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
-from pyrig.rig.tools.spelling.checker import SpellChecker
+from pyrig.rig.tools.formatting.mixed_line_ending import MixedLineEndingFormatter
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -59,8 +59,9 @@ class TrailingWhitespaceFormatter(Tool):
     def format_trailing_whitespace_hook(self) -> dict[str, Any]:
         """Return the hook metadata for fixing trailing whitespace.
 
-        Runs after spelling is fixed, so a spelling correction never
-        reintroduces trailing whitespace this hook already cleaned up.
+        Runs after mixed line endings are normalized, so a stray CR left
+        over from a CRLF ending is never mistaken for meaningful content
+        this hook should leave alone.
 
         Returns:
             Hook metadata dict for `trailing-whitespace-fixer`.
@@ -68,7 +69,7 @@ class TrailingWhitespaceFormatter(Tool):
         return VersionControlHookManager.I.hook(
             self.fix_trailing_whitespace,
             priority=VersionControlHookManager.I.increase_priority(
-                SpellChecker.I.check_spelling_hook(),
+                MixedLineEndingFormatter.I.format_mixed_line_ending_hook(),
             ),
             types=["text"],
         )
