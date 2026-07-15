@@ -6,7 +6,13 @@ from typing import Any
 
 import pytest
 
-from pyrig.rig.configs.base.yaml import _YAML, YAMLConfigFile, _represent_str
+from pyrig.rig.configs.base.yaml import (
+    _YAML,
+    YAMLConfigFile,
+    YMLConfigFile,
+    _represent_str,
+)
+from pyrig.rig.configs.docs.builder import DocsBuilderConfigFile
 
 
 @pytest.fixture
@@ -88,3 +94,17 @@ def test__represent_str() -> None:
     multi_line = _represent_str(_YAML.representer, "line1\nline2")
     assert multi_line.style == "|", "Expected a literal block scalar"
     assert multi_line.value == "line1\nline2", "Expected the value to be unchanged"
+
+
+class TestYMLConfigFile:
+    """Test class."""
+
+    def test_extension(self) -> None:
+        """Test method."""
+        assert issubclass(DocsBuilderConfigFile, YMLConfigFile)
+        extension = DocsBuilderConfigFile.I.extension()
+        assert extension == "yml"
+
+
+class TestYMLDictConfigFile:
+    """Test class."""

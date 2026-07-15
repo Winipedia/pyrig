@@ -10,6 +10,9 @@ from pyrig.rig.configs.version_control.remote.workflows.health_check import (
 )
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
+from pyrig.rig.tools.version_control.remote.controller import (
+    RemoteVersionController,
+)
 
 
 class RepositorySettingsConfigFile(JSONDictConfigFile):
@@ -96,8 +99,8 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
         }
 
     def parent_path(self) -> Path:
-        """Return `Path(".github")`, the standard GitHub configuration directory."""
-        return Path(".github")
+        """Return the `RemoteVersionController`'s config directory."""
+        return RemoteVersionController.I.config_dir()
 
     def stem(self) -> str:
         """Return `"settings"`."""

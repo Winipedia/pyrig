@@ -11,7 +11,7 @@ from pyrig.core.strings import (
     reformat_name,
     split_on_uppercase,
 )
-from pyrig.rig.configs.base.yml import YMLDictConfigFile
+from pyrig.rig.configs.base.yaml import YMLDictConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
@@ -91,8 +91,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
         }
 
     def parent_path(self) -> Path:
-        """Return the `.github/workflows` directory path."""
-        return Path(".github/workflows")
+        """Return the GitHub Actions workflows directory."""
+        return RemoteVersionController.I.config_dir() / "workflows"
 
     def defaults(self) -> dict[str, Any]:
         """Return the default settings applied to every step in the workflow.

@@ -1,12 +1,11 @@
 """Configuration file for the GitHub feature request issue template."""
 
-from pathlib import Path
 from typing import Any
 
-from pyrig.rig.configs.base.yml import YMLDictConfigFile
+from pyrig.rig.configs.base.issue_template import IssueTemplateConfigFile
 
 
-class FeatureRequestConfigFile(YMLDictConfigFile):
+class FeatureRequestConfigFile(IssueTemplateConfigFile):
     """Config file for `.github/ISSUE_TEMPLATE/feature_request.yml`.
 
     Generates and validates the GitHub issue form that contributors use to
@@ -68,14 +67,6 @@ class FeatureRequestConfigFile(YMLDictConfigFile):
                 },
             ],
         }
-
-    def parent_path(self) -> Path:
-        """Return the directory containing the feature request template file.
-
-        Returns:
-            `Path(".github/ISSUE_TEMPLATE")`.
-        """
-        return Path(".github/ISSUE_TEMPLATE")
 
     def stem(self) -> str:
         """Return `"feature_request"` as the filename stem."""
