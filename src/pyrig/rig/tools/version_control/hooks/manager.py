@@ -155,6 +155,7 @@ class VersionControlHookManager(Tool):
         groups: Iterable[str] | None = None,
         types: Iterable[str] | None = None,
         types_or: Iterable[str] | None = None,
+        files: str | None = None,
         args: list[str] | None = None,
         always_run: bool | None = None,
         pass_filenames: bool | None = None,
@@ -177,6 +178,10 @@ class VersionControlHookManager(Tool):
             types: File types this hook is restricted to.
             types_or: File types this hook is restricted to, matching any one
                 of them rather than all.
+            files: Regex restricting this hook to file paths that match.
+                For a tool with no path filter of its own, unlike `types`
+                and `types_or`, which filter by detected file type rather
+                than path.
             args: Extra CLI arguments appended to the hook's entry command.
             always_run: Whether to run this hook even when no matching files
                 changed.
@@ -200,6 +205,8 @@ class VersionControlHookManager(Tool):
             hook["types"] = sorted(types)
         if types_or is not None:
             hook["types_or"] = sorted(types_or)
+        if files is not None:
+            hook["files"] = files
         hook["stages"] = sorted(stages or ["pre-commit"])
         hook["groups"] = sorted([self.group_all(), *(groups or [])])
         hook["priority"] = priority
