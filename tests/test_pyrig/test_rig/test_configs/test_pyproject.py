@@ -115,8 +115,8 @@ class TestPyprojectConfigFile:
 
         assert configs["project"]["authors"][0]["name"] == "Winipedia"
 
-        assert "classifiers" not in configs["project"]
-        assert "keywords" not in configs["project"]
+        assert "classifiers" in configs["project"]
+        assert "keywords" in configs["project"]
 
     def test_merge_additional_dependencies(
         self,
@@ -295,7 +295,7 @@ class TestPyprojectConfigFile:
 
     def test_make_classifiers(self) -> None:
         """Test method."""
-        assert PyprojectConfigFile.I.make_classifiers() == [
+        assert PyprojectConfigFile().make_classifiers() == [
             "Programming Language :: Python :: 3 :: Only",
             "Programming Language :: Python :: 3.12",
             "Programming Language :: Python :: 3.13",
@@ -306,4 +306,4 @@ class TestPyprojectConfigFile:
 
     def test_make_keywords(self) -> None:
         """Test method."""
-        assert PyprojectConfigFile.I.make_keywords() == ["pyrig"]
+        assert PyprojectConfigFile().make_keywords() == ["pyrig"]
