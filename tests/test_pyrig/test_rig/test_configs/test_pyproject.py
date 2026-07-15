@@ -292,3 +292,18 @@ class TestPyprojectConfigFile:
             == PyprojectConfigFile.I.tool_configs()
         )
         assert len(PyprojectConfigFile.I.tool_configs()) > 0
+
+    def test_make_classifiers(self) -> None:
+        """Test method."""
+        assert PyprojectConfigFile.I.make_classifiers() == [
+            "Programming Language :: Python :: 3 :: Only",
+            "Programming Language :: Python :: 3.12",
+            "Programming Language :: Python :: 3.13",
+            "Programming Language :: Python :: 3.14",
+            "Operating System :: OS Independent",
+            "Typing :: Typed",
+        ]
+
+    def test_make_keywords(self) -> None:
+        """Test method."""
+        assert PyprojectConfigFile.I.make_keywords() == ["pyrig"]
