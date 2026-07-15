@@ -65,7 +65,7 @@ class PyprojectConfigFile(TOMLConfigFile):
                 "description": self.project_description(),
                 "readme": ReadmeConfigFile.I.path().as_posix(),
                 "requires-python": self.requires_python(),
-                "classifiers": self.make_classifiers(),
+                "classifiers": sorted(self.make_classifiers()),
                 "dependencies": self.merge_additional_dependencies(
                     dependencies=self.dependencies(),
                     additional=self.additional_dependencies(),
@@ -203,7 +203,7 @@ class PyprojectConfigFile(TOMLConfigFile):
         )
         return sorted({*dependencies, *additional})
 
-    def make_classifiers(self) -> list[str]:
+    def make_classifiers(self) -> Iterable[str]:
         """Build the PyPI trove classifiers for the project.
 
         Includes a `Programming Language :: Python :: X.Y` classifier for every
