@@ -31,12 +31,12 @@ class EnvConfigFile(DictConfigFile):
             configs: Configuration to write. Must be empty.
 
         Raises:
-            RuntimeError: If `configs` is non-empty.
+            ValueError: If `configs` is non-empty.
         """
         if not configs:
             return
         msg = f"""cannot dump to {self}"""
-        raise RuntimeError(msg)
+        raise ValueError(msg)
 
     def _load(self) -> dict[str, str | None]:
         """Refuse to load `.env` content.
