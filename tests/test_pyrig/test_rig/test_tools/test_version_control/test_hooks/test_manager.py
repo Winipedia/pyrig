@@ -91,6 +91,7 @@ class TestVersionControlHookManager:
             VersionControlHookManager.I.run_args,
             priority=priority,
             types=["python"],
+            files="^tests/",
             args=["--fix"],
         )
         assert hook["id"] == "run-args"
@@ -99,11 +100,20 @@ class TestVersionControlHookManager:
         assert hook["entry"] == str(VersionControlHookManager.I.run_args())
         assert hook["args"] == ["--fix"]
         assert hook["types"] == ["python"]
+        assert hook["files"] == "^tests/"
         assert hook["stages"] == ["pre-commit"]
         assert hook["groups"] == ["all"]
         assert hook["priority"] == priority
         assert "always_run" not in hook
         assert "pass_filenames" not in hook
+
+    def test_hook_without_files(self) -> None:
+        """Test method."""
+        hook = VersionControlHookManager.I.hook(
+            VersionControlHookManager.I.run_args,
+            priority=1,
+        )
+        assert "files" not in hook
 
     def test_transition_stages(self) -> None:
         """Test method."""

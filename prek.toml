@@ -303,6 +303,19 @@ groups = [
 priority = 9
 
 [[repos.hooks]]
+id = "check-large-files"
+name = "check large files"
+language = "system"
+entry = "check-added-large-files"
+stages = [
+    "pre-commit",
+]
+groups = [
+    "all",
+]
+priority = 9
+
+[[repos.hooks]]
 id = "check-merge-conflict"
 name = "check merge conflict"
 language = "system"
@@ -370,6 +383,26 @@ args = [
 types = [
     "shell",
 ]
+stages = [
+    "pre-commit",
+]
+groups = [
+    "all",
+]
+priority = 9
+
+[[repos.hooks]]
+id = "check-test-naming"
+name = "check test naming"
+language = "system"
+entry = "name-tests-test"
+args = [
+    "--pytest-test-first",
+]
+types = [
+    "python",
+]
+files = "^tests/"
 stages = [
     "pre-commit",
 ]
