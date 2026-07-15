@@ -9,7 +9,7 @@ from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.testing.project import ProjectTester
-from pyrig.rig.tools.version_control.hook_manager import (
+from pyrig.rig.tools.version_control.hooks.manager import (
     VersionControlHookManager,
 )
 

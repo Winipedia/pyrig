@@ -6,7 +6,7 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.testing.project import ProjectTester
 from pyrig.rig.tools.typing.checker import TypeChecker
-from pyrig.rig.tools.version_control.hook_manager import VersionControlHookManager
+from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
 class SecurityLinter(Tool):
