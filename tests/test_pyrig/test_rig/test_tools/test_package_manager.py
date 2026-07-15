@@ -93,7 +93,7 @@ class TestPackageManager:
     def test_build_system_requires(self) -> None:
         """Test method."""
         result = PackageManager.I.build_system_requires()
-        assert result == ["uv_build"]
+        assert result == ["uv-build"]
 
     def test_build_backend(self) -> None:
         """Test method."""

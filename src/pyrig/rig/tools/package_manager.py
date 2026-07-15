@@ -88,7 +88,7 @@ class PackageManager(Tool):
         different build back-end, for example `["poetry-core"]` for Poetry or
         `["hatchling"]` for Hatch.
         """
-        return ["uv_build"]
+        return [snake_to_kebab_case(self.build_backend())]
 
     def lock_file(self) -> Path:
         """Return `Path("uv.lock")`, relative to the project root."""

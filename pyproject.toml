@@ -99,7 +99,7 @@ dev = [
 
 [build-system]
 requires = [
-    "uv_build",
+    "uv-build",
 ]
 build-backend = "uv_build"
 
