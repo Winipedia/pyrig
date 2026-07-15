@@ -41,7 +41,7 @@ class ProgrammingLanguage(Tool):
         """Return `"python"`."""
         return "python"
 
-    def version_control_ignore_paths(self) -> tuple[str, ...]:
+    def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return `("__pycache__/",)`."""
         return ("__pycache__/",)
 

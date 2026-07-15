@@ -93,16 +93,16 @@ class VersionController(Tool):
         return self.args("add", *args)
 
     def commit_with_msg_args(self, *args: str, msg: str) -> Args:
-        """Build arguments for `git commit -m <msg>`.
+        """Build arguments for `git commit --message <msg>`.
 
         Args:
             *args: Additional arguments appended to the command.
             msg: The commit message.
 
         Returns:
-            Args for `git commit -m <msg> [args]`.
+            Args for `git commit --message <msg> [args]`.
         """
-        return self.commit_args("-m", msg, *args)
+        return self.commit_args("--message", msg, *args)
 
     def commit_args(self, *args: str) -> Args:
         """Build base arguments for `git commit`.

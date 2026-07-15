@@ -136,3 +136,34 @@ class Pyrigger(Tool):
             `'pyrig-runtime'`.
         """
         return snake_to_kebab_case(pyrig_runtime.__name__)
+
+    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
+        """Return the project-synchronization hook.
+
+        Returns:
+            `synchronize_project_hook`, wrapped in a single-element tuple.
+        """
+        return (self.synchronize_project_hook(),)
+
+    def synchronize_project_hook(self) -> dict[str, Any]:
+        """Return the hook metadata for the `pyrig sync` hook.
+
+        Returns:
+            Hook metadata dictionary for the `pyrig sync` hook.
+        """
+        return VersionControlHookManager.I.hook(
+            self.synchronize_project,
+            priority=VersionControlHookManager.I.increase_priority(
+                PackageManager.I.install_dependencies_hook(),
+            ),
+            always_run=True,
+            pass_filenames=False,
+        )
+
+    def synchronize_project(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `pyrig sync`.
+        """
+        return self.cmd_args(cmd=sync)

@@ -118,21 +118,13 @@ class TestHealthCheckWorkflowConfigFile:
 
         assert "env" not in step
 
-    def test_step_run_pre_commit_hooks(
+    def test_step_run_version_control_hooks(
         self,
         my_test_health_check_workflow: type[HealthCheckWorkflowConfigFile],
     ) -> None:
         """Test method."""
-        result = my_test_health_check_workflow().step_run_pre_commit_hooks()
+        result = my_test_health_check_workflow().step_run_version_control_hooks()
         assert "run" in result
-
-    def test_step_run_dependency_audit(
-        self,
-        my_test_health_check_workflow: type[HealthCheckWorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_health_check_workflow().step_run_dependency_audit()
-        assert "run" in result, f"Expected 'run' in step, got {result}"
 
     def test_step_aggregate_jobs(
         self,

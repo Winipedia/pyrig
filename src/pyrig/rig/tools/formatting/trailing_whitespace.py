@@ -1,11 +1,14 @@
 """Wrapper around the trailing-whitespace-fixer tool."""
 
+from typing import Any
+
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.file import FileTool
-from pyrig.rig.tools.base.tool import Group
+from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.spelling.checker import SpellChecker
+from pyrig.rig.tools.version_control.hook_manager import VersionControlHookManager
 
 
-class TrailingWhitespaceFormatter(FileTool):
+class TrailingWhitespaceFormatter(Tool):
     """Type-safe wrapper for the pre-commit-hooks trailing whitespace fixer."""
 
     def group(self) -> str:
@@ -28,15 +31,6 @@ class TrailingWhitespaceFormatter(FileTool):
         """Return the package providing `trailing-whitespace-fixer`."""
         return ("pre-commit-hooks",)
 
-    def types(self) -> list[str]:
-        """Return `["text"]`, matching every text file this tool can strip.
-
-        Same broad scope as `SpellChecker`/`SecretsChecker`: trailing
-        whitespace is a property of text in general, not of any single
-        language, so it isn't restricted to a single file type.
-        """
-        return ["text"]
-
     def format_args(self, *args: str) -> Args:
         """Construct trailing-whitespace-fixer arguments.
 
@@ -52,3 +46,37 @@ class TrailingWhitespaceFormatter(FileTool):
             Args for `trailing-whitespace-fixer`.
         """
         return self.args(*args)
+
+    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
+        """Return the trailing whitespace hook.
+
+        Returns:
+            `format_trailing_whitespace_hook`, wrapped in a single-element
+            tuple.
+        """
+        return (self.format_trailing_whitespace_hook(),)
+
+    def format_trailing_whitespace_hook(self) -> dict[str, Any]:
+        """Return the hook metadata for fixing trailing whitespace.
+
+        Runs after spelling is fixed, so a spelling correction never
+        reintroduces trailing whitespace this hook already cleaned up.
+
+        Returns:
+            Hook metadata dict for `trailing-whitespace-fixer`.
+        """
+        return VersionControlHookManager.I.hook(
+            self.fix_trailing_whitespace,
+            priority=VersionControlHookManager.I.increase_priority(
+                SpellChecker.I.check_spelling_hook(),
+            ),
+            types=["text"],
+        )
+
+    def fix_trailing_whitespace(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `trailing-whitespace-fixer`.
+        """
+        return self.format_args()

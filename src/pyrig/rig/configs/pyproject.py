@@ -23,7 +23,6 @@ from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.dependencies.checker import DependencyChecker
 from pyrig.rig.tools.docs.builder import DocsBuilder
 from pyrig.rig.tools.linting.python import PythonLinter
-from pyrig.rig.tools.linting.security import SecurityLinter
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.testing.project import ProjectTester
@@ -107,11 +106,6 @@ class PyprojectConfigFile(TOMLConfigFile):
     def tool_configs(self) -> dict[str, Any]:
         """Assemble the required `tool` section of `pyproject.toml`."""
         return {
-            SecurityLinter.I.config_name(): {
-                "exclude_dirs": [
-                    ProjectTester.I.package_root().as_posix(),
-                ],
-            },
             DependencyChecker.I.config_name(): {
                 "root": PackageManager.I.source_root().as_posix(),
                 "per_rule_ignores": {"DEP002": [Pyrigger.I.runtime_dependency()]},

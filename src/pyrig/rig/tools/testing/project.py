@@ -36,7 +36,7 @@ class ProjectTester(Tool):
         """Return `('pytest', 'pytest-cov')`."""
         return (*super().dev_dependencies(), "pytest-cov", "pytest-randomly")
 
-    def version_control_ignore_paths(self) -> tuple[str, ...]:
+    def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return `('.pytest_cache/',)`."""
         return (".pytest_cache/", ".coverage")
 

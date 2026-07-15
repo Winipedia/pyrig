@@ -46,13 +46,9 @@
         "id": "create-version-control-ignored-files"
         "run": "uv run pyrig mk local"
       -
-        "name": "Run Pre Commit Hooks"
-        "id": "run-pre-commit-hooks"
-        "run": "uv run prek run --all-files --hook-stage pre-commit"
-      -
-        "name": "Run Dependency Audit"
-        "id": "run-dependency-audit"
-        "run": "uv run pip-audit"
+        "name": "Run Version Control Hooks"
+        "id": "run-version-control-hooks"
+        "run": "uv run prek run --all-files --group all"
   "matrix-health-checks":
     "runs-on": "${{ matrix.os }}"
     "strategy":

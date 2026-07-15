@@ -2,11 +2,13 @@
 
 from pathlib import Path
 from types import FunctionType
+from typing import Any
 
 from pyrig_runtime.core.strings import kebab_to_snake_case, snake_to_kebab_case
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.version_control.hook_manager import VersionControlHookManager
 
 
 class PackageManager(Tool):
@@ -41,7 +43,7 @@ class PackageManager(Tool):
         """Return `'uv'`."""
         return "uv"
 
-    def version_control_ignore_paths(self) -> tuple[str, ...]:
+    def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return `(".venv", "dist/")`."""
         return (".venv", "dist/")
 
@@ -195,17 +197,6 @@ class PackageManager(Tool):
         """
         return self.args("lock", "--upgrade", *args)
 
-    def update_self_args(self, *args: str) -> Args:
-        """Construct `Args` for updating uv itself.
-
-        Args:
-            *args: Additional arguments for the self-update command.
-
-        Returns:
-            Args for `uv self update <args...>`.
-        """
-        return self.args("self", "update", *args)
-
     def version_short_args(self, *args: str) -> Args:
         """Construct `Args` for reading the current project version as a bare string.
 
@@ -238,3 +229,65 @@ class PackageManager(Tool):
             Args for `uv build <args...>`.
         """
         return self.args("build", *args)
+
+    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
+        """Return the dependency update and install hooks.
+
+        Returns:
+            `update_dependencies_hook` and `install_dependencies_hook`, in
+            that order.
+        """
+        return (self.update_dependencies_hook(), self.install_dependencies_hook())
+
+    def update_dependencies_hook(self) -> dict[str, Any]:
+        """Return the hook metadata for upgrading locked dependency versions.
+
+        Runs first among the transition-stage hooks, since every other step
+        that touches dependencies depends on the lock file already being
+        current.
+
+        Returns:
+            Hook metadata dict for `uv lock --upgrade`.
+        """
+        return VersionControlHookManager.I.hook(
+            self.update_dependencies,
+            priority=0,
+            stages=VersionControlHookManager.I.transition_stages(),
+            pass_filenames=False,
+            always_run=True,
+        )
+
+    def update_dependencies(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `uv lock --upgrade`.
+        """
+        return self.update_dependencies_args()
+
+    def install_dependencies_hook(self) -> dict[str, Any]:
+        """Return the hook metadata for installing dependencies.
+
+        Runs after `update_dependencies_hook`, since installing requires the
+        lock file it refreshes.
+
+        Returns:
+            Hook metadata dict for `uv sync`.
+        """
+        return VersionControlHookManager.I.hook(
+            self.install_dependencies,
+            priority=VersionControlHookManager.I.increase_priority(
+                self.update_dependencies_hook(),
+            ),
+            stages=VersionControlHookManager.I.transition_stages(),
+            pass_filenames=False,
+            always_run=True,
+        )
+
+    def install_dependencies(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `uv sync`.
+        """
+        return self.install_dependencies_args()

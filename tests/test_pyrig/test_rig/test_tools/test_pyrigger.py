@@ -4,6 +4,8 @@ from pytest_mock import MockerFixture
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.cli.make import local
+from pyrig.rig.cli.subcommands import sync
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 
 
@@ -68,3 +70,22 @@ class TestPyrigger:
 
         result = Pyrigger.I.cmd_args("--help", cmd=my_command)
         assert result == ("pyrig", "my-command", "--help")
+
+    def test_version_control_hooks(self) -> None:
+        """Test method."""
+        assert Pyrigger.I.version_control_hooks() == (
+            Pyrigger.I.synchronize_project_hook(),
+        )
+
+    def test_synchronize_project_hook(self) -> None:
+        """Test method."""
+        # syncing depends on dependencies already being installed
+        hook = Pyrigger.I.synchronize_project_hook()
+        install_hook = PackageManager.I.install_dependencies_hook()
+        assert hook["priority"] > install_hook["priority"]
+        assert hook["always_run"] is True
+        assert hook["pass_filenames"] is False
+
+    def test_synchronize_project(self) -> None:
+        """Test method."""
+        assert Pyrigger.I.synchronize_project() == Pyrigger.I.cmd_args(cmd=sync)

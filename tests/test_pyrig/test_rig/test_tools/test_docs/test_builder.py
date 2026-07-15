@@ -24,9 +24,9 @@ class TestDocsBuilder:
         """Test method."""
         assert DocsBuilder.I.link_url() == "https://Winipedia.github.io/pyrig"
 
-    def test_version_control_ignore_paths(self) -> None:
+    def test_version_control_ignore_patterns(self) -> None:
         """Test method."""
-        assert DocsBuilder.I.version_control_ignore_paths() == ("/site",)
+        assert DocsBuilder.I.version_control_ignore_patterns() == ("/site",)
 
     def test_documentation_url(self) -> None:
         """Test method."""

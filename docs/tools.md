@@ -45,7 +45,7 @@ discovered automatically — no registration needed.
 
 ### Optional Overrides
 
-- **`version_control_ignore_paths()`** — Paths (relative to project root) this
+- **`version_control_ignore_patterns()`** — Paths (relative to project root) this
   tool writes that should be added to `.gitignore` automatically.
 - **`dev_dependencies()`** — Package names to add to the project's dev
   dependency group.

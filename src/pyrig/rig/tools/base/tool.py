@@ -2,6 +2,7 @@
 
 from abc import abstractmethod
 from types import ModuleType
+from typing import Any
 
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.strings import kebab_to_snake_case
@@ -68,7 +69,7 @@ class Tool(DependencySubclass):
             tools in that group. Groups are ordered by `groups()`; badges
             within a group are ordered by each tool's `sort_key()`.
         """
-        subclasses = cls.subclasses_sorted(cls.concrete_subclasses())
+        subclasses = cls.sort_subclasses(cls.concrete_subclasses())
         groups: dict[str, list[str]] = {g: [] for g in cls.groups()}
         for subclass in subclasses:
             tool = subclass()
@@ -102,7 +103,7 @@ class Tool(DependencySubclass):
         )
 
     @classmethod
-    def subclasses_version_control_ignore_paths(cls) -> list[str]:
+    def subclasses_version_control_ignore_patterns(cls) -> list[str]:
         """Return the version control ignore paths of every concrete tool, sorted.
 
         Returns:
@@ -112,7 +113,7 @@ class Tool(DependencySubclass):
         return sorted(
             path
             for subclass in cls.concrete_subclasses()
-            for path in subclass().version_control_ignore_paths()
+            for path in subclass().version_control_ignore_patterns()
         )
 
     def args(self, *args: str) -> Args:
@@ -175,7 +176,7 @@ class Tool(DependencySubclass):
         """
         return (self.name(),)
 
-    def version_control_ignore_paths(self) -> tuple[str, ...]:
+    def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return paths this tool writes that should be excluded from version control.
 
         Paths are relative to the project root. Override in a subclass to
@@ -183,6 +184,17 @@ class Tool(DependencySubclass):
 
         Returns:
             File paths to ignore. Empty by default.
+        """
+        return ()
+
+    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
+        """Return the prek hooks this tool contributes to the pipeline.
+
+        Override in a subclass to declare the hooks that invoke this tool,
+        built via `VersionControlHookManager.hook`.
+
+        Returns:
+            Hook metadata dictionaries. Empty by default.
         """
         return ()
 

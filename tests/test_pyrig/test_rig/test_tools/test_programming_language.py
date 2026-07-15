@@ -86,9 +86,11 @@ class TestProgrammingLanguage:
         """Test method."""
         assert ProgrammingLanguage.I.link_url() == "https://www.python.org"
 
-    def test_version_control_ignore_paths(self) -> None:
+    def test_version_control_ignore_patterns(self) -> None:
         """Test method."""
-        assert ProgrammingLanguage().version_control_ignore_paths() == ("__pycache__/",)
+        assert ProgrammingLanguage().version_control_ignore_patterns() == (
+            "__pycache__/",
+        )
 
     def test_standard_init_content(self) -> None:
         """Test method."""

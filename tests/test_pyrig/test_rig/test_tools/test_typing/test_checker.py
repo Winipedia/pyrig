@@ -1,25 +1,11 @@
 """module."""
 
-from pytest_mock import MockerFixture
-
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.typing.checker import TypeChecker
 
 
 class TestTypeChecker:
     """Test class."""
-
-    def test_types(self, mocker: MockerFixture) -> None:
-        """Test method."""
-        # Delegates to PythonLinter rather than coincidentally returning
-        # the same value, so patch it to prove that.
-        mock = mocker.patch.object(
-            PythonLinter,
-            PythonLinter.types.__name__,
-            return_value=["mocked-type"],
-        )
-        assert TypeChecker.I.types() == ["mocked-type"]
-        mock.assert_called_once()
 
     def test_image_url(self) -> None:
         """Test method."""
@@ -47,3 +33,22 @@ class TestTypeChecker:
         """Test method."""
         result = TypeChecker.I.check_args()
         assert result == ("ty", "check")
+
+    def test_version_control_hooks(self) -> None:
+        """Test method."""
+        assert TypeChecker.I.version_control_hooks() == (
+            TypeChecker.I.check_types_hook(),
+        )
+
+    def test_check_types_hook(self) -> None:
+        """Test method."""
+        # type checking runs after Python formatting, anchoring the checks tier
+        hook = TypeChecker.I.check_types_hook()
+        format_hook = PythonLinter.I.format_python_hook()
+        assert hook["priority"] > format_hook["priority"]
+        assert hook["types"] == ["python"]
+        assert hook["pass_filenames"] is False
+
+    def test_check_types(self) -> None:
+        """Test method."""
+        assert TypeChecker.I.check_types() == TypeChecker.I.check_args()

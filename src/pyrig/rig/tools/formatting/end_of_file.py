@@ -1,11 +1,14 @@
 """Wrapper around the end-of-file-fixer tool."""
 
+from typing import Any
+
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.file import FileTool
-from pyrig.rig.tools.base.tool import Group
+from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.formatting.trailing_whitespace import TrailingWhitespaceFormatter
+from pyrig.rig.tools.version_control.hook_manager import VersionControlHookManager
 
 
-class EndOfFileFormatter(FileTool):
+class EndOfFileFormatter(Tool):
     """Type-safe wrapper for the pre-commit-hooks end-of-file fixer."""
 
     def group(self) -> str:
@@ -28,15 +31,6 @@ class EndOfFileFormatter(FileTool):
         """Return the package providing `end-of-file-fixer`."""
         return ("pre-commit-hooks",)
 
-    def types(self) -> list[str]:
-        """Return `["text"]`, matching every text file this tool can normalize.
-
-        Same broad scope as `SpellChecker`/`SecretsChecker`: a trailing
-        newline is a property of text in general, not of any single
-        language, so it isn't restricted to a single file type.
-        """
-        return ["text"]
-
     def format_args(self, *args: str) -> Args:
         """Construct end-of-file-fixer arguments.
 
@@ -53,3 +47,37 @@ class EndOfFileFormatter(FileTool):
             Args for `end-of-file-fixer`.
         """
         return self.args(*args)
+
+    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
+        """Return the end-of-file hook.
+
+        Returns:
+            `format_end_of_file_hook`, wrapped in a single-element tuple.
+        """
+        return (self.format_end_of_file_hook(),)
+
+    def format_end_of_file_hook(self) -> dict[str, Any]:
+        """Return the hook metadata for fixing a file's trailing newline.
+
+        Runs last among the sequential text-fixing hooks: it normalizes
+        the very end of the file, a property no earlier fixer in the chain
+        touches or could reintroduce a violation of.
+
+        Returns:
+            Hook metadata dict for `end-of-file-fixer`.
+        """
+        return VersionControlHookManager.I.hook(
+            self.fix_end_of_file,
+            priority=VersionControlHookManager.I.increase_priority(
+                TrailingWhitespaceFormatter.I.format_trailing_whitespace_hook(),
+            ),
+            types=["text"],
+        )
+
+    def fix_end_of_file(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `end-of-file-fixer`.
+        """
+        return self.format_args()

@@ -1,6 +1,7 @@
 """module."""
 
 from pyrig.rig.tools.formatting.trailing_whitespace import TrailingWhitespaceFormatter
+from pyrig.rig.tools.spelling.checker import SpellChecker
 
 
 class TestTrailingWhitespaceFormatter:
@@ -36,11 +37,29 @@ class TestTrailingWhitespaceFormatter:
         result = TrailingWhitespaceFormatter.I.dev_dependencies()
         assert result == ("pre-commit-hooks",)
 
-    def test_types(self) -> None:
-        """Test method."""
-        assert TrailingWhitespaceFormatter.I.types() == ["text"]
-
     def test_format_args(self) -> None:
         """Test method."""
         result = TrailingWhitespaceFormatter.I.format_args()
         assert result == ("trailing-whitespace-fixer",)
+
+    def test_version_control_hooks(self) -> None:
+        """Test method."""
+        assert TrailingWhitespaceFormatter.I.version_control_hooks() == (
+            TrailingWhitespaceFormatter.I.format_trailing_whitespace_hook(),
+        )
+
+    def test_format_trailing_whitespace_hook(self) -> None:
+        """Test method."""
+        # trailing whitespace is fixed after spelling, so a spelling fix
+        # can't reintroduce whitespace this hook already cleaned up
+        hook = TrailingWhitespaceFormatter.I.format_trailing_whitespace_hook()
+        spelling_hook = SpellChecker.I.check_spelling_hook()
+        assert hook["priority"] > spelling_hook["priority"]
+        assert hook["types"] == ["text"]
+
+    def test_fix_trailing_whitespace(self) -> None:
+        """Test method."""
+        assert (
+            TrailingWhitespaceFormatter.I.fix_trailing_whitespace()
+            == TrailingWhitespaceFormatter.I.format_args()
+        )

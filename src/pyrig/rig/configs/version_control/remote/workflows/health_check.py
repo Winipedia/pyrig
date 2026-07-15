@@ -6,7 +6,6 @@ from pyrig.core.strings import fstring_var_name
 from pyrig.rig.cli.make import local
 from pyrig.rig.cli.subcommands import mk
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
-from pyrig.rig.tools.dependencies.auditor import DependencyAuditor
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.testing.project import ProjectTester
@@ -147,8 +146,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         return [
             *self.steps_core_installed_setup(update_dependencies=True),
             self.step_create_version_control_ignored_files(),
-            self.step_run_pre_commit_hooks(),
-            self.step_run_dependency_audit(),
+            self.step_run_version_control_hooks(),
         ]
 
     def step_create_version_control_ignored_files(
@@ -181,29 +179,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             step=step,
         )
 
-    def step_run_dependency_audit(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that audits dependencies for known vulnerabilities.
-
-        Runs `pip-audit` via uv against the installed environment to detect
-        CVEs in direct and transitive dependencies.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step that runs `uv run pip-audit`.
-        """
-        return self.step(
-            self.step_run_dependency_audit,
-            run=str(PackageManager.I.run_args(*DependencyAuditor.I.check_args())),
-            step=step,
-        )
-
-    def step_run_pre_commit_hooks(
+    def step_run_version_control_hooks(
         self,
         *,
         step: dict[str, Any] | None = None,
@@ -217,10 +193,10 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Step that runs the pre-commit hooks.
         """
         return self.step(
-            self.step_run_pre_commit_hooks,
+            self.step_run_version_control_hooks,
             run=str(
                 PackageManager.I.run_args(
-                    *VersionControlHookManager.I.run_all_files_stage_pre_commit_args(),
+                    *VersionControlHookManager.I.run_all_files_all_hooks_args(),
                 ),
             ),
             step=step,

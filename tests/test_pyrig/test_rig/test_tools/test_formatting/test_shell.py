@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.formatting.shell import ShellFormatter
 
 
@@ -33,11 +34,25 @@ class TestShellFormatter:
         result = ShellFormatter.I.dev_dependencies()
         assert result == ("shfmt-py",)
 
-    def test_types(self) -> None:
-        """Test method."""
-        assert ShellFormatter.I.types() == ["shell"]
-
     def test_format_args(self) -> None:
         """Test method."""
         result = ShellFormatter.I.format_args()
-        assert result == ("shfmt", "-i", "2", "-ci", "-ln", "bash", "-w")
+        assert result == ("shfmt",)
+
+    def test_version_control_hooks(self) -> None:
+        """Test method."""
+        assert ShellFormatter.I.version_control_hooks() == (
+            ShellFormatter.I.format_shell_hook(),
+        )
+
+    def test_format_shell_hook(self) -> None:
+        """Test method."""
+        # shell formatting runs after the sequential text-fixing chain
+        hook = ShellFormatter.I.format_shell_hook()
+        eof_hook = EndOfFileFormatter.I.format_end_of_file_hook()
+        assert hook["priority"] > eof_hook["priority"]
+        assert hook["types"] == ["shell"]
+
+    def test_format_shell(self) -> None:
+        """Test method."""
+        assert ShellFormatter.I.format_shell() == ShellFormatter.I.format_args()

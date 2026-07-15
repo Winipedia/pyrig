@@ -1,7 +1,11 @@
 """Vulnerability scanning for installed Python dependencies."""
 
+from typing import Any
+
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.typing.checker import TypeChecker
+from pyrig.rig.tools.version_control.hook_manager import VersionControlHookManager
 
 
 class DependencyAuditor(Tool):
@@ -38,3 +42,41 @@ class DependencyAuditor(Tool):
             Args for running `pip-audit` with the given flags.
         """
         return self.args(*args)
+
+    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
+        """Return the dependency vulnerability audit hook.
+
+        Returns:
+            `check_dependencies_hook`, wrapped in a single-element tuple.
+        """
+        return (self.check_dependencies_hook(),)
+
+    def check_dependencies_hook(self) -> dict[str, Any]:
+        """Return the hook metadata for auditing installed dependencies.
+
+        Runs on the transition stages rather than pre-commit, since
+        `pip-audit` scans installed distributions, not changed files. Ties
+        its priority to `TypeChecker.check_types_hook`: it's a read-only
+        check like the rest of that tier, so a full `--group all` sweep can
+        run it alongside them even though it triggers on different stages.
+
+        Returns:
+            Hook metadata dict for `pip-audit`.
+        """
+        return VersionControlHookManager.I.hook(
+            self.audit_dependencies,
+            priority=VersionControlHookManager.I.hook_priority(
+                TypeChecker.I.check_types_hook(),
+            ),
+            stages=VersionControlHookManager.I.transition_stages(),
+            pass_filenames=False,
+            always_run=True,
+        )
+
+    def audit_dependencies(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `pip-audit`.
+        """
+        return self.check_args()

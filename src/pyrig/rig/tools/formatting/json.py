@@ -1,12 +1,14 @@
 """Wrapper around the pretty-format-json JSON formatter tool."""
 
+from typing import Any
+
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.file import FileTool
-from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.linting.json import JSONLinter
+from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
+from pyrig.rig.tools.version_control.hook_manager import VersionControlHookManager
 
 
-class JSONFormatter(FileTool):
+class JSONFormatter(Tool):
     """Type-safe wrapper for the pretty-format-json JSON formatter."""
 
     def group(self) -> str:
@@ -29,10 +31,6 @@ class JSONFormatter(FileTool):
         """Return the package providing `pretty-format-json`."""
         return ("pre-commit-hooks",)
 
-    def types(self) -> list[str]:
-        """Return the list of file types that `pretty-format-json` can format."""
-        return JSONLinter.I.types()
-
     def format_args(self, *args: str) -> Args:
         """Construct pretty-format-json formatting arguments at maximum strictness.
 
@@ -52,9 +50,38 @@ class JSONFormatter(FileTool):
         Returns:
             Args for `pretty-format-json --autofix --no-ensure-ascii --no-sort-keys`.
         """
-        return self.args(
-            "--autofix",
-            "--no-ensure-ascii",
-            "--no-sort-keys",
-            *args,
+        return self.args(*args)
+
+    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
+        """Return the JSON formatting hook.
+
+        Returns:
+            `format_json_hook`, wrapped in a single-element tuple.
+        """
+        return (self.format_json_hook(),)
+
+    def format_json_hook(self) -> dict[str, Any]:
+        """Return the hook metadata for formatting JSON files.
+
+        Runs after the sequential text-fixing chain, alongside the other
+        file-type-specific fixers.
+
+        Returns:
+            Hook metadata dict for `pretty-format-json`.
+        """
+        return VersionControlHookManager.I.hook(
+            self.format_json,
+            priority=VersionControlHookManager.I.increase_priority(
+                EndOfFileFormatter.I.format_end_of_file_hook(),
+            ),
+            types=["json"],
+            args=["--autofix", "--no-ensure-ascii", "--no-sort-keys"],
         )
+
+    def format_json(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `pretty-format-json`.
+        """
+        return self.format_args()

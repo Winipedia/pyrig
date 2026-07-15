@@ -52,9 +52,9 @@ class TestProjectTester:
         """Test method."""
         assert ProjectTester().link_url() == "https://pytest.org"
 
-    def test_version_control_ignore_paths(self) -> None:
+    def test_version_control_ignore_patterns(self) -> None:
         """Test method."""
-        assert ProjectTester().version_control_ignore_paths() == (
+        assert ProjectTester().version_control_ignore_patterns() == (
             ".pytest_cache/",
             ".coverage",
         )
