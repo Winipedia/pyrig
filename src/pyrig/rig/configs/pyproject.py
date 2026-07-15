@@ -85,7 +85,7 @@ class PyprojectConfigFile(TOMLConfigFile):
                     "Issues": RemoteVersionController.I.issues_url(),
                     "Changelog": RemoteVersionController.I.releases_url(),
                 },
-                "keywords": self.make_keywords(),
+                "keywords": sorted(self.make_keywords()),
                 "scripts": {
                     PackageManager.I.project_name(): (
                         f"{main.__name__}:{main.main.__name__}"
@@ -223,7 +223,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             "Typing :: Typed",
         ]
 
-    def make_keywords(self) -> list[str]:
+    def make_keywords(self) -> Iterable[str]:
         """Build the PyPI keywords for the project.
 
         Returns:
