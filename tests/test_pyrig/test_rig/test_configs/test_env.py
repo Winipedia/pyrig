@@ -1,6 +1,5 @@
 """module."""
 
-from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
 from typing import Any
@@ -8,18 +7,6 @@ from typing import Any
 import pytest
 
 from pyrig.rig.configs.env import EnvConfigFile
-
-
-@pytest.fixture
-def my_test_dotenv_config_file(
-    config_file_factory: Callable[[type[EnvConfigFile]], type[EnvConfigFile]],
-) -> type[EnvConfigFile]:
-    """Create a test dotenv config file class with tmp_path."""
-
-    class MyTestEnvConfigFile(config_file_factory(EnvConfigFile)):  # ty: ignore[unsupported-base]
-        """Test dotenv config file with tmp_path override."""
-
-    return MyTestEnvConfigFile
 
 
 class TestEnvConfigFile:
@@ -37,45 +24,43 @@ class TestEnvConfigFile:
         """Test method."""
         assert EnvConfigFile.I.version_control_ignored() is True
 
-    def test__load(self, my_test_dotenv_config_file: type[EnvConfigFile]) -> None:
+    def test__load(self) -> None:
         """Test method."""
-        with pytest.raises(RuntimeError):
-            my_test_dotenv_config_file().load()
+        with pytest.raises(RuntimeError, match=r".* should never be loaded."):
+            EnvConfigFile.I._load()  # noqa: SLF001
 
-    def test__dump(self, my_test_dotenv_config_file: type[EnvConfigFile]) -> None:
+    def test__dump(self) -> None:
         """Test method."""
-        # dump should raise RuntimeError if config is not empty (truthy)
         with pytest.raises(
-            RuntimeError,
+            ValueError,
             match=r"cannot dump to .*",
         ):
-            my_test_dotenv_config_file().dump({"key": "val"})
+            EnvConfigFile.I._dump({"key": "val"})  # noqa: SLF001
 
-        my_test_dotenv_config_file().dump({})
+        EnvConfigFile.I._dump({})  # noqa: SLF001
 
-    def test_extension(self, my_test_dotenv_config_file: type[EnvConfigFile]) -> None:
+    def test_extension(self) -> None:
         """Test method."""
-        assert my_test_dotenv_config_file().extension() == ""
+        assert EnvConfigFile.I.extension() == ""
 
-    def test_stem(self, my_test_dotenv_config_file: type[EnvConfigFile]) -> None:
+    def test_stem(self) -> None:
         """Test method."""
-        assert my_test_dotenv_config_file().stem() == ".env"
+        assert EnvConfigFile.I.stem() == ".env"
 
     def test_parent_path(
         self,
-        my_test_dotenv_config_file: type[EnvConfigFile],
         tmp_path: Path,
     ) -> None:
         """Test method."""
         # Should return Path() (root)
         with chdir(tmp_path):
             expected = Path()
-            actual = my_test_dotenv_config_file().parent_path()
+            actual = EnvConfigFile.I.parent_path()
             assert actual == expected, f"Expected {expected}, got {actual}"
 
-    def test__configs(self, my_test_dotenv_config_file: type[EnvConfigFile]) -> None:
+    def test__configs(self) -> None:
         """Test method."""
         # Should return empty dict
         expected: dict[str, Any] = {}
-        actual = my_test_dotenv_config_file().configs()
+        actual = EnvConfigFile.I.configs()
         assert actual == expected, f"Expected {expected}, got {actual}"
