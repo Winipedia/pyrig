@@ -108,12 +108,20 @@ def test_read_text_utf8(tmp_path: Path) -> None:
 
 def test_write_text_utf8(tmp_path: Path) -> None:
     """Test function."""
-    text = "Hello, world! 👋"
+    text = """Hello, world! 👋
+This is a test file with multiple lines.
+Another line here.
+End of file.
+"""
     file_path = tmp_path / "test_write.txt"
     write_text_utf8(file_path, text)
 
     result = file_path.read_text(encoding="utf-8")
     assert result == text
+
+    # check all line ending are lf, not crlf, even on Windows
+    content_bytes = file_path.read_bytes()
+    assert b"\r\n" not in content_bytes
 
     # assert the function .write_text is not used in this project
     # to ensure consistent UTF-8 encoding handling
