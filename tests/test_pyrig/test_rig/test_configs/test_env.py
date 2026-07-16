@@ -12,9 +12,12 @@ from pyrig.rig.configs.env import EnvConfigFile
 class TestEnvConfigFile:
     """Test class."""
 
-    def test_is_correct(self) -> None:
+    def test_is_correct(self, tmp_path: Path) -> None:
         """Test method."""
-        assert EnvConfigFile.I.is_correct()
+        with chdir(tmp_path):
+            assert not EnvConfigFile.I.is_correct()
+            EnvConfigFile.I.create_file()
+            assert EnvConfigFile.I.is_correct()
 
     def test_extension_separator(self) -> None:
         """Test method."""
