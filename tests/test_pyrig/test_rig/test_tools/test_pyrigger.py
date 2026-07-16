@@ -5,7 +5,7 @@ from pytest_mock import MockerFixture
 from pyrig.core.subprocesses import Args
 from pyrig.rig.cli.make import local
 from pyrig.rig.cli.subcommands import sync
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 
 

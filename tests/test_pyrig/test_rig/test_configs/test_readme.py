@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from pyrig.rig.configs.readme import ReadmeConfigFile
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class TestReadmeConfigFile:

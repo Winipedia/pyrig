@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pyrig.core.introspection.packages import make_package_dir
 from pyrig.rig.configs.base.python import PythonConfigFile
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 
 

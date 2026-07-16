@@ -20,7 +20,7 @@ from pyrig.core.introspection.modules import (
 from pyrig.core.introspection.paths import module_name_as_path
 from pyrig.core.strings import reformat_name
 from pyrig.rig.configs.base.package import PythonPackageConfigFile
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class CopyModuleConfigFile(PythonPackageConfigFile):

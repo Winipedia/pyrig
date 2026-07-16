@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class ProjectTester(Tool):

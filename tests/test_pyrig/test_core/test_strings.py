@@ -12,7 +12,7 @@ from pyrig.core.strings import (
     split_on_uppercase,
     write_text_utf8,
 )
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 
 

@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.tools.docs.builder import DocsBuilder
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class APIDocsConfigFile(MarkdownConfigFile):

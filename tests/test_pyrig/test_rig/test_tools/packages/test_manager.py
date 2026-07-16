@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 

@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from pyrig.rig.configs.base.package import PythonPackageConfigFile
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 @pytest.fixture

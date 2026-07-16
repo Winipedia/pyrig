@@ -5,7 +5,7 @@ from typing import Any
 
 from pyrig.rig.configs.base.yaml import YMLDictConfigFile
 from pyrig.rig.tools.docs.builder import DocsBuilder
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,

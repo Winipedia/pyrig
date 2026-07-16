@@ -8,7 +8,7 @@ from pyrig.rig.configs.version_control.remote.workflows.release import (
     ReleaseWorkflowConfigFile,
 )
 from pyrig.rig.tools.docs.builder import DocsBuilder
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class DeployWorkflowConfigFile(WorkflowConfigFile):
