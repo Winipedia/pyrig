@@ -7,6 +7,7 @@ from pyrig.core.iterate import (
     both_dicts_or_lists,
     both_lists,
     deep_sort_dict,
+    dict_insert_key,
     iterator_has_items,
     match_list_items,
     merge_nested_structures,
@@ -142,3 +143,22 @@ def test_deep_sort_dict() -> None:
 
     assert sorted_dict == unsorted  # values are unchanged
     assert sorted_dict is not unsorted  # a new dict is returned
+
+
+def test_dict_insert_key() -> None:
+    """Test function."""
+    d = {"a": 1, "b": 2}
+    dict_insert_key(d, index=1, key="c", value=3)
+    assert d == {"a": 1, "c": 3, "b": 2}
+
+    d = {"a": 1, "b": 2, "c": 3, "d": 4}
+    dict_insert_key(d, index=0, key="c", value=5)
+    assert d == {"c": 5, "a": 1, "b": 2, "d": 4}
+
+    d = {"a": 1, "b": 2, "c": 3, "d": 4}
+    dict_insert_key(d, index=2, key="b", value=5)
+    assert d == {"a": 1, "c": 3, "b": 5, "d": 4}
+
+    d = {"a": 1, "b": 2, "c": 3, "d": 4}
+    dict_insert_key(d, index=10, key="e", value=5)
+    assert d == {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}
