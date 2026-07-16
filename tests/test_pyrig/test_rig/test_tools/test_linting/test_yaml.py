@@ -42,7 +42,7 @@ class TestYAMLLinter:
         eof_hook = EndOfFileFormatter.I.format_end_of_file_hook()
         assert hook["priority"] > eof_hook["priority"]
         assert hook["types"] == ["yaml"]
-        assert hook["args"] == ["--fix", "--config-data", "extends: default"]
+        assert hook["args"] == ["--config-data=extends: default", "--fix"]
 
     def test_lint_yaml(self) -> None:
         """Test method."""
