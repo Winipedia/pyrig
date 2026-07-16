@@ -4,7 +4,7 @@ from typing import Any
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
-from pyrig.rig.tools.pyrigger import Pyrigger
+from pyrig.rig.tools.formatting.byte_order_marker import ByteOrderMarkerFormatter
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -53,8 +53,10 @@ class SpellChecker(Tool):
     def check_spelling_hook(self) -> dict[str, Any]:
         """Return the hook metadata for fixing spelling mistakes.
 
-        Runs after project synchronization, since syncing can create or
-        update the files this hook then spell-checks.
+        Runs right after the byte-order marker is stripped, so a leading
+        BOM is never mistaken for part of the first word on the line. That
+        hook itself runs right after project synchronization, since syncing
+        can create or update the files this hook then spell-checks.
 
         Returns:
             Hook metadata dict for `typos --write-changes`.
@@ -62,7 +64,7 @@ class SpellChecker(Tool):
         return VersionControlHookManager.I.hook(
             self.fix_spelling,
             priority=VersionControlHookManager.I.increase_priority(
-                Pyrigger.I.synchronize_project_hook(),
+                ByteOrderMarkerFormatter.I.fix_byte_order_marker_hook(),
             ),
             types=["text"],
             args=["--write-changes"],

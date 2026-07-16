@@ -59,7 +59,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10
 always_run = true
 pass_filenames = false
 
@@ -79,6 +79,22 @@ always_run = true
 pass_filenames = false
 
 [[repos.hooks]]
+id = "fix-byte-order-marker"
+name = "fix byte order marker"
+language = "system"
+entry = "fix-byte-order-marker"
+types = [
+  "text",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 3
+
+[[repos.hooks]]
 id = "fix-spelling"
 name = "fix spelling"
 language = "system"
@@ -95,7 +111,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 3
+priority = 4
 
 [[repos.hooks]]
 id = "fix-mixed-line-ending"
@@ -114,7 +130,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 4
+priority = 5
 
 [[repos.hooks]]
 id = "fix-trailing-whitespace"
@@ -130,7 +146,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 5
+priority = 6
 
 [[repos.hooks]]
 id = "fix-end-of-file"
@@ -146,7 +162,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 6
+priority = 7
 
 [[repos.hooks]]
 id = "format-json"
@@ -167,7 +183,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 7
+priority = 8
 
 [[repos.hooks]]
 id = "format-markdown"
@@ -183,7 +199,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 7
+priority = 8
 
 [[repos.hooks]]
 id = "format-shell"
@@ -205,7 +221,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 7
+priority = 8
 
 [[repos.hooks]]
 id = "format-toml"
@@ -222,7 +238,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 7
+priority = 8
 
 [[repos.hooks]]
 id = "lint-python"
@@ -241,7 +257,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 7
+priority = 8
 
 [[repos.hooks]]
 id = "lint-yaml"
@@ -261,7 +277,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 7
+priority = 8
 
 [[repos.hooks]]
 id = "format-python"
@@ -277,7 +293,20 @@ stages = [
 groups = [
   "all",
 ]
-priority = 8
+priority = 9
+
+[[repos.hooks]]
+id = "check-case-conflict"
+name = "check case conflict"
+language = "system"
+entry = "check-case-conflict"
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 10
 
 [[repos.hooks]]
 id = "check-dependencies"
@@ -294,7 +323,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10
 pass_filenames = false
 
 [[repos.hooks]]
@@ -308,7 +337,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10
 
 [[repos.hooks]]
 id = "check-merge-conflict"
@@ -324,7 +353,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10
 
 [[repos.hooks]]
 id = "check-secrets"
@@ -340,7 +369,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10
 
 [[repos.hooks]]
 id = "check-security"
@@ -359,7 +388,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10
 
 [[repos.hooks]]
 id = "check-test-naming"
@@ -379,7 +408,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10
 
 [[repos.hooks]]
 id = "check-types"
@@ -395,7 +424,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10
 pass_filenames = false
 
 [[repos.hooks]]
@@ -412,7 +441,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10
 
 [[repos.hooks]]
 id = "lint-markdown"
@@ -428,7 +457,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10
 
 [[repos.hooks]]
 id = "lint-shell"
@@ -449,7 +478,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10
 
 [[repos.hooks]]
 id = "lint-toml"
@@ -469,4 +498,4 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10

@@ -1,7 +1,7 @@
 """module."""
 
+from pyrig.rig.tools.formatting.byte_order_marker import ByteOrderMarkerFormatter
 from pyrig.rig.tools.language.spelling import SpellChecker
-from pyrig.rig.tools.pyrigger import Pyrigger
 
 
 class TestSpellChecker:
@@ -41,10 +41,10 @@ class TestSpellChecker:
 
     def test_check_spelling_hook(self) -> None:
         """Test method."""
-        # spelling is checked after the project has been synchronized
+        # spelling is checked right after the byte-order marker is stripped
         hook = SpellChecker.I.check_spelling_hook()
-        sync_hook = Pyrigger.I.synchronize_project_hook()
-        assert hook["priority"] > sync_hook["priority"]
+        bom_hook = ByteOrderMarkerFormatter.I.fix_byte_order_marker_hook()
+        assert hook["priority"] > bom_hook["priority"]
         assert hook["types"] == ["text"]
         assert hook["args"] == ["--write-changes"]
 
