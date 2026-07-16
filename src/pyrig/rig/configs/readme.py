@@ -6,7 +6,7 @@ Manages README.md as a badge-augmented Markdown file at the project root.
 from pathlib import Path
 
 from pyrig.rig.configs.base.badges import BadgesConfigFile
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class ReadmeConfigFile(BadgesConfigFile):

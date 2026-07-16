@@ -13,7 +13,7 @@ from pyrig.core.strings import (
 )
 from pyrig.rig.configs.base.yaml import YMLDictConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote.controller import (

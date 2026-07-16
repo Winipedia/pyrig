@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,
 )

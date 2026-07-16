@@ -6,7 +6,7 @@ from pathlib import Path
 from types import ModuleType
 
 from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig.rig.tools.testing.project import ProjectTester
 

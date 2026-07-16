@@ -5,7 +5,7 @@ from pathlib import Path
 
 from pyrig.core.strings import make_linked_badge_markdown
 from pyrig.rig.tools.base.tool import Group, Tool
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
 
 

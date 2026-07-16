@@ -5,7 +5,7 @@ from pytest_mock import MockerFixture
 from pyrig.rig import tools
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.base.tool import Group, Tool
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.testing.project import ProjectTester
 
 

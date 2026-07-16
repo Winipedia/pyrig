@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from pyrig.rig.configs.base.config_file import DictConfigFile
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class PyTypedConfigFile(DictConfigFile):
