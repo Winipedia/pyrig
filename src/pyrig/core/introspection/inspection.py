@@ -1,12 +1,18 @@
 """Utilities for locating an object's source definition line."""
 
 import inspect
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
+from types import CodeType, FrameType, ModuleType, TracebackType
+from typing import Any
 
 from pyrig_runtime.core.introspection.inspection import unwrap_obj
 
 
-def def_line_sorted[T: object](objs: Iterable[T]) -> list[T]:
+def def_line_sorted[
+    T: ModuleType | type | Callable[..., Any] | FrameType | TracebackType | CodeType,
+](
+    objs: Iterable[T],
+) -> list[T]:
     """Sort objects by their source definition line number.
 
     Args:
@@ -18,7 +24,9 @@ def def_line_sorted[T: object](objs: Iterable[T]) -> list[T]:
     return sorted(objs, key=def_line)
 
 
-def def_line(obj: object) -> int:
+def def_line(
+    obj: ModuleType | type | Callable[..., Any] | FrameType | TracebackType | CodeType,
+) -> int:
     """Return the 1-based source line where an object is defined.
 
     For properties, classmethods, staticmethods, and decorated callables, the

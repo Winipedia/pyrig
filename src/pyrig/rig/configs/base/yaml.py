@@ -35,7 +35,6 @@ _YAML = YAML()
 _YAML.indent(mapping=2, sequence=4, offset=2)
 _YAML.explicit_start = True
 _YAML.explicit_end = True
-_YAML.width = 4096
 _YAML.compact_seq_map = False
 _YAML.representer.add_representer(str, _represent_str)
 
@@ -46,17 +45,17 @@ class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
     Parses and serializes YAML content using `ruamel.yaml`, which refuses to
     construct or represent arbitrary Python objects (only ruamel.yaml's
     separate, deprecated "unsafe" mode does that). Sequences are indented
-    under their parent key, a mapping inside a sequence item starts on its
-    own line below the `-` rather than sharing its line, and long scalars
-    are never line-wrapped by the dumper, so line length is governed by the
-    actual content and a linter, not by ruamel.yaml silently folding a
-    value.
+    under their parent key, and a mapping inside a sequence item starts on
+    its own line below the `-` rather than sharing its line.
 
     Every plain `str` is double-quoted automatically (e.g. GitHub Actions'
     `on:` key needs no special handling), and any string containing a
     newline is written as a literal block scalar automatically (e.g. a
     multi-line shell script), so subclasses never need to reach for
-    `ruamel.yaml.scalarstring` themselves.
+    `ruamel.yaml.scalarstring` themselves. Long single-line strings are
+    wrapped across multiple physical lines by the dumper at ruamel's
+    default 80-character width for readability; the wrapped lines are
+    folded back into the original single-line value on load.
 
     Subclasses must implement `parent_path()`, `stem()`, and `_configs()`.
 

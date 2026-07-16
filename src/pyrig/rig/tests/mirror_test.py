@@ -542,7 +542,7 @@ class {test_class_name}:
         raise {NotImplementedError.__name__}
 '''
 
-    def test_func_name(self, func: FunctionType | MethodType) -> str:
+    def test_func_name(self, func: FunctionType | MethodType | type) -> str:
         """Return the expected test function name for a given source function.
 
         Args:
@@ -553,7 +553,7 @@ class {test_class_name}:
         """
         return self.test_func_prefix() + func.__name__
 
-    def test_cls_name(self, cls: type) -> str:
+    def test_cls_name(self, cls: type | FunctionType | MethodType) -> str:
         """Return the expected test class name for a given source class.
 
         Args:
