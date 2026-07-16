@@ -71,12 +71,6 @@ class TestPyrigger:
         result = Pyrigger.I.cmd_args("--help", cmd=my_command)
         assert result == ("pyrig", "my-command", "--help")
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert Pyrigger.I.version_control_hooks() == (
-            Pyrigger.I.synchronize_project_hook(),
-        )
-
     def test_synchronize_project_hook(self) -> None:
         """Test method."""
         # syncing depends on dependencies already being installed
@@ -89,3 +83,7 @@ class TestPyrigger:
     def test_synchronize_project(self) -> None:
         """Test method."""
         assert Pyrigger.I.synchronize_project() == Pyrigger.I.cmd_args(cmd=sync)
+
+    def test_hooks(self) -> None:
+        """Test method."""
+        assert Pyrigger.I.hooks() == (Pyrigger.I.synchronize_project_hook(),)

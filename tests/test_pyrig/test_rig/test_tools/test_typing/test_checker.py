@@ -34,10 +34,6 @@ class TestTypeChecker:
         result = TypeChecker.I.check_args()
         assert result == ("ty", "check")
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert TypeChecker.I.version_control_hooks() == (TypeChecker.I.check_hook(),)
-
     def test_check_hook(self) -> None:
         """Test method."""
         # type checking runs after Python formatting, anchoring the checks tier

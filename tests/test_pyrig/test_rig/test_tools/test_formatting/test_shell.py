@@ -39,12 +39,6 @@ class TestShellFormatter:
         result = ShellFormatter.I.format_args()
         assert result == ("shfmt",)
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert ShellFormatter.I.version_control_hooks() == (
-            ShellFormatter.I.format_hook(),
-        )
-
     def test_format_hook(self) -> None:
         """Test method."""
         # shell formatting runs after the sequential text-fixing chain

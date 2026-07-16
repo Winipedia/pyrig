@@ -35,12 +35,6 @@ class TestDependencyAuditor:
         args = DependencyAuditor.I.check_args("--format", "json")
         assert isinstance(args, Args)
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert DependencyAuditor.I.version_control_hooks() == (
-            DependencyAuditor.I.check_hook(),
-        )
-
     def test_check_hook(self) -> None:
         """Test method."""
         # runs on transition stages, but ties its priority to the checks tier

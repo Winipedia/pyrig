@@ -42,12 +42,6 @@ class TestEndOfLineFormatter:
         result = EndOfLineFormatter.I.format_args()
         assert result == ("mixed-line-ending",)
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert EndOfLineFormatter.I.version_control_hooks() == (
-            EndOfLineFormatter.I.format_hook(),
-        )
-
     def test_format_hook(self) -> None:
         """Test method."""
         # mixed line endings are normalized right after spelling is fixed,

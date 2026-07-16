@@ -31,12 +31,6 @@ class TestDependencyChecker:
         """Test method."""
         assert DependencyChecker.I.link_url() == "https://github.com/osprey-oss/deptry"
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert DependencyChecker.I.version_control_hooks() == (
-            DependencyChecker.I.check_hook(),
-        )
-
     def test_check_hook(self) -> None:
         """Test method."""
         # ties into the checks tier rather than running after it

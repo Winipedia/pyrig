@@ -42,12 +42,6 @@ class TestTrailingWhitespaceFormatter:
         result = TrailingWhitespaceFormatter.I.format_args()
         assert result == ("trailing-whitespace-fixer",)
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert TrailingWhitespaceFormatter.I.version_control_hooks() == (
-            TrailingWhitespaceFormatter.I.format_hook(),
-        )
-
     def test_format_hook(self) -> None:
         """Test method."""
         # trailing whitespace is fixed after spelling, so a spelling fix

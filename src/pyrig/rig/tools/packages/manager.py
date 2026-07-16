@@ -7,11 +7,12 @@ from typing import Any
 from pyrig_runtime.core.strings import kebab_to_snake_case, snake_to_kebab_case
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.base.hooks import VersionControlHookTool
+from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
-class PackageManager(Tool):
+class PackageManager(VersionControlHookTool):
     """`uv` package manager wrapper and source of project layout conventions.
 
     Beyond the `*_args` methods that build commands for `uv`, this also
@@ -230,7 +231,7 @@ class PackageManager(Tool):
         """
         return self.args("build", *args)
 
-    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
+    def hooks(self) -> tuple[dict[str, Any], ...]:
         """Return the dependency update and install hooks.
 
         Returns:

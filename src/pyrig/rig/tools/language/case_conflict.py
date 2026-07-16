@@ -3,12 +3,13 @@
 from typing import Any
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.base.hooks import CheckHookTool
+from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
-class CaseConflictChecker(Tool):
+class CaseConflictChecker(CheckHookTool):
     """Type-safe wrapper for the pre-commit-hooks case conflict checker."""
 
     def group(self) -> str:
@@ -46,14 +47,6 @@ class CaseConflictChecker(Tool):
             Args for `check-case-conflict`.
         """
         return self.args(*args)
-
-    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return the case conflict check hook.
-
-        Returns:
-            `check_hook`, wrapped in a single-element tuple.
-        """
-        return (self.check_hook(),)
 
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for checking for case-conflicting filenames.

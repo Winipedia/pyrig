@@ -39,13 +39,6 @@ class TestMarkdownLinter:
         result = MarkdownLinter.I.check_args()
         assert result == ("rumdl", "check")
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert MarkdownLinter.I.version_control_hooks() == (
-            MarkdownLinter.I.check_hook(),
-            MarkdownLinter.I.format_hook(),
-        )
-
     def test_check_hook(self) -> None:
         """Test method."""
         hook = MarkdownLinter.I.check_hook()

@@ -42,12 +42,6 @@ class TestJSONFormatter:
         result = JSONFormatter.I.format_args()
         assert result == ("pretty-format-json",)
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert JSONFormatter.I.version_control_hooks() == (
-            JSONFormatter.I.format_hook(),
-        )
-
     def test_format_hook(self) -> None:
         """Test method."""
         # JSON formatting runs after the sequential text-fixing chain

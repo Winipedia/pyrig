@@ -3,12 +3,13 @@
 from typing import Any
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.base.hooks import CheckHookTool
+from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
-class DependencyAuditor(Tool):
+class DependencyAuditor(CheckHookTool):
     """`pip-audit` command wrapper.
 
     Intentionally minimal so that downstream projects can subclass and
@@ -42,14 +43,6 @@ class DependencyAuditor(Tool):
             Args for running `pip-audit` with the given flags.
         """
         return self.args(*args)
-
-    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return the dependency vulnerability audit hook.
-
-        Returns:
-            `check_hook`, wrapped in a single-element tuple.
-        """
-        return (self.check_hook(),)
 
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for auditing installed dependencies.

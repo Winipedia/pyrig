@@ -10,6 +10,7 @@ from pyrig_runtime.core.strings import snake_to_kebab_case
 import pyrig
 from pyrig.core.subprocesses import Args
 from pyrig.rig.cli.subcommands import sync
+from pyrig.rig.tools.base.hooks import VersionControlHookTool
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
@@ -18,7 +19,7 @@ from pyrig.rig.tools.version_control.hooks.manager import (
 )
 
 
-class Pyrigger(Tool):
+class Pyrigger(VersionControlHookTool):
     """Pyrig CLI wrapper and new-project initialization orchestrator."""
 
     def group(self) -> str:
@@ -137,7 +138,7 @@ class Pyrigger(Tool):
         """
         return snake_to_kebab_case(pyrig_runtime.__name__)
 
-    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
+    def hooks(self) -> tuple[dict[str, Any], ...]:
         """Return the project-synchronization hook.
 
         Returns:

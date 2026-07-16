@@ -4,14 +4,15 @@ import re
 from typing import Any
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.base.hooks import CheckFormatHookTool
+from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
-class TOMLLinter(Tool):
+class TOMLLinter(CheckFormatHookTool):
     """`tombi` command wrapper for linting and formatting."""
 
     def group(self) -> str:
@@ -51,14 +52,6 @@ class TOMLLinter(Tool):
             Args for `tombi format`.
         """
         return self.args("format", *args)
-
-    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return the TOML linting and formatting hooks.
-
-        Returns:
-            `check_hook` and `format_hook`, in that order.
-        """
-        return (self.check_hook(), self.format_hook())
 
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting TOML files.

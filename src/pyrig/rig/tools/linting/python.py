@@ -3,12 +3,13 @@
 from typing import Any
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.base.hooks import CheckFormatHookTool
+from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
-class PythonLinter(Tool):
+class PythonLinter(CheckFormatHookTool):
     """`ruff` command wrapper for linting, auto-fixing, and formatting."""
 
     def group(self) -> str:
@@ -56,14 +57,6 @@ class PythonLinter(Tool):
     def pydocstyle(self) -> str:
         """Return `google` as the docstring standard."""
         return "google"
-
-    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return the Python linting and formatting hooks.
-
-        Returns:
-            `check_hook` and `format_hook`, in that order.
-        """
-        return (self.check_hook(), self.format_hook())
 
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting and auto-fixing Python source.

@@ -42,12 +42,6 @@ class TestMergeConflictChecker:
         result = MergeConflictChecker.I.check_args()
         assert result == ("check-merge-conflict",)
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert MergeConflictChecker.I.version_control_hooks() == (
-            MergeConflictChecker.I.check_hook(),
-        )
-
     def test_check_hook(self) -> None:
         """Test method."""
         # ties into the checks tier rather than running after it

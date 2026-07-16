@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from pyrig.rig.configs.base.toml import TOMLConfigFile
+from pyrig.rig.tools.base.hooks import VersionControlHookTool
 from pyrig.rig.tools.version_control.hooks.manager import (
     VersionControlHookManager,
 )
@@ -60,4 +61,6 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
 
         Sorted via `sort_hooks` purely for readability of the generated file.
         """
-        return VersionControlHookManager.I.subclasses_hooks()
+        return VersionControlHookTool.sort_hooks(
+            VersionControlHookTool.subclasses_hooks(),
+        )
