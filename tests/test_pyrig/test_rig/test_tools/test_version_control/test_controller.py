@@ -207,14 +207,17 @@ class TestVersionController:
 
     def test_normalized_username(self, mocker: MockerFixture) -> None:
         """Test method."""
-        result = VersionController.I.normalized_username()
-        assert result == "Winipedia"
-
         mock_run = mocker.patch.object(
             Args,
             Args.run_cached.__name__,
-            return_value=mocker.Mock(stdout="Some User\n"),
+            return_value=mocker.Mock(stdout="Winipedia\n"),
         )
+
         result = VersionController.I.normalized_username()
         mock_run.assert_called_once()
+        assert result == "Winipedia"
+
+        mock_run.return_value = mocker.Mock(stdout="Some User\n")
+        result = VersionController.I.normalized_username()
+        mock_run.call_count = 2
         assert result == "SomeUser"
