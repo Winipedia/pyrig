@@ -52,11 +52,11 @@ class EndOfFileFormatter(Tool):
         """Return the end-of-file hook.
 
         Returns:
-            `format_end_of_file_hook`, wrapped in a single-element tuple.
+            `format_hook`, wrapped in a single-element tuple.
         """
-        return (self.format_end_of_file_hook(),)
+        return (self.format_hook(),)
 
-    def format_end_of_file_hook(self) -> dict[str, Any]:
+    def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for fixing a file's trailing newline.
 
         Runs last among the sequential text-fixing hooks: it normalizes
@@ -69,7 +69,7 @@ class EndOfFileFormatter(Tool):
         return VersionControlHookManager.I.hook(
             self.fix_end_of_file,
             priority=VersionControlHookManager.I.increase_priority(
-                TrailingWhitespaceFormatter.I.format_trailing_whitespace_hook(),
+                TrailingWhitespaceFormatter.I.format_hook(),
             ),
             types=["text"],
         )

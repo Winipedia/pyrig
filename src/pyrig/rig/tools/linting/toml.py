@@ -56,11 +56,11 @@ class TOMLLinter(Tool):
         """Return the TOML linting and formatting hooks.
 
         Returns:
-            `lint_toml_hook` and `format_toml_hook`, in that order.
+            `lint_hook` and `format_hook`, in that order.
         """
-        return (self.lint_toml_hook(), self.format_toml_hook())
+        return (self.lint_hook(), self.format_hook())
 
-    def lint_toml_hook(self) -> dict[str, Any]:
+    def lint_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting TOML files.
 
         tombi's lint has no auto-fix mode, so unlike the other linters it
@@ -73,7 +73,7 @@ class TOMLLinter(Tool):
         the package manager writes or reformats it, so tombi shouldn't
         weigh in on it.
 
-        Ties its priority to `TypeChecker.check_types_hook` so it runs
+        Ties its priority to `TypeChecker.check_hook` so it runs
         alongside the rest of the checks tier rather than after it.
 
         Returns:
@@ -82,7 +82,7 @@ class TOMLLinter(Tool):
         return VersionControlHookManager.I.hook(
             self.lint_toml,
             priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_types_hook(),
+                TypeChecker.I.check_hook(),
             ),
             types=["toml"],
             exclude=self.lock_file_exclude_pattern(),
@@ -97,12 +97,12 @@ class TOMLLinter(Tool):
         """
         return self.lint_args()
 
-    def format_toml_hook(self) -> dict[str, Any]:
+    def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting TOML files.
 
         tombi lint never mutates a file, so there's no fix for formatting
         to run after; this can sit with the other file-type-specific
-        fixers instead of being chained after `lint_toml_hook`.
+        fixers instead of being chained after `lint_hook`.
 
         Runs after the sequential text-fixing chain, alongside the other
         file-type-specific fixers.
@@ -118,7 +118,7 @@ class TOMLLinter(Tool):
         return VersionControlHookManager.I.hook(
             self.format_toml,
             priority=VersionControlHookManager.I.increase_priority(
-                EndOfFileFormatter.I.format_end_of_file_hook(),
+                EndOfFileFormatter.I.format_hook(),
             ),
             types=["toml"],
             exclude=self.lock_file_exclude_pattern(),

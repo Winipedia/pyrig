@@ -47,14 +47,14 @@ class SecretsChecker(Tool):
         """Return the secrets scanning hook.
 
         Returns:
-            `check_secrets_hook`, wrapped in a single-element tuple.
+            `check_hook`, wrapped in a single-element tuple.
         """
-        return (self.check_secrets_hook(),)
+        return (self.check_hook(),)
 
-    def check_secrets_hook(self) -> dict[str, Any]:
+    def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for scanning for committed secrets.
 
-        Ties its priority to `TypeChecker.check_types_hook` so it runs
+        Ties its priority to `TypeChecker.check_hook` so it runs
         alongside the rest of the checks tier rather than after it.
 
         Returns:
@@ -63,7 +63,7 @@ class SecretsChecker(Tool):
         return VersionControlHookManager.I.hook(
             self.check_secrets,
             priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_types_hook(),
+                TypeChecker.I.check_hook(),
             ),
             types=["text"],
         )

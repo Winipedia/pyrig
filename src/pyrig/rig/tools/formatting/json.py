@@ -56,11 +56,11 @@ class JSONFormatter(Tool):
         """Return the JSON formatting hook.
 
         Returns:
-            `format_json_hook`, wrapped in a single-element tuple.
+            `format_hook`, wrapped in a single-element tuple.
         """
-        return (self.format_json_hook(),)
+        return (self.format_hook(),)
 
-    def format_json_hook(self) -> dict[str, Any]:
+    def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting JSON files.
 
         Runs after the sequential text-fixing chain, alongside the other
@@ -72,7 +72,7 @@ class JSONFormatter(Tool):
         return VersionControlHookManager.I.hook(
             self.format_json,
             priority=VersionControlHookManager.I.increase_priority(
-                EndOfFileFormatter.I.format_end_of_file_hook(),
+                EndOfFileFormatter.I.format_hook(),
             ),
             types=["json"],
             args=["--autofix", "--no-ensure-ascii", "--no-sort-keys"],

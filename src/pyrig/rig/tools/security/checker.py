@@ -53,14 +53,14 @@ class SecurityChecker(Tool):
         """Return the security scanning hook.
 
         Returns:
-            `check_security_hook`, wrapped in a single-element tuple.
+            `check_hook`, wrapped in a single-element tuple.
         """
-        return (self.check_security_hook(),)
+        return (self.check_hook(),)
 
-    def check_security_hook(self) -> dict[str, Any]:
+    def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for scanning Python source for vulnerabilities.
 
-        Ties its priority to `TypeChecker.check_types_hook` so it runs
+        Ties its priority to `TypeChecker.check_hook` so it runs
         alongside the rest of the checks tier rather than after it.
 
         Returns:
@@ -69,7 +69,7 @@ class SecurityChecker(Tool):
         return VersionControlHookManager.I.hook(
             self.check_security,
             priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_types_hook(),
+                TypeChecker.I.check_hook(),
             ),
             types=["python"],
             args=[

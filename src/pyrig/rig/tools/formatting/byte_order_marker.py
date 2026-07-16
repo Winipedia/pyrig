@@ -51,11 +51,11 @@ class ByteOrderMarkerFormatter(Tool):
         """Return the byte-order-marker hook.
 
         Returns:
-            `fix_byte_order_marker_hook`, wrapped in a single-element tuple.
+            `format_hook`, wrapped in a single-element tuple.
         """
-        return (self.fix_byte_order_marker_hook(),)
+        return (self.format_hook(),)
 
-    def fix_byte_order_marker_hook(self) -> dict[str, Any]:
+    def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for stripping a leading byte-order mark.
 
         Runs first among the sequential text-fixing hooks, right after

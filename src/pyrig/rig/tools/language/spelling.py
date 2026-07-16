@@ -46,11 +46,11 @@ class SpellChecker(Tool):
         """Return the spelling hook.
 
         Returns:
-            `check_spelling_hook`, wrapped in a single-element tuple.
+            `check_hook`, wrapped in a single-element tuple.
         """
-        return (self.check_spelling_hook(),)
+        return (self.check_hook(),)
 
-    def check_spelling_hook(self) -> dict[str, Any]:
+    def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for fixing spelling mistakes.
 
         Runs right after the byte-order marker is stripped, so a leading
@@ -64,7 +64,7 @@ class SpellChecker(Tool):
         return VersionControlHookManager.I.hook(
             self.fix_spelling,
             priority=VersionControlHookManager.I.increase_priority(
-                ByteOrderMarkerFormatter.I.fix_byte_order_marker_hook(),
+                ByteOrderMarkerFormatter.I.format_hook(),
             ),
             types=["text"],
             args=["--write-changes"],

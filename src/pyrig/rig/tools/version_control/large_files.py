@@ -50,16 +50,16 @@ class LargeFileChecker(Tool):
         """Return the large file check hook.
 
         Returns:
-            `check_large_files_hook`, wrapped in a single-element tuple.
+            `check_hook`, wrapped in a single-element tuple.
         """
-        return (self.check_large_files_hook(),)
+        return (self.check_hook(),)
 
-    def check_large_files_hook(self) -> dict[str, Any]:
+    def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for checking for accidentally added large files.
 
         Left without a `types` restriction so it matches every file,
         binary included, since a large binary is exactly what this check
-        exists to catch. Ties its priority to `TypeChecker.check_types_hook`
+        exists to catch. Ties its priority to `TypeChecker.check_hook`
         so it runs alongside the rest of the checks tier rather than after
         it.
 
@@ -69,7 +69,7 @@ class LargeFileChecker(Tool):
         return VersionControlHookManager.I.hook(
             self.check_large_files,
             priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_types_hook(),
+                TypeChecker.I.check_hook(),
             ),
         )
 

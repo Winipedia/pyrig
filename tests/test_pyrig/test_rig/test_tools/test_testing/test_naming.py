@@ -46,14 +46,14 @@ class TestModuleTestNamingChecker:
     def test_version_control_hooks(self) -> None:
         """Test method."""
         assert ModuleTestNamingChecker.I.version_control_hooks() == (
-            ModuleTestNamingChecker.I.check_test_naming_hook(),
+            ModuleTestNamingChecker.I.check_hook(),
         )
 
-    def test_check_test_naming_hook(self) -> None:
+    def test_check_hook(self) -> None:
         """Test method."""
         # ties into the checks tier rather than running after it
-        hook = ModuleTestNamingChecker.I.check_test_naming_hook()
-        types_hook = TypeChecker.I.check_types_hook()
+        hook = ModuleTestNamingChecker.I.check_hook()
+        types_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == types_hook["priority"]
         assert hook["types"] == ["python"]
         assert hook["files"] == f"^{ProjectTester.I.package_root().as_posix()}/"

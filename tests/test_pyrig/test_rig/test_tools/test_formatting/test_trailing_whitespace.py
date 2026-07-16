@@ -45,15 +45,15 @@ class TestTrailingWhitespaceFormatter:
     def test_version_control_hooks(self) -> None:
         """Test method."""
         assert TrailingWhitespaceFormatter.I.version_control_hooks() == (
-            TrailingWhitespaceFormatter.I.format_trailing_whitespace_hook(),
+            TrailingWhitespaceFormatter.I.format_hook(),
         )
 
-    def test_format_trailing_whitespace_hook(self) -> None:
+    def test_format_hook(self) -> None:
         """Test method."""
         # trailing whitespace is fixed after spelling, so a spelling fix
         # can't reintroduce whitespace this hook already cleaned up
-        hook = TrailingWhitespaceFormatter.I.format_trailing_whitespace_hook()
-        spelling_hook = SpellChecker.I.check_spelling_hook()
+        hook = TrailingWhitespaceFormatter.I.format_hook()
+        spelling_hook = SpellChecker.I.check_hook()
         assert hook["priority"] > spelling_hook["priority"]
         assert hook["types"] == ["text"]
 

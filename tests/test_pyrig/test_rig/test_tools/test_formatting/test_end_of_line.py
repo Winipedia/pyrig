@@ -45,16 +45,16 @@ class TestEndOfLineFormatter:
     def test_version_control_hooks(self) -> None:
         """Test method."""
         assert EndOfLineFormatter.I.version_control_hooks() == (
-            EndOfLineFormatter.I.format_mixed_line_ending_hook(),
+            EndOfLineFormatter.I.format_hook(),
         )
 
-    def test_format_mixed_line_ending_hook(self) -> None:
+    def test_format_hook(self) -> None:
         """Test method."""
         # mixed line endings are normalized right after spelling is fixed,
         # so the later whitespace and end-of-file fixers never see a stray
         # carriage return left over from a non-LF line ending
-        hook = EndOfLineFormatter.I.format_mixed_line_ending_hook()
-        spelling_hook = SpellChecker.I.check_spelling_hook()
+        hook = EndOfLineFormatter.I.format_hook()
+        spelling_hook = SpellChecker.I.check_hook()
         assert hook["priority"] > spelling_hook["priority"]
         assert hook["types"] == ["text"]
         assert hook["args"] == ["--fix=lf"]

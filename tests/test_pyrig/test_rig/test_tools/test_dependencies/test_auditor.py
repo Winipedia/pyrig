@@ -38,14 +38,14 @@ class TestDependencyAuditor:
     def test_version_control_hooks(self) -> None:
         """Test method."""
         assert DependencyAuditor.I.version_control_hooks() == (
-            DependencyAuditor.I.check_dependencies_hook(),
+            DependencyAuditor.I.check_hook(),
         )
 
-    def test_check_dependencies_hook(self) -> None:
+    def test_check_hook(self) -> None:
         """Test method."""
         # runs on transition stages, but ties its priority to the checks tier
-        hook = DependencyAuditor.I.check_dependencies_hook()
-        types_hook = TypeChecker.I.check_types_hook()
+        hook = DependencyAuditor.I.check_hook()
+        types_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == types_hook["priority"]
         assert hook["stages"] == VersionControlHookManager.I.transition_stages()
         assert hook["always_run"] is True

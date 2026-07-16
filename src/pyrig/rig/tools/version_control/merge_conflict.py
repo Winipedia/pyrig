@@ -51,14 +51,14 @@ class MergeConflictChecker(Tool):
         """Return the merge conflict marker check hook.
 
         Returns:
-            `check_merge_conflict_hook`, wrapped in a single-element tuple.
+            `check_hook`, wrapped in a single-element tuple.
         """
-        return (self.check_merge_conflict_hook(),)
+        return (self.check_hook(),)
 
-    def check_merge_conflict_hook(self) -> dict[str, Any]:
+    def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for checking for merge conflict markers.
 
-        Ties its priority to `TypeChecker.check_types_hook` so it runs
+        Ties its priority to `TypeChecker.check_hook` so it runs
         alongside the rest of the checks tier rather than after it.
 
         Returns:
@@ -67,7 +67,7 @@ class MergeConflictChecker(Tool):
         return VersionControlHookManager.I.hook(
             self.check_merge_conflict,
             priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_types_hook(),
+                TypeChecker.I.check_hook(),
             ),
             types=["text"],
         )

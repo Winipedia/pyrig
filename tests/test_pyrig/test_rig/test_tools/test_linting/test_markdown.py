@@ -42,14 +42,14 @@ class TestMarkdownLinter:
     def test_version_control_hooks(self) -> None:
         """Test method."""
         assert MarkdownLinter.I.version_control_hooks() == (
-            MarkdownLinter.I.lint_markdown_hook(),
-            MarkdownLinter.I.format_markdown_hook(),
+            MarkdownLinter.I.lint_hook(),
+            MarkdownLinter.I.format_hook(),
         )
 
-    def test_lint_markdown_hook(self) -> None:
+    def test_lint_hook(self) -> None:
         """Test method."""
-        hook = MarkdownLinter.I.lint_markdown_hook()
-        type_check_hook = TypeChecker.I.check_types_hook()
+        hook = MarkdownLinter.I.lint_hook()
+        type_check_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == type_check_hook["priority"]
         assert hook["types"] == ["markdown"]
 
@@ -62,11 +62,11 @@ class TestMarkdownLinter:
         result = MarkdownLinter.I.format_args()
         assert result == ("rumdl", "fmt")
 
-    def test_format_markdown_hook(self) -> None:
+    def test_format_hook(self) -> None:
         """Test method."""
         # Markdown formatting runs after the sequential text-fixing chain
-        hook = MarkdownLinter.I.format_markdown_hook()
-        eof_hook = EndOfFileFormatter.I.format_end_of_file_hook()
+        hook = MarkdownLinter.I.format_hook()
+        eof_hook = EndOfFileFormatter.I.format_hook()
         assert hook["priority"] > eof_hook["priority"]
         assert hook["types"] == ["markdown"]
 

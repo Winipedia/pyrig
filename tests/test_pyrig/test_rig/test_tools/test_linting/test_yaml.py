@@ -33,13 +33,13 @@ class TestYAMLLinter:
 
     def test_version_control_hooks(self) -> None:
         """Test method."""
-        assert YAMLLinter.I.version_control_hooks() == (YAMLLinter.I.lint_yaml_hook(),)
+        assert YAMLLinter.I.version_control_hooks() == (YAMLLinter.I.lint_hook(),)
 
-    def test_lint_yaml_hook(self) -> None:
+    def test_lint_hook(self) -> None:
         """Test method."""
         # YAML linting runs after the sequential text-fixing chain
-        hook = YAMLLinter.I.lint_yaml_hook()
-        eof_hook = EndOfFileFormatter.I.format_end_of_file_hook()
+        hook = YAMLLinter.I.lint_hook()
+        eof_hook = EndOfFileFormatter.I.format_hook()
         assert hook["priority"] > eof_hook["priority"]
         assert hook["types"] == ["yaml"]
         assert hook["args"] == ["--config-data=extends: default", "--fix"]

@@ -45,13 +45,13 @@ class TestByteOrderMarkerFormatter:
     def test_version_control_hooks(self) -> None:
         """Test method."""
         assert ByteOrderMarkerFormatter.I.version_control_hooks() == (
-            ByteOrderMarkerFormatter.I.fix_byte_order_marker_hook(),
+            ByteOrderMarkerFormatter.I.format_hook(),
         )
 
-    def test_fix_byte_order_marker_hook(self) -> None:
+    def test_format_hook(self) -> None:
         """Test method."""
         # runs first among the text-fixing hooks, right after sync
-        hook = ByteOrderMarkerFormatter.I.fix_byte_order_marker_hook()
+        hook = ByteOrderMarkerFormatter.I.format_hook()
         sync_hook = Pyrigger.I.synchronize_project_hook()
         assert hook["priority"] > sync_hook["priority"]
         assert hook["types"] == ["text"]
