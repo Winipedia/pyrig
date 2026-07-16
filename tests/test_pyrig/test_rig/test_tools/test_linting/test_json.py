@@ -36,23 +36,23 @@ class TestJSONLinter:
         result = JSONLinter.I.dev_dependencies()
         assert result == ("pre-commit-hooks",)
 
-    def test_lint_args(self) -> None:
+    def test_check_args(self) -> None:
         """Test method."""
-        result = JSONLinter.I.lint_args()
+        result = JSONLinter.I.check_args()
         assert result == ("check-json",)
 
     def test_version_control_hooks(self) -> None:
         """Test method."""
-        assert JSONLinter.I.version_control_hooks() == (JSONLinter.I.lint_hook(),)
+        assert JSONLinter.I.version_control_hooks() == (JSONLinter.I.check_hook(),)
 
-    def test_lint_hook(self) -> None:
+    def test_check_hook(self) -> None:
         """Test method."""
         # ties into the checks tier rather than running after it
-        hook = JSONLinter.I.lint_hook()
+        hook = JSONLinter.I.check_hook()
         types_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == types_hook["priority"]
         assert hook["types"] == ["json"]
 
     def test_lint_json(self) -> None:
         """Test method."""
-        assert JSONLinter.I.lint_json() == JSONLinter.I.lint_args()
+        assert JSONLinter.I.lint_json() == JSONLinter.I.check_args()

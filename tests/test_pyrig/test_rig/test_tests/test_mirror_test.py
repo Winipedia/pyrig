@@ -140,7 +140,7 @@ class TestMirrorTestConfigFile:
             assert '"""\n\n\ndef test_mirror_function' in content
             assert "NotImplementedError\n\n\nclass TestMirrorClass:" in content
 
-            PythonLinter.I.lint_args(
+            PythonLinter.I.check_args(
                 my_test_mirror_test_config_file().test_path().as_posix(),
             ).run()
             PythonLinter.I.format_args(

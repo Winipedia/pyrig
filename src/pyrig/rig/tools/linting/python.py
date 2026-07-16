@@ -31,7 +31,7 @@ class PythonLinter(Tool):
         """Return `ruff`'s cache directory as the only path to ignore."""
         return (".ruff_cache/",)
 
-    def lint_args(self, *args: str) -> Args:
+    def check_args(self, *args: str) -> Args:
         """Build a `ruff check` command.
 
         Args:
@@ -61,11 +61,11 @@ class PythonLinter(Tool):
         """Return the Python linting and formatting hooks.
 
         Returns:
-            `lint_hook` and `format_hook`, in that order.
+            `check_hook` and `format_hook`, in that order.
         """
-        return (self.lint_hook(), self.format_hook())
+        return (self.check_hook(), self.format_hook())
 
-    def lint_hook(self) -> dict[str, Any]:
+    def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting and auto-fixing Python source.
 
         Runs after the sequential text-fixing chain, alongside the other
@@ -89,7 +89,7 @@ class PythonLinter(Tool):
         Returns:
             Args for `ruff check`.
         """
-        return self.lint_args()
+        return self.check_args()
 
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting Python source.
@@ -103,7 +103,7 @@ class PythonLinter(Tool):
         return VersionControlHookManager.I.hook(
             self.format_python,
             priority=VersionControlHookManager.I.increase_priority(
-                self.lint_hook(),
+                self.check_hook(),
             ),
             types=["python"],
         )

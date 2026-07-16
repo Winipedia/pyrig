@@ -36,7 +36,7 @@ class MarkdownLinter(Tool):
         """Return `('.rumdl_cache/',)`, rumdl's cache directory."""
         return (".rumdl_cache/",)
 
-    def lint_args(self, *args: str) -> Args:
+    def check_args(self, *args: str) -> Args:
         """Construct rumdl check arguments.
 
         Args:
@@ -62,11 +62,11 @@ class MarkdownLinter(Tool):
         """Return the Markdown linting and formatting hooks.
 
         Returns:
-            `lint_hook` and `format_hook`, in that order.
+            `check_hook` and `format_hook`, in that order.
         """
-        return (self.lint_hook(), self.format_hook())
+        return (self.check_hook(), self.format_hook())
 
-    def lint_hook(self) -> dict[str, Any]:
+    def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting Markdown files.
 
         Ties its priority to `TypeChecker.check_hook` so it runs
@@ -89,7 +89,7 @@ class MarkdownLinter(Tool):
         Returns:
             Args for `rumdl check`.
         """
-        return self.lint_args()
+        return self.check_args()
 
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting Markdown files.

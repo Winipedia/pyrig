@@ -37,9 +37,9 @@ class TestPythonLinter:
         result = PythonLinter.I.name()
         assert result == "ruff"
 
-    def test_lint_args(self) -> None:
+    def test_check_args(self) -> None:
         """Test method."""
-        result = PythonLinter.I.lint_args()
+        result = PythonLinter.I.check_args()
         assert result == ("ruff", "check")
 
     def test_format_args(self) -> None:
@@ -50,14 +50,14 @@ class TestPythonLinter:
     def test_version_control_hooks(self) -> None:
         """Test method."""
         assert PythonLinter.I.version_control_hooks() == (
-            PythonLinter.I.lint_hook(),
+            PythonLinter.I.check_hook(),
             PythonLinter.I.format_hook(),
         )
 
-    def test_lint_hook(self) -> None:
+    def test_check_hook(self) -> None:
         """Test method."""
         # Python linting runs after the sequential text-fixing chain
-        hook = PythonLinter.I.lint_hook()
+        hook = PythonLinter.I.check_hook()
         eof_hook = EndOfFileFormatter.I.format_hook()
         assert hook["priority"] > eof_hook["priority"]
         assert hook["types"] == ["python"]
@@ -65,14 +65,14 @@ class TestPythonLinter:
 
     def test_lint_python(self) -> None:
         """Test method."""
-        assert PythonLinter.I.lint_python() == PythonLinter.I.lint_args()
+        assert PythonLinter.I.lint_python() == PythonLinter.I.check_args()
 
     def test_format_hook(self) -> None:
         """Test method."""
         # formatting runs after linting, so it never fights ruff's own fixes
         format_hook = PythonLinter.I.format_hook()
-        lint_hook = PythonLinter.I.lint_hook()
-        assert format_hook["priority"] > lint_hook["priority"]
+        check_hook = PythonLinter.I.check_hook()
+        assert format_hook["priority"] > check_hook["priority"]
         assert format_hook["types"] == ["python"]
 
     def test_format_python(self) -> None:

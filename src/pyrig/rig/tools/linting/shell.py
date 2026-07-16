@@ -31,7 +31,7 @@ class ShellLinter(Tool):
         """Return `('shellcheck-py',)`, the PyPI package providing `shellcheck`."""
         return ("shellcheck-py",)
 
-    def lint_args(self, *args: str) -> Args:
+    def check_args(self, *args: str) -> Args:
         """Construct ShellCheck check arguments at maximum strictness.
 
         Enables every optional check on top of the default set, surfaces
@@ -52,11 +52,11 @@ class ShellLinter(Tool):
         """Return the shell linting hook.
 
         Returns:
-            `lint_hook`, wrapped in a single-element tuple.
+            `check_hook`, wrapped in a single-element tuple.
         """
-        return (self.lint_hook(),)
+        return (self.check_hook(),)
 
-    def lint_hook(self) -> dict[str, Any]:
+    def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting shell scripts.
 
         Ties its priority to `TypeChecker.check_hook` so it runs
@@ -84,4 +84,4 @@ class ShellLinter(Tool):
         Returns:
             Args for `shellcheck`.
         """
-        return self.lint_args()
+        return self.check_args()
