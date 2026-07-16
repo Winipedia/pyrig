@@ -3,6 +3,8 @@
 tests.test_pyrig.test_modules.test_inspection
 """
 
+import inspect
+
 from pyrig.core.introspection.inspection import def_line, def_line_sorted
 
 
@@ -30,7 +32,7 @@ def test_def_line() -> None:
     assert method_line > 0
 
     # Test with a property
-    prop_line = def_line(TestClass.test_property)
+    prop_line = def_line(inspect.getattr_static(TestClass, "test_property"))  # ty:ignore[invalid-argument-type]
     assert prop_line > 0
 
 
