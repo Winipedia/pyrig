@@ -989,7 +989,7 @@ dev = [
     { name = "pyrig-resources", specifier = ">=3.1.2" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
-    { name = "pytest-randomly" },
+    { name = "pytest-randomly", specifier = ">=4.1.0" },
     { name = "ruff", specifier = ">=0.15.21" },
     { name = "rumdl", specifier = ">=0.2.30" },
     { name = "ryl" },

@@ -118,7 +118,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             },
             ProjectTester.I.config_name(): {
                 "testpaths": [ProjectTester.I.package_root().as_posix()],
-                "addopts": list(ProjectTester.I.additional_args()),
+                "addopts": sorted(ProjectTester.I.additional_args()),
                 "filterwarnings": ["error"],
                 "strict": True,
             },

@@ -73,8 +73,7 @@ class SecurityLinter(Tool):
             ),
             types=["python"],
             args=[
-                "--exclude",
-                ProjectTester.I.package_root().as_posix(),
+                f"--exclude={ProjectTester.I.package_root().as_posix()}",
             ],
         )
 

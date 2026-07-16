@@ -73,8 +73,7 @@ class YAMLLinter(Tool):
             types=["yaml"],
             args=[
                 "--fix",
-                "--config-data",
-                "extends: default",
+                "--config-data=extends: default",
             ],
         )
 

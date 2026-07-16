@@ -84,8 +84,8 @@ dev = [
     "pyrig-pypi>=3.1.2",
     "pyrig-resources>=3.1.2",
     "pytest>=9.1.1",
-    "pytest-randomly",
     "pytest-cov>=7.1.0",
+    "pytest-randomly>=4.1.0",
     "ruff>=0.15.21",
     "rumdl>=0.2.30",
     "ryl",
@@ -111,11 +111,11 @@ DEP002 = [
 
 [tool.pytest]
 addopts = [
-    "--cov=pyrig",
     "--cov-branch",
     "--cov-fail-under=100",
     "--cov-report=term-missing:skip-covered",
     "--cov-report=xml",
+    "--cov=pyrig",
 ]
 filterwarnings = [
     "error",
