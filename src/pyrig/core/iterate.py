@@ -87,12 +87,12 @@ def merge_nested_structures(subset: Any, superset: Any) -> Any:
         ['', '', '---']
     """
     if both_dicts(subset, superset):
-        for key, sub_val in subset.items():
+        for index, (key, sub_val) in enumerate(subset.items()):
             sup_val = superset.get(key, MISSING)
             if both_dicts_or_lists(sub_val, sup_val):
                 merge_nested_structures(sub_val, sup_val)
             elif not nested_structure_is_subset(sub_val, sup_val):
-                superset[key] = sub_val
+                dict_insert_key(superset, index=index, key=key, value=sub_val)
 
     elif both_lists(subset, superset):
         matched = match_list_items(subset, superset)
@@ -106,6 +106,37 @@ def merge_nested_structures(subset: Any, superset: Any) -> Any:
                 superset.insert(index, sub_val)
 
     return superset
+
+
+def dict_insert_key[K, V](
+    dict_: dict[K, V],
+    *,
+    index: int,
+    key: K,
+    value: V,
+) -> None:
+    """Insert a key/value pair into a dict at a specific index.
+
+    This handles inserting at the beginning and at the end if
+    the given index is out of bounds. The dict is modified in-place.
+
+    Args:
+        dict_: The dict to modify.
+        index: The index at which to insert the new key/value pair.
+        key: The key to insert.
+        value: The value to insert.
+
+    Examples:
+        >>> d = {"a": 1, "b": 2}
+        >>> dict_insert_key(d, index=1, key="c", value=3)
+        >>> d
+        {'a': 1, 'c': 3, 'b': 2}
+    """
+    dict_.pop(key, None)
+    items = list(dict_.items())
+    items.insert(index, (key, value))
+    dict_.clear()
+    dict_.update(items)
 
 
 @overload
