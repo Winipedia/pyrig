@@ -92,6 +92,7 @@ class TestVersionControlHookManager:
             priority=priority,
             types=["python"],
             files="^tests/",
+            exclude="^tests/fixtures/",
             args=["--fix"],
         )
         assert hook["id"] == "run-args"
@@ -101,6 +102,7 @@ class TestVersionControlHookManager:
         assert hook["args"] == ["--fix"]
         assert hook["types"] == ["python"]
         assert hook["files"] == "^tests/"
+        assert hook["exclude"] == "^tests/fixtures/"
         assert hook["stages"] == ["pre-commit"]
         assert hook["groups"] == ["all"]
         assert hook["priority"] == priority
@@ -114,6 +116,14 @@ class TestVersionControlHookManager:
             priority=1,
         )
         assert "files" not in hook
+
+    def test_hook_without_exclude(self) -> None:
+        """Test method."""
+        hook = VersionControlHookManager.I.hook(
+            VersionControlHookManager.I.run_args,
+            priority=1,
+        )
+        assert "exclude" not in hook
 
     def test_transition_stages(self) -> None:
         """Test method."""

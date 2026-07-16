@@ -1,10 +1,12 @@
 """Command-line wrapper for the TOML linter and formatter."""
 
+import re
 from typing import Any
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
@@ -67,6 +69,10 @@ class TOMLLinter(Tool):
         also default to warn-level, which alone would never fail the hook,
         so `--error-on-warnings` is passed to make any warning fail it.
 
+        Excludes the package manager's lock file: it's TOML too, but only
+        the package manager writes or reformats it, so tombi shouldn't
+        weigh in on it.
+
         Ties its priority to `TypeChecker.check_types_hook` so it runs
         alongside the rest of the checks tier rather than after it.
 
@@ -79,6 +85,7 @@ class TOMLLinter(Tool):
                 TypeChecker.I.check_types_hook(),
             ),
             types=["toml"],
+            exclude=self.lock_file_exclude_pattern(),
             args=["--error-on-warnings"],
         )
 
@@ -100,6 +107,11 @@ class TOMLLinter(Tool):
         Runs after the sequential text-fixing chain, alongside the other
         file-type-specific fixers.
 
+        Excludes the package manager's lock file: it's TOML too, but
+        tombi's formatting style doesn't match the package manager's own,
+        so formatting it here would fight the package manager on every
+        lock, leaving the file perpetually "modified by this hook".
+
         Returns:
             Hook metadata dict for `tombi format`.
         """
@@ -109,6 +121,7 @@ class TOMLLinter(Tool):
                 EndOfFileFormatter.I.format_end_of_file_hook(),
             ),
             types=["toml"],
+            exclude=self.lock_file_exclude_pattern(),
         )
 
     def format_toml(self) -> Args:
@@ -118,3 +131,11 @@ class TOMLLinter(Tool):
             Args for `tombi format`.
         """
         return self.format_args()
+
+    def lock_file_exclude_pattern(self) -> str:
+        r"""Return a regex matching only the package manager's lock file.
+
+        Returns:
+            A regex anchored to the lock file's path, e.g. `^uv\.lock$`.
+        """
+        return rf"^{re.escape(PackageManager.I.lock_file().as_posix())}$"
