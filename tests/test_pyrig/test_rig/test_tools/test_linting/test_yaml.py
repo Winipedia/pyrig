@@ -26,19 +26,19 @@ class TestYAMLLinter:
         result = YAMLLinter.I.name()
         assert result == "ryl"
 
-    def test_check_args(self) -> None:
+    def test_lint_args(self) -> None:
         """Test method."""
-        result = YAMLLinter.I.check_args()
+        result = YAMLLinter.I.lint_args()
         assert result == ("ryl", "check")
 
     def test_version_control_hooks(self) -> None:
         """Test method."""
-        assert YAMLLinter.I.version_control_hooks() == (YAMLLinter.I.check_yaml_hook(),)
+        assert YAMLLinter.I.version_control_hooks() == (YAMLLinter.I.lint_yaml_hook(),)
 
-    def test_check_yaml_hook(self) -> None:
+    def test_lint_yaml_hook(self) -> None:
         """Test method."""
         # YAML linting runs after the sequential text-fixing chain
-        hook = YAMLLinter.I.check_yaml_hook()
+        hook = YAMLLinter.I.lint_yaml_hook()
         eof_hook = EndOfFileFormatter.I.format_end_of_file_hook()
         assert hook["priority"] > eof_hook["priority"]
         assert hook["types"] == ["yaml"]
@@ -46,4 +46,4 @@ class TestYAMLLinter:
 
     def test_lint_yaml(self) -> None:
         """Test method."""
-        assert YAMLLinter.I.lint_yaml() == YAMLLinter.I.check_args()
+        assert YAMLLinter.I.lint_yaml() == YAMLLinter.I.lint_args()

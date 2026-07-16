@@ -34,25 +34,25 @@ class TestShellLinter:
         result = ShellLinter.I.dev_dependencies()
         assert result == ("shellcheck-py",)
 
-    def test_check_args(self) -> None:
+    def test_lint_args(self) -> None:
         """Test method."""
-        result = ShellLinter.I.check_args()
+        result = ShellLinter.I.lint_args()
         assert result == ("shellcheck",)
 
     def test_version_control_hooks(self) -> None:
         """Test method."""
         assert ShellLinter.I.version_control_hooks() == (
-            ShellLinter.I.check_shell_hook(),
+            ShellLinter.I.lint_shell_hook(),
         )
 
-    def test_check_shell_hook(self) -> None:
+    def test_lint_shell_hook(self) -> None:
         """Test method."""
         # ties into the checks tier rather than running after it
-        hook = ShellLinter.I.check_shell_hook()
+        hook = ShellLinter.I.lint_shell_hook()
         types_hook = TypeChecker.I.check_types_hook()
         assert hook["priority"] == types_hook["priority"]
         assert hook["types"] == ["shell"]
 
-    def test_check_shell(self) -> None:
+    def test_lint_shell(self) -> None:
         """Test method."""
-        assert ShellLinter.I.check_shell() == ShellLinter.I.check_args()
+        assert ShellLinter.I.lint_shell() == ShellLinter.I.lint_args()

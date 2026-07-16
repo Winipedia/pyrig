@@ -31,8 +31,8 @@ class YAMLLinter(Tool):
         """Return `'ryl'`, the executable name for this tool's CLI command."""
         return "ryl"
 
-    def check_args(self, *args: str) -> Args:
-        """Construct ryl check arguments.
+    def lint_args(self, *args: str) -> Args:
+        """Construct ryl lint arguments.
 
         No custom rule configuration or target path is baked in here; the
         hook's own `args=` supplies `--config-data`, and callers are
@@ -52,11 +52,11 @@ class YAMLLinter(Tool):
         """Return the YAML linting hook.
 
         Returns:
-            `check_yaml_hook`, wrapped in a single-element tuple.
+            `lint_yaml_hook`, wrapped in a single-element tuple.
         """
-        return (self.check_yaml_hook(),)
+        return (self.lint_yaml_hook(),)
 
-    def check_yaml_hook(self) -> dict[str, Any]:
+    def lint_yaml_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting and auto-fixing YAML files.
 
         Runs after the sequential text-fixing chain, alongside the other
@@ -83,4 +83,4 @@ class YAMLLinter(Tool):
         Returns:
             Args for `ryl check`.
         """
-        return self.check_args()
+        return self.lint_args()

@@ -36,7 +36,7 @@ class JSONLinter(Tool):
         """Return `('pre-commit-hooks',)`, the PyPI package providing `check-json`."""
         return ("pre-commit-hooks",)
 
-    def check_args(self, *args: str) -> Args:
+    def lint_args(self, *args: str) -> Args:
         """Construct check-json arguments.
 
         check-json takes no flags of its own; every argument is a file path
@@ -55,11 +55,11 @@ class JSONLinter(Tool):
         """Return the JSON validation hook.
 
         Returns:
-            `check_json_hook`, wrapped in a single-element tuple.
+            `lint_json_hook`, wrapped in a single-element tuple.
         """
-        return (self.check_json_hook(),)
+        return (self.lint_json_hook(),)
 
-    def check_json_hook(self) -> dict[str, Any]:
+    def lint_json_hook(self) -> dict[str, Any]:
         """Return the hook metadata for validating JSON syntax.
 
         Ties its priority to `TypeChecker.check_types_hook` so it runs
@@ -69,17 +69,17 @@ class JSONLinter(Tool):
             Hook metadata dict for `check-json`.
         """
         return VersionControlHookManager.I.hook(
-            self.check_json,
+            self.lint_json,
             priority=VersionControlHookManager.I.hook_priority(
                 TypeChecker.I.check_types_hook(),
             ),
             types=["json"],
         )
 
-    def check_json(self) -> Args:
+    def lint_json(self) -> Args:
         """Return the `Args` this hook's entry runs.
 
         Returns:
             Args for `check-json`.
         """
-        return self.check_args()
+        return self.lint_args()

@@ -37,9 +37,9 @@ class TestPythonLinter:
         result = PythonLinter.I.name()
         assert result == "ruff"
 
-    def test_check_args(self) -> None:
+    def test_lint_args(self) -> None:
         """Test method."""
-        result = PythonLinter.I.check_args()
+        result = PythonLinter.I.lint_args()
         assert result == ("ruff", "check")
 
     def test_format_args(self) -> None:
@@ -65,7 +65,7 @@ class TestPythonLinter:
 
     def test_lint_python(self) -> None:
         """Test method."""
-        assert PythonLinter.I.lint_python() == PythonLinter.I.check_args()
+        assert PythonLinter.I.lint_python() == PythonLinter.I.lint_args()
 
     def test_format_python_hook(self) -> None:
         """Test method."""

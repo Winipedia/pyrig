@@ -30,9 +30,9 @@ class TestTOMLLinter:
         result = TOMLLinter.I.name()
         assert result == "tombi"
 
-    def test_check_args(self) -> None:
+    def test_lint_args(self) -> None:
         """Test method."""
-        result = TOMLLinter.I.check_args()
+        result = TOMLLinter.I.lint_args()
         assert result == ("tombi", "lint")
 
     def test_format_args(self) -> None:
@@ -58,7 +58,7 @@ class TestTOMLLinter:
 
     def test_lint_toml(self) -> None:
         """Test method."""
-        assert TOMLLinter.I.lint_toml() == TOMLLinter.I.check_args()
+        assert TOMLLinter.I.lint_toml() == TOMLLinter.I.lint_args()
 
     def test_format_toml_hook(self) -> None:
         """Test method."""
