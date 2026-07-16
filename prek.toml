@@ -215,6 +215,7 @@ entry = "tombi format"
 types = [
   "toml",
 ]
+exclude = "^uv\\.lock$"
 stages = [
   "pre-commit",
 ]
@@ -461,6 +462,7 @@ args = [
 types = [
   "toml",
 ]
+exclude = "^uv\\.lock$"
 stages = [
   "pre-commit",
 ]

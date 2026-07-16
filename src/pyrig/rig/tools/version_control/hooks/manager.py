@@ -156,6 +156,7 @@ class VersionControlHookManager(Tool):
         types: Iterable[str] | None = None,
         types_or: Iterable[str] | None = None,
         files: str | None = None,
+        exclude: str | None = None,
         args: Iterable[str] | None = None,
         always_run: bool | None = None,
         pass_filenames: bool | None = None,
@@ -182,6 +183,8 @@ class VersionControlHookManager(Tool):
                 For a tool with no path filter of its own, unlike `types`
                 and `types_or`, which filter by detected file type rather
                 than path.
+            exclude: Regex excluding matching file paths from this hook,
+                even when they match `types`, `types_or`, or `files`.
             args: Extra CLI arguments appended to the hook's entry command.
             always_run: Whether to run this hook even when no matching files
                 changed.
@@ -207,6 +210,8 @@ class VersionControlHookManager(Tool):
             hook["types_or"] = sorted(types_or)
         if files is not None:
             hook["files"] = files
+        if exclude is not None:
+            hook["exclude"] = exclude
         hook["stages"] = sorted(stages or ["pre-commit"])
         hook["groups"] = sorted([self.group_all(), *(groups or [])])
         hook["priority"] = priority

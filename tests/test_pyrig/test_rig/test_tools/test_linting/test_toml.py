@@ -54,6 +54,7 @@ class TestTOMLLinter:
         types_hook = TypeChecker.I.check_types_hook()
         assert hook["priority"] == types_hook["priority"]
         assert hook["types"] == ["toml"]
+        assert hook["exclude"] == TOMLLinter.I.lock_file_exclude_pattern()
         assert hook["args"] == ["--error-on-warnings"]
 
     def test_lint_toml(self) -> None:
@@ -67,7 +68,12 @@ class TestTOMLLinter:
         eof_hook = EndOfFileFormatter.I.format_end_of_file_hook()
         assert hook["priority"] > eof_hook["priority"]
         assert hook["types"] == ["toml"]
+        assert hook["exclude"] == TOMLLinter.I.lock_file_exclude_pattern()
 
     def test_format_toml(self) -> None:
         """Test method."""
         assert TOMLLinter.I.format_toml() == TOMLLinter.I.format_args()
+
+    def test_lock_file_exclude_pattern(self) -> None:
+        """Test method."""
+        assert TOMLLinter.I.lock_file_exclude_pattern() == "^uv\\.lock$"
