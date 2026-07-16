@@ -1,5 +1,6 @@
 """Abstract base for shell script (`.sh`) configuration file management."""
 
+import stat
 from abc import abstractmethod
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
@@ -44,6 +45,12 @@ class ShellConfigFile(StringConfigFile):
             Shell script content, excluding the shebang and strict mode
             line, which `content()` prepends automatically.
         """
+
+    def create_file(self) -> None:
+        """Create the `.sh` file with executable permissions."""
+        super().create_file()
+        path = self.path()
+        path.chmod(path.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
     def content(self) -> str:
         """Prepend the shebang and strict mode line to `script_content()`.
