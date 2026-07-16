@@ -31,7 +31,7 @@ class PythonLinter(Tool):
         """Return `ruff`'s cache directory as the only path to ignore."""
         return (".ruff_cache/",)
 
-    def check_args(self, *args: str) -> Args:
+    def lint_args(self, *args: str) -> Args:
         """Build a `ruff check` command.
 
         Args:
@@ -89,7 +89,7 @@ class PythonLinter(Tool):
         Returns:
             Args for `ruff check`.
         """
-        return self.check_args()
+        return self.lint_args()
 
     def format_python_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting Python source.

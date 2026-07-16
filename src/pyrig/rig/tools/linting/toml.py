@@ -28,7 +28,7 @@ class TOMLLinter(Tool):
         """Return `"tombi"`."""
         return "tombi"
 
-    def check_args(self, *args: str) -> Args:
+    def lint_args(self, *args: str) -> Args:
         """Build a `tombi lint` command.
 
         Args:
@@ -88,7 +88,7 @@ class TOMLLinter(Tool):
         Returns:
             Args for `tombi lint`.
         """
-        return self.check_args()
+        return self.lint_args()
 
     def format_toml_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting TOML files.

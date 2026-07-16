@@ -170,6 +170,22 @@ groups = [
 priority = 7
 
 [[repos.hooks]]
+id = "format-markdown"
+name = "format markdown"
+language = "system"
+entry = "rumdl fmt"
+types = [
+  "markdown",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 7
+
+[[repos.hooks]]
 id = "format-shell"
 name = "format shell"
 language = "system"
@@ -198,25 +214,6 @@ language = "system"
 entry = "tombi format"
 types = [
   "toml",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 7
-
-[[repos.hooks]]
-id = "lint-markdown"
-name = "lint markdown"
-language = "system"
-entry = "rumdl check"
-args = [
-  "--fix",
-]
-types = [
-  "markdown",
 ]
 stages = [
   "pre-commit",
@@ -300,22 +297,6 @@ priority = 9
 pass_filenames = false
 
 [[repos.hooks]]
-id = "check-json"
-name = "check json"
-language = "system"
-entry = "check-json"
-types = [
-  "json",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 9
-
-[[repos.hooks]]
 id = "check-large-files"
 name = "check large files"
 language = "system"
@@ -380,27 +361,6 @@ groups = [
 priority = 9
 
 [[repos.hooks]]
-id = "check-shell"
-name = "check shell"
-language = "system"
-entry = "shellcheck"
-args = [
-  "--enable=all",
-  "--severity=style",
-  "--shell=bash",
-]
-types = [
-  "shell",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 9
-
-[[repos.hooks]]
 id = "check-test-naming"
 name = "check test naming"
 language = "system"
@@ -436,6 +396,59 @@ groups = [
 ]
 priority = 9
 pass_filenames = false
+
+[[repos.hooks]]
+id = "lint-json"
+name = "lint json"
+language = "system"
+entry = "check-json"
+types = [
+  "json",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 9
+
+[[repos.hooks]]
+id = "lint-markdown"
+name = "lint markdown"
+language = "system"
+entry = "rumdl check"
+types = [
+  "markdown",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 9
+
+[[repos.hooks]]
+id = "lint-shell"
+name = "lint shell"
+language = "system"
+entry = "shellcheck"
+args = [
+  "--enable=all",
+  "--severity=style",
+  "--shell=bash",
+]
+types = [
+  "shell",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 9
 
 [[repos.hooks]]
 id = "lint-toml"

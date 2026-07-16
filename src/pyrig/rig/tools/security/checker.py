@@ -9,7 +9,7 @@ from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
-class SecurityLinter(Tool):
+class SecurityChecker(Tool):
     """Wrapper for the `bandit` security checker.
 
     Constructs `bandit` command-line arguments for scanning source code for
