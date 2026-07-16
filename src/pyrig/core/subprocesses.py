@@ -1,9 +1,12 @@
 """Utilities for safe subprocess execution."""
 
+import logging
 import subprocess  # nosec: B404
 from functools import cache
 from pathlib import Path
 from typing import Any, Self
+
+logger = logging.getLogger(__name__)
 
 
 class Args(tuple[str, ...]):
@@ -122,11 +125,21 @@ def run_subprocess(
         subprocess.CalledProcessError: If the command exits with a non-zero
             return code and `check` is `True`.
     """
-    return subprocess.run(  # noqa: S603  # nosec: B603
-        args,
-        check=check,
-        capture_output=True,
-        cwd=Path(),
-        shell=False,
-        text=True,
-    )
+    try:
+        return subprocess.run(  # noqa: S603  # nosec: B603
+            args,
+            check=check,
+            capture_output=True,
+            cwd=Path(),
+            shell=False,
+            text=True,
+        )
+    except subprocess.CalledProcessError as e:
+        logger.exception(
+            "Subprocess command failed: %s\nReturn code: %s\nStdout: %s\nStderr: %s",
+            e.cmd,
+            e.returncode,
+            e.stdout,
+            e.stderr,
+        )
+        raise
