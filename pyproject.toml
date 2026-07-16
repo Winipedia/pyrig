@@ -6,54 +6,54 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"
 license-files = [
-    "LICENSE",
+  "LICENSE",
+]
+authors = [
+  { name = "Winipedia" },
+]
+maintainers = [
+  { name = "Winipedia" },
 ]
 keywords = [
-    "automation",
-    "boilerplate",
-    "ci-cd",
-    "code-quality",
-    "configuration",
-    "developer-tools",
-    "devops",
-    "project-setup",
-    "project-template",
-    "pyrig",
-    "scaffolding",
+  "automation",
+  "boilerplate",
+  "ci-cd",
+  "code-quality",
+  "configuration",
+  "developer-tools",
+  "devops",
+  "project-setup",
+  "project-template",
+  "pyrig",
+  "scaffolding",
 ]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Environment :: Console",
-    "Intended Audience :: Developers",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
-    "Topic :: Software Development :: Build Tools",
-    "Topic :: Software Development :: Code Generators",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: Software Development :: Quality Assurance",
-    "Topic :: Software Development :: Testing",
-    "Topic :: System :: Installation/Setup",
-    "Topic :: System :: Software Distribution",
-    "Typing :: Typed",
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Build Tools",
+  "Topic :: Software Development :: Code Generators",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Software Development :: Testing",
+  "Topic :: System :: Installation/Setup",
+  "Topic :: System :: Software Distribution",
+  "Typing :: Typed",
 ]
 dependencies = [
-    "inquirerpy>=0.3.4",
-    "packaging>=26.2",
-    "pyrig-runtime>=3.5.2",
-    "ruamel-yaml>=0.19.1",
-    "spdx-matcher>=0.1.4",
-    "tomlkit>=0.15.0",
-    "typer>=0.26.8",
+  "inquirerpy>=0.3.4",
+  "packaging>=26.2",
+  "pyrig-runtime>=3.5.2",
+  "ruamel-yaml>=0.19.1",
+  "spdx-matcher>=0.1.4",
+  "tomli-w>=1.2.0",
+  "typer>=0.26.8",
 ]
-
-[[project.authors]]
-name = "Winipedia"
-
-[[project.maintainers]]
-name = "Winipedia"
 
 [project.urls]
 Changelog = "https://github.com/Winipedia/pyrig/releases"
@@ -67,37 +67,37 @@ pyrig = "pyrig_runtime.rig.cli.main:main"
 
 [dependency-groups]
 dev = [
-    "bandit>=1.9.4",
-    "deptry>=0.25.1",
-    "detect-secrets>=1.5.0",
-    "mkdocs>=1.6.1",
-    "mkdocs-material>=9.7.6",
-    "mkdocs-mermaid2-plugin>=1.2.3",
-    "mkdocstrings[python]>=1.0.5",
-    "pip-audit>=2.10.1",
-    "pre-commit-hooks>=6.0.0",
-    "prek>=0.4.8",
-    "pyrig>=15.0.0",
-    "pyrig-codecov>=3.2.6",
-    "pyrig-fixtures>=2.3.2",
-    "pyrig-overrides>=4.2.2",
-    "pyrig-pypi>=3.1.2",
-    "pyrig-resources>=3.1.2",
-    "pytest>=9.1.1",
-    "pytest-cov>=7.1.0",
-    "pytest-randomly>=4.1.0",
-    "ruff>=0.15.21",
-    "rumdl>=0.2.30",
-    "ryl",
-    "shellcheck-py",
-    "shfmt-py",
-    "ty>=0.0.58",
-    "typos>=1.48.0",
+  "bandit>=1.9.4",
+  "deptry>=0.25.1",
+  "detect-secrets>=1.5.0",
+  "mkdocs>=1.6.1",
+  "mkdocs-material>=9.7.6",
+  "mkdocs-mermaid2-plugin>=1.2.3",
+  "mkdocstrings[python]>=1.0.5",
+  "pip-audit>=2.10.1",
+  "pre-commit-hooks>=6.0.0",
+  "prek>=0.4.8",
+  "pyrig>=15.0.0",
+  "pyrig-codecov>=3.2.6",
+  "pyrig-fixtures>=2.3.2",
+  "pyrig-overrides>=4.2.2",
+  "pyrig-pypi>=3.1.2",
+  "pyrig-resources>=3.1.2",
+  "pytest>=9.1.1",
+  "pytest-cov>=7.1.0",
+  "pytest-randomly>=4.1.0",
+  "ruff>=0.15.21",
+  "rumdl>=0.2.30",
+  "ryl",
+  "shellcheck-py",
+  "shfmt-py",
+  "ty>=0.0.58",
+  "typos>=1.48.0",
 ]
 
 [build-system]
 requires = [
-    "uv-build",
+  "uv-build",
 ]
 build-backend = "uv_build"
 
@@ -106,23 +106,23 @@ root = "src"
 
 [tool.deptry.per_rule_ignores]
 DEP002 = [
-    "pyrig-runtime",
+  "pyrig-runtime",
 ]
 
 [tool.pytest]
 addopts = [
-    "--cov-branch",
-    "--cov-fail-under=100",
-    "--cov-report=term-missing:skip-covered",
-    "--cov-report=xml",
-    "--cov=pyrig",
+  "--cov-branch",
+  "--cov-fail-under=100",
+  "--cov-report=term-missing:skip-covered",
+  "--cov-report=xml",
+  "--cov=pyrig",
 ]
 filterwarnings = [
-    "error",
+  "error",
 ]
 strict = true
 testpaths = [
-    "tests",
+  "tests",
 ]
 
 [tool.ruff.format]
@@ -130,12 +130,12 @@ docstring-code-format = true
 
 [tool.ruff.lint]
 select = [
-    "ALL",
+  "ALL",
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = [
-    "S101",
+  "S101",
 ]
 
 [tool.ruff.lint.pydocstyle]
