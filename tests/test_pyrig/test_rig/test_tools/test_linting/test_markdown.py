@@ -34,28 +34,28 @@ class TestMarkdownLinter:
         result = MarkdownLinter.I.name()
         assert result == "rumdl"
 
-    def test_lint_args(self) -> None:
+    def test_check_args(self) -> None:
         """Test method."""
-        result = MarkdownLinter.I.lint_args()
+        result = MarkdownLinter.I.check_args()
         assert result == ("rumdl", "check")
 
     def test_version_control_hooks(self) -> None:
         """Test method."""
         assert MarkdownLinter.I.version_control_hooks() == (
-            MarkdownLinter.I.lint_hook(),
+            MarkdownLinter.I.check_hook(),
             MarkdownLinter.I.format_hook(),
         )
 
-    def test_lint_hook(self) -> None:
+    def test_check_hook(self) -> None:
         """Test method."""
-        hook = MarkdownLinter.I.lint_hook()
+        hook = MarkdownLinter.I.check_hook()
         type_check_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == type_check_hook["priority"]
         assert hook["types"] == ["markdown"]
 
     def test_lint_markdown(self) -> None:
         """Test method."""
-        assert MarkdownLinter.I.lint_markdown() == MarkdownLinter.I.lint_args()
+        assert MarkdownLinter.I.lint_markdown() == MarkdownLinter.I.check_args()
 
     def test_format_args(self) -> None:
         """Test method."""

@@ -30,9 +30,9 @@ class TestTOMLLinter:
         result = TOMLLinter.I.name()
         assert result == "tombi"
 
-    def test_lint_args(self) -> None:
+    def test_check_args(self) -> None:
         """Test method."""
-        result = TOMLLinter.I.lint_args()
+        result = TOMLLinter.I.check_args()
         assert result == ("tombi", "lint")
 
     def test_format_args(self) -> None:
@@ -43,14 +43,14 @@ class TestTOMLLinter:
     def test_version_control_hooks(self) -> None:
         """Test method."""
         assert TOMLLinter.I.version_control_hooks() == (
-            TOMLLinter.I.lint_hook(),
+            TOMLLinter.I.check_hook(),
             TOMLLinter.I.format_hook(),
         )
 
-    def test_lint_hook(self) -> None:
+    def test_check_hook(self) -> None:
         """Test method."""
         # ties into the checks tier rather than running after it
-        hook = TOMLLinter.I.lint_hook()
+        hook = TOMLLinter.I.check_hook()
         types_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == types_hook["priority"]
         assert hook["types"] == ["toml"]
@@ -59,7 +59,7 @@ class TestTOMLLinter:
 
     def test_lint_toml(self) -> None:
         """Test method."""
-        assert TOMLLinter.I.lint_toml() == TOMLLinter.I.lint_args()
+        assert TOMLLinter.I.lint_toml() == TOMLLinter.I.check_args()
 
     def test_format_hook(self) -> None:
         """Test method."""

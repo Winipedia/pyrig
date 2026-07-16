@@ -30,7 +30,7 @@ class TOMLLinter(Tool):
         """Return `"tombi"`."""
         return "tombi"
 
-    def lint_args(self, *args: str) -> Args:
+    def check_args(self, *args: str) -> Args:
         """Build a `tombi lint` command.
 
         Args:
@@ -56,11 +56,11 @@ class TOMLLinter(Tool):
         """Return the TOML linting and formatting hooks.
 
         Returns:
-            `lint_hook` and `format_hook`, in that order.
+            `check_hook` and `format_hook`, in that order.
         """
-        return (self.lint_hook(), self.format_hook())
+        return (self.check_hook(), self.format_hook())
 
-    def lint_hook(self) -> dict[str, Any]:
+    def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting TOML files.
 
         tombi's lint has no auto-fix mode, so unlike the other linters it
@@ -95,14 +95,14 @@ class TOMLLinter(Tool):
         Returns:
             Args for `tombi lint`.
         """
-        return self.lint_args()
+        return self.check_args()
 
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting TOML files.
 
         tombi lint never mutates a file, so there's no fix for formatting
         to run after; this can sit with the other file-type-specific
-        fixers instead of being chained after `lint_hook`.
+        fixers instead of being chained after `check_hook`.
 
         Runs after the sequential text-fixing chain, alongside the other
         file-type-specific fixers.
