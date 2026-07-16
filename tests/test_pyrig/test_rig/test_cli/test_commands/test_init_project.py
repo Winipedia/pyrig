@@ -51,6 +51,10 @@ def test_init_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None: 
         pyrig_tmp_path,
     )
     with chdir(pyrig_tmp_path):
+        # remove a potential dist dir from a previous build
+        dist_dir = pyrig_tmp_path / "dist"
+        if dist_dir.exists():
+            shutil.rmtree(dist_dir)
         # build the package
         args = PackageManager.I.build_args()
         args.run()
