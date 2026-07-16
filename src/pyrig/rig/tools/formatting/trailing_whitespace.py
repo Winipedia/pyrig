@@ -4,7 +4,7 @@ from typing import Any
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
-from pyrig.rig.tools.formatting.mixed_line_ending import MixedLineEndingFormatter
+from pyrig.rig.tools.formatting.end_of_line import EndOfLineFormatter
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -69,7 +69,7 @@ class TrailingWhitespaceFormatter(Tool):
         return VersionControlHookManager.I.hook(
             self.fix_trailing_whitespace,
             priority=VersionControlHookManager.I.increase_priority(
-                MixedLineEndingFormatter.I.format_mixed_line_ending_hook(),
+                EndOfLineFormatter.I.format_mixed_line_ending_hook(),
             ),
             types=["text"],
         )

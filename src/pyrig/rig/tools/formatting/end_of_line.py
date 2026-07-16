@@ -8,7 +8,7 @@ from pyrig.rig.tools.spelling.checker import SpellChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
-class MixedLineEndingFormatter(Tool):
+class EndOfLineFormatter(Tool):
     """Type-safe wrapper for the pre-commit-hooks mixed line ending fixer."""
 
     def group(self) -> str:
