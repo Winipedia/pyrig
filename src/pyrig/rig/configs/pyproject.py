@@ -67,18 +67,18 @@ class PyprojectConfigFile(TOMLConfigFile):
                 "requires-python": self.requires_python(),
                 "license": LicenseConfigFile.I.spdx_identifier(),
                 "license-files": [LicenseConfigFile.I.path().as_posix()],
-                "keywords": sorted(self.make_keywords()),
-                "classifiers": sorted(self.make_classifiers()),
-                "dependencies": self.merge_additional_dependencies(
-                    dependencies=self.dependencies(),
-                    additional=self.additional_dependencies(),
-                ),
                 "authors": [
                     {"name": VersionController.I.repo_owner()},
                 ],
                 "maintainers": [
                     {"name": VersionController.I.repo_owner()},
                 ],
+                "keywords": sorted(self.make_keywords()),
+                "classifiers": sorted(self.make_classifiers()),
+                "dependencies": self.merge_additional_dependencies(
+                    dependencies=self.dependencies(),
+                    additional=self.additional_dependencies(),
+                ),
                 "urls": deep_sort_dict(self.url_configs()),
                 "scripts": {
                     PackageManager.I.project_name(): (
