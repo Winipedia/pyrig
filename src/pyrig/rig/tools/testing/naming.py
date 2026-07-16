@@ -51,18 +51,18 @@ class ModuleTestNamingChecker(Tool):
         """Return the test naming convention check hook.
 
         Returns:
-            `check_test_naming_hook`, wrapped in a single-element tuple.
+            `check_hook`, wrapped in a single-element tuple.
         """
-        return (self.check_test_naming_hook(),)
+        return (self.check_hook(),)
 
-    def check_test_naming_hook(self) -> dict[str, Any]:
+    def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for checking test file naming conventions.
 
         Restricted to `ProjectTester.package_root()` via `files`, since
         `name-tests-test` has no path filter of its own and would otherwise
         also inspect ordinary source modules. Enforces the `test_*.py`
         pattern via `--pytest-test-first`, matching this project's own test
-        naming convention. Ties its priority to `TypeChecker.check_types_hook`
+        naming convention. Ties its priority to `TypeChecker.check_hook`
         so it runs alongside the rest of the checks tier rather than after it.
 
         Returns:
@@ -71,7 +71,7 @@ class ModuleTestNamingChecker(Tool):
         return VersionControlHookManager.I.hook(
             self.check_test_naming,
             priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_types_hook(),
+                TypeChecker.I.check_hook(),
             ),
             types=["python"],
             files=f"^{ProjectTester.I.package_root().as_posix()}/",

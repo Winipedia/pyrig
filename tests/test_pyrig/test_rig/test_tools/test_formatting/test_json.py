@@ -45,14 +45,14 @@ class TestJSONFormatter:
     def test_version_control_hooks(self) -> None:
         """Test method."""
         assert JSONFormatter.I.version_control_hooks() == (
-            JSONFormatter.I.format_json_hook(),
+            JSONFormatter.I.format_hook(),
         )
 
-    def test_format_json_hook(self) -> None:
+    def test_format_hook(self) -> None:
         """Test method."""
         # JSON formatting runs after the sequential text-fixing chain
-        hook = JSONFormatter.I.format_json_hook()
-        eof_hook = EndOfFileFormatter.I.format_end_of_file_hook()
+        hook = JSONFormatter.I.format_hook()
+        eof_hook = EndOfFileFormatter.I.format_hook()
         assert hook["priority"] > eof_hook["priority"]
         assert hook["types"] == ["json"]
         assert hook["args"] == ["--autofix", "--no-ensure-ascii", "--no-sort-keys"]

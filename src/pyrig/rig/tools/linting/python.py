@@ -61,11 +61,11 @@ class PythonLinter(Tool):
         """Return the Python linting and formatting hooks.
 
         Returns:
-            `lint_python_hook` and `format_python_hook`, in that order.
+            `lint_hook` and `format_hook`, in that order.
         """
-        return (self.lint_python_hook(), self.format_python_hook())
+        return (self.lint_hook(), self.format_hook())
 
-    def lint_python_hook(self) -> dict[str, Any]:
+    def lint_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting and auto-fixing Python source.
 
         Runs after the sequential text-fixing chain, alongside the other
@@ -77,7 +77,7 @@ class PythonLinter(Tool):
         return VersionControlHookManager.I.hook(
             self.lint_python,
             priority=VersionControlHookManager.I.increase_priority(
-                EndOfFileFormatter.I.format_end_of_file_hook(),
+                EndOfFileFormatter.I.format_hook(),
             ),
             types=["python"],
             args=["--fix"],
@@ -91,7 +91,7 @@ class PythonLinter(Tool):
         """
         return self.lint_args()
 
-    def format_python_hook(self) -> dict[str, Any]:
+    def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting Python source.
 
         Runs after linting, so formatting never fights the fixes ruff's
@@ -103,7 +103,7 @@ class PythonLinter(Tool):
         return VersionControlHookManager.I.hook(
             self.format_python,
             priority=VersionControlHookManager.I.increase_priority(
-                self.lint_python_hook(),
+                self.lint_hook(),
             ),
             types=["python"],
         )

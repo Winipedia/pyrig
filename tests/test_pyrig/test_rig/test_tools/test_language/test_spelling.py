@@ -35,15 +35,13 @@ class TestSpellChecker:
 
     def test_version_control_hooks(self) -> None:
         """Test method."""
-        assert SpellChecker.I.version_control_hooks() == (
-            SpellChecker.I.check_spelling_hook(),
-        )
+        assert SpellChecker.I.version_control_hooks() == (SpellChecker.I.check_hook(),)
 
-    def test_check_spelling_hook(self) -> None:
+    def test_check_hook(self) -> None:
         """Test method."""
         # spelling is checked right after the byte-order marker is stripped
-        hook = SpellChecker.I.check_spelling_hook()
-        bom_hook = ByteOrderMarkerFormatter.I.fix_byte_order_marker_hook()
+        hook = SpellChecker.I.check_hook()
+        bom_hook = ByteOrderMarkerFormatter.I.format_hook()
         assert hook["priority"] > bom_hook["priority"]
         assert hook["types"] == ["text"]
         assert hook["args"] == ["--write-changes"]

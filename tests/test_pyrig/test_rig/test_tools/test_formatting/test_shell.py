@@ -42,14 +42,14 @@ class TestShellFormatter:
     def test_version_control_hooks(self) -> None:
         """Test method."""
         assert ShellFormatter.I.version_control_hooks() == (
-            ShellFormatter.I.format_shell_hook(),
+            ShellFormatter.I.format_hook(),
         )
 
-    def test_format_shell_hook(self) -> None:
+    def test_format_hook(self) -> None:
         """Test method."""
         # shell formatting runs after the sequential text-fixing chain
-        hook = ShellFormatter.I.format_shell_hook()
-        eof_hook = EndOfFileFormatter.I.format_end_of_file_hook()
+        hook = ShellFormatter.I.format_hook()
+        eof_hook = EndOfFileFormatter.I.format_hook()
         assert hook["priority"] > eof_hook["priority"]
         assert hook["types"] == ["shell"]
 

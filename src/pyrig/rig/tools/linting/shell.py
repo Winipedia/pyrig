@@ -52,14 +52,14 @@ class ShellLinter(Tool):
         """Return the shell linting hook.
 
         Returns:
-            `lint_shell_hook`, wrapped in a single-element tuple.
+            `lint_hook`, wrapped in a single-element tuple.
         """
-        return (self.lint_shell_hook(),)
+        return (self.lint_hook(),)
 
-    def lint_shell_hook(self) -> dict[str, Any]:
+    def lint_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting shell scripts.
 
-        Ties its priority to `TypeChecker.check_types_hook` so it runs
+        Ties its priority to `TypeChecker.check_hook` so it runs
         alongside the rest of the checks tier rather than after it.
 
         Returns:
@@ -68,7 +68,7 @@ class ShellLinter(Tool):
         return VersionControlHookManager.I.hook(
             self.lint_shell,
             priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_types_hook(),
+                TypeChecker.I.check_hook(),
             ),
             types=["shell"],
             args=[

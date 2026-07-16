@@ -55,14 +55,14 @@ class JSONLinter(Tool):
         """Return the JSON validation hook.
 
         Returns:
-            `lint_json_hook`, wrapped in a single-element tuple.
+            `lint_hook`, wrapped in a single-element tuple.
         """
-        return (self.lint_json_hook(),)
+        return (self.lint_hook(),)
 
-    def lint_json_hook(self) -> dict[str, Any]:
+    def lint_hook(self) -> dict[str, Any]:
         """Return the hook metadata for validating JSON syntax.
 
-        Ties its priority to `TypeChecker.check_types_hook` so it runs
+        Ties its priority to `TypeChecker.check_hook` so it runs
         alongside the rest of the checks tier rather than after it.
 
         Returns:
@@ -71,7 +71,7 @@ class JSONLinter(Tool):
         return VersionControlHookManager.I.hook(
             self.lint_json,
             priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_types_hook(),
+                TypeChecker.I.check_hook(),
             ),
             types=["json"],
         )

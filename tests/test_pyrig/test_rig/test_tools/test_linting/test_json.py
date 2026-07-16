@@ -43,13 +43,13 @@ class TestJSONLinter:
 
     def test_version_control_hooks(self) -> None:
         """Test method."""
-        assert JSONLinter.I.version_control_hooks() == (JSONLinter.I.lint_json_hook(),)
+        assert JSONLinter.I.version_control_hooks() == (JSONLinter.I.lint_hook(),)
 
-    def test_lint_json_hook(self) -> None:
+    def test_lint_hook(self) -> None:
         """Test method."""
         # ties into the checks tier rather than running after it
-        hook = JSONLinter.I.lint_json_hook()
-        types_hook = TypeChecker.I.check_types_hook()
+        hook = JSONLinter.I.lint_hook()
+        types_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == types_hook["priority"]
         assert hook["types"] == ["json"]
 

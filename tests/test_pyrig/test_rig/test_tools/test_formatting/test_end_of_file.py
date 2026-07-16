@@ -45,16 +45,14 @@ class TestEndOfFileFormatter:
     def test_version_control_hooks(self) -> None:
         """Test method."""
         assert EndOfFileFormatter.I.version_control_hooks() == (
-            EndOfFileFormatter.I.format_end_of_file_hook(),
+            EndOfFileFormatter.I.format_hook(),
         )
 
-    def test_format_end_of_file_hook(self) -> None:
+    def test_format_hook(self) -> None:
         """Test method."""
         # the end-of-file fix runs last in the sequential text-fixing chain
-        hook = EndOfFileFormatter.I.format_end_of_file_hook()
-        whitespace_hook = (
-            TrailingWhitespaceFormatter.I.format_trailing_whitespace_hook()
-        )
+        hook = EndOfFileFormatter.I.format_hook()
+        whitespace_hook = TrailingWhitespaceFormatter.I.format_hook()
         assert hook["priority"] > whitespace_hook["priority"]
         assert hook["types"] == ["text"]
 

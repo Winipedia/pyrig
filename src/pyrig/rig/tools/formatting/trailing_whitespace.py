@@ -51,12 +51,12 @@ class TrailingWhitespaceFormatter(Tool):
         """Return the trailing whitespace hook.
 
         Returns:
-            `format_trailing_whitespace_hook`, wrapped in a single-element
+            `format_hook`, wrapped in a single-element
             tuple.
         """
-        return (self.format_trailing_whitespace_hook(),)
+        return (self.format_hook(),)
 
-    def format_trailing_whitespace_hook(self) -> dict[str, Any]:
+    def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for fixing trailing whitespace.
 
         Runs after mixed line endings are normalized, so a stray CR left
@@ -69,7 +69,7 @@ class TrailingWhitespaceFormatter(Tool):
         return VersionControlHookManager.I.hook(
             self.fix_trailing_whitespace,
             priority=VersionControlHookManager.I.increase_priority(
-                EndOfLineFormatter.I.format_mixed_line_ending_hook(),
+                EndOfLineFormatter.I.format_hook(),
             ),
             types=["text"],
         )

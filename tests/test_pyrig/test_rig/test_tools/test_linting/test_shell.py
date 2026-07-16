@@ -41,15 +41,13 @@ class TestShellLinter:
 
     def test_version_control_hooks(self) -> None:
         """Test method."""
-        assert ShellLinter.I.version_control_hooks() == (
-            ShellLinter.I.lint_shell_hook(),
-        )
+        assert ShellLinter.I.version_control_hooks() == (ShellLinter.I.lint_hook(),)
 
-    def test_lint_shell_hook(self) -> None:
+    def test_lint_hook(self) -> None:
         """Test method."""
         # ties into the checks tier rather than running after it
-        hook = ShellLinter.I.lint_shell_hook()
-        types_hook = TypeChecker.I.check_types_hook()
+        hook = ShellLinter.I.lint_hook()
+        types_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == types_hook["priority"]
         assert hook["types"] == ["shell"]
 

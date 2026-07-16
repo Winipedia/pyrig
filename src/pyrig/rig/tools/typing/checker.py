@@ -42,11 +42,11 @@ class TypeChecker(Tool):
         """Return the type checking hook.
 
         Returns:
-            `check_types_hook`, wrapped in a single-element tuple.
+            `check_hook`, wrapped in a single-element tuple.
         """
-        return (self.check_types_hook(),)
+        return (self.check_hook(),)
 
-    def check_types_hook(self) -> dict[str, Any]:
+    def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for type checking Python source.
 
         Anchors the checks tier: it runs after Python formatting, and every
@@ -59,7 +59,7 @@ class TypeChecker(Tool):
         return VersionControlHookManager.I.hook(
             self.check_types,
             priority=VersionControlHookManager.I.increase_priority(
-                PythonLinter.I.format_python_hook(),
+                PythonLinter.I.format_hook(),
             ),
             types=["python"],
             pass_filenames=False,

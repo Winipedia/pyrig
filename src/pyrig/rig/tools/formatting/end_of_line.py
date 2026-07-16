@@ -50,11 +50,11 @@ class EndOfLineFormatter(Tool):
         """Return the mixed line ending hook.
 
         Returns:
-            `format_mixed_line_ending_hook`, wrapped in a single-element tuple.
+            `format_hook`, wrapped in a single-element tuple.
         """
-        return (self.format_mixed_line_ending_hook(),)
+        return (self.format_hook(),)
 
-    def format_mixed_line_ending_hook(self) -> dict[str, Any]:
+    def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for normalizing mixed line endings.
 
         Runs right after spelling is fixed and before the other formatting
@@ -70,7 +70,7 @@ class EndOfLineFormatter(Tool):
         return VersionControlHookManager.I.hook(
             self.fix_mixed_line_ending,
             priority=VersionControlHookManager.I.increase_priority(
-                SpellChecker.I.check_spelling_hook(),
+                SpellChecker.I.check_hook(),
             ),
             types=["text"],
             args=["--fix=lf"],

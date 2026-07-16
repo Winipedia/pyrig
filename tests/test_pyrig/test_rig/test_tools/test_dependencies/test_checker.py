@@ -34,14 +34,14 @@ class TestDependencyChecker:
     def test_version_control_hooks(self) -> None:
         """Test method."""
         assert DependencyChecker.I.version_control_hooks() == (
-            DependencyChecker.I.check_dependencies_hook(),
+            DependencyChecker.I.check_hook(),
         )
 
-    def test_check_dependencies_hook(self) -> None:
+    def test_check_hook(self) -> None:
         """Test method."""
         # ties into the checks tier rather than running after it
-        hook = DependencyChecker.I.check_dependencies_hook()
-        types_hook = TypeChecker.I.check_types_hook()
+        hook = DependencyChecker.I.check_hook()
+        types_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == types_hook["priority"]
         assert hook["types_or"] == ["pyproject", "python"]
         assert hook["pass_filenames"] is False

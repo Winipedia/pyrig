@@ -51,17 +51,17 @@ class CaseConflictChecker(Tool):
         """Return the case conflict check hook.
 
         Returns:
-            `check_case_conflict_hook`, wrapped in a single-element tuple.
+            `check_hook`, wrapped in a single-element tuple.
         """
-        return (self.check_case_conflict_hook(),)
+        return (self.check_hook(),)
 
-    def check_case_conflict_hook(self) -> dict[str, Any]:
+    def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for checking for case-conflicting filenames.
 
         Left without a `types` restriction so it matches every file, like
         `check-added-large-files`: a case collision can occur between any
         two tracked paths regardless of content type. Ties its priority to
-        `TypeChecker.check_types_hook` so it runs alongside the rest of the
+        `TypeChecker.check_hook` so it runs alongside the rest of the
         checks tier rather than after it.
 
         Returns:
@@ -70,7 +70,7 @@ class CaseConflictChecker(Tool):
         return VersionControlHookManager.I.hook(
             self.check_case_conflict,
             priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_types_hook(),
+                TypeChecker.I.check_hook(),
             ),
         )
 

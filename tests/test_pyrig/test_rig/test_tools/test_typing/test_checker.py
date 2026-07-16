@@ -36,15 +36,13 @@ class TestTypeChecker:
 
     def test_version_control_hooks(self) -> None:
         """Test method."""
-        assert TypeChecker.I.version_control_hooks() == (
-            TypeChecker.I.check_types_hook(),
-        )
+        assert TypeChecker.I.version_control_hooks() == (TypeChecker.I.check_hook(),)
 
-    def test_check_types_hook(self) -> None:
+    def test_check_hook(self) -> None:
         """Test method."""
         # type checking runs after Python formatting, anchoring the checks tier
-        hook = TypeChecker.I.check_types_hook()
-        format_hook = PythonLinter.I.format_python_hook()
+        hook = TypeChecker.I.check_hook()
+        format_hook = PythonLinter.I.format_hook()
         assert hook["priority"] > format_hook["priority"]
         assert hook["types"] == ["python"]
         assert hook["pass_filenames"] is False

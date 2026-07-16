@@ -62,14 +62,14 @@ class MarkdownLinter(Tool):
         """Return the Markdown linting and formatting hooks.
 
         Returns:
-            `lint_markdown_hook` and `format_markdown_hook`, in that order.
+            `lint_hook` and `format_hook`, in that order.
         """
-        return (self.lint_markdown_hook(), self.format_markdown_hook())
+        return (self.lint_hook(), self.format_hook())
 
-    def lint_markdown_hook(self) -> dict[str, Any]:
+    def lint_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting Markdown files.
 
-        Ties its priority to `TypeChecker.check_types_hook` so it runs
+        Ties its priority to `TypeChecker.check_hook` so it runs
         alongside the rest of the checks tier rather than after it.
 
         Returns:
@@ -78,7 +78,7 @@ class MarkdownLinter(Tool):
         return VersionControlHookManager.I.hook(
             self.lint_markdown,
             priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_types_hook(),
+                TypeChecker.I.check_hook(),
             ),
             types=["markdown"],
         )
@@ -91,7 +91,7 @@ class MarkdownLinter(Tool):
         """
         return self.lint_args()
 
-    def format_markdown_hook(self) -> dict[str, Any]:
+    def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting Markdown files.
 
         Runs after the sequential text-fixing chain, alongside the other
@@ -103,7 +103,7 @@ class MarkdownLinter(Tool):
         return VersionControlHookManager.I.hook(
             self.format_markdown,
             priority=VersionControlHookManager.I.increase_priority(
-                EndOfFileFormatter.I.format_end_of_file_hook(),
+                EndOfFileFormatter.I.format_hook(),
             ),
             types=["markdown"],
         )

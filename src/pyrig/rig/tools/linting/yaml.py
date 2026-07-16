@@ -52,11 +52,11 @@ class YAMLLinter(Tool):
         """Return the YAML linting hook.
 
         Returns:
-            `lint_yaml_hook`, wrapped in a single-element tuple.
+            `lint_hook`, wrapped in a single-element tuple.
         """
-        return (self.lint_yaml_hook(),)
+        return (self.lint_hook(),)
 
-    def lint_yaml_hook(self) -> dict[str, Any]:
+    def lint_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting and auto-fixing YAML files.
 
         Runs after the sequential text-fixing chain, alongside the other
@@ -68,7 +68,7 @@ class YAMLLinter(Tool):
         return VersionControlHookManager.I.hook(
             self.lint_yaml,
             priority=VersionControlHookManager.I.increase_priority(
-                EndOfFileFormatter.I.format_end_of_file_hook(),
+                EndOfFileFormatter.I.format_hook(),
             ),
             types=["yaml"],
             args=[

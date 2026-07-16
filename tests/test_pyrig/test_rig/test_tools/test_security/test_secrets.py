@@ -37,14 +37,14 @@ class TestSecretsChecker:
     def test_version_control_hooks(self) -> None:
         """Test method."""
         assert SecretsChecker.I.version_control_hooks() == (
-            SecretsChecker.I.check_secrets_hook(),
+            SecretsChecker.I.check_hook(),
         )
 
-    def test_check_secrets_hook(self) -> None:
+    def test_check_hook(self) -> None:
         """Test method."""
         # ties into the checks tier rather than running after it
-        hook = SecretsChecker.I.check_secrets_hook()
-        types_hook = TypeChecker.I.check_types_hook()
+        hook = SecretsChecker.I.check_hook()
+        types_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == types_hook["priority"]
         assert hook["types"] == ["text"]
 
