@@ -1,7 +1,7 @@
 """Test module."""
 
 from pyrig.rig.tools.formatting.end_of_line import EndOfLineFormatter
-from pyrig.rig.tools.spelling.checker import SpellChecker
+from pyrig.rig.tools.language.spelling import SpellChecker
 
 
 class TestEndOfLineFormatter:

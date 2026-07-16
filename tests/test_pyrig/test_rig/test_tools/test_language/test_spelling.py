@@ -1,7 +1,7 @@
 """module."""
 
+from pyrig.rig.tools.language.spelling import SpellChecker
 from pyrig.rig.tools.pyrigger import Pyrigger
-from pyrig.rig.tools.spelling.checker import SpellChecker
 
 
 class TestSpellChecker:

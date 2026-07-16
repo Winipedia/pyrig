@@ -1,7 +1,7 @@
 """module."""
 
 from pyrig.rig.tools.formatting.trailing_whitespace import TrailingWhitespaceFormatter
-from pyrig.rig.tools.spelling.checker import SpellChecker
+from pyrig.rig.tools.language.spelling import SpellChecker
 
 
 class TestTrailingWhitespaceFormatter:

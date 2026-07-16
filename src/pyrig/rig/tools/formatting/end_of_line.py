@@ -4,7 +4,7 @@ from typing import Any
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
-from pyrig.rig.tools.spelling.checker import SpellChecker
+from pyrig.rig.tools.language.spelling import SpellChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
