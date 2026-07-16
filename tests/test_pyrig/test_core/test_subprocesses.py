@@ -1,6 +1,8 @@
 """Tests for pyrig.os.os module."""
 
 import copy
+import logging
+import subprocess  # nosec: B404
 
 import pytest
 from pytest_mock import MockerFixture
@@ -8,19 +10,38 @@ from pytest_mock import MockerFixture
 from pyrig.core.subprocesses import Args, run_subprocess, run_subprocess_cached
 
 
-def test_run_subprocess() -> None:
+def test_run_subprocess(caplog: pytest.LogCaptureFixture) -> None:
     """Test function."""
-    cmd = ["echo", "hello"]
-    res = run_subprocess(*cmd)
-    assert res.returncode == 0, "Expected returncode 0"
-    assert res.stdout == "hello\n", f"Expected stdout 'hello\n', got {res.stdout}"
-    assert res.stderr == "", f"Expected stderr '', got {res.stderr}"
+    with caplog.at_level(logging.ERROR, logger="pyrig.core.subprocesses"):
+        cmd = ["echo", "hello"]
+        res = run_subprocess(*cmd)
+        assert res.returncode == 0, "Expected returncode 0"
+        assert res.stdout == "hello\n", f"Expected stdout 'hello\n', got {res.stdout}"
+        assert res.stderr == "", f"Expected stderr '', got {res.stderr}"
+        assert not caplog.records, "Expected no log records on success"
 
-    with pytest.raises(
-        TypeError,
-        match=r"shell",
-    ):
-        run_subprocess(*cmd, shell=True)  # ty: ignore[unknown-argument]  # noqa: S604  # nosec: B604
+        with pytest.raises(
+            TypeError,
+            match=r"shell",
+        ):
+            run_subprocess(*cmd, shell=True)  # ty: ignore[unknown-argument]  # noqa: S604  # nosec: B604
+        assert not caplog.records, "Expected no log records on TypeError"
+
+        fail_cmd = ["python", "-c", "import sys; sys.exit(1)"]
+        with pytest.raises(subprocess.CalledProcessError):
+            run_subprocess(*fail_cmd)
+
+        assert len(caplog.records) == 1, "Expected exactly one log record on failure"
+        record = caplog.records[0]
+        assert record.name == "pyrig.core.subprocesses"
+        assert record.levelname == "ERROR"
+        assert record.exc_info is not None, "Expected exception info to be logged"
+        assert record.getMessage() == (
+            f"Subprocess command failed: {tuple(fail_cmd)}\n"
+            "Return code: 1\n"
+            "Stdout: \n"
+            "Stderr: "
+        ), "Expected formatted log message to include command, return code, and streams"
 
 
 def test_run_subprocess_cached() -> None:
