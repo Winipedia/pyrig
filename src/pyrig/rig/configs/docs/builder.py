@@ -42,7 +42,6 @@ class DocsBuilderConfigFile(YMLDictConfigFile):
                         "handlers": {
                             "python": {
                                 "options": {
-                                    "filters": [],
                                     "inherited_members": True,
                                     "members": True,
                                     "relative_crossrefs": True,

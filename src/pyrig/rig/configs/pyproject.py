@@ -73,8 +73,6 @@ class PyprojectConfigFile(TOMLConfigFile):
                 "maintainers": [
                     {"name": VersionController.I.repo_owner()},
                 ],
-                "keywords": sorted(self.make_keywords()),
-                "classifiers": sorted(self.make_classifiers()),
                 "dependencies": self.merge_additional_dependencies(
                     dependencies=self.dependencies(),
                     additional=self.additional_dependencies(),
@@ -206,35 +204,6 @@ class PyprojectConfigFile(TOMLConfigFile):
             if dependency_requirement_as_module_name(dep) not in normalized_dependencies
         )
         return sorted({*dependencies, *additional})
-
-    def make_classifiers(self) -> Iterable[str]:
-        """Build the PyPI trove classifiers for the project.
-
-        Includes a `Programming Language :: Python :: X.Y` classifier for every
-        Python minor version the project supports, alongside fixed classifiers
-        declaring the project as Python 3 only, OS independent, and typed.
-
-        Returns:
-            Trove classifier strings for the `project.classifiers` field.
-        """
-        return [
-            "Programming Language :: Python :: 3 :: Only",
-            *(
-                f"Programming Language :: Python :: {v.major}.{v.minor}"
-                for v in self.supported_python_versions()
-            ),
-            "Operating System :: OS Independent",
-            "Typing :: Typed",
-        ]
-
-    def make_keywords(self) -> Iterable[str]:
-        """Build the PyPI keywords for the project.
-
-        Returns:
-            A single-element list containing the pyrig executable name, to
-            aid discoverability of the pyrig ecosystem in PyPI search.
-        """
-        return [Pyrigger.I.name()]
 
     def first_supported_python_version(self) -> Version:
         """Return the minimum Python version required by the project.
