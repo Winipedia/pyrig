@@ -74,11 +74,9 @@ class ShellFormatter(Tool):
             ),
             types=["shell"],
             args=[
-                "--indent",
-                "2",
+                "--indent=2",
                 "--case-indent",
-                "--language-dialect",
-                "bash",
+                "--language-dialect=bash",
                 "--write",
             ],
         )

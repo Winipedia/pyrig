@@ -156,7 +156,7 @@ class VersionControlHookManager(Tool):
         types: Iterable[str] | None = None,
         types_or: Iterable[str] | None = None,
         files: str | None = None,
-        args: list[str] | None = None,
+        args: Iterable[str] | None = None,
         always_run: bool | None = None,
         pass_filenames: bool | None = None,
     ) -> dict[str, Any]:
@@ -200,7 +200,7 @@ class VersionControlHookManager(Tool):
             "entry": str(entry),
         }
         if args is not None:
-            hook["args"] = args
+            hook["args"] = sorted(args)
         if types is not None:
             hook["types"] = sorted(types)
         if types_or is not None:

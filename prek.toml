@@ -175,11 +175,9 @@ name = "format shell"
 language = "system"
 entry = "shfmt"
 args = [
-    "--indent",
-    "2",
     "--case-indent",
-    "--language-dialect",
-    "bash",
+    "--indent=2",
+    "--language-dialect=bash",
     "--write",
 ]
 types = [
@@ -237,9 +235,8 @@ name = "lint yaml"
 language = "system"
 entry = "ryl check"
 args = [
+    "--config-data=extends: default",
     "--fix",
-    "--config-data",
-    "extends: default",
 ]
 types = [
     "yaml",
@@ -353,8 +350,7 @@ name = "check security"
 language = "system"
 entry = "bandit"
 args = [
-    "--exclude",
-    "tests",
+    "--exclude=tests",
 ]
 types = [
     "python",
@@ -373,12 +369,9 @@ name = "check shell"
 language = "system"
 entry = "shellcheck"
 args = [
-    "--enable",
-    "all",
-    "--severity",
-    "style",
-    "--shell",
-    "bash",
+    "--enable=all",
+    "--severity=style",
+    "--shell=bash",
 ]
 types = [
     "shell",

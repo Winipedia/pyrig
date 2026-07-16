@@ -72,12 +72,9 @@ class ShellLinter(Tool):
             ),
             types=["shell"],
             args=[
-                "--enable",
-                "all",
-                "--severity",
-                "style",
-                "--shell",
-                "bash",
+                "--enable=all",
+                "--severity=style",
+                "--shell=bash",
             ],
         )
 
