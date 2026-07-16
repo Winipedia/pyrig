@@ -59,37 +59,27 @@ class PyprojectConfigFile(TOMLConfigFile):
         )
 
         return {
-            "build-system": {
-                "requires": PackageManager.I.build_system_requires(),
-                "build-backend": PackageManager.I.build_backend(),
-            },
             "project": {
                 "name": PackageManager.I.project_name(),
                 "version": self.project_version(),
                 "description": self.project_description(),
                 "readme": ReadmeConfigFile.I.path().as_posix(),
-                "keywords": sorted(self.make_keywords()),
+                "requires-python": self.requires_python(),
                 "license": LicenseConfigFile.I.spdx_identifier(),
                 "license-files": [LicenseConfigFile.I.path().as_posix()],
-                "maintainers": [
-                    {"name": VersionController.I.repo_owner()},
-                ],
-                "authors": [
-                    {"name": VersionController.I.repo_owner()},
-                ],
-                "requires-python": self.requires_python(),
+                "keywords": sorted(self.make_keywords()),
                 "classifiers": sorted(self.make_classifiers()),
                 "dependencies": self.merge_additional_dependencies(
                     dependencies=self.dependencies(),
                     additional=self.additional_dependencies(),
                 ),
-                "urls": {
-                    "Changelog": RemoteVersionController.I.releases_url(),
-                    "Documentation": DocsBuilder.I.documentation_url(),
-                    "Homepage": RemoteVersionController.I.repo_url(),
-                    "Issues": RemoteVersionController.I.issues_url(),
-                    "Source": RemoteVersionController.I.repo_url(),
-                },
+                "authors": [
+                    {"name": VersionController.I.repo_owner()},
+                ],
+                "maintainers": [
+                    {"name": VersionController.I.repo_owner()},
+                ],
+                "urls": deep_sort_dict(self.url_configs()),
                 "scripts": {
                     PackageManager.I.project_name(): (
                         f"{main.__name__}:{main.main.__name__}"
@@ -102,7 +92,21 @@ class PyprojectConfigFile(TOMLConfigFile):
                     additional=self.additional_dev_dependencies(),
                 ),
             },
+            "build-system": {
+                "requires": PackageManager.I.build_system_requires(),
+                "build-backend": PackageManager.I.build_backend(),
+            },
             "tool": deep_sort_dict(self.tool_configs()),
+        }
+
+    def url_configs(self) -> dict[str, Any]:
+        """Assemble the required `urls` section of `pyproject.toml`."""
+        return {
+            "Changelog": RemoteVersionController.I.releases_url(),
+            "Documentation": DocsBuilder.I.documentation_url(),
+            "Homepage": RemoteVersionController.I.repo_url(),
+            "Issues": RemoteVersionController.I.issues_url(),
+            "Source": RemoteVersionController.I.repo_url(),
         }
 
     def tool_configs(self) -> dict[str, Any]:

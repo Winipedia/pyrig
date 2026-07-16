@@ -307,3 +307,13 @@ class TestPyprojectConfigFile:
     def test_make_keywords(self) -> None:
         """Test method."""
         assert PyprojectConfigFile().make_keywords() == ["pyrig"]
+
+    def test_url_configs(self) -> None:
+        """Test method."""
+        assert isinstance(PyprojectConfigFile.I.url_configs(), dict)
+        urls = PyprojectConfigFile.I.url_configs()
+        assert "Homepage" in urls
+        assert "Source" in urls
+        assert "Changelog" in urls
+        assert "Documentation" in urls
+        assert "Issues" in urls
