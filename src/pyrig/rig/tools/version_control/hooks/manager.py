@@ -112,38 +112,9 @@ class VersionControlHookManager(Tool):
         """
         return self.args("run", *args)
 
-    def subclasses_hooks(self) -> list[dict[str, Any]]:
-        """Return every concrete tool's hooks, sorted for a deterministic pipeline.
-
-        Returns:
-            Every hook returned by `version_control_hooks()` across all
-            concrete `Tool` subclasses, sorted via `sort_hooks`.
-        """
-        return self.sort_hooks(
-            [
-                hook
-                for tool in Tool.concrete_subclasses()
-                for hook in tool().version_control_hooks()
-            ],
-        )
-
-    def sort_hooks(self, hooks: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """Sort hooks by stage, then priority, then id.
-
-        Stage groups hooks that never run in the same invocation apart first,
-        since only hooks sharing a stage compete for order at all. Within a
-        stage, priority orders the pipeline; id breaks ties deterministically.
-
-        Args:
-            hooks: Hook metadata dictionaries to sort.
-
-        Returns:
-            The hooks sorted by `(stages, priority, id)`.
-        """
-        return sorted(
-            hooks,
-            key=lambda hook: (hook["stages"], hook["priority"], hook["id"]),
-        )
+    def hook_sort_key(self, hook: dict[str, Any]) -> tuple[Any, ...]:
+        """Return a sort key for a hook, for deterministic ordering."""
+        return (hook["stages"], hook["priority"], hook["id"])
 
     def hook(  # noqa: PLR0913
         self,

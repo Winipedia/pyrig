@@ -31,10 +31,6 @@ class TestYAMLLinter:
         result = YAMLLinter.I.check_args()
         assert result == ("ryl", "check")
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert YAMLLinter.I.version_control_hooks() == (YAMLLinter.I.check_hook(),)
-
     def test_check_hook(self) -> None:
         """Test method."""
         # YAML linting runs after the sequential text-fixing chain

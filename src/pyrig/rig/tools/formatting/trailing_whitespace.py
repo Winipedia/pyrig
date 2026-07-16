@@ -3,12 +3,13 @@
 from typing import Any
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.base.hooks import FormatHookTool
+from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.formatting.end_of_line import EndOfLineFormatter
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
-class TrailingWhitespaceFormatter(Tool):
+class TrailingWhitespaceFormatter(FormatHookTool):
     """Type-safe wrapper for the pre-commit-hooks trailing whitespace fixer."""
 
     def group(self) -> str:
@@ -46,15 +47,6 @@ class TrailingWhitespaceFormatter(Tool):
             Args for `trailing-whitespace-fixer`.
         """
         return self.args(*args)
-
-    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return the trailing whitespace hook.
-
-        Returns:
-            `format_hook`, wrapped in a single-element
-            tuple.
-        """
-        return (self.format_hook(),)
 
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for fixing trailing whitespace.

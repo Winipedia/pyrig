@@ -43,12 +43,6 @@ class TestModuleTestNamingChecker:
         result = ModuleTestNamingChecker.I.check_args()
         assert result == ("name-tests-test",)
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert ModuleTestNamingChecker.I.version_control_hooks() == (
-            ModuleTestNamingChecker.I.check_hook(),
-        )
-
     def test_check_hook(self) -> None:
         """Test method."""
         # ties into the checks tier rather than running after it

@@ -3,12 +3,13 @@
 from typing import Any
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.base.hooks import CheckHookTool
+from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
-class TypeChecker(Tool):
+class TypeChecker(CheckHookTool):
     """Type-safe wrapper for the `ty` static type checker."""
 
     def group(self) -> str:
@@ -37,14 +38,6 @@ class TypeChecker(Tool):
             Args for `ty check [args]`.
         """
         return self.args("check", *args)
-
-    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return the type checking hook.
-
-        Returns:
-            `check_hook`, wrapped in a single-element tuple.
-        """
-        return (self.check_hook(),)
 
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for type checking Python source.

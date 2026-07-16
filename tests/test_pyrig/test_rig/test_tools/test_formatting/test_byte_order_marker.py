@@ -42,12 +42,6 @@ class TestByteOrderMarkerFormatter:
         result = ByteOrderMarkerFormatter.I.format_args()
         assert result == ("fix-byte-order-marker",)
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert ByteOrderMarkerFormatter.I.version_control_hooks() == (
-            ByteOrderMarkerFormatter.I.format_hook(),
-        )
-
     def test_format_hook(self) -> None:
         """Test method."""
         # runs first among the text-fixing hooks, right after sync

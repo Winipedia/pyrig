@@ -2,7 +2,6 @@
 
 from abc import abstractmethod
 from types import ModuleType
-from typing import Any
 
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.strings import kebab_to_snake_case
@@ -184,17 +183,6 @@ class Tool(DependencySubclass):
 
         Returns:
             File paths to ignore. Empty by default.
-        """
-        return ()
-
-    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return the prek hooks this tool contributes to the pipeline.
-
-        Override in a subclass to declare the hooks that invoke this tool,
-        built via `VersionControlHookManager.hook`.
-
-        Returns:
-            Hook metadata dictionaries. Empty by default.
         """
         return ()
 

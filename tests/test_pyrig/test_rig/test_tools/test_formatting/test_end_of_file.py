@@ -42,12 +42,6 @@ class TestEndOfFileFormatter:
         result = EndOfFileFormatter.I.format_args()
         assert result == ("end-of-file-fixer",)
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert EndOfFileFormatter.I.version_control_hooks() == (
-            EndOfFileFormatter.I.format_hook(),
-        )
-
     def test_format_hook(self) -> None:
         """Test method."""
         # the end-of-file fix runs last in the sequential text-fixing chain

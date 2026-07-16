@@ -34,12 +34,6 @@ class TestSecurityChecker:
         result = SecurityChecker.I.check_args("flag1", "flag2")
         assert result == ("bandit", "flag1", "flag2")
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert SecurityChecker.I.version_control_hooks() == (
-            SecurityChecker.I.check_hook(),
-        )
-
     def test_check_hook(self) -> None:
         """Test method."""
         # ties into the checks tier rather than running after it

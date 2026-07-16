@@ -33,10 +33,6 @@ class TestSpellChecker:
         result = SpellChecker.I.check_args()
         assert result == ("typos",)
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert SpellChecker.I.version_control_hooks() == (SpellChecker.I.check_hook(),)
-
     def test_check_hook(self) -> None:
         """Test method."""
         # spelling is checked right after the byte-order marker is stripped

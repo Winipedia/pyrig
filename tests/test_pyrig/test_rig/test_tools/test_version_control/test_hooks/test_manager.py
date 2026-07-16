@@ -67,23 +67,6 @@ class TestVersionControlHookManager:
         result = VersionControlHookManager.I.run_all_files_args()
         assert result == ("prek", "run", "--all-files")
 
-    def test_subclasses_hooks(self) -> None:
-        """Test method."""
-        hooks = VersionControlHookManager.I.subclasses_hooks()
-        assert len(hooks) > 0
-        assert all(isinstance(hook, dict) for hook in hooks)
-        assert hooks == VersionControlHookManager.I.sort_hooks(hooks)
-
-    def test_sort_hooks(self) -> None:
-        """Test method."""
-        hooks = [
-            {"stages": ["pre-commit"], "priority": 2, "id": "b"},
-            {"stages": ["pre-commit"], "priority": 1, "id": "z"},
-            {"stages": ["pre-commit"], "priority": 1, "id": "a"},
-        ]
-        sorted_hooks = VersionControlHookManager.I.sort_hooks(hooks)
-        assert [hook["id"] for hook in sorted_hooks] == ["a", "z", "b"]
-
     def test_hook(self) -> None:
         """Test method."""
         priority = 2
@@ -170,4 +153,13 @@ class TestVersionControlHookManager:
         assert (
             VersionControlHookManager.I.hook_priority({"priority": priority})
             == priority
+        )
+
+    def test_hook_sort_key(self) -> None:
+        """Test method."""
+        hook = {"stages": ["pre-commit"], "priority": 2, "id": "b"}
+        assert VersionControlHookManager.I.hook_sort_key(hook) == (
+            ["pre-commit"],
+            2,
+            "b",
         )

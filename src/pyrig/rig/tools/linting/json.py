@@ -3,12 +3,13 @@
 from typing import Any
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.base.hooks import CheckHookTool
+from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
-class JSONLinter(Tool):
+class JSONLinter(CheckHookTool):
     """Type-safe wrapper for the check-json JSON syntax linter.
 
     Constructs check-json command-line arguments for validating that JSON
@@ -50,14 +51,6 @@ class JSONLinter(Tool):
             Args for `check-json`.
         """
         return self.args(*args)
-
-    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return the JSON validation hook.
-
-        Returns:
-            `check_hook`, wrapped in a single-element tuple.
-        """
-        return (self.check_hook(),)
 
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for validating JSON syntax.

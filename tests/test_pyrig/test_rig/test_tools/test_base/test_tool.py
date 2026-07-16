@@ -128,9 +128,3 @@ class TestTool:
 
         mock.return_value = "mytool"
         assert PackageManager.I.shield_name() == "mytool"
-
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        # ProjectTester doesn't contribute any hooks, so it falls back to
-        # Tool's default implementation
-        assert ProjectTester.I.version_control_hooks() == ()

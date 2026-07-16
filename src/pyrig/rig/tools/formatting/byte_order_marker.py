@@ -3,12 +3,13 @@
 from typing import Any
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.base.hooks import FormatHookTool
+from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
-class ByteOrderMarkerFormatter(Tool):
+class ByteOrderMarkerFormatter(FormatHookTool):
     """Type-safe wrapper for the pre-commit-hooks byte-order-marker fixer."""
 
     def group(self) -> str:
@@ -46,14 +47,6 @@ class ByteOrderMarkerFormatter(Tool):
             Args for `fix-byte-order-marker`.
         """
         return self.args(*args)
-
-    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return the byte-order-marker hook.
-
-        Returns:
-            `format_hook`, wrapped in a single-element tuple.
-        """
-        return (self.format_hook(),)
 
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for stripping a leading byte-order mark.

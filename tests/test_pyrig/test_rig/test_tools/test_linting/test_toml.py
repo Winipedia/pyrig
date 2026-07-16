@@ -40,13 +40,6 @@ class TestTOMLLinter:
         result = TOMLLinter.I.format_args()
         assert result == ("tombi", "format")
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert TOMLLinter.I.version_control_hooks() == (
-            TOMLLinter.I.check_hook(),
-            TOMLLinter.I.format_hook(),
-        )
-
     def test_check_hook(self) -> None:
         """Test method."""
         # ties into the checks tier rather than running after it

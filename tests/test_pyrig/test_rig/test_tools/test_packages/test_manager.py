@@ -145,13 +145,6 @@ class TestPackageManager:
         result = PackageManager.I.build_args()
         assert result == ("uv", "build")
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert PackageManager.I.version_control_hooks() == (
-            PackageManager.I.update_dependencies_hook(),
-            PackageManager.I.install_dependencies_hook(),
-        )
-
     def test_update_dependencies_hook(self) -> None:
         """Test method."""
         hook = PackageManager.I.update_dependencies_hook()
@@ -180,4 +173,11 @@ class TestPackageManager:
         assert (
             PackageManager.I.install_dependencies()
             == PackageManager.I.install_dependencies_args()
+        )
+
+    def test_hooks(self) -> None:
+        """Test method."""
+        assert PackageManager.I.hooks() == (
+            PackageManager.I.update_dependencies_hook(),
+            PackageManager.I.install_dependencies_hook(),
         )

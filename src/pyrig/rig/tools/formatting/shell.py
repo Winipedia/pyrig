@@ -3,12 +3,13 @@
 from typing import Any
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.base.hooks import FormatHookTool
+from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
-class ShellFormatter(Tool):
+class ShellFormatter(FormatHookTool):
     """A formatter for shell commands."""
 
     def group(self) -> str:
@@ -49,14 +50,6 @@ class ShellFormatter(Tool):
             Args for `shfmt -i 2 -ci -ln bash -w`.
         """
         return self.args(*args)
-
-    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return the shell formatting hook.
-
-        Returns:
-            `format_hook`, wrapped in a single-element tuple.
-        """
-        return (self.format_hook(),)
 
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting shell scripts.

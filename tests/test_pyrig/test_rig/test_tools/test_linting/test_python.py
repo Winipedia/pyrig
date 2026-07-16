@@ -47,13 +47,6 @@ class TestPythonLinter:
         result = PythonLinter.I.format_args()
         assert result == ("ruff", "format")
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert PythonLinter.I.version_control_hooks() == (
-            PythonLinter.I.check_hook(),
-            PythonLinter.I.format_hook(),
-        )
-
     def test_check_hook(self) -> None:
         """Test method."""
         # Python linting runs after the sequential text-fixing chain

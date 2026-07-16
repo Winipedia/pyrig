@@ -42,12 +42,6 @@ class TestCaseConflictChecker:
         result = CaseConflictChecker.I.check_args()
         assert result == ("check-case-conflict",)
 
-    def test_version_control_hooks(self) -> None:
-        """Test method."""
-        assert CaseConflictChecker.I.version_control_hooks() == (
-            CaseConflictChecker.I.check_hook(),
-        )
-
     def test_check_hook(self) -> None:
         """Test method."""
         # ties into the checks tier rather than running after it

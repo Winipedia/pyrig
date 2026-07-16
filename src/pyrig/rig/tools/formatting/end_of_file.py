@@ -3,12 +3,13 @@
 from typing import Any
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.base.hooks import FormatHookTool
+from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.formatting.trailing_whitespace import TrailingWhitespaceFormatter
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
-class EndOfFileFormatter(Tool):
+class EndOfFileFormatter(FormatHookTool):
     """Type-safe wrapper for the pre-commit-hooks end-of-file fixer."""
 
     def group(self) -> str:
@@ -47,14 +48,6 @@ class EndOfFileFormatter(Tool):
             Args for `end-of-file-fixer`.
         """
         return self.args(*args)
-
-    def version_control_hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return the end-of-file hook.
-
-        Returns:
-            `format_hook`, wrapped in a single-element tuple.
-        """
-        return (self.format_hook(),)
 
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for fixing a file's trailing newline.
