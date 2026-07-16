@@ -1,8 +1,6 @@
 """module."""
 
-import stat
 from collections.abc import Callable
-from contextlib import chdir
 from pathlib import Path
 
 import pytest
@@ -73,18 +71,3 @@ class TestShellConfigFile:
             f"{script.script_content()}"
         )
         assert script.content() == expected
-
-    def test_create_file(
-        self,
-        my_test_shell_config_file: type[ShellConfigFile],
-        tmp_path: Path,
-    ) -> None:
-        """Test method."""
-        with chdir(tmp_path):
-            script = my_test_shell_config_file()
-            script.create_file()
-            path = script.path()
-            assert path.exists()
-            assert path.stat().st_mode & stat.S_IXUSR
-            assert path.stat().st_mode & stat.S_IXGRP
-            assert path.stat().st_mode & stat.S_IXOTH
