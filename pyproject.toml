@@ -4,18 +4,22 @@ version = "18.5.0"
 description = "A tool that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = [
-    "inquirerpy>=0.3.4",
-    "packaging>=26.2",
-    "pyrig-runtime>=3.5.2",
-    "ruamel-yaml>=0.19.1",
-    "spdx-matcher>=0.1.4",
-    "tomlkit>=0.15.0",
-    "typer>=0.26.8",
-]
 license = "MIT"
 license-files = [
     "LICENSE",
+]
+keywords = [
+    "automation",
+    "boilerplate",
+    "ci-cd",
+    "code-quality",
+    "configuration",
+    "developer-tools",
+    "devops",
+    "project-setup",
+    "project-template",
+    "pyrig",
+    "scaffolding",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -35,18 +39,14 @@ classifiers = [
     "Topic :: System :: Software Distribution",
     "Typing :: Typed",
 ]
-keywords = [
-    "automation",
-    "boilerplate",
-    "ci-cd",
-    "code-quality",
-    "configuration",
-    "developer-tools",
-    "devops",
-    "project-setup",
-    "project-template",
-    "pyrig",
-    "scaffolding",
+dependencies = [
+    "inquirerpy>=0.3.4",
+    "packaging>=26.2",
+    "pyrig-runtime>=3.5.2",
+    "ruamel-yaml>=0.19.1",
+    "spdx-matcher>=0.1.4",
+    "tomlkit>=0.15.0",
+    "typer>=0.26.8",
 ]
 
 [[project.authors]]
@@ -56,11 +56,11 @@ name = "Winipedia"
 name = "Winipedia"
 
 [project.urls]
-Homepage = "https://github.com/Winipedia/pyrig"
-Documentation = "https://Winipedia.github.io/pyrig"
-Source = "https://github.com/Winipedia/pyrig"
-Issues = "https://github.com/Winipedia/pyrig/issues"
 Changelog = "https://github.com/Winipedia/pyrig/releases"
+Documentation = "https://Winipedia.github.io/pyrig"
+Homepage = "https://github.com/Winipedia/pyrig"
+Issues = "https://github.com/Winipedia/pyrig/issues"
+Source = "https://github.com/Winipedia/pyrig"
 
 [project.scripts]
 pyrig = "pyrig_runtime.rig.cli.main:main"
