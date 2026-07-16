@@ -91,6 +91,7 @@ dev = [
   "ryl",
   "shellcheck-py",
   "shfmt-py",
+  "tombi",
   "ty>=0.0.58",
   "typos>=1.48.0",
 ]

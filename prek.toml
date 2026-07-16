@@ -192,6 +192,22 @@ groups = [
 priority = 7
 
 [[repos.hooks]]
+id = "format-toml"
+name = "format toml"
+language = "system"
+entry = "tombi format"
+types = [
+  "toml",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 7
+
+[[repos.hooks]]
 id = "lint-markdown"
 name = "lint markdown"
 language = "system"
@@ -420,3 +436,22 @@ groups = [
 ]
 priority = 9
 pass_filenames = false
+
+[[repos.hooks]]
+id = "lint-toml"
+name = "lint toml"
+language = "system"
+entry = "tombi lint"
+args = [
+  "--error-on-warnings",
+]
+types = [
+  "toml",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 9
