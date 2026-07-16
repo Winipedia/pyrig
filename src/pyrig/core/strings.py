@@ -31,12 +31,16 @@ def read_text_utf8(path: Path) -> str:
 
 
 def write_text_utf8(path: Path, content: str) -> int:
-    """Write `content` to `path` as UTF-8, replacing any existing file.
+    r"""Write `content` to `path` as UTF-8, replacing any existing file.
+
+    Uses `newline="\n"` so `\n` characters in `content` are written as-is
+    instead of being translated to the platform's line separator (`\r\n`
+    on Windows), keeping output consistent across platforms.
 
     Returns:
         The number of characters written.
     """
-    return path.write_text(content, encoding=UTF_8_ENCODING)
+    return path.write_text(content, encoding=UTF_8_ENCODING, newline="\n")
 
 
 def fstring_var_name(fstring: str) -> str:
