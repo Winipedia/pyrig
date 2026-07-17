@@ -133,21 +133,21 @@ class PackageManager(VersionControlHookTool):
             *args: Package names or additional `uv add` flags.
 
         Returns:
-            Args for `uv add --group dev <args...>`.
+            Args for `uv add --group=dev <args...>`.
         """
-        return self.add_group_args("dev", *args)
+        return self.add_group_args(*args, group="dev")
 
-    def add_group_args(self, *args: str) -> Args:
+    def add_group_args(self, *args: str, group: str) -> Args:
         """Construct `Args` for adding packages to a dependency group.
 
         Args:
-            *args: The group name, followed by package names or additional
-                `uv add` flags.
+            *args: Package names or additional `uv add` flags.
+            group: The dependency group to add to.
 
         Returns:
-            Args for `uv add --group <args...>`.
+            Args for `uv add --group=<group> <args...>`.
         """
-        return self.add_args("--group", *args)
+        return self.add_args(f"--group={group}", *args)
 
     def add_args(self, *args: str) -> Args:
         """Construct `Args` for `uv add`.
@@ -161,15 +161,27 @@ class PackageManager(VersionControlHookTool):
         return self.args("add", *args)
 
     def install_dependencies_no_dev_args(self, *args: str) -> Args:
-        """Construct `Args` for `uv sync --no-group dev`.
+        """Construct `Args` for `uv sync --no-group=dev`.
 
         Args:
             *args: Additional arguments for the sync command.
 
         Returns:
-            Args for `uv sync --no-group dev <args...>`.
+            Args for `uv sync --no-group=dev <args...>`.
         """
-        return self.install_dependencies_args("--no-group", "dev", *args)
+        return self.install_dependencies_no_group_args(*args, group="dev")
+
+    def install_dependencies_no_group_args(self, *args: str, group: str) -> Args:
+        """Construct `Args` for `uv sync --no-group=<group>`.
+
+        Args:
+            *args: Additional arguments for the sync command.
+            group: The dependency group to exclude from installation.
+
+        Returns:
+            Args for `uv sync --no-group=<group> <args...>`.
+        """
+        return self.install_dependencies_args(f"--no-group={group}", *args)
 
     def install_dependencies_args(self, *args: str) -> Args:
         """Construct `Args` for `uv sync`.

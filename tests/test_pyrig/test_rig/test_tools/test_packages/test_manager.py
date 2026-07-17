@@ -12,11 +12,11 @@ class TestPackageManager:
 
     def test_add_group_args(self) -> None:
         """Test method."""
-        assert PackageManager.I.add_group_args("smth") == (
+        assert PackageManager.I.add_group_args("pkg", group="smth") == (
             "uv",
             "add",
-            "--group",
-            "smth",
+            "--group=smth",
+            "pkg",
         )
 
     def test_add_args(self) -> None:
@@ -28,8 +28,7 @@ class TestPackageManager:
         assert PackageManager.I.install_dependencies_no_dev_args("hello") == (
             "uv",
             "sync",
-            "--no-group",
-            "dev",
+            "--no-group=dev",
             "hello",
         )
 
@@ -118,7 +117,7 @@ class TestPackageManager:
     def test_add_dev_dependencies_args(self) -> None:
         """Test method."""
         result = PackageManager.I.add_dev_dependencies_args("pytest", "ruff")
-        assert result == ("uv", "add", "--group", "dev", "pytest", "ruff")
+        assert result == ("uv", "add", "--group=dev", "pytest", "ruff")
 
     def test_install_dependencies_args(self) -> None:
         """Test method."""
@@ -181,3 +180,11 @@ class TestPackageManager:
             PackageManager.I.update_dependencies_hook(),
             PackageManager.I.install_dependencies_hook(),
         )
+
+    def test_install_dependencies_no_group_args(self) -> None:
+        """Test method."""
+        assert PackageManager.I.install_dependencies_no_group_args(
+            "some",
+            "args",
+            group="whatever",
+        ) == ("uv", "sync", "--no-group=whatever", "some", "args")

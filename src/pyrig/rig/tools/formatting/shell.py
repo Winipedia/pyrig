@@ -48,7 +48,7 @@ class ShellFormatter(FormatHookTool):
                 file paths to format.
 
         Returns:
-            Args for `shfmt -i 2 -ci -ln bash -w`.
+            Args for `shfmt --indent=2 --case-indent --language-dialect=bash --write`.
         """
         return self.args(*args)
 

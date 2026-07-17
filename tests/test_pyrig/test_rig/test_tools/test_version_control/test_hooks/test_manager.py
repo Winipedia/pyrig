@@ -25,8 +25,7 @@ class TestVersionControlHookManager:
             "prek",
             "run",
             "--all-files",
-            "--group",
-            "all",
+            "--group=all",
         )
 
     def test_run_all_files_group_args(self) -> None:
@@ -37,8 +36,7 @@ class TestVersionControlHookManager:
             "prek",
             "run",
             "--all-files",
-            "--group",
-            "some-group",
+            "--group=some-group",
         )
 
     def test_group(self) -> None:

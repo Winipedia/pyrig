@@ -48,7 +48,7 @@
       -
         "name": "Run Version Control Hooks"
         "id": "run-version-control-hooks"
-        "run": "uv run prek run --all-files --group all"
+        "run": "uv run prek run --all-files --group=all"
   "matrix-health-checks":
     "runs-on": "${{ matrix.os }}"
     "strategy":

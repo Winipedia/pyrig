@@ -74,7 +74,7 @@ class VersionControlHookManager(Tool):
             *args: Additional arguments appended to the command.
 
         Returns:
-            Args for `prek run --all-files --group all [args]`.
+            Args for `prek run --all-files --group=all [args]`.
         """
         return self.run_all_files_group_args(*args, group=self.group_all())
 
@@ -86,9 +86,9 @@ class VersionControlHookManager(Tool):
             group: The hook group to run (e.g. `"tooling"`).
 
         Returns:
-            Args for `prek run --all-files --group <group> [args]`.
+            Args for `prek run --all-files --group=<group> [args]`.
         """
-        return self.run_all_files_args("--group", group, *args)
+        return self.run_all_files_args(f"--group={group}", *args)
 
     def run_all_files_args(self, *args: str) -> Args:
         """Build arguments to run hooks against every file in the project.
@@ -206,7 +206,7 @@ class VersionControlHookManager(Tool):
         """Return the badge group every hook is tagged with.
 
         Returns:
-            `"all"`, so a full `prek run --all-files --group all` sweep
+            `"all"`, so a full `prek run --all-files --group=all` sweep
             always includes every hook regardless of its other groups.
         """
         return "all"
