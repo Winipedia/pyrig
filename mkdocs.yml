@@ -11,12 +11,12 @@
       "handlers":
         "python":
           "options":
-            "filters": []  # ryl disable-line rule:brackets
             "inherited_members": true
             "members": true
             "relative_crossrefs": true
             "scoped_crossrefs": true
             "show_submodules": true
+            "filters": []
 "strict": true
 "theme":
   "name": "material"
