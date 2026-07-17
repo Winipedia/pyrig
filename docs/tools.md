@@ -68,6 +68,6 @@ instance of the leaf subclass (respecting any downstream override):
 ```python
 # uv sync
 PackageManager.I.install_dependencies_args().run()
-# git commit -m "my commit message"
+# git commit --message="my commit message"
 VersionController.I.commit_with_msg_args(msg="my commit message").run()
 ```
