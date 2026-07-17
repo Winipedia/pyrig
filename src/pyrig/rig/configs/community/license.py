@@ -9,6 +9,7 @@ from pyrig.core.resources import (
     resource_content,
 )
 from pyrig.core.strings import (
+    file_has_content,
     make_linked_badge_markdown,
 )
 from pyrig.rig import resources
@@ -62,12 +63,7 @@ class LicenseConfigFile(StringConfigFile):
         Raises:
             FileNotFoundError: If the file does not exist.
         """
-        content = self.read_content().strip()
-        return (
-            bool(content)
-            and self.year_placeholder() not in content
-            and self.fullname_placeholder() not in content
-        )
+        return file_has_content(self.path())
 
     def priority(self) -> float:
         """Return a priority one step above `PyprojectConfigFile`'s.

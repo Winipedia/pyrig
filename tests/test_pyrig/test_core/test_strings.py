@@ -2,7 +2,10 @@
 
 from pathlib import Path
 
+import pytest
+
 from pyrig.core.strings import (
+    file_has_content,
     fstring_var_name,
     is_multiline,
     make_linked_badge_markdown,
@@ -165,3 +168,19 @@ second line""")
         is True
     )
     assert is_multiline("""One line only""") is False
+
+
+def test_file_has_content(tmp_path: Path) -> None:
+    """Test function."""
+    file_path = tmp_path / "test_file.txt"
+    # file does not exist yet
+    with pytest.raises(FileNotFoundError):
+        assert file_has_content(file_path) is False
+
+    # create an empty file
+    file_path.write_text("", encoding="utf-8")
+    assert file_has_content(file_path) is False
+
+    # create a non-empty file
+    file_path.write_text("content", encoding="utf-8")
+    assert file_has_content(file_path) is True
