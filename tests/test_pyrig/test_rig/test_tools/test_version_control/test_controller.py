@@ -39,7 +39,7 @@ class TestVersionController:
     def test_commit_with_msg_args(self) -> None:
         """Test method."""
         result = VersionController.I.commit_with_msg_args(msg="Initial commit")
-        assert result == ("git", "commit", "--message", "Initial commit")
+        assert result == ("git", "commit", "--message=Initial commit")
 
     def test_resolve_repo_owner(self, mocker: MockerFixture) -> None:
         """Test method."""

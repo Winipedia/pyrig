@@ -51,7 +51,7 @@ class DependencyAuditor(CheckHookTool):
         Runs on the transition stages rather than pre-commit, since
         `pip-audit` scans installed distributions, not changed files. Ties
         its priority to `TypeChecker.check_hook`: it's a read-only
-        check like the rest of that tier, so a full `--group all` sweep can
+        check like the rest of that tier, so a full `--group=all` sweep can
         run it alongside them even though it triggers on different stages.
 
         Returns:

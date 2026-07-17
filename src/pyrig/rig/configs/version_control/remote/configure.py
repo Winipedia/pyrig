@@ -61,7 +61,7 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         repository_key = RepositorySettingsConfigFile.I.repository_key()
         endpoint = f"repos/${{{self.repo_variable()}}}"
         return f"""{self.apply_repository_settings_function()}() {{
-  jq '.{repository_key}' {settings_path} | gh api "{endpoint}" -X PATCH --input -
+  jq '.{repository_key}' {settings_path} | gh api "{endpoint}" --method=PATCH --input -
 }}"""
 
     def apply_repository_settings_function(self) -> str:
@@ -85,12 +85,12 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         method_ref = "${method}"
         return f"""{self.apply_rulesets_function()}() {{
   local endpoint="repos/{repo_ref}/rulesets"
-  jq -c '.{rulesets_key}[]' {settings_path} | while read -r ruleset; do
+  jq --compact-output '.{rulesets_key}[]' {settings_path} | while read -r ruleset; do
     id=$(gh api "{endpoint_ref}" |
-      jq -r --argjson r "{ruleset_ref}" '.[] | select(.name==$r.name) | .id')
+      jq --raw-output --argjson r "{ruleset_ref}" '.[] | select(.name==$r.name) | .id')
     if [[ -z "{id_ref}" ]]; then method="POST"; else method="PUT"; fi
     url="{endpoint_ref}${{id:+/{id_ref}}}"
-    gh api "${{url}}" -X "{method_ref}" --input - <<<"{ruleset_ref}"
+    gh api "${{url}}" --method="{method_ref}" --input - <<<"{ruleset_ref}"
   done
 }}"""
 
