@@ -61,7 +61,7 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         repository_key = RepositorySettingsConfigFile.I.repository_key()
         endpoint = f"repos/${{{self.repo_variable()}}}"
         return f"""{self.apply_repository_settings_function()}() {{
-  jq '.{repository_key}' {settings_path} | gh api "{endpoint}" --method=PATCH --input -
+  jq '.{repository_key}' {settings_path} | gh api "{endpoint}" --method=PATCH --input=-
 }}"""
 
     def apply_repository_settings_function(self) -> str:
@@ -90,7 +90,7 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
       jq --raw-output --argjson r "{ruleset_ref}" '.[] | select(.name==$r.name) | .id')
     if [[ -z "{id_ref}" ]]; then method="POST"; else method="PUT"; fi
     url="{endpoint_ref}${{id:+/{id_ref}}}"
-    gh api "${{url}}" --method="{method_ref}" --input - <<<"{ruleset_ref}"
+    gh api "${{url}}" --method="{method_ref}" --input=- <<<"{ruleset_ref}"
   done
 }}"""
 
