@@ -4,7 +4,7 @@ set -euo pipefail
 repo="Winipedia/pyrig"
 
 settings() {
-  jq '.repository' .github/settings.json | gh api "repos/${repo}" --method=PATCH --input -
+  jq '.repository' .github/settings.json | gh api "repos/${repo}" --method=PATCH --input=-
 }
 
 rulesets() {
@@ -14,7 +14,7 @@ rulesets() {
       jq --raw-output --argjson r "${ruleset}" '.[] | select(.name==$r.name) | .id')
     if [[ -z "${id}" ]]; then method="POST"; else method="PUT"; fi
     url="${endpoint}${id:+/${id}}"
-    gh api "${url}" --method="${method}" --input - <<<"${ruleset}"
+    gh api "${url}" --method="${method}" --input=- <<<"${ruleset}"
   done
 }
 
