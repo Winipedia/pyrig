@@ -6,6 +6,7 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.formatting.trailing_whitespace import TrailingWhitespaceFormatter
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -71,6 +72,6 @@ class EndOfFileFormatter(FormatHookTool):
         """Return the `Args` this hook's entry runs.
 
         Returns:
-            Args for `end-of-file-fixer`.
+            Args for `uv run end-of-file-fixer`.
         """
-        return self.format_args()
+        return PackageManager.I.run_args(*self.format_args())

@@ -167,4 +167,4 @@ class Pyrigger(VersionControlHookTool):
         Returns:
             Args for `pyrig sync`.
         """
-        return self.cmd_args(cmd=sync)
+        return PackageManager.I.run_args(*self.cmd_args(cmd=sync))

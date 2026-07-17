@@ -2,6 +2,7 @@
 
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.linting.yaml import YAMLLinter
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class TestYAMLLinter:
@@ -42,4 +43,5 @@ class TestYAMLLinter:
 
     def test_lint_yaml(self) -> None:
         """Test method."""
-        assert YAMLLinter.I.lint_yaml() == YAMLLinter.I.check_args()
+        base_args = YAMLLinter.I.check_args()
+        assert YAMLLinter.I.lint_yaml() == PackageManager.I.run_args(*base_args)

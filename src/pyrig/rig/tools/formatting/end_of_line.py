@@ -6,6 +6,7 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.language.spelling import SpellChecker
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -73,6 +74,6 @@ class EndOfLineFormatter(FormatHookTool):
         """Return the `Args` this hook's entry runs.
 
         Returns:
-            Args for `mixed-line-ending --fix=lf`.
+            Args for `uv run mixed-line-ending --fix=lf`.
         """
-        return self.format_args()
+        return PackageManager.I.run_args(*self.format_args())

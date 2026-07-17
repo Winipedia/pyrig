@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.large_files import LargeFileChecker
 
@@ -52,4 +53,7 @@ class TestLargeFileChecker:
 
     def test_check_large_files(self) -> None:
         """Test method."""
-        assert LargeFileChecker.I.check_large_files() == LargeFileChecker.I.check_args()
+        base_args = LargeFileChecker.I.check_args()
+        assert LargeFileChecker.I.check_large_files() == PackageManager.I.run_args(
+            *base_args,
+        )

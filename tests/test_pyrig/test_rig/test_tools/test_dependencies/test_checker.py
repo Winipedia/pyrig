@@ -2,6 +2,7 @@
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.dependencies.checker import DependencyChecker
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 
 
@@ -42,6 +43,6 @@ class TestDependencyChecker:
 
     def test_check_dependencies(self) -> None:
         """Test method."""
-        assert (
-            DependencyChecker.I.check_dependencies() == DependencyChecker.I.check_args()
+        assert DependencyChecker.I.check_dependencies() == PackageManager.I.run_args(
+            *DependencyChecker.I.check_args(),
         )

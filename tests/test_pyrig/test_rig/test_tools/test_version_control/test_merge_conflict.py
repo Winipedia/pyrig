@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.merge_conflict import MergeConflictChecker
 
@@ -52,7 +53,8 @@ class TestMergeConflictChecker:
 
     def test_check_merge_conflict(self) -> None:
         """Test method."""
+        base_args = MergeConflictChecker.I.check_args()
         assert (
             MergeConflictChecker.I.check_merge_conflict()
-            == MergeConflictChecker.I.check_args()
+            == PackageManager.I.run_args(*base_args)
         )

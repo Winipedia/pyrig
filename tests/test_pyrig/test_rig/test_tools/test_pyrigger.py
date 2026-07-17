@@ -82,7 +82,8 @@ class TestPyrigger:
 
     def test_synchronize_project(self) -> None:
         """Test method."""
-        assert Pyrigger.I.synchronize_project() == Pyrigger.I.cmd_args(cmd=sync)
+        base_args = Pyrigger.I.cmd_args(cmd=sync)
+        assert Pyrigger.I.synchronize_project() == PackageManager.I.run_args(*base_args)
 
     def test_hooks(self) -> None:
         """Test method."""

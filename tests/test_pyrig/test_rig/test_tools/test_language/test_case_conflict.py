@@ -1,6 +1,7 @@
 """module."""
 
 from pyrig.rig.tools.language.case_conflict import CaseConflictChecker
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 
 
@@ -52,7 +53,7 @@ class TestCaseConflictChecker:
 
     def test_check_case_conflict(self) -> None:
         """Test method."""
-        assert (
-            CaseConflictChecker.I.check_case_conflict()
-            == CaseConflictChecker.I.check_args()
+        base_args = CaseConflictChecker.I.check_args()
+        assert CaseConflictChecker.I.check_case_conflict() == PackageManager.I.run_args(
+            *base_args,
         )

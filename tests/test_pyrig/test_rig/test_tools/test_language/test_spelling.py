@@ -2,6 +2,7 @@
 
 from pyrig.rig.tools.formatting.byte_order_marker import ByteOrderMarkerFormatter
 from pyrig.rig.tools.language.spelling import SpellChecker
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class TestSpellChecker:
@@ -44,4 +45,5 @@ class TestSpellChecker:
 
     def test_fix_spelling(self) -> None:
         """Test method."""
-        assert SpellChecker.I.fix_spelling() == SpellChecker.I.check_args()
+        base_args = SpellChecker.I.check_args()
+        assert SpellChecker.I.fix_spelling() == PackageManager.I.run_args(*base_args)

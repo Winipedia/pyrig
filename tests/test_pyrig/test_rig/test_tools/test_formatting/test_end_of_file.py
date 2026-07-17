@@ -2,6 +2,7 @@
 
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.formatting.trailing_whitespace import TrailingWhitespaceFormatter
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class TestEndOfFileFormatter:
@@ -52,6 +53,6 @@ class TestEndOfFileFormatter:
 
     def test_fix_end_of_file(self) -> None:
         """Test method."""
-        assert (
-            EndOfFileFormatter.I.fix_end_of_file() == EndOfFileFormatter.I.format_args()
+        assert EndOfFileFormatter.I.fix_end_of_file() == PackageManager.I.run_args(
+            *EndOfFileFormatter.I.format_args(),
         )
