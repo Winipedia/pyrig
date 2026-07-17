@@ -51,7 +51,27 @@ class SecurityConfigFile(MarkdownConfigFile):
             The security policy template, with the contact method
             placeholder filled in.
         """
-        return self.template_with_contact_method()
+        return f"""# Security Policy
+
+## Reporting a Vulnerability
+
+**Please do not report security vulnerabilities publicly.**
+
+Instead, please report them privately to
+{self.contact_method()}
+
+Include:
+
+- Description of the vulnerability
+- Steps to reproduce
+- Affected versions
+- Any potential impact
+
+## Response
+
+The vulnerability will be investigated, and a fix will be released as soon as
+reasonably possible.
+"""
 
     def is_correct(self) -> bool:
         """Check whether SECURITY.md has non-empty content.
@@ -63,8 +83,7 @@ class SecurityConfigFile(MarkdownConfigFile):
             `True` if the file has non-empty content; `False` if the file
             is empty.
         """
-        content = self.read_content().strip()
-        return bool(content) and self.contact_method_placeholder() not in content
+        return self.contact_method() in self.read_content()
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
@@ -74,20 +93,6 @@ class SecurityConfigFile(MarkdownConfigFile):
         """Return the filename stem `"SECURITY"`."""
         return "SECURITY"
 
-    def template_with_contact_method(self) -> str:
-        """Return the security template with the contact placeholder replaced.
-
-        Returns:
-            Complete security policy template with the contact method
-            filled in.
-        """
-        contact_method = self.contact_method()
-        return SECURITY_TEMPLATE.replace(
-            self.contact_method_placeholder(),
-            contact_method,
-            1,
-        )
-
     def contact_method(self) -> str:
         """Return the contact email address for security reports.
 
@@ -96,11 +101,3 @@ class SecurityConfigFile(MarkdownConfigFile):
             `<user@example.com>`.
         """
         return f"<{VersionController.I.email()}>"
-
-    def contact_method_placeholder(self) -> str:
-        """Return the placeholder for the contact method in the template.
-
-        Returns:
-            The `[INSERT CONTACT METHOD]` placeholder string.
-        """
-        return "[INSERT CONTACT METHOD]"

@@ -8,7 +8,18 @@ from pathlib import Path
 
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 
-CONTRIBUTING_TEMPLATE = """# Contributing
+
+class ContributingConfigFile(MarkdownConfigFile):
+    """Configuration manager for the project's CONTRIBUTING.md file.
+
+    Generates CONTRIBUTING.md from a minimal best-practices template covering
+    issue reporting and the pull request workflow. Users are free to
+    customize the file after initial generation.
+    """
+
+    def content(self) -> str:
+        """Return the contributing template content."""
+        return """# Contributing
 
 Contributions are welcome!
 
@@ -25,7 +36,7 @@ Use issues for:
 ## Pull Requests
 
 1. Clone the repository
-2. Create a branch (`git switch --create your-feature`)
+2. Create a branch
 3. Make your changes
 4. Commit your changes with clear messages
 5. Push your branch and open a pull request
@@ -38,19 +49,6 @@ Use issues for:
 - Match the existing code style
 - All checks must pass before merge
 """
-
-
-class ContributingConfigFile(MarkdownConfigFile):
-    """Configuration manager for the project's CONTRIBUTING.md file.
-
-    Generates CONTRIBUTING.md from a minimal best-practices template covering
-    issue reporting and the pull request workflow. Users are free to
-    customize the file after initial generation.
-    """
-
-    def content(self) -> str:
-        """Return the contributing template content."""
-        return CONTRIBUTING_TEMPLATE
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""

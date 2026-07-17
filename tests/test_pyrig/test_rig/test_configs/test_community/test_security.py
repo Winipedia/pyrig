@@ -33,18 +33,6 @@ class TestSecurityConfigFile:
         assert len(result) > 0
         assert "some.email@here.com" in result
 
-    def test_template_with_contact_method(self, mocker: MockerFixture) -> None:
-        """Test method."""
-        email_mock = mocker.patch.object(
-            VersionController,
-            VersionController.email.__name__,
-            return_value="some.email@here.com",
-        )
-        result = SecurityConfigFile.I.template_with_contact_method()
-        email_mock.assert_called_once()
-        assert len(result) > 0
-        assert "<some.email@here.com>" in result
-
     def test_contact_method(self, mocker: MockerFixture) -> None:
         """Test method."""
         email_mock = mocker.patch.object(
@@ -59,10 +47,3 @@ class TestSecurityConfigFile:
     def test_is_correct(self) -> None:
         """Test method."""
         assert SecurityConfigFile.I.is_correct()
-
-    def test_contact_method_placeholder(self) -> None:
-        """Test method."""
-        assert (
-            SecurityConfigFile.I.contact_method_placeholder()
-            == "[INSERT CONTACT METHOD]"
-        )

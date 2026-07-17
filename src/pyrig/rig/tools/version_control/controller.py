@@ -108,7 +108,7 @@ class VersionController(Tool):
         """Build base arguments for `git commit`.
 
         Args:
-            *args: Commit options or message flags (e.g. `-m`, `--amend`).
+            *args: Commit options or message flags (e.g. `--message`, `--amend`).
 
         Returns:
             Args for `git commit [args]`.

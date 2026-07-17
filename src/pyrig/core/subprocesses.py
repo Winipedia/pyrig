@@ -18,16 +18,15 @@ class Args(tuple[str, ...]):
     form a single command.
 
     Example:
-        >>> args = Args("git", "commit", "--message", "my commit message")
-        >>> args == ("git", "commit", "--message", "my commit message")
+        >>> args = Args("git", "commit", "--message=my commit message")
+        >>> args == ("git", "commit", "--message=my commit message")
         True
         >>> str(args)
-        'git commit --message my commit message'
+        'git commit --message=my commit message'
         >>> print(args.multiline())
         git \
         commit \
-        --message \
-        my commit message
+        --message=my commit message
     """
 
     __slots__ = ()

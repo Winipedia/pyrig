@@ -40,8 +40,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         Raises:
             FileNotFoundError: If the file does not exist.
         """
-        content = self.read_content().strip()
-        return bool(content) and self.contact_method_placeholder() not in content
+        return self.contact_method() in self.read_content()
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
