@@ -1,5 +1,6 @@
 """Test module."""
 
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.security.secrets import SecretsChecker
 from pyrig.rig.tools.typing.checker import TypeChecker
 
@@ -44,4 +45,5 @@ class TestSecretsChecker:
 
     def test_check_secrets(self) -> None:
         """Test method."""
-        assert SecretsChecker.I.check_secrets() == SecretsChecker.I.check_args()
+        base_args = SecretsChecker.I.check_args()
+        assert SecretsChecker.I.check_secrets() == PackageManager.I.run_args(*base_args)

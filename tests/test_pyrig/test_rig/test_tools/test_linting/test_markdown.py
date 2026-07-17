@@ -2,6 +2,7 @@
 
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.linting.markdown import MarkdownLinter
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 
 
@@ -48,7 +49,8 @@ class TestMarkdownLinter:
 
     def test_lint_markdown(self) -> None:
         """Test method."""
-        assert MarkdownLinter.I.lint_markdown() == MarkdownLinter.I.check_args()
+        base_args = MarkdownLinter.I.check_args()
+        assert MarkdownLinter.I.lint_markdown() == PackageManager.I.run_args(*base_args)
 
     def test_format_args(self) -> None:
         """Test method."""
@@ -65,4 +67,7 @@ class TestMarkdownLinter:
 
     def test_format_markdown(self) -> None:
         """Test method."""
-        assert MarkdownLinter.I.format_markdown() == MarkdownLinter.I.format_args()
+        base_args = MarkdownLinter.I.format_args()
+        assert MarkdownLinter.I.format_markdown() == PackageManager.I.run_args(
+            *base_args,
+        )

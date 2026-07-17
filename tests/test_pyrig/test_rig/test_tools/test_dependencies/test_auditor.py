@@ -2,6 +2,7 @@
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.dependencies.auditor import DependencyAuditor
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
@@ -47,6 +48,7 @@ class TestDependencyAuditor:
 
     def test_audit_dependencies(self) -> None:
         """Test method."""
-        assert (
-            DependencyAuditor.I.audit_dependencies() == DependencyAuditor.I.check_args()
+        base_args = DependencyAuditor.I.check_args()
+        assert DependencyAuditor.I.audit_dependencies() == PackageManager.I.run_args(
+            *base_args,
         )

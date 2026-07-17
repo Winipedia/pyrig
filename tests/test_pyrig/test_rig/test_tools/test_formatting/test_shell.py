@@ -2,6 +2,7 @@
 
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.formatting.shell import ShellFormatter
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class TestShellFormatter:
@@ -49,4 +50,5 @@ class TestShellFormatter:
 
     def test_format_shell(self) -> None:
         """Test method."""
-        assert ShellFormatter.I.format_shell() == ShellFormatter.I.format_args()
+        base_args = ShellFormatter.I.format_args()
+        assert ShellFormatter.I.format_shell() == PackageManager.I.run_args(*base_args)

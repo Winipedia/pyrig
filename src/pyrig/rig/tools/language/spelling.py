@@ -6,6 +6,7 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.formatting.byte_order_marker import ByteOrderMarkerFormatter
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -67,6 +68,6 @@ class SpellChecker(CheckHookTool):
         """Return the `Args` this hook's entry runs.
 
         Returns:
-            Args for `typos --write-changes`.
+            Args for `uv run typos --write-changes`.
         """
-        return self.check_args()
+        return PackageManager.I.run_args(*self.check_args())

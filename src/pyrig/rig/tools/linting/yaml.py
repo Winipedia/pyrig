@@ -6,6 +6,7 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -74,6 +75,6 @@ class YAMLLinter(CheckHookTool):
         """Return the `Args` this hook's entry runs.
 
         Returns:
-            Args for `ryl check`.
+            Args for `uv run ryl check`.
         """
-        return self.check_args()
+        return PackageManager.I.run_args(*self.check_args())

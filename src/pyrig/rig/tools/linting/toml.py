@@ -86,9 +86,9 @@ class TOMLLinter(CheckFormatHookTool):
         """Return the `Args` this hook's entry runs.
 
         Returns:
-            Args for `tombi lint`.
+            Args for `uv run tombi lint`.
         """
-        return self.check_args()
+        return PackageManager.I.run_args(*self.check_args())
 
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting TOML files.
@@ -121,9 +121,9 @@ class TOMLLinter(CheckFormatHookTool):
         """Return the `Args` this hook's entry runs.
 
         Returns:
-            Args for `tombi format`.
+            Args for `uv run tombi format`.
         """
-        return self.format_args()
+        return PackageManager.I.run_args(*self.format_args())
 
     def lock_file_exclude_pattern(self) -> str:
         r"""Return a regex matching only the package manager's lock file.

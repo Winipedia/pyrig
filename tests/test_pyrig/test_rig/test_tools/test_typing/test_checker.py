@@ -1,6 +1,7 @@
 """module."""
 
 from pyrig.rig.tools.linting.python import PythonLinter
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 
 
@@ -45,4 +46,5 @@ class TestTypeChecker:
 
     def test_check_types(self) -> None:
         """Test method."""
-        assert TypeChecker.I.check_types() == TypeChecker.I.check_args()
+        base_args = TypeChecker.I.check_args()
+        assert TypeChecker.I.check_types() == PackageManager.I.run_args(*base_args)

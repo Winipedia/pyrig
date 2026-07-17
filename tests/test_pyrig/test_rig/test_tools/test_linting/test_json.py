@@ -1,6 +1,7 @@
 """module."""
 
 from pyrig.rig.tools.linting.json import JSONLinter
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 
 
@@ -51,4 +52,6 @@ class TestJSONLinter:
 
     def test_lint_json(self) -> None:
         """Test method."""
-        assert JSONLinter.I.lint_json() == JSONLinter.I.check_args()
+        assert JSONLinter.I.lint_json() == PackageManager.I.run_args(
+            *JSONLinter.I.check_args(),
+        )

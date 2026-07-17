@@ -2,6 +2,7 @@
 
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.formatting.json import JSONFormatter
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class TestJSONFormatter:
@@ -53,4 +54,5 @@ class TestJSONFormatter:
 
     def test_format_json(self) -> None:
         """Test method."""
-        assert JSONFormatter.I.format_json() == JSONFormatter.I.format_args()
+        base_args = JSONFormatter.I.format_args()
+        assert JSONFormatter.I.format_json() == PackageManager.I.run_args(*base_args)

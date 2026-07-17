@@ -6,6 +6,7 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckFormatHookTool
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -80,9 +81,9 @@ class PythonLinter(CheckFormatHookTool):
         """Return the `Args` this hook's entry runs.
 
         Returns:
-            Args for `ruff check`.
+            Args for `uv run ruff check`.
         """
-        return self.check_args()
+        return PackageManager.I.run_args(*self.check_args())
 
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting Python source.
@@ -105,6 +106,6 @@ class PythonLinter(CheckFormatHookTool):
         """Return the `Args` this hook's entry runs.
 
         Returns:
-            Args for `ruff format`.
+            Args for `uv run ruff format`.
         """
-        return self.format_args()
+        return PackageManager.I.run_args(*self.format_args())

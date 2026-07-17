@@ -1,6 +1,7 @@
 """module."""
 
 from pyrig.rig.tools.linting.shell import ShellLinter
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 
 
@@ -49,4 +50,5 @@ class TestShellLinter:
 
     def test_lint_shell(self) -> None:
         """Test method."""
-        assert ShellLinter.I.lint_shell() == ShellLinter.I.check_args()
+        base_args = ShellLinter.I.check_args()
+        assert ShellLinter.I.lint_shell() == PackageManager.I.run_args(*base_args)

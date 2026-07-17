@@ -49,7 +49,7 @@ pass_filenames = false
 id = "audit-dependencies"
 name = "audit dependencies"
 language = "system"
-entry = "pip-audit"
+entry = "uv run pip-audit"
 stages = [
   "post-checkout",
   "post-merge",
@@ -67,7 +67,7 @@ pass_filenames = false
 id = "synchronize-project"
 name = "synchronize project"
 language = "system"
-entry = "pyrig sync"
+entry = "uv run pyrig sync"
 stages = [
   "pre-commit",
 ]
@@ -82,7 +82,7 @@ pass_filenames = false
 id = "fix-byte-order-marker"
 name = "fix byte order marker"
 language = "system"
-entry = "fix-byte-order-marker"
+entry = "uv run fix-byte-order-marker"
 types = [
   "text",
 ]
@@ -98,7 +98,7 @@ priority = 3
 id = "fix-spelling"
 name = "fix spelling"
 language = "system"
-entry = "typos"
+entry = "uv run typos"
 args = [
   "--write-changes",
 ]
@@ -117,7 +117,7 @@ priority = 4
 id = "fix-mixed-line-ending"
 name = "fix mixed line ending"
 language = "system"
-entry = "mixed-line-ending"
+entry = "uv run mixed-line-ending"
 args = [
   "--fix=lf",
 ]
@@ -136,7 +136,7 @@ priority = 5
 id = "fix-trailing-whitespace"
 name = "fix trailing whitespace"
 language = "system"
-entry = "trailing-whitespace-fixer"
+entry = "uv run trailing-whitespace-fixer"
 types = [
   "text",
 ]
@@ -152,7 +152,7 @@ priority = 6
 id = "fix-end-of-file"
 name = "fix end of file"
 language = "system"
-entry = "end-of-file-fixer"
+entry = "uv run end-of-file-fixer"
 types = [
   "text",
 ]
@@ -168,7 +168,7 @@ priority = 7
 id = "format-json"
 name = "format json"
 language = "system"
-entry = "pretty-format-json"
+entry = "uv run pretty-format-json"
 args = [
   "--autofix",
   "--no-ensure-ascii",
@@ -189,7 +189,7 @@ priority = 8
 id = "format-markdown"
 name = "format markdown"
 language = "system"
-entry = "rumdl fmt"
+entry = "uv run rumdl fmt"
 types = [
   "markdown",
 ]
@@ -205,7 +205,7 @@ priority = 8
 id = "format-shell"
 name = "format shell"
 language = "system"
-entry = "shfmt"
+entry = "uv run shfmt"
 args = [
   "--case-indent",
   "--indent=2",
@@ -227,7 +227,7 @@ priority = 8
 id = "format-toml"
 name = "format toml"
 language = "system"
-entry = "tombi format"
+entry = "uv run tombi format"
 types = [
   "toml",
 ]
@@ -244,7 +244,7 @@ priority = 8
 id = "lint-python"
 name = "lint python"
 language = "system"
-entry = "ruff check"
+entry = "uv run ruff check"
 args = [
   "--fix",
 ]
@@ -263,7 +263,7 @@ priority = 8
 id = "lint-yaml"
 name = "lint yaml"
 language = "system"
-entry = "ryl check"
+entry = "uv run ryl check"
 args = [
   "--config-data=extends: default",
   "--fix",
@@ -283,7 +283,7 @@ priority = 8
 id = "format-python"
 name = "format python"
 language = "system"
-entry = "ruff format"
+entry = "uv run ruff format"
 types = [
   "python",
 ]
@@ -299,7 +299,7 @@ priority = 9
 id = "check-case-conflict"
 name = "check case conflict"
 language = "system"
-entry = "check-case-conflict"
+entry = "uv run check-case-conflict"
 stages = [
   "pre-commit",
 ]
@@ -312,7 +312,7 @@ priority = 10
 id = "check-dependencies"
 name = "check dependencies"
 language = "system"
-entry = "deptry"
+entry = "uv run deptry"
 types_or = [
   "pyproject",
   "python",
@@ -330,7 +330,7 @@ pass_filenames = false
 id = "check-large-files"
 name = "check large files"
 language = "system"
-entry = "check-added-large-files"
+entry = "uv run check-added-large-files"
 stages = [
   "pre-commit",
 ]
@@ -343,7 +343,7 @@ priority = 10
 id = "check-merge-conflict"
 name = "check merge conflict"
 language = "system"
-entry = "check-merge-conflict"
+entry = "uv run check-merge-conflict"
 types = [
   "text",
 ]
@@ -359,7 +359,7 @@ priority = 10
 id = "check-secrets"
 name = "check secrets"
 language = "system"
-entry = "detect-secrets-hook"
+entry = "uv run detect-secrets-hook"
 types = [
   "text",
 ]
@@ -375,7 +375,7 @@ priority = 10
 id = "check-security"
 name = "check security"
 language = "system"
-entry = "bandit"
+entry = "uv run bandit"
 args = [
   "--exclude=tests",
 ]
@@ -394,7 +394,7 @@ priority = 10
 id = "check-test-naming"
 name = "check test naming"
 language = "system"
-entry = "name-tests-test"
+entry = "uv run name-tests-test"
 args = [
   "--pytest-test-first",
 ]
@@ -414,7 +414,7 @@ priority = 10
 id = "check-types"
 name = "check types"
 language = "system"
-entry = "ty check"
+entry = "uv run ty check"
 types = [
   "python",
 ]
@@ -431,7 +431,7 @@ pass_filenames = false
 id = "lint-json"
 name = "lint json"
 language = "system"
-entry = "check-json"
+entry = "uv run check-json"
 types = [
   "json",
 ]
@@ -447,7 +447,7 @@ priority = 10
 id = "lint-markdown"
 name = "lint markdown"
 language = "system"
-entry = "rumdl check"
+entry = "uv run rumdl check"
 types = [
   "markdown",
 ]
@@ -463,7 +463,7 @@ priority = 10
 id = "lint-shell"
 name = "lint shell"
 language = "system"
-entry = "shellcheck"
+entry = "uv run shellcheck"
 args = [
   "--enable=all",
   "--severity=style",
@@ -484,7 +484,7 @@ priority = 10
 id = "lint-toml"
 name = "lint toml"
 language = "system"
-entry = "tombi lint"
+entry = "uv run tombi lint"
 args = [
   "--error-on-warnings",
 ]

@@ -2,6 +2,7 @@
 
 from pyrig.rig.tools.formatting.trailing_whitespace import TrailingWhitespaceFormatter
 from pyrig.rig.tools.language.spelling import SpellChecker
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class TestTrailingWhitespaceFormatter:
@@ -53,7 +54,8 @@ class TestTrailingWhitespaceFormatter:
 
     def test_fix_trailing_whitespace(self) -> None:
         """Test method."""
+        base_args = TrailingWhitespaceFormatter.I.format_args()
         assert (
             TrailingWhitespaceFormatter.I.fix_trailing_whitespace()
-            == TrailingWhitespaceFormatter.I.format_args()
+            == PackageManager.I.run_args(*base_args)
         )

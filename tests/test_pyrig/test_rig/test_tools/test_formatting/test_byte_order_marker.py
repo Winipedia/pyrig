@@ -1,6 +1,7 @@
 """Test module."""
 
 from pyrig.rig.tools.formatting.byte_order_marker import ByteOrderMarkerFormatter
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 
 
@@ -54,5 +55,5 @@ class TestByteOrderMarkerFormatter:
         """Test method."""
         assert (
             ByteOrderMarkerFormatter.I.fix_byte_order_marker()
-            == ByteOrderMarkerFormatter.I.format_args()
+            == PackageManager.I.run_args(*ByteOrderMarkerFormatter.I.format_args())
         )

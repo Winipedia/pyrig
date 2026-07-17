@@ -2,6 +2,7 @@
 
 from pyrig.rig.tools.formatting.end_of_line import EndOfLineFormatter
 from pyrig.rig.tools.language.spelling import SpellChecker
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class TestEndOfLineFormatter:
@@ -55,7 +56,8 @@ class TestEndOfLineFormatter:
 
     def test_fix_mixed_line_ending(self) -> None:
         """Test method."""
+        base_args = EndOfLineFormatter.I.format_args()
         assert (
             EndOfLineFormatter.I.fix_mixed_line_ending()
-            == EndOfLineFormatter.I.format_args()
+            == PackageManager.I.run_args(*base_args)
         )

@@ -6,6 +6,7 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.formatting.end_of_line import EndOfLineFormatter
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -70,6 +71,6 @@ class TrailingWhitespaceFormatter(FormatHookTool):
         """Return the `Args` this hook's entry runs.
 
         Returns:
-            Args for `trailing-whitespace-fixer`.
+            Args for `uv run trailing-whitespace-fixer`.
         """
-        return self.format_args()
+        return PackageManager.I.run_args(*self.format_args())

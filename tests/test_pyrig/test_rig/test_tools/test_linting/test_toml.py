@@ -2,6 +2,7 @@
 
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.linting.toml import TOMLLinter
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 
 
@@ -52,7 +53,8 @@ class TestTOMLLinter:
 
     def test_lint_toml(self) -> None:
         """Test method."""
-        assert TOMLLinter.I.lint_toml() == TOMLLinter.I.check_args()
+        base_args = TOMLLinter.I.check_args()
+        assert TOMLLinter.I.lint_toml() == PackageManager.I.run_args(*base_args)
 
     def test_format_hook(self) -> None:
         """Test method."""
@@ -65,7 +67,8 @@ class TestTOMLLinter:
 
     def test_format_toml(self) -> None:
         """Test method."""
-        assert TOMLLinter.I.format_toml() == TOMLLinter.I.format_args()
+        base_args = TOMLLinter.I.format_args()
+        assert TOMLLinter.I.format_toml() == PackageManager.I.run_args(*base_args)
 
     def test_lock_file_exclude_pattern(self) -> None:
         """Test method."""

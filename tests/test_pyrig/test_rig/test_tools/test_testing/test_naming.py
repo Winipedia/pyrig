@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.testing.naming import ModuleTestNamingChecker
 from pyrig.rig.tools.testing.project import ProjectTester
 from pyrig.rig.tools.typing.checker import TypeChecker
@@ -55,7 +56,8 @@ class TestModuleTestNamingChecker:
 
     def test_check_test_naming(self) -> None:
         """Test method."""
+        base_args = ModuleTestNamingChecker.I.check_args()
         assert (
             ModuleTestNamingChecker.I.check_test_naming()
-            == ModuleTestNamingChecker.I.check_args()
+            == PackageManager.I.run_args(*base_args)
         )

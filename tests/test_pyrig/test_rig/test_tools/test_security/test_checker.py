@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.security.checker import SecurityChecker
 from pyrig.rig.tools.typing.checker import TypeChecker
 
@@ -44,4 +45,6 @@ class TestSecurityChecker:
 
     def test_check_security(self) -> None:
         """Test method."""
-        assert SecurityChecker.I.check_security() == SecurityChecker.I.check_args()
+        assert SecurityChecker.I.check_security() == PackageManager.I.run_args(
+            *SecurityChecker.I.check_args(),
+        )

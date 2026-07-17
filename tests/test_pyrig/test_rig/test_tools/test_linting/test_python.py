@@ -2,6 +2,7 @@
 
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.linting.python import PythonLinter
+from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class TestPythonLinter:
@@ -58,7 +59,9 @@ class TestPythonLinter:
 
     def test_lint_python(self) -> None:
         """Test method."""
-        assert PythonLinter.I.lint_python() == PythonLinter.I.check_args()
+        assert PythonLinter.I.lint_python() == PackageManager.I.run_args(
+            *PythonLinter.I.check_args(),
+        )
 
     def test_format_hook(self) -> None:
         """Test method."""
@@ -70,4 +73,6 @@ class TestPythonLinter:
 
     def test_format_python(self) -> None:
         """Test method."""
-        assert PythonLinter.I.format_python() == PythonLinter.I.format_args()
+        assert PythonLinter.I.format_python() == PackageManager.I.run_args(
+            *PythonLinter.I.format_args(),
+        )
