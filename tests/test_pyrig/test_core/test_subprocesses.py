@@ -99,6 +99,12 @@ class TestArgs:
         result = str(args)
         assert result == "uv run pytest"
 
+    def test_multiline(self) -> None:
+        """Test method."""
+        args = Args("uv", "run", "pytest")
+        result = args.multiline()
+        assert result == "uv \\\nrun \\\npytest"
+
     def test_run(self, mocker: MockerFixture) -> None:
         """Test method."""
         mock_run_subprocess = mocker.patch("subprocess.run")
