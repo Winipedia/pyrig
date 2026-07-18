@@ -4,6 +4,7 @@ from pathlib import Path
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
+from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,
 )
@@ -28,7 +29,7 @@ class VersionControllerAttributesConfigFile(StringConfigFile):
             excluding version-control and GitHub metadata from `git
             archive` output.
         """
-        return f"""* text=auto eol=lf
+        return f"""* text=auto eol={VersionController.I.end_of_line()}
 
 *.md diff=markdown
 *.py diff=python

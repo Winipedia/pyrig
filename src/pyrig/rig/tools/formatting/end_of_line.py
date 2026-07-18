@@ -7,6 +7,7 @@ from pyrig.rig.tools.base.hooks import FormatHookTool
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.language.spelling import SpellChecker
 from pyrig.rig.tools.packages.manager import PackageManager
+from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -62,15 +63,15 @@ class EndOfLineFormatter(FormatHookTool):
             Hook metadata dict for `mixed-line-ending --fix=lf`.
         """
         return VersionControlHookManager.I.hook(
-            self.fix_mixed_line_ending,
+            self.fix_end_of_line,
             priority=VersionControlHookManager.I.increase_priority(
                 SpellChecker.I.check_hook(),
             ),
             types=["text"],
-            args=["--fix=lf"],
+            args=[f"--fix={VersionController.I.end_of_line()}"],
         )
 
-    def fix_mixed_line_ending(self) -> Args:
+    def fix_end_of_line(self) -> Args:
         """Return the `Args` this hook's entry runs.
 
         Returns:

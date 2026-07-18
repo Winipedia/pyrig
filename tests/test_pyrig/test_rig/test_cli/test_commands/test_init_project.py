@@ -30,7 +30,7 @@ def test_init_project_calls_pyrigger(mocker: MockerFixture) -> None:
     pyrigger_init_project_mock.assert_called_once()
 
 
-def test_init_project(
+def test_init_project(  # noqa: PLR0915
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -125,6 +125,11 @@ def test_init_project(
         # Verify pyrig was installed correctly
         # also checks if the init process works
         PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=init)).run()
+
+        # run tests with no cov
+        args = PackageManager.I.run_args(*ProjectTester.I.test_args(), "--no-cov")
+        res = args.run(check=False)
+        assert "No files were found in testpaths" in res.stderr
 
         # with cov
         args = PackageManager.I.run_args(*ProjectTester.I.test_args())
