@@ -35,7 +35,6 @@ class TestPyrigger:
     def test_setup_steps(self) -> None:
         """Test that setup_steps returns a non-empty list of (Args, dict) pairs."""
         steps = Pyrigger.I.setup_steps()
-        assert isinstance(steps, list)
         assert len(steps) > 0
         assert all(
             isinstance(step_args, Args) and isinstance(step_kwargs, dict)
