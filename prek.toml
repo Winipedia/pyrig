@@ -114,8 +114,8 @@ groups = [
 priority = 4
 
 [[repos.hooks]]
-id = "fix-mixed-line-ending"
-name = "fix mixed line ending"
+id = "fix-end-of-line"
+name = "fix end of line"
 language = "system"
 entry = "uv run mixed-line-ending"
 args = [

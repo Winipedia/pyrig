@@ -109,6 +109,11 @@ class TestVersionController:
         result = VersionController.I.default_branch()
         assert result == "main"
 
+    def test_end_of_line(self) -> None:
+        """Test method."""
+        result = VersionController.I.end_of_line()
+        assert result == "lf"
+
     def test_config_get_args(self) -> None:
         """Test method."""
         result = VersionController.I.config_get_args()

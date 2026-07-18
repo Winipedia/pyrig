@@ -54,10 +54,9 @@ class TestEndOfLineFormatter:
         assert hook["types"] == ["text"]
         assert hook["args"] == ["--fix=lf"]
 
-    def test_fix_mixed_line_ending(self) -> None:
+    def test_fix_end_of_line(self) -> None:
         """Test method."""
         base_args = EndOfLineFormatter.I.format_args()
-        assert (
-            EndOfLineFormatter.I.fix_mixed_line_ending()
-            == PackageManager.I.run_args(*base_args)
+        assert EndOfLineFormatter.I.fix_end_of_line() == PackageManager.I.run_args(
+            *base_args,
         )

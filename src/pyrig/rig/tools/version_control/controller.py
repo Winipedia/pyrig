@@ -57,6 +57,15 @@ class VersionController(Tool):
         """Return `'main'` as the default branch name for new repositories."""
         return "main"
 
+    def end_of_line(self) -> str:
+        """Return `'lf'`, the line-ending convention enforced across the project.
+
+        Single source of truth shared by `.gitattributes` (`eol=lf`) and the
+        `mixed-line-ending` pre-commit hook (`--fix=lf`), so the two can
+        never drift apart.
+        """
+        return "lf"
+
     def init_args(self, *args: str) -> Args:
         """Build arguments for `git init`.
 
