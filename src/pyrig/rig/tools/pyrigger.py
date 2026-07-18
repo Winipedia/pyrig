@@ -83,7 +83,7 @@ class Pyrigger(VersionControlHookTool):
             for step_args, run_kwargs in progress:
                 PackageManager.I.run_args(*step_args).run(**run_kwargs)
 
-    def setup_steps(self) -> list[tuple[Args, dict[str, Any]]]:
+    def setup_steps(self) -> tuple[tuple[Args, dict[str, Any]], ...]:
         """Return the ordered setup steps for project initialization.
 
         Each step pairs the command to run with the keyword arguments to pass
@@ -93,7 +93,7 @@ class Pyrigger(VersionControlHookTool):
         Returns:
             Ordered list of `(Args, run_kwargs)` steps.
         """
-        return [
+        return (
             (VersionController.I.init_args(), {}),
             (PackageManager.I.add_args(self.runtime_dependency()), {}),
             (
@@ -113,7 +113,7 @@ class Pyrigger(VersionControlHookTool):
                 ),
                 {},
             ),
-        ]
+        )
 
     def cmd_args(self, *args: str, cmd: FunctionType) -> Args:
         """Construct `Args` for a top-level pyrig CLI command.
