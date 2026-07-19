@@ -45,11 +45,12 @@ def discard_parent_methods(
     Yields:
         Methods that are defined directly on `cls`.
     """
+    unwrapped_cls = unwrap_cls(cls)
+    cls_module = inspect.getmodule(unwrapped_cls)
     for method in methods:
         unwrapped_method = unwrap_func(method)
-        unwrapped_cls = unwrap_cls(cls)
         if (
-            inspect.getmodule(unwrapped_method) is inspect.getmodule(unwrapped_cls)
+            inspect.getmodule(unwrapped_method) is cls_module
             and unwrapped_method.__name__ in unwrapped_cls.__dict__
         ):
             yield method
