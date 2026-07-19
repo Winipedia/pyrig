@@ -9,13 +9,13 @@ from abc import abstractmethod
 from collections.abc import Iterable, Iterator
 from importlib import import_module
 from pathlib import Path
-from types import FunctionType, MethodType, ModuleType
+from types import FunctionType, ModuleType
 from typing import Any, Self
 
 from pyrig_runtime.core.introspection.functions import (
     filter_module_functions,
 )
-from pyrig_runtime.core.introspection.inspection import obj_members, unwrap_obj
+from pyrig_runtime.core.introspection.inspection import obj_members
 
 from pyrig.core.introspection.classes import (
     cls_methods,
@@ -25,6 +25,8 @@ from pyrig.core.introspection.classes import (
 )
 from pyrig.core.introspection.inspection import (
     def_line_sorted,
+    unwrap_cls,
+    unwrap_func,
 )
 from pyrig.core.introspection.modules import (
     import_module_with_file_fallback,
@@ -337,8 +339,8 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         funcs = def_line_sorted(filter_module_functions(module, module_members))
         test_funcs = filter_module_functions(test_module, test_module_members)
 
-        supposed_test_func_names = (self.test_func_name(unwrap_obj(f)) for f in funcs)
-        actual_test_func_names = {unwrap_obj(f).__name__ for f in test_funcs}
+        supposed_test_func_names = (self.test_func_name(unwrap_func(f)) for f in funcs)
+        actual_test_func_names = {unwrap_func(f).__name__ for f in test_funcs}
 
         return (f for f in supposed_test_func_names if f not in actual_test_func_names)
 
@@ -469,13 +471,13 @@ def {test_func_name}() -> None:
 
         supposed_test_class_to_test_methods_names = (
             (
-                self.test_cls_name(unwrap_obj(c)),
-                (self.test_func_name(unwrap_obj(m)) for m in ms),
+                self.test_cls_name(unwrap_cls(c)),
+                (self.test_func_name(unwrap_func(m)) for m in ms),
             )
             for c, ms in class_to_methods
         )
         actual_test_class_to_test_methods_names = {
-            unwrap_obj(tc).__name__: {unwrap_obj(tm).__name__ for tm in tms}
+            unwrap_cls(tc).__name__: {unwrap_func(tm).__name__ for tm in tms}
             for tc, tms in test_class_to_test_methods
         }
 
@@ -542,7 +544,7 @@ class {test_class_name}:
         raise {NotImplementedError.__name__}
 '''
 
-    def test_func_name(self, func: FunctionType | MethodType | type) -> str:
+    def test_func_name(self, func: FunctionType) -> str:
         """Return the expected test function name for a given source function.
 
         Args:
@@ -553,7 +555,7 @@ class {test_class_name}:
         """
         return self.test_func_prefix() + func.__name__
 
-    def test_cls_name(self, cls: type | FunctionType | MethodType) -> str:
+    def test_cls_name(self, cls: type) -> str:
         """Return the expected test class name for a given source class.
 
         Args:

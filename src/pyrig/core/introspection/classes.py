@@ -7,7 +7,7 @@ from typing import Any, cast
 
 from pyrig_runtime.core.introspection.inspection import obj_members
 
-from pyrig.core.introspection.inspection import unwrap_obj
+from pyrig.core.introspection.inspection import unwrap_cls, unwrap_func, unwrap_obj
 
 
 def cls_methods(
@@ -46,8 +46,8 @@ def discard_parent_methods(
         Methods that are defined directly on `cls`.
     """
     for method in methods:
-        unwrapped_method = unwrap_obj(method)
-        unwrapped_cls = unwrap_obj(cls)
+        unwrapped_method = unwrap_func(method)
+        unwrapped_cls = unwrap_cls(cls)
         if (
             inspect.getmodule(unwrapped_method) is inspect.getmodule(unwrapped_cls)
             and unwrapped_method.__name__ in unwrapped_cls.__dict__
