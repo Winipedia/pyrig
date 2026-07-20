@@ -1,31 +1,11 @@
 """module."""
 
-from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
-
-import pytest
 
 from pyrig.rig.configs.version_control.hooks.manager import (
     VersionControlHookManagerConfigFile,
 )
-
-
-@pytest.fixture
-def my_test_prek_config_file(
-    config_file_factory: Callable[
-        [type[VersionControlHookManagerConfigFile]],
-        type[VersionControlHookManagerConfigFile],
-    ],
-) -> type[VersionControlHookManagerConfigFile]:
-    """Create a test prek config file class with tmp_path."""
-
-    class MyTestVersionControlHookManagerConfigFile(
-        config_file_factory(VersionControlHookManagerConfigFile),  # ty: ignore[unsupported-base]
-    ):
-        """Test prek config file with tmp_path override."""
-
-    return MyTestVersionControlHookManagerConfigFile
 
 
 class TestVersionControlHookManagerConfigFile:
@@ -72,20 +52,18 @@ class TestVersionControlHookManagerConfigFile:
 
     def test_parent_path(
         self,
-        my_test_prek_config_file: type[VersionControlHookManagerConfigFile],
         tmp_path: Path,
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            parent_path = my_test_prek_config_file().parent_path()
+            parent_path = VersionControlHookManagerConfigFile.I.parent_path()
             assert parent_path == Path(), f"Expected Path(), got {parent_path}"
 
     def test__configs(
         self,
-        my_test_prek_config_file: type[VersionControlHookManagerConfigFile],
     ) -> None:
         """Test method."""
-        configs = my_test_prek_config_file().configs()
+        configs = VersionControlHookManagerConfigFile.I.configs()
         assert "repos" in configs, "Expected 'repos' key in configs"
         assert isinstance(configs["repos"], list), "Expected 'repos' to be a list"
         assert len(configs["repos"]) > 0, "Expected at least one repo in configs"

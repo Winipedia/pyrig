@@ -32,7 +32,7 @@ class TestReleaseWorkflowConfigFile:
     ) -> None:
         """Test method."""
         step = my_test_release_workflow().step_apply_repository_settings()
-        function = ConfigureRepositoryConfigFile.I.apply_repository_settings_function()
+        function = ConfigureRepositoryConfigFile().apply_repository_settings_function()
         assert function in step["run"]
         assert step["env"]["GH_TOKEN"]
 
@@ -42,7 +42,7 @@ class TestReleaseWorkflowConfigFile:
     ) -> None:
         """Test method."""
         step = my_test_release_workflow().step_apply_rulesets()
-        assert ConfigureRepositoryConfigFile.I.apply_rulesets_function() in step["run"]
+        assert ConfigureRepositoryConfigFile().apply_rulesets_function() in step["run"]
         assert step["env"]["GH_TOKEN"]
 
     def test_run_configure_repository_function(
@@ -53,7 +53,7 @@ class TestReleaseWorkflowConfigFile:
         workflow = my_test_release_workflow()
         result = workflow.run_configure_repository_function("some_function")
         assert "bash" in result
-        assert ConfigureRepositoryConfigFile.I.path().as_posix() in result
+        assert ConfigureRepositoryConfigFile().path().as_posix() in result
         assert "some_function" in result
 
     def test_configure_repository_env(
@@ -79,7 +79,7 @@ class TestReleaseWorkflowConfigFile:
 
     def test_job(self) -> None:
         """Test method."""
-        result = ReleaseWorkflowConfigFile.I.job(self.test_job, steps=[])
+        result = ReleaseWorkflowConfigFile().job(self.test_job, steps=[])
         assert len(result) == 1, "Expected job to have one key"
         job_config = next(iter(result.values()))
         expected = (
@@ -90,7 +90,7 @@ class TestReleaseWorkflowConfigFile:
 
     def test_stem(self) -> None:
         """Test method."""
-        assert ReleaseWorkflowConfigFile.I.stem() == "release"
+        assert ReleaseWorkflowConfigFile().stem() == "release"
 
     def test_workflow_triggers(
         self,

@@ -26,13 +26,13 @@ class TestHealthCheckWorkflowConfigFile:
     def test_step_create_version_control_ignored_files(self) -> None:
         """Test method."""
         step = (
-            HealthCheckWorkflowConfigFile.I.step_create_version_control_ignored_files()
+            HealthCheckWorkflowConfigFile().step_create_version_control_ignored_files()
         )
         assert step["run"] == "uv run pyrig mk local"
 
     def test_stem(self) -> None:
         """Test method."""
-        assert HealthCheckWorkflowConfigFile.I.stem() == "health_check"
+        assert HealthCheckWorkflowConfigFile().stem() == "health_check"
 
     def test_cron_schedule(self) -> None:
         """Test method."""
@@ -40,14 +40,14 @@ class TestHealthCheckWorkflowConfigFile:
 
     def test_job_health_checks(self) -> None:
         """Test method."""
-        result = HealthCheckWorkflowConfigFile.I.job_health_checks()
+        result = HealthCheckWorkflowConfigFile().job_health_checks()
         assert len(result) == 1, "Expected job to have one key"
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name], "Expected 'steps' in job"
 
     def test_steps_health_checks(self) -> None:
         """Test method."""
-        result = HealthCheckWorkflowConfigFile.I.steps_health_checks()
+        result = HealthCheckWorkflowConfigFile().steps_health_checks()
         assert len(result) > 0, "Expected steps to be non-empty"
 
     def test_workflow_triggers(
