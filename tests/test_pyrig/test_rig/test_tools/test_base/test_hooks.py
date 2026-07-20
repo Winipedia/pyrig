@@ -19,14 +19,14 @@ class TestVersionControlHookTool:
         assert len(hooks) > 0
         assert all(isinstance(hook, dict) for hook in hooks)
 
-    def test_sort_hooks(self) -> None:
+    def test_sorted_hooks(self) -> None:
         """Test method."""
         hooks = [
             {"stages": ["pre-commit"], "priority": 2, "id": "b"},
             {"stages": ["pre-commit"], "priority": 1, "id": "z"},
             {"stages": ["pre-commit"], "priority": 1, "id": "a"},
         ]
-        sorted_hooks = VersionControlHookTool.sort_hooks(hooks)
+        sorted_hooks = VersionControlHookTool.sorted_hooks(hooks)
         assert [hook["id"] for hook in sorted_hooks] == ["a", "z", "b"]
 
 

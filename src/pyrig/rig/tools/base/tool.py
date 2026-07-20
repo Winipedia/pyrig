@@ -1,10 +1,12 @@
 """Shared contract every external CLI tool wrapper must implement."""
 
 from abc import abstractmethod
+from collections import defaultdict
 from types import ModuleType
 
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.strings import kebab_to_snake_case
+from pyrig_runtime.core.wrappers import safe_call
 
 from pyrig.core.strings import make_linked_badge_markdown
 from pyrig.core.subprocesses import Args
@@ -60,7 +62,12 @@ class Tool(DependencySubclass):
         return tools
 
     @classmethod
-    def grouped_badges(cls) -> dict[str, list[str]]:
+    def sort_key(cls) -> tuple[int, str]:
+        """Return a tuple for sorting tools by group and name."""
+        return (cls.group_order(cls().group()), cls.__name__)
+
+    @classmethod
+    def grouped_badges(cls) -> defaultdict[str, list[str]]:
         """Return every concrete tool's badge, grouped by its `Group` category.
 
         Returns:
@@ -68,12 +75,30 @@ class Tool(DependencySubclass):
             tools in that group. Groups are ordered by `groups()`; badges
             within a group are ordered by each tool's `sort_key()`.
         """
-        subclasses = cls.sort_subclasses(cls.concrete_subclasses())
-        groups: dict[str, list[str]] = {g: [] for g in cls.groups()}
+        subclasses = cls.sorted_subclasses(cls.concrete_subclasses())
+        groups: defaultdict[str, list[str]] = defaultdict(list)
         for subclass in subclasses:
             tool = subclass()
             groups[tool.group()].append(tool.badge())
         return groups
+
+    @classmethod
+    def group_order(cls, group: str) -> int:
+        """Return the display order of a `Group` category.
+
+        Args:
+            group: The group name to look up.
+
+        Returns:
+            The index of the group in `groups()`, or `len(groups())` if not found.
+        """
+        groups = cls.groups()
+        return safe_call(
+            groups.index,
+            args=(group,),
+            default=len(groups),
+            exceptions=(ValueError,),
+        )
 
     @classmethod
     def groups(cls) -> tuple[str, ...]:

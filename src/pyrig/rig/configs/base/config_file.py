@@ -173,7 +173,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             Empty if all were already correct.
         """
         return tuple(
-            cf for cf in cls.sort_subclasses(subclasses) if not cf().validate()
+            cf for cf in cls.sorted_subclasses(subclasses) if not cf().validate()
         )
 
     def validate(self) -> bool:

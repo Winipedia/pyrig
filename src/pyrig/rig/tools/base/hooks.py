@@ -24,17 +24,19 @@ class VersionControlHookTool(Tool):
         return ()
 
     @classmethod
-    def subclasses_hooks(cls) -> Iterable[dict[str, Any]]:
+    def subclasses_hooks(cls) -> list[dict[str, Any]]:
         """Return every concrete tool's hooks, sorted for a deterministic pipeline.
 
         Returns:
-            Every hook returned by `version_control_hooks()` across all
-            concrete `Tool` subclasses, sorted via `sort_hooks`.
+            Every hook returned by `hooks()` across all
+            concrete `Tool` subclasses, sorted via `sorted_hooks`.
         """
-        return (hook for tool in cls.concrete_subclasses() for hook in tool().hooks())
+        return cls.sorted_hooks(
+            hook for tool in cls.concrete_subclasses() for hook in tool().hooks()
+        )
 
     @classmethod
-    def sort_hooks(cls, hooks: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
+    def sorted_hooks(cls, hooks: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
         """Return the given hooks sorted for a deterministic pipeline.
 
         Sorts by the sort key returned by `hook_sort_key()`.

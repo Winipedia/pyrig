@@ -11,7 +11,7 @@ from pyrig_runtime.core.strings import (
 )
 from pyrig_runtime.rig.cli import main
 
-from pyrig.core.iterate import deep_sort_dict
+from pyrig.core.iterate import deep_sorted_dict
 from pyrig.core.resources import (
     resource_content,
 )
@@ -77,7 +77,7 @@ class PyprojectConfigFile(TOMLConfigFile):
                     dependencies=self.dependencies(),
                     additional=self.additional_dependencies(),
                 ),
-                "urls": deep_sort_dict(self.url_configs()),
+                "urls": deep_sorted_dict(self.url_configs()),
                 "scripts": {
                     PackageManager.I.project_name(): (
                         f"{main.__name__}:{main.main.__name__}"
@@ -94,7 +94,7 @@ class PyprojectConfigFile(TOMLConfigFile):
                 "requires": PackageManager.I.build_system_requires(),
                 "build-backend": PackageManager.I.build_backend(),
             },
-            "tool": deep_sort_dict(self.tool_configs()),
+            "tool": deep_sorted_dict(self.tool_configs()),
         }
 
     def url_configs(self) -> dict[str, Any]:

@@ -128,3 +128,26 @@ class TestTool:
 
         mock.return_value = "mytool"
         assert PackageManager.I.shield_name() == "mytool"
+
+    def test_sort_key(self) -> None:
+        """Test method."""
+        result = PackageManager.sort_key()
+        assert isinstance(result, tuple)
+        assert len(result) == 2  # noqa: PLR2004
+        assert isinstance(result[0], int)
+        assert isinstance(result[1], str)
+        assert result[1] == "PackageManager"
+
+    def test_group_order(self) -> None:
+        """Test method."""
+        result = Tool.group_order("project-status")
+        assert isinstance(result, int)
+        assert result == 0
+
+        result = Tool.group_order("code-quality")
+        assert isinstance(result, int)
+        assert result == 1
+
+        result = Tool.group_order("unknown-group")
+        assert isinstance(result, int)
+        assert result == 4  # noqa: PLR2004
