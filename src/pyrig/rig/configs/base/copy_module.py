@@ -140,7 +140,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         """
         return self.source_root() / module_name_as_path(
             replace_root_module_name(
-                self.copy_module(),
+                self.copy_module().__name__,
                 PackageManager.I.package_name(),
             ),
         )
