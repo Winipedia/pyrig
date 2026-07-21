@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Any, Literal
 
 from packaging.version import Version
-from pyrig_runtime.core.strings import (
-    dependency_requirement_as_module_name,
+from pyrig_runtime.core.dependencies.distribution import (
+    distribution_requirement_as_module_name,
 )
 from pyrig_runtime.rig.cli import main
 
@@ -196,12 +196,13 @@ class PyprojectConfigFile(TOMLConfigFile):
         """
         dependencies = set(dependencies)
         normalized_dependencies = {
-            dependency_requirement_as_module_name(dep) for dep in dependencies
+            distribution_requirement_as_module_name(dep) for dep in dependencies
         }
         additional = (
             dep
             for dep in additional
-            if dependency_requirement_as_module_name(dep) not in normalized_dependencies
+            if distribution_requirement_as_module_name(dep)
+            not in normalized_dependencies
         )
         return sorted({*dependencies, *additional})
 
