@@ -8,7 +8,9 @@ import pyrig_runtime
 import pytest
 import requests
 from packaging.version import Version
-from pyrig_runtime.core.strings import dependency_requirement_as_module_name
+from pyrig_runtime.core.dependencies.distribution import (
+    distribution_requirement_as_module_name,
+)
 from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.community.license import LicenseConfigFile
@@ -136,7 +138,7 @@ class TestPyprojectConfigFile:
         # dependencies may raise if dependencies key doesn't exist
         # This is expected behavior for the test config
         deps = [
-            dependency_requirement_as_module_name(dep)
+            distribution_requirement_as_module_name(dep)
             for dep in PyprojectConfigFile.I.dependencies()
         ]
         assert deps == [
