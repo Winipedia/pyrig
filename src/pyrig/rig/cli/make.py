@@ -40,6 +40,23 @@ def cmd(
 
 
 @app.command()
+def inits() -> None:
+    """Create all missing `__init__.py` files in the project.
+
+    Echoes each directory where a file was created to standard output.
+
+    Returns:
+        Directories where `__init__.py` files were created. Empty if all
+        already existed.
+    """
+    from pyrig.rig.cli.commands.make.inits import (  # noqa: PLC0415
+        make_project_init_files,
+    )
+
+    make_project_init_files()
+
+
+@app.command()
 def local() -> None:
     """Create or update all version-control-ignored config files.
 
