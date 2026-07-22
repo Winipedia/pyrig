@@ -7,10 +7,10 @@ from typing import Any
 import pytest
 
 from pyrig.rig.configs.base.yaml import (
-    _YAML,
+    YAML_DUMP,
     YAMLConfigFile,
     YMLConfigFile,
-    _represent_str,
+    represent_str,
 )
 from pyrig.rig.configs.docs.builder import DocsBuilderConfigFile
 
@@ -85,13 +85,13 @@ class TestYAMLConfigFile:
         assert my_test_yaml_config_file().extension() == "yaml", "Expected yaml"
 
 
-def test__represent_str() -> None:
+def test_represent_str() -> None:
     """Test function."""
-    single_line = _represent_str(_YAML.representer, "value")
+    single_line = represent_str(YAML_DUMP.representer, "value")
     assert single_line.style == '"', "Expected a double-quoted scalar"
     assert single_line.value == "value", "Expected the value to be unchanged"
 
-    multi_line = _represent_str(_YAML.representer, "line1\nline2")
+    multi_line = represent_str(YAML_DUMP.representer, "line1\nline2")
     assert multi_line.style == "|", "Expected a literal block scalar"
     assert multi_line.value == "line1\nline2", "Expected the value to be unchanged"
 

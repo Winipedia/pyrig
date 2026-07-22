@@ -10,8 +10,10 @@ from ruamel.yaml.scalarstring import DoubleQuotedScalarString, LiteralScalarStri
 from pyrig.core.strings import is_multiline, open_path_with_utf8, read_text_utf8
 from pyrig.rig.configs.base.config_file import ConfigFile
 
+YAML_LOAD = YAML(typ="safe")
 
-def _represent_str(representer: RoundTripRepresenter, data: str) -> ScalarNode:
+
+def represent_str(representer: RoundTripRepresenter, data: str) -> ScalarNode:
     """Represent a string in YAML.
 
     Represents multi-line strings as literal block scalars and single-line
@@ -31,12 +33,12 @@ def _represent_str(representer: RoundTripRepresenter, data: str) -> ScalarNode:
     )
 
 
-_YAML = YAML()
-_YAML.indent(mapping=2, sequence=4, offset=2)
-_YAML.explicit_start = True
-_YAML.explicit_end = True
-_YAML.compact_seq_map = False
-_YAML.representer.add_representer(str, _represent_str)
+YAML_DUMP = YAML()
+YAML_DUMP.indent(mapping=2, sequence=4, offset=2)
+YAML_DUMP.explicit_start = True
+YAML_DUMP.explicit_end = True
+YAML_DUMP.compact_seq_map = False
+YAML_DUMP.representer.add_representer(str, represent_str)
 
 
 class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
@@ -81,11 +83,11 @@ class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
             configs: Configuration dict or list to serialize and write.
         """
         with open_path_with_utf8(self.path(), mode="w") as f:
-            _YAML.dump(configs, f)
+            YAML_DUMP.dump(configs, f)
 
     def _load(self) -> ConfigT:
         """Read and parse the YAML file from disk, returning a dict or list."""
-        return _YAML.load(read_text_utf8(self.path()))
+        return YAML_LOAD.load(read_text_utf8(self.path()))
 
     def extension(self) -> str:
         """Return `"yaml"`, the fixed extension for YAML files."""
