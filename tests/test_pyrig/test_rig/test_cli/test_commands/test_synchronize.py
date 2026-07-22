@@ -20,7 +20,7 @@ def test_synchronize_project(mocker: MockerFixture) -> None:
         return_value=(),
     )
 
-    synchronize_project()
+    synchronize_project([])
 
     assert config_file_mock.call_count == len(
         (
@@ -32,4 +32,4 @@ def test_synchronize_project(mocker: MockerFixture) -> None:
     config_file_mock.return_value = (PyprojectConfigFile,)
 
     with pytest.raises(typer.Exit):
-        synchronize_project()
+        synchronize_project([])

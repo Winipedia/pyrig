@@ -6,6 +6,11 @@ as command groups, with each group named after the kebab-case form of its
 variable name.
 """
 
+from pathlib import Path
+from typing import Annotated
+
+import typer
+
 from pyrig.rig.cli import make
 
 mk = make.app
@@ -64,12 +69,26 @@ def scratch() -> None:
     run_scratch_file()
 
 
-def sync() -> None:
+def sync(
+    files: Annotated[
+        list[Path],
+        typer.Argument(
+            default_factory=list,
+            help=(
+                "Specific files to synchronize. If omitted, all files are synchronized."
+            ),
+        ),
+    ],
+) -> None:
     """Reconcile all pyrig-managed project structure into its correct state.
 
     Safe to run repeatedly: existing user content is preserved, and only what
     is missing or incorrect is changed. Run it after adding source code,
     pulling changes, or adding a new pyrig dependency.
+
+    Args:
+        files: Specific files to synchronize. If omitted, all files are
+            synchronized.
 
     Exits with code 1 if any file was created or updated, 0 if everything was
     already in sync. This makes it suitable as a git hook: auto-fixes are
@@ -77,4 +96,4 @@ def sync() -> None:
     """
     from pyrig.rig.cli.commands.synchronize import synchronize_project  # noqa: PLC0415
 
-    synchronize_project()
+    synchronize_project(files)
