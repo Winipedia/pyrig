@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "18.28.13"
+version = "18.28.14"
 description = "A tool that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -50,6 +50,7 @@ dependencies = [
   "packaging>=26.2",
   "pyrig-runtime>=3.5.2",
   "ruamel-yaml>=0.19.1",
+  "ruamel-yaml-clib>=0.2.8",
   "spdx-matcher>=0.1.4",
   "tomli-w>=1.2.0",
   "typer>=0.26.8",
