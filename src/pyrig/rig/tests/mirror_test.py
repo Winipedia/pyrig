@@ -7,7 +7,6 @@ corresponding test counterpart, without overwriting tests that already exist.
 import inspect
 from abc import abstractmethod
 from collections.abc import Iterable, Iterator
-from importlib import import_module
 from pathlib import Path
 from types import FunctionType, ModuleType
 from typing import Any, Self
@@ -32,13 +31,11 @@ from pyrig.core.introspection.modules import (
     import_module_with_file_fallback,
     leaf_module_name,
 )
-from pyrig.core.introspection.packages import discover_modules
 from pyrig.core.introspection.paths import module_name_as_path
 from pyrig.core.iterate import iterator_has_items
 from pyrig.core.strings import reformat_name
 from pyrig.rig import tests
 from pyrig.rig.configs.base.package import PythonPackageConfigFile
-from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.testing.project import ProjectTester
 
 
@@ -135,15 +132,6 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return self.test_path().stem
 
     @classmethod
-    def concrete_subclasses(cls) -> Iterator[type[Self]]:
-        """Yield a dynamically generated subclass for every module in the project.
-
-        Yields:
-            One dynamically created subclass per source module.
-        """
-        return cls.generate_subclasses(cls.mirror_modules())
-
-    @classmethod
     def discovery_module(cls) -> ModuleType:
         """Return the `pyrig.rig.tests` package, scoping discovery to mirror tests.
 
@@ -191,27 +179,6 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             bases=(cls,),
             methods=(mirror_module,),
         )
-
-    @classmethod
-    def generate_subclasses(cls, modules: Iterable[ModuleType]) -> Iterator[type[Self]]:
-        """Yield a dynamically created config subclass for each module.
-
-        Args:
-            modules: Source modules to create test config subclasses for.
-
-        Yields:
-            One subclass per module, in input order.
-        """
-        return (cls.generate_subclass(m) for m in modules)
-
-    @classmethod
-    def mirror_modules(cls) -> Iterator[ModuleType]:
-        """Yield every module in the project's source package.
-
-        Yields:
-            Each module in the package declared by the active `PackageManager`.
-        """
-        return discover_modules(import_module(PackageManager.I.package_name()))
 
     def test_path(self) -> Path:
         """Return the filesystem path of the test module file.

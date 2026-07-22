@@ -147,19 +147,6 @@ class TestMirrorTestConfigFile:
                 my_test_mirror_test_config_file().test_path().as_posix(),
             ).run()
 
-    def test_concrete_subclasses(self) -> None:
-        """Test method."""
-        subclasses = tuple(MirrorTestConfigFile.concrete_subclasses())
-        assert len(subclasses) > 0
-        assert all(
-            issubclass(subclass, MirrorTestConfigFile) for subclass in subclasses
-        )
-
-    def test_mirror_modules(self) -> None:
-        """Test method."""
-        modules = tuple(MirrorTestConfigFile.L.mirror_modules())
-        assert mirror_test in modules
-
     def test_test_func_name(
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
@@ -628,11 +615,6 @@ class TestGamma:
         skeleton = my_test_mirror_test_config_file().test_method_skeleton("test_method")
         assert "def test_method" in skeleton
         assert "NotImplementedError" in skeleton
-
-    def test_generate_subclasses(self) -> None:
-        """Test method."""
-        subclasses = tuple(MirrorTestConfigFile.L.generate_subclasses([mirror_test]))
-        assert len(subclasses) > 0
 
     def test_generate_subclass(self) -> None:
         """Test method."""

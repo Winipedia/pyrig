@@ -75,8 +75,6 @@ groups = [
   "all",
 ]
 priority = 2
-always_run = true
-pass_filenames = false
 
 [[repos.hooks]]
 id = "fix-byte-order-marker"

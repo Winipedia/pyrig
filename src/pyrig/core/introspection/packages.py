@@ -1,27 +1,11 @@
 """Utilities for Python packages."""
 
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable
 from pathlib import Path
-from types import ModuleType
 
 import typer
-from pyrig_runtime.core.introspection.packages import walk_package
 
 from pyrig.core.strings import write_text_utf8
-
-
-def discover_modules(package: ModuleType) -> Iterator[ModuleType]:
-    """Yield all non-package modules found anywhere in a package hierarchy.
-
-    Each module is imported as a side effect of iteration.
-
-    Args:
-        package: Root package to search.
-
-    Yields:
-        A non-package module found anywhere within `package`.
-    """
-    return (module for module, is_pkg in walk_package(package) if not is_pkg)
 
 
 def make_init_files(paths: Iterable[Path], content: str) -> tuple[Path, ...]:

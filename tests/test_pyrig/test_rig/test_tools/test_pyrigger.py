@@ -76,8 +76,6 @@ class TestPyrigger:
         hook = Pyrigger.I.synchronize_project_hook()
         install_hook = PackageManager.I.install_dependencies_hook()
         assert hook["priority"] > install_hook["priority"]
-        assert hook["always_run"] is True
-        assert hook["pass_filenames"] is False
 
     def test_synchronize_project(self) -> None:
         """Test method."""

@@ -12,7 +12,6 @@ from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile, Priority
 from pyrig.rig.configs.env import EnvConfigFile
 from pyrig.rig.configs.scratch import ScratchConfigFile
-from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 
 
 @pytest.fixture
@@ -178,19 +177,6 @@ class TestConfigFile:
         )
         my_test_config_file.validate_subclasses([my_test_config_file])
         mock.assert_called_once()
-
-    def test_validate_concrete_subclasses(self, mocker: MockerFixture) -> None:
-        """Test method."""
-        with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            _ = MirrorTestConfigFile.I
-
-        mock_validate = mocker.patch.object(
-            ConfigFile,
-            ConfigFile.validate.__name__,
-            return_value=True,
-        )
-        ConfigFile.validate_concrete_subclasses()
-        mock_validate.assert_called()
 
     def test_extension_separator(
         self,

@@ -71,14 +71,11 @@ def scratch() -> None:
 
 def sync(
     files: Annotated[
-        list[Path],
+        list[Path] | None,
         typer.Argument(
-            default_factory=list,
-            help=(
-                "Specific files to synchronize. If omitted, all files are synchronized."
-            ),
+            help="Files to synchronize. If omitted, all files are synchronized.",
         ),
-    ],
+    ] = None,
 ) -> None:
     """Reconcile all pyrig-managed project structure into its correct state.
 
@@ -87,12 +84,15 @@ def sync(
     pulling changes, or adding a new pyrig dependency.
 
     Args:
-        files: Specific files to synchronize. If omitted, all files are
+        files: Files to synchronize. If omitted, all files are
             synchronized.
 
     Exits with code 1 if any file was created or updated, 0 if everything was
     already in sync. This makes it suitable as a git hook: auto-fixes are
     applied, the hook fails, the developer stages the changes and recommits.
+
+    Note:
+        Only relative paths are supported. Absolute paths are silently dropped.
     """
     from pyrig.rig.cli.commands.synchronize import synchronize_project  # noqa: PLC0415
 
