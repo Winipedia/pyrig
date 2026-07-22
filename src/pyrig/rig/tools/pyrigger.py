@@ -157,8 +157,6 @@ class Pyrigger(VersionControlHookTool):
             priority=VersionControlHookManager.I.increase_priority(
                 PackageManager.I.install_dependencies_hook(),
             ),
-            always_run=True,
-            pass_filenames=False,
         )
 
     def synchronize_project(self) -> Args:

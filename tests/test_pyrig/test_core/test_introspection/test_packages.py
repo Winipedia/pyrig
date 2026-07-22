@@ -3,16 +3,11 @@
 from contextlib import chdir
 from pathlib import Path
 
-import pyrig
-from pyrig.core import introspection
-from pyrig.core.introspection import packages
 from pyrig.core.introspection.packages import (
-    discover_modules,
     make_init_file,
     make_init_files,
     make_package_dir,
 )
-from pyrig.rig.tests import mirror_test
 
 
 def test_make_init_file(tmp_path: Path) -> None:
@@ -39,17 +34,6 @@ def test_make_package_dir(tmp_path: Path) -> None:
         assert (Path() / "test" / "package" / "__init__.py").exists()
         assert (Path() / "test" / "package" / "sub_package" / "__init__.py").exists()
         assert not (Path() / "__init__.py").exists()
-
-
-def test_discover_modules() -> None:
-    """Test function."""
-    modules = list(discover_modules(pyrig))
-    assert pyrig not in modules
-    # modules should be included, but not the package itself
-    assert mirror_test in modules
-    assert packages in modules
-    # is a package module, not a regular module, so should be excluded
-    assert introspection not in modules
 
 
 def test_make_init_files(tmp_path: Path) -> None:

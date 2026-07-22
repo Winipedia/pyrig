@@ -146,16 +146,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         )
 
     @classmethod
-    def validate_concrete_subclasses(cls) -> tuple[type[Self], ...]:
-        """Discover and validate every concrete `ConfigFile` subclass.
-
-        Returns:
-            Tuple of subclasses that were created or updated.
-            Empty if all were already correct.
-        """
-        return cls.validate_subclasses(cls.concrete_subclasses())
-
-    @classmethod
     def validate_subclasses(
         cls,
         subclasses: Iterable[type[Self]],
