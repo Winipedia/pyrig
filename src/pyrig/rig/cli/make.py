@@ -1,5 +1,7 @@
 """CLI command group for scaffolding new project artifacts."""
 
+from typing import Annotated
+
 import typer
 
 app = typer.Typer(no_args_is_help=True, help="Scaffold new project artifacts.")
@@ -7,12 +9,14 @@ app = typer.Typer(no_args_is_help=True, help="Scaffold new project artifacts.")
 
 @app.command()
 def cmd(
-    name: str = typer.Argument(help="Name of the command to create."),
+    name: Annotated[str, typer.Argument(help="Name of the command to create.")],
     *,
-    shared: bool = typer.Option(
-        default=False,
-        help="Whether the command should be shared in subsequent projects.",
-    ),
+    shared: Annotated[
+        bool,
+        typer.Option(
+            help="Whether the command should be shared in subsequent projects.",
+        ),
+    ] = False,
 ) -> None:
     """Scaffold a new CLI subcommand stub.
 
