@@ -2,6 +2,7 @@
 
 from importlib import import_module
 from itertools import chain
+from operator import itemgetter
 
 from InquirerPy import inquirer
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
@@ -68,7 +69,7 @@ def choose_subclass() -> type[DependencySubclass]:
 
     choices = sorted(
         chain(concrete_choices, abstract_choices),
-        key=lambda c: c["name"],
+        key=itemgetter("name"),
     )
 
     return inquirer.fuzzy(
