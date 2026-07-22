@@ -4,11 +4,13 @@ import typer
 
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
-from pyrig.rig.tools.programming_language import ProgrammingLanguage
 
 
 def synchronize_project() -> None:
     """Bring the project into its canonical state.
+
+    Args:
+        files: Specific files to synchronize. If empty, all files are synchronized.
 
     Run the ordered reconciliation steps that create missing package files,
     update managed configuration, and refresh generated tests. The operation
@@ -18,8 +20,7 @@ def synchronize_project() -> None:
         typer.Exit: With code 1 if any file was created or updated during
             the run.
     """
-    created_inits = ProgrammingLanguage.I.make_init_files()
     changed_configs = ConfigFile.validate_concrete_subclasses()
     changed_tests = MirrorTestConfigFile.L.validate_concrete_subclasses()
-    if created_inits or changed_configs or changed_tests:
+    if changed_configs or changed_tests:
         raise typer.Exit(code=1)
