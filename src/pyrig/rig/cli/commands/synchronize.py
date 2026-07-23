@@ -74,7 +74,7 @@ def validate_test_files(
 
     files = (file for file in files if file.name != "__init__.py")
 
-    source_root = package_root.parent
+    source_root = PackageManager.I.source_root()
     module_names = (
         path_as_module_name(file.relative_to(source_root)) for file in files
     )
