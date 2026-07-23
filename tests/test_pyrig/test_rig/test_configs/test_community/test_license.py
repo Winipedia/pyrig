@@ -19,6 +19,7 @@ class TestLicenseConfigFile:
     def test_spdx_identifier(self, mocker: MockerFixture) -> None:
         """Test method."""
         assert LicenseConfigFile.I.spdx_identifier() == "MIT"
+        LicenseConfigFile.I.spdx_identifier.cache_clear()
 
         read_content_mock = mocker.patch.object(
             LicenseConfigFile,
@@ -26,6 +27,7 @@ class TestLicenseConfigFile:
             return_value="Not a valid license text.",
         )
         assert LicenseConfigFile.I.spdx_identifier() == "LicenseRef-Custom"
+        LicenseConfigFile.I.spdx_identifier.cache_clear()
         read_content_mock.assert_called_once()
 
     def test_remote_license_template(
