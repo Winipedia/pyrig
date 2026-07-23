@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.rig.configs.base.copy_module_docstring import (
+from pyrig.rig.configs.base.copy_module import (
     CopyModuleDocstringConfigFile,
 )
 

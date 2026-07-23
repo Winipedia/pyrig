@@ -35,7 +35,7 @@ from pyrig.core.introspection.paths import module_name_as_path
 from pyrig.core.iterate import iterator_has_items
 from pyrig.core.strings import reformat_name
 from pyrig.rig import tests
-from pyrig.rig.configs.base.package import PythonPackageConfigFile
+from pyrig.rig.configs.base.python import PythonPackageConfigFile
 from pyrig.rig.tools.testing.project import ProjectTester
 
 
