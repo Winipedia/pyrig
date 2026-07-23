@@ -1,6 +1,7 @@
 """LICENSE file configuration for generated projects."""
 
 from datetime import UTC, datetime
+from functools import cache
 from pathlib import Path
 
 from spdx_matcher import analyse_license_text
@@ -118,14 +119,16 @@ class LicenseConfigFile(StringConfigFile):
         )
         return f"https://img.shields.io/github/license/{owner}/{repo}"
 
-    def spdx_identifier(self) -> str:
+    @classmethod
+    @cache
+    def spdx_identifier(cls) -> str:
         """Return the SPDX license identifier detected from the LICENSE file content.
 
         Returns:
             The matched SPDX identifier (e.g., `"MIT"`, `"Apache-2.0"`), or
             `"LicenseRef-Custom"` if no standard license is recognised.
         """
-        licenses, _ = analyse_license_text(self.read_content())
+        licenses, _ = analyse_license_text(cls().read_content())
         return next(iter(licenses["licenses"]), "LicenseRef-Custom")
 
     def year_placeholder(self) -> str:
