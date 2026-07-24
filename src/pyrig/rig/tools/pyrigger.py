@@ -155,7 +155,7 @@ class Pyrigger(VersionControlHookTool):
         return VersionControlHookManager.I.hook(
             self.synchronize_project,
             priority=VersionControlHookManager.I.increase_priority(
-                PackageManager.I.install_dependencies_hook(),
+                PackageManager.I.audit_dependencies_hook(),
             ),
         )
 

@@ -179,6 +179,7 @@ class TestPackageManager:
         assert PackageManager.I.hooks() == (
             PackageManager.I.update_dependencies_hook(),
             PackageManager.I.install_dependencies_hook(),
+            PackageManager.I.audit_dependencies_hook(),
         )
 
     def test_install_dependencies_no_group_args(self) -> None:
@@ -188,3 +189,21 @@ class TestPackageManager:
             "args",
             group="whatever",
         ) == ("uv", "sync", "--no-group=whatever", "some", "args")
+
+    def test_audit_args(self) -> None:
+        """Test method."""
+        assert PackageManager.I.audit_args() == ("uv", "audit")
+
+    def test_audit_dependencies_hook(self) -> None:
+        """Test method."""
+        hook = PackageManager.I.audit_dependencies_hook()
+        assert (
+            hook["priority"] > PackageManager.I.install_dependencies_hook()["priority"]
+        )
+        assert hook["stages"] == VersionControlHookManager.I.transition_stages()
+        assert hook["always_run"] is True
+        assert hook["pass_filenames"] is False
+
+    def test_audit_dependencies(self) -> None:
+        """Test method."""
+        assert PackageManager.I.audit_dependencies() == PackageManager.I.audit_args()

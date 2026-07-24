@@ -76,6 +76,8 @@ class TestPyrigger:
         hook = Pyrigger.I.synchronize_project_hook()
         install_hook = PackageManager.I.install_dependencies_hook()
         assert hook["priority"] > install_hook["priority"]
+        audit_hook = PackageManager.I.audit_dependencies_hook()
+        assert hook["priority"] > audit_hook["priority"]
 
     def test_synchronize_project(self) -> None:
         """Test method."""

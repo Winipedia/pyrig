@@ -160,6 +160,10 @@ class PackageManager(VersionControlHookTool):
         """
         return self.args("add", *args)
 
+    def audit_args(self, *args: str) -> Args:
+        """Construct `Args` for auditing installed dependencies."""
+        return self.args("audit", *args)
+
     def install_dependencies_no_dev_args(self, *args: str) -> Args:
         """Construct `Args` for `uv sync --no-group=dev`.
 
@@ -244,13 +248,12 @@ class PackageManager(VersionControlHookTool):
         return self.args("build", *args)
 
     def hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return the dependency update and install hooks.
-
-        Returns:
-            `update_dependencies_hook` and `install_dependencies_hook`, in
-            that order.
-        """
-        return (self.update_dependencies_hook(), self.install_dependencies_hook())
+        """Return the dependency update and install hooks."""
+        return (
+            self.update_dependencies_hook(),
+            self.install_dependencies_hook(),
+            self.audit_dependencies_hook(),
+        )
 
     def update_dependencies_hook(self) -> dict[str, Any]:
         """Return the hook metadata for upgrading locked dependency versions.
@@ -304,3 +307,23 @@ class PackageManager(VersionControlHookTool):
             Args for `uv sync`.
         """
         return self.install_dependencies_args()
+
+    def audit_dependencies_hook(self) -> dict[str, Any]:
+        """Return the hook metadata for auditing installed dependencies."""
+        return VersionControlHookManager.I.hook(
+            self.audit_dependencies,
+            priority=VersionControlHookManager.I.increase_priority(
+                self.install_dependencies_hook(),
+            ),
+            stages=VersionControlHookManager.I.transition_stages(),
+            pass_filenames=False,
+            always_run=True,
+        )
+
+    def audit_dependencies(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `uv audit`.
+        """
+        return self.audit_args()
