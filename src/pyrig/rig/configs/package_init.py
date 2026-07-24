@@ -3,10 +3,10 @@
 from types import ModuleType
 
 import pyrig
-from pyrig.rig.configs.base.init import InitConfigFile
+from pyrig.rig.configs.base.init import CopyInitDocstringConfigFile
 
 
-class PackageInitConfigFile(InitConfigFile):
+class PackageInitConfigFile(CopyInitDocstringConfigFile):
     """Config file for the target project's top-level package `__init__.py`."""
 
     def copy_module(self) -> ModuleType:

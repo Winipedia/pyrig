@@ -1,48 +1,15 @@
 """module."""
 
-from collections.abc import Callable
 from pathlib import Path
 from types import ModuleType
 
-import pytest
 from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 
-from pyrig.rig.configs.base.init import InitConfigFile
+from pyrig.rig.configs.base.init import CopyInitConfigFile
+from pyrig.rig.configs.package_init import PackageInitConfigFile
 
 
-@pytest.fixture
-def my_test_init_config_file(
-    config_file_factory: Callable[[type[InitConfigFile]], type[InitConfigFile]],
-    tmp_path: Path,
-) -> type[InitConfigFile]:
-    """Create a test init config file class with tmp_path."""
-    mock_module = ModuleType("test_package.test_subpackage.test_module")
-    mock_module.__file__ = str(
-        tmp_path / "test_package" / "test_subpackage" / "test_module.py",
-    )
-
-    # Create the module file with some content
-    module_path = Path(mock_module.__file__)
-    module_path.parent.mkdir(parents=True, exist_ok=True)
-    test_content = (
-        '"""Test module content."""\n\n'
-        "def test_func():\n"
-        '    """Test function."""\n'
-        "    pass\n"
-    )
-    module_path.write_text(test_content)
-
-    class MyTestInitConfigFile(config_file_factory(InitConfigFile)):  # ty: ignore[unsupported-base]
-        """Test init config file with tmp_path override."""
-
-        def copy_module(self) -> ModuleType:
-            """Get the source module."""
-            return mock_module
-
-    return MyTestInitConfigFile
-
-
-class TestInitConfigFile:
+class TestCopyInitConfigFile:
     """Test class."""
 
     def test_import_path(self) -> None:
@@ -58,7 +25,7 @@ class TestInitConfigFile:
         module.__file__ = "test_package/test_subpackage/test_subpackage2/__init__.py"
 
         # Generate the subclass config file
-        subclass = InitConfigFile.generate_subclass(module)
+        subclass = CopyInitConfigFile.generate_subclass(module)
 
         # Verify the generated subclass has the correct module_path method
         subclass_instance = subclass()
@@ -66,12 +33,11 @@ class TestInitConfigFile:
         actual_path = subclass_instance.module_path()
         assert actual_path == expected_path
 
-    def test_parent_path(self, my_test_init_config_file: type[InitConfigFile]) -> None:
+    def test_parent_path(self) -> None:
         """Test method."""
-        assert isinstance(my_test_init_config_file().parent_path(), Path)
+        assert PackageInitConfigFile.I.parent_path() == Path("src/pyrig/")
 
-    def test_stem(self, my_test_init_config_file: type[InitConfigFile]) -> None:
+    def test_stem(self) -> None:
         """Test method."""
-        expected = "__init__"
-        actual = my_test_init_config_file().stem()
-        assert expected == actual, f"Expected {expected}, got {actual}"
+        assert ResourcesInitConfigFile.I.stem() == "__init__"
+        assert PackageInitConfigFile.I.stem() == "__init__"
