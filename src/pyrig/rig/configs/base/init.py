@@ -3,11 +3,12 @@
 from pathlib import Path
 
 from pyrig.rig.configs.base.copy_module import (
+    CopyModuleConfigFile,
     CopyModuleDocstringConfigFile,
 )
 
 
-class InitConfigFile(CopyModuleDocstringConfigFile):
+class CopyInitConfigFile(CopyModuleConfigFile):
     """Base class for `__init__.py` config files containing a copied module docstring.
 
     The generated file is always named `__init__.py` and is placed inside the
@@ -39,3 +40,14 @@ class InitConfigFile(CopyModuleDocstringConfigFile):
     def stem(self) -> str:
         """Return `"__init__"` as the filename stem."""
         return "__init__"
+
+
+class CopyInitDocstringConfigFile(CopyInitConfigFile, CopyModuleDocstringConfigFile):
+    """Base class for `__init__.py` config files containing a copied module docstring.
+
+    The generated file is always named `__init__.py` and is placed inside the
+    package directory corresponding to the source module in the target project's tree.
+
+    Subclasses must implement:
+        - `copy_module`: Return the source module whose docstring will be written.
+    """
