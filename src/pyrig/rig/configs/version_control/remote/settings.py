@@ -19,9 +19,7 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
     """Configuration file for GitHub repository settings and branch protection rulesets.
 
     Manages `.github/settings.json`, containing the general repository settings
-    and the branch protection rulesets to apply to the default branch. Its
-    contents are applied to the repository via the GitHub CLI by a generated
-    script that the release workflow invokes.
+    and the branch protection rulesets to apply to the default branch.
     """
 
     def _configs(self) -> dict[str, Any]:

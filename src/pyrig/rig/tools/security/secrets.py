@@ -14,7 +14,7 @@ class SecretsChecker(CheckHookTool):
     """Wrapper for the `detect-secrets` secrets scanner.
 
     Constructs `detect-secrets-hook` command-line arguments for scanning the
-    project's source code for accidentally committed credentials and other
+    project's files for accidentally committed credentials and other
     secrets.
     """
 

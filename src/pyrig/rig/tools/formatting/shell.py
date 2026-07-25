@@ -11,7 +11,7 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 
 
 class ShellFormatter(FormatHookTool):
-    """A formatter for shell commands."""
+    """Type-safe wrapper for the shfmt shell script formatter."""
 
     def group(self) -> str:
         """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
@@ -34,21 +34,18 @@ class ShellFormatter(FormatHookTool):
         return ("shfmt-py",)
 
     def format_args(self, *args: str) -> Args:
-        """Construct shfmt formatting arguments at maximum strictness.
+        """Construct shfmt arguments.
 
-        Uses 2-space indentation, matching the Google Shell Style Guide
-        (https://google.github.io/styleguide/shellguide.html), the most
-        widely adopted shell formatting convention. Also indents `case`
-        statement bodies, pins the dialect to `bash` rather than relying on
-        shebang detection, and writes changes back to each file rather than
-        only reporting a diff.
+        Unlike `trailing-whitespace-fixer`, `shfmt` needs an explicit
+        `--write` flag to write changes back instead of printing the
+        formatted result to stdout.
 
         Args:
             *args: Additional arguments forwarded to `shfmt`, typically the
                 file paths to format.
 
         Returns:
-            Args for `shfmt --indent=2 --case-indent --language-dialect=bash --write`.
+            Args for `shfmt`.
         """
         return self.args(*args)
 
@@ -56,10 +53,17 @@ class ShellFormatter(FormatHookTool):
         """Return the hook metadata for formatting shell scripts.
 
         Runs after the sequential text-fixing chain, alongside the other
-        file-type-specific fixers.
+        file-type-specific fixers. Passes `--write` so changes are written
+        back to each file rather than only printed to stdout. Uses 2-space
+        indentation, matching the Google Shell Style Guide
+        (https://google.github.io/styleguide/shellguide.html), the most
+        widely adopted shell formatting convention. Also indents `case`
+        statement bodies, and pins the dialect to `bash` rather than
+        relying on shebang detection.
 
         Returns:
-            Hook metadata dict for `shfmt`.
+            Hook metadata dict for `shfmt` with
+            `--indent=2 --case-indent --language-dialect=bash --write`.
         """
         return VersionControlHookManager.I.hook(
             self.format_shell,

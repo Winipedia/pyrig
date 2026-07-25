@@ -9,9 +9,9 @@ from pyrig.rig.tools.docs.builder import DocsBuilder
 class IndexConfigFile(BadgesConfigFile):
     """Configuration manager for the documentation site's landing page.
 
-    Produces the same status badges and description as the badge-augmented
-    Markdown base, with the heading replaced by `"Home"` so the auto-generated
-    MkDocs nav shows a short label for the landing page.
+    Produces the same badges and description as the badge-augmented Markdown
+    base, using `"Home"` as the heading so the auto-generated MkDocs nav shows
+    a short label for the landing page.
     """
 
     def heading(self) -> str:

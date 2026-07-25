@@ -57,7 +57,8 @@ class YAMLLinter(CheckHookTool):
         file-type-specific fixers.
 
         Returns:
-            Hook metadata dict for `ryl check --fix`.
+            Hook metadata dict for
+            `ryl check --config-data=extends: default --fix`.
         """
         return VersionControlHookManager.I.hook(
             self.lint_yaml,

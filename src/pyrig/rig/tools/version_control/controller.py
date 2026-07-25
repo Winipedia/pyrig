@@ -1,4 +1,4 @@
-"""Type-safe construction of version control CLI commands."""
+"""Type-safe construction of version control CLI commands and identity resolution."""
 
 from functools import cache
 
@@ -7,10 +7,11 @@ from pyrig.rig.tools.base.tool import Group, Tool
 
 
 class VersionController(Tool):
-    """Git tool wrapper exposing typed builders for common git commands.
+    """Git tool wrapper exposing typed command builders and identity resolution.
 
     Every `*_args` method returns an `Args` command prefixed with `git`, ready
-    to run or to render as a shell string.
+    to run or to render as a shell string. Other methods resolve the
+    repository owner and the local git user's configured identity.
     """
 
     def dev_dependencies(self) -> tuple[str, ...]:
@@ -41,28 +42,28 @@ class VersionController(Tool):
         The result is cached, so repeated calls incur no subprocess overhead.
 
         Returns:
-            The repository owner as a string.
+            The repository owner.
         """
         return cls().resolve_repo_owner()
 
     def resolve_repo_owner(self) -> str:
-        """Return the repository owner.
+        """Return the repository owner, falling back to the local git username.
 
         Returns:
-            The repository owner as a string.
+            The owner parsed from the remote origin URL, or the local
+            `user.name` (normalized) if no remote origin is configured.
         """
         return self.remote_repo_owner() or self.normalized_username()
 
     def default_branch(self) -> str:
-        """Return `'main'` as the default branch name for new repositories."""
+        """Return `'main'` as this project's default branch name."""
         return "main"
 
     def end_of_line(self) -> str:
         """Return `'lf'`, the line-ending convention enforced across the project.
 
-        Single source of truth shared by `.gitattributes` (`eol=lf`) and the
-        `mixed-line-ending` pre-commit hook (`--fix=lf`), so the two can
-        never drift apart.
+        Kept as a single source of truth so every config or tool that
+        encodes a line-ending setting stays in sync.
         """
         return "lf"
 
@@ -78,9 +79,7 @@ class VersionController(Tool):
         return self.args("init", *args)
 
     def add_all_args(self, *args: str) -> Args:
-        """Build arguments to stage all modified and untracked files.
-
-        Equivalent to running `git add .` from the current working directory.
+        """Build arguments equivalent to running `git add .`.
 
         Args:
             *args: Additional arguments appended to the command.
@@ -237,8 +236,8 @@ class VersionController(Tool):
         remote formats.
 
         Returns:
-            The repository owner as a string, or an empty string if no
-            remote origin is configured.
+            The repository owner, or an empty string if no remote origin
+            is configured.
         """
         url = self.remote_url()
         # possible formats:
@@ -254,8 +253,8 @@ class VersionController(Tool):
         """Return the remote origin URL configured for this repository.
 
         Returns:
-            The remote URL string in HTTPS or SSH format, or an empty string
-            if no remote origin is configured.
+            The configured `remote.origin.url` value, or an empty string if
+            no remote origin is configured.
         """
         return (
             self.config_remote_origin_url_args().run_cached(check=False).stdout.strip()
@@ -265,7 +264,7 @@ class VersionController(Tool):
         """Return the git `user.name` with spaces removed.
 
         Returns:
-            The configured git user name string with spaces removed.
+            The configured git user name with spaces removed.
 
         Raises:
             subprocess.CalledProcessError: If `user.name` is not configured.
@@ -276,7 +275,7 @@ class VersionController(Tool):
         """Return the git `user.name` from the active configuration.
 
         Returns:
-            The configured git user name string.
+            The configured git user name.
 
         Raises:
             subprocess.CalledProcessError: If `user.name` is not configured.
@@ -287,7 +286,7 @@ class VersionController(Tool):
         """Return the git `user.email` from the active configuration.
 
         Returns:
-            The configured git user email string.
+            The configured git user email.
 
         Raises:
             subprocess.CalledProcessError: If `user.email` is not configured.

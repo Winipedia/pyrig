@@ -15,10 +15,10 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     """Configuration file for `.github/configure.sh`.
 
     Defines shell functions that read `.github/settings.json` and apply its
-    contents to the repository via the GitHub CLI. The release workflow
-    runs this script directly, passing the function it needs as an
-    argument (e.g. `bash .github/configure.sh settings`), rather than
-    embedding the shell logic directly in the workflow YAML.
+    contents to the repository via the GitHub CLI. The script is meant to
+    be invoked directly with one of its function names as an argument
+    (e.g. `bash .github/configure.sh settings`), rather than sourced as a
+    library.
 
     Both functions call `gh api` against this repository directly, so only a
     token accepted by `gh` (`GH_TOKEN` or `GITHUB_TOKEN`) needs to already be

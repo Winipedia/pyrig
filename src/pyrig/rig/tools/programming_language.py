@@ -1,4 +1,4 @@
-"""Metadata and constants for the project's programming language."""
+"""Wrapper for the project's programming language and its file conventions."""
 
 import shutil
 from collections.abc import Iterator
@@ -18,7 +18,9 @@ class ProgrammingLanguage(Tool):
 
     Python is the only supported language; this wrapper gives a single,
     consistent access point for language-level details so callers never
-    hard-code language-specific strings.
+    hard-code language-specific strings. Beyond that, it also owns
+    Python-specific project file conventions: creating missing
+    `__init__.py` files and clearing `__pycache__` directories.
     """
 
     def dev_dependencies(self) -> tuple[str, ...]:
@@ -48,10 +50,10 @@ class ProgrammingLanguage(Tool):
     def make_init_files(self) -> tuple[Path, ...]:
         """Create all missing `__init__.py` files in the project.
 
-        Echoes each directory where a file was created to standard output.
+        Echoes each `__init__.py` path created to standard output.
 
         Returns:
-            Directories where `__init__.py` files were created. Empty if all
+            Paths of the `__init__.py` files that were created. Empty if all
             already existed.
         """
         return make_init_files(

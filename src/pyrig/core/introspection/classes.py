@@ -90,9 +90,10 @@ def generate_class[T](
         name: Name of the new class, used as its `__name__`.
         bases: Base classes the new class inherits from.
         methods: Functions to add to the class, each under its own `__name__`.
-        namespace: Extra attributes for the class body, keyed by name. The
-            `methods` are added on top, so a method whose name matches a key
-            here overrides it. Defaults to an empty namespace.
+        namespace: Extra attributes for the class body, keyed by name. Mutated
+            in place with the `methods` entries added on top, so a method
+            whose name matches a key here overrides it. Defaults to a new,
+            empty dict when omitted.
 
     Returns:
         The newly created class.

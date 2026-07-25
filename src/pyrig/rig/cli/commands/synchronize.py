@@ -1,4 +1,4 @@
-"""Project-structure reconciliation for the `sync` CLI command."""
+"""Reconciliation of a project's managed files with their canonical state."""
 
 from collections.abc import Iterable
 from importlib import import_module
@@ -15,13 +15,13 @@ from pyrig.rig.tools.packages.manager import PackageManager
 def synchronize_project(files: Iterable[Path] | None) -> None:
     """Bring the project into its canonical state.
 
+    Run the ordered reconciliation steps that update managed configuration and
+    refresh generated tests. Each step is idempotent, so the whole operation
+    is safe to re-run.
+
     Args:
         files: Specific files to synchronize, relative to the project root.
             If None, all files are synchronized.
-
-    Run the ordered reconciliation steps that create missing package files,
-    update managed configuration, and refresh generated tests. The operation
-    is idempotent and safe to re-run.
 
     Raises:
         typer.Exit: With code 1 if any file was created or updated during
@@ -56,8 +56,10 @@ def validate_test_files(
     """Validate mirror test files for the project.
 
     Args:
-        files: Specific test files to validate, relative to the project root.
-            If None, all test files are validated.
+        files: Source files whose mirrored test file should be validated,
+            relative to the project root. Files outside the package's source
+            tree, non-Python files, and `__init__.py` files are silently
+            ignored. If None, every source file in the package is considered.
 
     Returns:
         A tuple of MirrorTestConfigFile subclasses that were changed.

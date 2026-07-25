@@ -1,4 +1,4 @@
-"""Base configuration for `__init__.py` generation from a module's docstring."""
+"""Base configuration for generating an `__init__.py` file from a source module."""
 
 from pathlib import Path
 
@@ -9,13 +9,13 @@ from pyrig.rig.configs.base.copy_module import (
 
 
 class CopyInitConfigFile(CopyModuleConfigFile):
-    """Base class for `__init__.py` config files containing a copied module docstring.
+    """Base class for `__init__.py` config files copying a source module's content.
 
     The generated file is always named `__init__.py` and is placed inside the
     package directory corresponding to the source module in the target project's tree.
 
     Subclasses must implement:
-        - `copy_module`: Return the source module whose docstring will be written.
+        - `copy_module`: Return the source module whose content will be copied.
     """
 
     def import_path(self) -> Path:
@@ -46,8 +46,11 @@ class CopyInitDocstringConfigFile(CopyInitConfigFile, CopyModuleDocstringConfigF
     """Base class for `__init__.py` config files containing a copied module docstring.
 
     The generated file is always named `__init__.py` and is placed inside the
-    package directory corresponding to the source module in the target project's tree.
+    package directory corresponding to the source module in the target project's
+    tree. Its content is the source module's docstring alone, and it is
+    considered correct whenever the source module has a docstring, regardless
+    of what is currently on disk.
 
     Subclasses must implement:
-        - `copy_module`: Return the source module whose docstring will be written.
+        - `copy_module`: Return the source module whose docstring will be copied.
     """

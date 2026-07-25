@@ -18,7 +18,7 @@ def make_init_files(paths: Iterable[Path], content: str) -> tuple[Path, ...]:
         content: Content to write into each `__init__.py` file.
 
     Returns:
-        Tuple of paths where `__init__.py` files were created.
+        Tuple of the `__init__.py` file paths that were created.
         Empty if all already existed.
     """
     return tuple(
@@ -58,7 +58,8 @@ def make_init_file(path: Path, content: str) -> tuple[Path, bool]:
         content: Content to write into the `__init__.py` file.
 
     Returns:
-        `True` if the file was created, `False` if it already existed.
+        Tuple of the `__init__.py` file's path and whether it was newly
+        created; `False` if it already existed.
     """
     path = path / "__init__.py"
 

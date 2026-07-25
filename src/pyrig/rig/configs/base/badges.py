@@ -22,15 +22,20 @@ from pyrig.rig.tools.version_control.remote.controller import (
 class BadgesConfigFile(MarkdownConfigFile):
     """Base class for Markdown configuration files with auto-generated project badges.
 
-    Generated files include a project name header, badges grouped by category,
-    and a project description sourced from pyproject.toml. When updating an
+    Generated files include a heading, badges grouped by category, and a
+    project description sourced from pyproject.toml. When updating an
     existing file, stale badges and descriptions are replaced in-place where
     possible, preserving any user additions.
+
+    Subclasses must implement:
+        - `heading`: Return the heading text for the generated file.
+        - `parent_path`: Directory containing the file.
+        - `stem`: Filename without its extension.
     """
 
     @abstractmethod
     def heading(self) -> str:
-        """Return the heading text for the project name.
+        """Return the heading text for the generated file.
 
         Returns:
             Heading text to use in the Markdown file.
@@ -135,8 +140,10 @@ class BadgesConfigFile(MarkdownConfigFile):
         health check and deploy workflows in the `"project-status"` group.
 
         Returns:
-            Category name to list of badge Markdown strings, with keys `"ci/cd"`,
-            `"testing"`, `"code-quality"`, `"tooling"`, and `"project-info"`.
+            Category name to list of badge Markdown strings. The
+            `"project-info"` and `"project-status"` keys are always present;
+            other keys appear only when a registered tool belongs to that
+            `Group` category.
         """
         badge_groups = Tool.grouped_badges()
 

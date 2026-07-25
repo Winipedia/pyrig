@@ -1,4 +1,4 @@
-"""TOML configuration file management using tomllib and tomli_w."""
+"""Base class for managing TOML configuration files."""
 
 import tomllib
 from typing import Any
@@ -14,14 +14,13 @@ class TOMLConfigFile(DictConfigFile):
 
     Reads with `tomllib`, writes with `tomli_w`. `tomli_w` forces every
     array onto multiple lines (one item per line), even single-element
-    ones, rather than keeping short arrays inline, since long inline arrays
-    are unreadable and get reformatted by the linter anyway. Tables and
-    arrays of tables need no special handling: `tomli_w` already converts
-    dicts and lists of dicts to idiomatic TOML natively.
+    ones, rather than keeping short arrays inline. Tables and arrays of
+    tables need no special handling: `tomli_w` converts nested dicts and
+    lists of dicts to valid TOML natively.
     """
 
     def _dump(self, configs: dict[str, Any]) -> None:
-        """Write configuration to the TOML file.
+        """Write configuration to the TOML file via `pretty_dump()`.
 
         Args:
             configs: Configuration dict to write.
@@ -41,7 +40,7 @@ class TOMLConfigFile(DictConfigFile):
         return "toml"
 
     def pretty_dump(self, configs: dict[str, Any]) -> None:
-        """Write configuration to the TOML file using idiomatic TOML formatting.
+        """Write configuration to the TOML file using `tomli_w`.
 
         Key order is preserved; arrays are forced onto multiple lines.
 

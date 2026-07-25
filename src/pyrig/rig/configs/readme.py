@@ -1,7 +1,4 @@
-"""Configuration management for the project's README.md file.
-
-Manages README.md as a badge-augmented Markdown file at the project root.
-"""
+"""Configuration management for the project's README.md file."""
 
 from pathlib import Path
 

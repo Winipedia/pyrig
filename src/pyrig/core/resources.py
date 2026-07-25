@@ -1,4 +1,4 @@
-"""Path resolution and content reading for static files bundled with a package."""
+"""Utilities for working with resource files bundled inside a package."""
 
 from importlib.resources import files
 from pathlib import Path

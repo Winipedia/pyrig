@@ -1,4 +1,4 @@
-"""Utilities for loading, re-loading, and introspecting Python modules."""
+"""Utilities for working with Python modules."""
 
 import sys
 from importlib.machinery import SourceFileLoader
@@ -28,8 +28,9 @@ def module_content(module: ModuleType) -> str:
         Complete source of the module, decoded as UTF-8.
 
     Raises:
-        AttributeError: If the module's `__file__` is `None`
-            (e.g., built-in modules or namespace packages).
+        AttributeError: If the module has no `__file__` attribute, or that
+            attribute is `None` (e.g., a built-in module or a namespace
+            package).
         FileNotFoundError: If the source file does not exist.
     """
     path = module_file_path(module)
@@ -55,8 +56,13 @@ def reimport_module(module: ModuleType) -> ModuleType:
         A freshly imported module object, distinct from the original.
 
     Raises:
-        AttributeError: If the module's `__file__` is `None`
-            (e.g., built-in modules or namespace packages).
+        AttributeError: If the module has no `__file__` attribute, or that
+            attribute is `None` (e.g., a built-in module or a namespace
+            package).
+        FileNotFoundError: If a standard import of the module fails and its
+            source file no longer exists.
+        ImportError: If a standard import of the module fails and a spec
+            cannot be created for its source file.
     """
     module_path = (
         package_dir_path(module) if is_package(module) else module_file_path(module)

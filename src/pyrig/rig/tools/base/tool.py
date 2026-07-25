@@ -115,8 +115,7 @@ class Tool(DependencySubclass):
         """Return the dev dependency names of every concrete tool, sorted.
 
         Returns:
-            Sorted list of dev dependency names across all tools. May contain
-            duplicates if multiple tools share a dependency.
+            Sorted list of unique dev dependency names across all tools.
         """
         return sorted(
             {

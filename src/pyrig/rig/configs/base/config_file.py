@@ -1,4 +1,8 @@
-"""Core load, merge, validate, and dump lifecycle for configuration files."""
+"""Declarative load, merge, validate, and dump lifecycle for configuration files.
+
+Also defines the relative-priority system that controls the order in which
+config files are validated.
+"""
 
 from abc import abstractmethod
 from collections.abc import Iterable, Iterator
@@ -23,7 +27,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
     Implements an idempotent, declarative system for managing configuration
     files across a project. Subclasses declare the required structure and the
     system ensures that structure is present on disk, merging missing or
-    mismatched values while preserving any extra keys the user has added.
+    mismatched values while preserving any extra keys or items the user has added.
 
     The type parameter `ConfigT` is the configuration data type, either
     `dict[str, Any]` or `list[Any]`.
@@ -33,8 +37,12 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
     def _configs(self) -> ConfigT:
         """Return the minimum required configuration structure.
 
-        Keys or items present on disk but absent from this return value are
-        preserved unchanged.
+        Every concrete subclass must implement this to declare what the file
+        should contain. `validate()` treats the result as the file's required
+        content: it is written verbatim into a newly created file, and
+        otherwise compared against, and merged into, the file's existing
+        contents. Keys or items present on disk but absent from this return
+        value are left untouched.
 
         Returns:
             Required configuration as a dict or list.
@@ -42,7 +50,11 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
 
     @abstractmethod
     def _dump(self, configs: ConfigT) -> None:
-        """Write configuration to the file on disk.
+        """Write `configs` to the file on disk, replacing any existing content.
+
+        Called by `dump()` to persist a config value. Must write `configs` such
+        that a subsequent `_load()` call parses it back into an equivalent
+        structure, or the file will be treated as still incorrect.
 
         Args:
             configs: Configuration data to write.
@@ -50,7 +62,12 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
 
     @abstractmethod
     def _load(self) -> ConfigT:
-        """Load and parse the configuration file from disk.
+        """Parse the file's current on-disk content.
+
+        Used by `load()` to read the file's actual state for comparison and
+        merging against the required configuration. Must return a structure of
+        the same shape `_dump()` writes, so a write made via `_dump()` is read
+        back as an equivalent structure.
 
         Returns:
             Parsed configuration as a dict or list.
@@ -179,8 +196,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
 
         Raises:
             RuntimeError: If the file is still not correct after merging in
-                the required configuration, typically indicating a manual
-                conflict in the file.
+                the required configuration.
         """
         path = self.path()
         if not path.exists():
@@ -200,10 +216,11 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         return False
 
     def create_file(self) -> None:
-        """Create the config file and any missing parent directories.
+        """Ensure the config file exists, creating any missing parent directories.
 
-        Touches the file, creating it empty, after ensuring the full parent
-        directory tree exists. Echoes the created file path to stdout.
+        If the file does not already exist, it is created empty. An already
+        existing file is left with its content untouched. Echoes the file path
+        to stdout either way.
         """
         path = self.path()
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -243,8 +260,8 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
     def is_correct(self) -> bool:
         """Return whether the config file passes validation.
 
-        A file is considered correct if it contains at least all the keys and
-        values declared in `configs()` (additional keys are allowed).
+        A file is considered correct if it contains at least everything declared
+        in `configs()`; additional keys or items are allowed.
 
         Returns:
             `True` if all required configuration is present in the file.
@@ -259,8 +276,8 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         cause a mismatch.
 
         Returns:
-            `True` if every key and value required by `configs()` is present
-            in `load()`.
+            `True` if everything required by `configs()` is present in
+            `load()`.
         """
         return nested_structure_is_subset(self.configs(), self.load())
 
@@ -273,6 +290,11 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
 
         Returns:
             Updated configuration containing both required and existing values.
+
+        Note:
+            Mutates and returns the same object `load()` returns, so the
+            cached `load()` result reflects the merge even before `dump()`
+            is called.
         """
         return merge_nested_structures(subset=self.configs(), superset=self.load())
 
@@ -280,8 +302,8 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         """Return the validation priority for this config file.
 
         Higher values cause the file to be validated earlier relative to others.
-        Defaults to `Priority.DEFAULT`. Override in subclasses that must be
-        validated before others.
+        Defaults to `Priority.DEFAULT`; override in subclasses that must be
+        validated earlier or later than the default.
 
         Returns:
             Validation priority as a float.

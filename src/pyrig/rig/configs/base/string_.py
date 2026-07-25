@@ -20,8 +20,9 @@ class StringConfigFile(ListConfigFile):
         """Return the text that must be present in the file.
 
         Returns:
-            Required text, checked via substring matching rather than
-            exact content equality.
+            Required text. Each line is checked independently for
+            presence anywhere in the file; lines need not be
+            contiguous, ordered, or exact matches.
         """
 
     def lines(self) -> list[str]:

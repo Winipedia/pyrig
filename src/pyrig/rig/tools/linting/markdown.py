@@ -1,4 +1,4 @@
-"""Wrapper around the rumdl Markdown linter tool."""
+"""Wrapper around the rumdl Markdown linter and formatter."""
 
 from typing import Any
 

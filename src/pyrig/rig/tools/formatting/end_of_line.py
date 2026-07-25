@@ -75,6 +75,6 @@ class EndOfLineFormatter(FormatHookTool):
         """Return the `Args` this hook's entry runs.
 
         Returns:
-            Args for `uv run mixed-line-ending --fix=lf`.
+            Args for `uv run mixed-line-ending`.
         """
         return PackageManager.I.run_args(*self.format_args())

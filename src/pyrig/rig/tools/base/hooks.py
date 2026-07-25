@@ -1,4 +1,4 @@
-"""Abstract bases for `Tool` subclasses that contribute prek hooks."""
+"""Abstract bases for CLI tool wrappers that contribute prek hooks."""
 
 from abc import abstractmethod
 from collections.abc import Iterable
@@ -12,15 +12,22 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class VersionControlHookTool(Tool):
     """Abstract base for a `Tool` that contributes hooks to the prek pipeline.
 
-    Replaces `Tool.version_control_hooks()` as the method a subclass
-    overrides: `hooks()` is abstract here, so every concrete subclass must
-    declare its hooks explicitly rather than silently inheriting the empty
-    tuple `Tool.version_control_hooks()` falls back to.
+    `hooks()` is abstract, so a concrete subclass must always declare which
+    hooks it contributes instead of silently contributing none.
     """
 
     @abstractmethod
     def hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return the prek hooks this tool contributes to the pipeline."""
+        """Return the prek hooks this tool contributes to the pipeline.
+
+        Defaults to an empty tuple. A subclass that mixes in another
+        hook-contributing base should include `super().hooks()` in the
+        result, so that base's hooks are combined with its own rather than
+        dropped.
+
+        Returns:
+            This tool's hook metadata dictionaries.
+        """
         return ()
 
     @classmethod
@@ -28,8 +35,8 @@ class VersionControlHookTool(Tool):
         """Return every concrete tool's hooks, sorted for a deterministic pipeline.
 
         Returns:
-            Every hook returned by `hooks()` across all
-            concrete `Tool` subclasses, sorted via `sorted_hooks`.
+            Every hook returned by `hooks()` across all concrete subclasses,
+            sorted via `sorted_hooks()`.
         """
         return cls.sorted_hooks(
             hook for tool in cls.concrete_subclasses() for hook in tool().hooks()
@@ -39,13 +46,11 @@ class VersionControlHookTool(Tool):
     def sorted_hooks(cls, hooks: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
         """Return the given hooks sorted for a deterministic pipeline.
 
-        Sorts by the sort key returned by `hook_sort_key()`.
-
         Args:
             hooks: The hooks to sort.
 
         Returns:
-            The hooks sorted by `(stages, priority, id)`.
+            The hooks sorted by `hook_sort_key()`.
         """
         return sorted(
             hooks,
@@ -71,10 +76,10 @@ class CheckHookTool(VersionControlHookTool):
         """Return this tool's check hook metadata."""
 
     def hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return `check_hook()`, wrapped in a single-element tuple.
+        """Return `super().hooks()` with this tool's check hook appended.
 
         Returns:
-            `check_hook()`, wrapped in a single-element tuple.
+            `super().hooks()` with `check_hook()` appended.
         """
         return (*super().hooks(), self.check_hook())
 
@@ -91,10 +96,10 @@ class FormatHookTool(VersionControlHookTool):
         """Return this tool's format hook metadata."""
 
     def hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return `format_hook()`, wrapped in a single-element tuple.
+        """Return `super().hooks()` with this tool's format hook appended.
 
         Returns:
-            `format_hook()`, wrapped in a single-element tuple.
+            `super().hooks()` with `format_hook()` appended.
         """
         return (*super().hooks(), self.format_hook())
 

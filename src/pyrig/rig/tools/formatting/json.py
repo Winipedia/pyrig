@@ -22,11 +22,11 @@ class JSONFormatter(FormatHookTool):
         return f"https://img.shields.io/badge/JSON-{self.shield_name()}-orange"
 
     def link_url(self) -> str:
-        """Return the URL of the pretty-format-json project page."""
+        """Return the URL of the pre-commit-hooks project page."""
         return "https://github.com/pre-commit/pre-commit-hooks"
 
     def name(self) -> str:
-        """Return `the executable name for this tool's CLI command."""
+        """Return `"pretty-format-json"`, this tool's CLI command name."""
         return "pretty-format-json"
 
     def dev_dependencies(self) -> tuple[str, ...]:
@@ -34,23 +34,18 @@ class JSONFormatter(FormatHookTool):
         return ("pre-commit-hooks",)
 
     def format_args(self, *args: str) -> Args:
-        """Construct pretty-format-json formatting arguments at maximum strictness.
+        """Construct pretty-format-json arguments.
 
-        Disables ASCII-escaping and key sorting, matching `JSONConfigFile`'s
-        own `json.dump` call (`ensure_ascii=False`) so this formatter never
-        fights the config writer over a file it just generated. Key order
-        is left untouched rather than sorted for the same reason: it's
-        meaningful (e.g. `name` before `version`), not incidental. Indent
-        width isn't passed explicitly: `pretty-format-json`'s own default is
-        already 2, matching `JSONConfigFile`. Also writes changes back to
-        each file rather than only reporting a diff.
+        Unlike `trailing-whitespace-fixer`, `pretty-format-json` needs an
+        explicit `--autofix` flag to write changes back instead of only
+        reporting a diff.
 
         Args:
             *args: Additional arguments forwarded to `pretty-format-json`,
                 typically the file paths to format.
 
         Returns:
-            Args for `pretty-format-json --autofix --no-ensure-ascii --no-sort-keys`.
+            Args for `pretty-format-json`.
         """
         return self.args(*args)
 
@@ -58,10 +53,19 @@ class JSONFormatter(FormatHookTool):
         """Return the hook metadata for formatting JSON files.
 
         Runs after the sequential text-fixing chain, alongside the other
-        file-type-specific fixers.
+        file-type-specific fixers. Passes `--autofix` so changes are
+        written back rather than only reported as a diff. Disables
+        ASCII-escaping and key sorting, matching `JSONConfigFile`'s own
+        `json.dump` call (`ensure_ascii=False`) so this formatter never
+        fights the config writer over a file it just generated; key
+        order is left untouched for the same reason, since it's
+        meaningful (e.g. `name` before `version`), not incidental. Indent
+        width isn't passed explicitly: `pretty-format-json`'s own default
+        is already 2, matching `JSONConfigFile`.
 
         Returns:
-            Hook metadata dict for `pretty-format-json`.
+            Hook metadata dict for `pretty-format-json` with
+            `--autofix --no-ensure-ascii --no-sort-keys`.
         """
         return VersionControlHookManager.I.hook(
             self.format_json,

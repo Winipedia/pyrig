@@ -8,9 +8,9 @@ from pyrig.rig.configs.base.issue_template import IssueTemplateConfigFile
 class FeatureRequestConfigFile(IssueTemplateConfigFile):
     """Config file for `.github/ISSUE_TEMPLATE/feature_request.yml`.
 
-    Generates and validates the GitHub issue form that contributors use to
-    submit feature requests. The form guides contributors through describing
-    what they want, why they need it, and how it might work.
+    Defines the GitHub issue form contributors use to submit feature
+    requests, guiding them through what they want, why they need it, and
+    how it might work.
     """
 
     def _configs(self) -> dict[str, Any]:

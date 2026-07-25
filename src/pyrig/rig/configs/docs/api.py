@@ -14,16 +14,11 @@ class APIDocsConfigFile(MarkdownConfigFile):
     render full API documentation from the project's Python docstrings. The
     page contains an `# API` heading and a single `:::` directive targeting
     the project's package, which mkdocstrings expands recursively into all
-    public members, their signatures, docstrings, and source links.
+    public members, their signatures, docstrings, and source code.
     """
 
     def content(self) -> str:
-        """Build the API reference page content.
-
-        Returns:
-            The `# API` heading and the mkdocstrings `:::` directive for the
-            project's package.
-        """
+        """Return the Markdown content for the API reference page."""
         return f"""# API
 
 ::: {PackageManager.I.package_name()}

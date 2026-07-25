@@ -1,4 +1,4 @@
-"""Tool wrapper for the pyrig CLI itself, used for self-referential commands."""
+"""Tool wrapper for the pyrig CLI itself, including new-project initialization."""
 
 from types import FunctionType
 from typing import Any
@@ -23,11 +23,7 @@ class Pyrigger(VersionControlHookTool):
     """Pyrig CLI wrapper and new-project initialization orchestrator."""
 
     def group(self) -> str:
-        """Return the badge group this tool belongs to.
-
-        Returns:
-            `Group.TOOLING`.
-        """
+        """Return `Group.TOOLING`."""
         return Group.TOOLING
 
     def image_url(self) -> str:
@@ -39,11 +35,7 @@ class Pyrigger(VersionControlHookTool):
         return f"https://github.com/Winipedia/{self.name()}"
 
     def name(self) -> str:
-        """Return the pyrig executable name.
-
-        Returns:
-            `'pyrig'`.
-        """
+        """Return `"pyrig"`."""
         return snake_to_kebab_case(pyrig.__name__)
 
     def group_cmd_args(self, *args: str, group: str, cmd: FunctionType) -> Args:
@@ -131,11 +123,7 @@ class Pyrigger(VersionControlHookTool):
         return self.args(snake_to_kebab_case(cmd.__name__), *args)
 
     def runtime_dependency(self) -> str:
-        """Return the package name of pyrig's runtime dependency.
-
-        Returns:
-            `'pyrig-runtime'`.
-        """
+        """Return `"pyrig-runtime"`, the package name of pyrig's runtime dependency."""
         return snake_to_kebab_case(pyrig_runtime.__name__)
 
     def hooks(self) -> tuple[dict[str, Any], ...]:
@@ -147,11 +135,7 @@ class Pyrigger(VersionControlHookTool):
         return (self.synchronize_project_hook(),)
 
     def synchronize_project_hook(self) -> dict[str, Any]:
-        """Return the hook metadata for the `pyrig sync` hook.
-
-        Returns:
-            Hook metadata dictionary for the `pyrig sync` hook.
-        """
+        """Return the hook metadata for the `pyrig sync` hook."""
         return VersionControlHookManager.I.hook(
             self.synchronize_project,
             priority=VersionControlHookManager.I.increase_priority(
@@ -163,6 +147,6 @@ class Pyrigger(VersionControlHookTool):
         """Return the `Args` this hook's entry runs.
 
         Returns:
-            Args for `pyrig sync`.
+            Args for `uv run pyrig sync`.
         """
         return PackageManager.I.run_args(*self.cmd_args(cmd=sync))

@@ -34,7 +34,7 @@ class SpellChecker(CheckHookTool):
         return "typos"
 
     def check_args(self, *args: str) -> Args:
-        """Construct `typos` arguments for checking without fixing.
+        """Construct `typos` arguments.
 
         Args:
             *args: Additional arguments forwarded to `typos`.
@@ -48,9 +48,7 @@ class SpellChecker(CheckHookTool):
         """Return the hook metadata for fixing spelling mistakes.
 
         Runs right after the byte-order marker is stripped, so a leading
-        BOM is never mistaken for part of the first word on the line. That
-        hook itself runs right after project synchronization, since syncing
-        can create or update the files this hook then spell-checks.
+        BOM is never mistaken for part of the first word on the line.
 
         Returns:
             Hook metadata dict for `typos --write-changes`.
@@ -68,6 +66,6 @@ class SpellChecker(CheckHookTool):
         """Return the `Args` this hook's entry runs.
 
         Returns:
-            Args for `uv run typos --write-changes`.
+            Args for `uv run typos`.
         """
         return PackageManager.I.run_args(*self.check_args())

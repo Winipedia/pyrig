@@ -57,8 +57,5 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         return sorted({stage for hook in hooks for stage in hook["stages"]})
 
     def hooks(self) -> list[dict[str, Any]]:
-        """Return every hook configuration entry in the pipeline.
-
-        Sorted via `sorted_hooks` purely for readability of the generated file.
-        """
+        """Return every hook configuration entry in the pipeline."""
         return VersionControlHookTool.subclasses_hooks()

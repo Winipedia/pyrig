@@ -38,8 +38,8 @@ class SecurityChecker(CheckHookTool):
         """Construct `bandit` arguments.
 
         No target path is baked in: bandit silently skips a file it can't
-        parse as Python rather than erroring, but still logs a warning and
-        wastes a whole-tree walk doing so, so callers are expected to
+        parse as Python rather than erroring, but still reports the skip
+        and wastes a whole-tree walk doing so, so callers are expected to
         supply the specific files to check.
 
         Args:
@@ -54,8 +54,9 @@ class SecurityChecker(CheckHookTool):
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for scanning Python source for vulnerabilities.
 
-        Ties its priority to `TypeChecker.check_hook` so it runs
-        alongside the rest of the checks tier rather than after it.
+        Excludes the project's test package from the scan via `--exclude`.
+        Ties its priority to `TypeChecker.check_hook` so it runs alongside
+        the rest of the checks tier rather than after it.
 
         Returns:
             Hook metadata dict for `bandit`.

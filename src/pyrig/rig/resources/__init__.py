@@ -1,5 +1,5 @@
-"""Bundled static template files read when scaffolding pyrig projects.
+"""Bundled static resource files used to generate content for pyrig-based projects.
 
-Holds verbatim resource files that `ConfigFile` subclasses load via
-`resource_content` to generate the corresponding files in a managed project.
+Holds verbatim boilerplate text and reference values that the scaffolding
+system reads to populate the corresponding files of a managed project.
 """

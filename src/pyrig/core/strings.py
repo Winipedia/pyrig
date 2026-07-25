@@ -1,4 +1,4 @@
-"""String manipulation and text encoding utilities."""
+"""Utilities for working with strings and text files."""
 
 import re
 from collections.abc import Iterator
@@ -9,7 +9,11 @@ UTF_8_ENCODING = "utf-8"
 
 
 def open_path_with_utf8(path: Path, *, mode: str = "r") -> IO[Any]:
-    """Open a file with UTF-8 encoding.
+    r"""Open a file with UTF-8 encoding and no newline translation.
+
+    Uses `newline="\n"`, so line endings are read and written exactly as
+    they appear instead of being translated to or from the platform's line
+    separator (`\r\n` on Windows).
 
     Args:
         path: Path to the file to open.
@@ -23,6 +27,9 @@ def open_path_with_utf8(path: Path, *, mode: str = "r") -> IO[Any]:
 
 def read_text_utf8(path: Path) -> str:
     """Read the text content of a file using UTF-8 encoding.
+
+    Returns:
+        The file's content as a UTF-8-decoded string.
 
     Raises:
         FileNotFoundError: If the file does not exist.
@@ -44,19 +51,12 @@ def write_text_utf8(path: Path, content: str) -> int:
 
 
 def fstring_var_name(fstring: str) -> str:
-    """Extract the variable name from the output of a debug f-string expression."""
+    """Extract the text preceding `=` in a debug f-string's `name=value` output."""
     return fstring.split("=", maxsplit=1)[0].strip()
 
 
 def is_multiline(string: str) -> bool:
-    """Check if a string contains one or more newline characters.
-
-    Args:
-        string: The string to check.
-
-    Returns:
-        `True` if the string contains at least one newline character; `False` otherwise.
-    """
+    """Check whether a string contains one or more newline characters."""
     return "\n" in string
 
 
@@ -134,12 +134,12 @@ def split_on_uppercase(string: str) -> Iterator[str]:
 
 
 def file_has_content(path: Path) -> bool:
-    """Check if a file exists and is not empty.
-
-    Args:
-        path: Path to the file to check.
+    """Check whether a file has any content.
 
     Returns:
-        `True` if the file exists and has content; `False` otherwise.
+        `True` if the file is not empty; `False` if it is empty.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
     """
     return path.stat().st_size > 0

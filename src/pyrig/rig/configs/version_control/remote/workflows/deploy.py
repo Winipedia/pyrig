@@ -14,7 +14,8 @@ from pyrig.rig.tools.packages.manager import PackageManager
 class DeployWorkflowConfigFile(WorkflowConfigFile):
     """GitHub Actions workflow that publishes documentation to GitHub Pages.
 
-    Runs automatically when the release workflow completes successfully.
+    Triggered whenever the release workflow completes, but its job only
+    runs if that completion was a success.
     """
 
     def job(  # noqa: PLR0913
@@ -29,19 +30,10 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         steps: list[dict[str, Any]] | None = None,
         job: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Build a job gated on the triggering workflow run having succeeded.
+        """Build a job, defaulting `if_condition` to a success-gate condition.
 
-        Args:
-            method: Method representing this job; its name is used to derive
-                the job ID.
-            needs: IDs of jobs that must complete before this job starts.
-            strategy: Matrix or other strategy configuration.
-            permissions: Job-level permissions override.
-            runs_on: Runner label. Defaults to `ubuntu-latest`.
-            if_condition: GitHub Actions conditional expression controlling
-                whether the job runs.
-            steps: Ordered list of step configurations.
-            job: Additional job-level keys to merge into the configuration.
+        When `if_condition` is not given, it defaults to a condition that is
+        true only if the workflow run that triggered this workflow succeeded.
 
         Returns:
             Dict mapping the derived job ID to its configuration.
