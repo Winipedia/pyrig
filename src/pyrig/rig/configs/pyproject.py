@@ -181,14 +181,15 @@ class PyprojectConfigFile(TOMLConfigFile):
         dependencies: Iterable[str],
         additional: Iterable[str],
     ) -> list[str]:
-        """Merge and normalise two dependency lists into one sorted, deduplicated list.
+        """Merge two dependency iterables into one sorted, deduplicated list.
 
         Packages already present in `dependencies` (matched by package name,
-        ignoring version specifiers) are excluded from `additional` before merging.
-        This prevents a tool from overwriting a user-pinned version.
+        ignoring version specifiers) are excluded from `additional` before
+        merging, so `dependencies` entries always take precedence over
+        conflicting `additional` entries.
 
         Args:
-            dependencies: Primary dependency list. All entries are kept as-is.
+            dependencies: Primary dependencies. All entries are kept as-is.
             additional: Supplementary dependencies. An entry is only included
                 if its package name does not already appear in `dependencies`.
 
@@ -293,8 +294,9 @@ class PyprojectConfigFile(TOMLConfigFile):
     def requires_python(self) -> str:
         """Read the requires-python constraint from `pyproject.toml`.
 
-        If the field is absent, defaults to a specifier that matches the
-        currently running Python version (e.g., `">=3.12"` for Python 3.12).
+        If the field is absent, defaults to a lower-bound specifier requiring
+        at least the currently running Python version (e.g., `">=3.12"` for
+        Python 3.12).
 
         Returns:
             PEP 440 version specifier string (e.g., `">=3.13"`).

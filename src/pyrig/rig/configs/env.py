@@ -60,7 +60,7 @@ class EnvConfigFile(DictConfigFile):
         return self.path().exists()
 
     def parent_path(self) -> Path:
-        """Return the project root, relative to the current working directory."""
+        """Return the project root as the parent directory."""
         return Path()
 
     def stem(self) -> str:

@@ -1,4 +1,4 @@
-"""Utilities for safe subprocess execution."""
+"""Utilities for working with subprocesses."""
 
 import logging
 import subprocess  # nosec: B404
@@ -32,14 +32,7 @@ class Args(tuple[str, ...]):
     __slots__ = ()
 
     def __new__(cls, *args: str) -> Self:
-        """Create an `Args` instance from individual string tokens.
-
-        Args:
-            *args: Command-line tokens.
-
-        Returns:
-            New `Args` instance containing the given tokens.
-        """
+        """Create an `Args` instance from individual command-line tokens."""
         return super().__new__(cls, args)
 
     def run(self, *args: str, check: bool = True) -> subprocess.CompletedProcess[Any]:
@@ -47,10 +40,15 @@ class Args(tuple[str, ...]):
 
         Args:
             *args: Additional command-line arguments appended to the command.
-            check: Whether to raise an exception on non-zero exit.
+            check: Whether to raise an exception on non-zero exit. Defaults
+                to `True`.
 
         Returns:
             The completed process result.
+
+        Raises:
+            subprocess.CalledProcessError: If `check` is `True` and the
+                command exits with a non-zero return code.
         """
         return run_subprocess(*self, *args, check=check)
 
@@ -63,10 +61,15 @@ class Args(tuple[str, ...]):
 
         Args:
             *args: Additional command-line arguments appended to the command.
-            check: Whether to raise an exception on non-zero exit.
+            check: Whether to raise an exception on non-zero exit. Defaults
+                to `True`.
 
         Returns:
             The completed process result.
+
+        Raises:
+            subprocess.CalledProcessError: If `check` is `True` and the
+                command exits with a non-zero return code.
         """
         return run_subprocess_cached(*self, *args, check=check)
 
@@ -108,15 +111,24 @@ def run_subprocess_cached(
 ) -> subprocess.CompletedProcess[Any]:
     """Execute a subprocess command and cache the result.
 
-    Repeated calls with identical arguments return the cached result without
-    spawning a new process.
+    A repeated call with identical arguments returns the cached result
+    without spawning a new process.
 
     Args:
         *args: Command and arguments (e.g., `"git"`, `"status"`).
-        check: Whether to raise an exception on non-zero exit.
+        check: Whether to raise an exception on non-zero exit. Defaults to
+            `True`.
 
     Returns:
         The completed process result.
+
+    Raises:
+        subprocess.CalledProcessError: If `check` is `True` and the command
+            exits with a non-zero return code.
+
+    Note:
+        A call that raises is not cached, so a failing command re-runs on
+        the next identical call.
     """
     return run_subprocess(*args, check=check)
 
@@ -141,6 +153,10 @@ def run_subprocess(
     Raises:
         subprocess.CalledProcessError: If the command exits with a non-zero
             return code and `check` is `True`.
+
+    Note:
+        Logs the command, return code, stdout, and stderr before re-raising
+        on failure.
     """
     try:
         return subprocess.run(  # noqa: S603  # nosec: B603

@@ -1,4 +1,4 @@
-"""Parsing of PEP 440 version constraints and the version ranges they imply."""
+"""Parsing and manipulation of PEP 440 versions and version constraints."""
 
 from typing import Literal, overload
 
@@ -9,14 +9,22 @@ from packaging.version import Version
 class VersionConstraint:
     """Parsed PEP 440 version constraint with normalized bounds.
 
-    Parses a specifier string such as `">=3.8,<3.12"` and normalizes all bounds
-    to a consistent form:
+    Parses a specifier string such as `">=3.8,<3.12"` and normalizes its `>=`,
+    `>`, `<=`, and `<` specifiers into a single inclusive lower bound and a
+    single exclusive upper bound:
 
     - Exclusive lower bounds (`>`) are converted to inclusive form:
       `">3.7.0"` → `">=3.7.1"`.
     - Inclusive upper bounds (`<=`) are converted to exclusive form:
       `"<=3.11.5"` → `"<3.11.6"`.
     - When multiple lower or upper bounds are present, the most restrictive is used.
+    - A bound produced by conversion keeps only its major, minor, and micro
+      release segments; any pre-release, post-release, development, or local
+      version segment is dropped.
+
+    Specifiers using other operators (`==`, `!=`, `~=`, `===`) do not contribute
+    to either bound, though they still constrain which versions the parsed
+    specifier set matches.
 
     Attributes:
         constraint (str): The original constraint string as provided.
@@ -90,14 +98,15 @@ class VersionConstraint:
         lower_default: str | Version | None = None,
         upper_default: str | Version | None = None,
     ) -> tuple[Version, ...]:
-        """Enumerate versions at the given precision between the constraint's bounds.
+        """Enumerate versions at the given precision within the constraint's bounds.
 
-        For a range confined to a single major version, the result is every version
-        at the requested precision between the lower and upper bound that the
-        constraint actually matches (so, for example, `!=` exclusions are absent).
-        A range spanning multiple major versions instead repeats the lower and
-        upper bound's minor (and micro) digits within each major, rather than
-        covering every value in between.
+        When the bounds fall within a single major version, the result is every
+        version at the requested precision, between the lower and upper bound,
+        that the constraint actually matches (so, for example, `!=` exclusions
+        are absent). When the bounds span more than one major version, the
+        result is not an exhaustive enumeration: only a subset of minor (and
+        micro) values, derived from the lower and upper bounds' own digits, is
+        produced for each major.
 
         Args:
             level: Granularity of version increments. Defaults to `"major"`.
@@ -236,6 +245,10 @@ class VersionConstraint:
         - `micro > 0`: `"<3.12.5"` → `"<=3.12.4"`.
         - `micro == 0` and `minor > 0`: `"<3.12.0"` → `"<=3.11"`.
         - `micro == 0` and `minor == 0`: `"<4.0.0"` → `"<=3"`.
+
+        The result always has only major, minor, and micro components: any
+        pre-release, post-release, development, or local segment on the
+        exclusive bound is dropped.
 
         Args:
             default: Inclusive upper bound to use when the constraint specifies no

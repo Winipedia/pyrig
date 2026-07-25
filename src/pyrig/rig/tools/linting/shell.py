@@ -34,30 +34,35 @@ class ShellLinter(CheckHookTool):
         return ("shellcheck-py",)
 
     def check_args(self, *args: str) -> Args:
-        """Construct ShellCheck check arguments at maximum strictness.
+        """Construct ShellCheck check arguments.
 
-        Enables every optional check on top of the default set, surfaces
-        every severity level down to style, and pins the dialect to `bash`
-        rather than relying on shebang detection, since every script this
-        project generates (`ShellConfigFile`) commits to `bash` explicitly.
+        No severity, dialect, or rule configuration is baked in here; the
+        hook's own `args=` supplies those flags, and callers are otherwise
+        expected to supply the specific files to check.
 
         Args:
             *args: Additional arguments forwarded to `shellcheck`, typically
                 the file paths to check.
 
         Returns:
-            Args for `shellcheck --severity=style --enable=all --shell=bash`.
+            Args for `shellcheck`.
         """
         return self.args(*args)
 
     def check_hook(self) -> dict[str, Any]:
-        """Return the hook metadata for linting shell scripts.
+        """Return the hook metadata for linting shell scripts at maximum strictness.
+
+        Enables every optional check on top of the default set, surfaces
+        every severity level down to style, and pins the dialect to `bash`
+        rather than relying on shebang detection, since every script this
+        project generates (`ShellConfigFile`) commits to `bash` explicitly.
 
         Ties its priority to `TypeChecker.check_hook` so it runs
         alongside the rest of the checks tier rather than after it.
 
         Returns:
-            Hook metadata dict for `shellcheck`.
+            Hook metadata dict for
+            `shellcheck --enable=all --severity=style --shell=bash`.
         """
         return VersionControlHookManager.I.hook(
             self.lint_shell,

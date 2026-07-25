@@ -1,1 +1,1 @@
-"""Built-in CLI commands that pyrig provides to every dependent project."""
+"""pyrig's own command-line interface, available to any project that depends on it."""

@@ -1,8 +1,8 @@
 """Module content copying configuration management.
 
-Provides a base configuration class for copying Python module source files
-into a target project, transforming the module's package prefix to match
-the target project's package name.
+Provides base configuration classes for copying a source module's content —
+in full or as just its docstring — into a target project, translating the
+source module's package prefix into the target project's own package name.
 """
 
 import ast

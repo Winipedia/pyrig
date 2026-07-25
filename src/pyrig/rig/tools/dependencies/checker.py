@@ -1,4 +1,4 @@
-"""Detection of unused, missing, and transitive Python dependencies."""
+"""Dependency checker command construction and badge metadata."""
 
 from typing import Any
 
@@ -11,7 +11,11 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 
 
 class DependencyChecker(CheckHookTool):
-    """`deptry` command wrapper."""
+    """Wrapper for the `deptry` dependency checker.
+
+    Constructs `deptry` command-line arguments for detecting unused, missing,
+    and transitive dependencies.
+    """
 
     def group(self) -> str:
         """Return `Group.CODE_QUALITY`."""
@@ -41,7 +45,7 @@ class DependencyChecker(CheckHookTool):
         return self.args(*args)
 
     def check_hook(self) -> dict[str, Any]:
-        """Return the hook metadata for detecting unused or missing dependencies.
+        """Return the hook metadata for checking the project's dependencies.
 
         Ties its priority to `TypeChecker.check_hook` so it runs
         alongside the rest of the checks tier rather than after it.

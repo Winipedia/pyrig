@@ -1,4 +1,4 @@
-"""Identity and badge metadata for a repository's remote hosting service."""
+"""Identity, URL, and environment metadata for a repository's remote hosting service."""
 
 import os
 from pathlib import Path
@@ -10,29 +10,21 @@ from pyrig.rig.tools.version_control.controller import VersionController
 
 
 class RemoteVersionController(Tool):
-    """GitHub tool for constructing repository URLs and shields.io badges.
+    """GitHub tool for repository identity, URLs, and environment metadata.
 
-    Covers the repository page, issues tracker, releases, and GitHub Actions
-    workflow URLs, plus the badge and access-token metadata needed to
-    reference them from README and workflow files.
+    Builds the repository page, issues tracker, releases, and GitHub
+    Actions workflow URLs, plus the badge and access-token metadata
+    needed to reference them from README and workflow files. Also
+    resolves GitHub's `.github` config directory and detects the
+    GitHub Actions CI environment.
     """
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Return the dev dependency names required by this tool.
-
-        GitHub is not installed as a Python package, so none are required.
-
-        Returns:
-            An empty tuple.
-        """
+        """Return an empty tuple; GitHub is not installed as a Python package."""
         return ()
 
     def group(self) -> str:
-        """Return the badge group this tool belongs to.
-
-        Returns:
-            `Group.TOOLING`.
-        """
+        """Return `Group.TOOLING` as the badge category."""
         return Group.TOOLING
 
     def image_url(self) -> str:
@@ -45,19 +37,11 @@ class RemoteVersionController(Tool):
         return f"https://img.shields.io/github/stars/{self.repository()}?style=social"
 
     def link_url(self) -> str:
-        """Return the URL this tool's badge should link to.
-
-        Returns:
-            The GitHub repository page URL.
-        """
+        """Return the GitHub repository page URL."""
         return self.repo_url()
 
     def name(self) -> str:
-        """Return the tool's name.
-
-        Returns:
-            `'github'`.
-        """
+        """Return `'github'` as the executable name."""
         return "github"
 
     def cicd_badge(self, workflow_name: str, label: str) -> str:
@@ -135,11 +119,7 @@ class RemoteVersionController(Tool):
         return f"{VersionController.I.repo_owner()}/{PackageManager.I.project_name()}"
 
     def url_base(self) -> str:
-        """Return the base URL for GitHub.
-
-        Returns:
-            `https://github.com`.
-        """
+        """Return `'https://github.com'` as GitHub's base URL."""
         return "https://github.com"
 
     def config_dir(self) -> Path:
@@ -153,11 +133,7 @@ class RemoteVersionController(Tool):
         return Path(f".{self.name()}")
 
     def access_token_key(self) -> str:
-        """Return the environment variable name for the repository access token.
-
-        Returns:
-            `'REPO_TOKEN'`.
-        """
+        """Return `'REPO_TOKEN'` as the access token's environment variable name."""
         return "REPO_TOKEN"
 
     def running_in_ci(self) -> bool:

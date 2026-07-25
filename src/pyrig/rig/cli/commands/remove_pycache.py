@@ -4,5 +4,5 @@ from pyrig.rig.tools.programming_language import ProgrammingLanguage
 
 
 def remove_pycache() -> None:
-    """Remove all `__pycache__` directories in the project."""
+    """Remove all `__pycache__` directories from the project's source and test trees."""
     ProgrammingLanguage.I.remove_pycache()

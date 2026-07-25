@@ -1,4 +1,4 @@
-"""Configuration file management for the MkDocs site build."""
+"""Configuration file management for the project's MkDocs site."""
 
 from pathlib import Path
 from typing import Any
@@ -22,11 +22,7 @@ class DocsBuilderConfigFile(YMLDictConfigFile):
     """
 
     def _configs(self) -> dict[str, Any]:
-        """Assemble the required `mkdocs.yml` structure from live project state.
-
-        Returns:
-            Nested dict matching the expected `mkdocs.yml` structure.
-        """
+        """Assemble the required `mkdocs.yml` structure from live project state."""
         branch = VersionController.I.default_branch()
         docs_dir = DocsBuilder.I.docs_dir().as_posix()
         return {

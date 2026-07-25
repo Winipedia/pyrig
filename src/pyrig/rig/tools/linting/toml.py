@@ -56,11 +56,11 @@ class TOMLLinter(CheckFormatHookTool):
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting TOML files.
 
-        tombi's lint has no auto-fix mode, so unlike the other linters it
-        never mutates a file; it belongs with the pure-validation checks
-        tier rather than the file-type-specific fixers. Its diagnostics
-        also default to warn-level, which alone would never fail the hook,
-        so `--error-on-warnings` is passed to make any warning fail it.
+        tombi's lint has no auto-fix mode, so it never mutates a file on
+        its own; it belongs with the pure-validation checks tier rather
+        than the file-type-specific fixers. Its diagnostics also default
+        to warn-level, which alone would never fail the hook, so
+        `--error-on-warnings` is passed to make any warning fail it.
 
         Excludes the package manager's lock file: it's TOML too, but only
         the package manager writes or reformats it, so tombi shouldn't

@@ -1,4 +1,4 @@
-"""Argument construction for the prek pre-commit hook manager CLI."""
+"""Command and hook-metadata construction for the prek pre-commit pipeline."""
 
 from collections.abc import Callable, Iterable
 from types import MethodType
@@ -14,8 +14,12 @@ from pyrig.rig.tools.base.tool import Group, Tool
 class VersionControlHookManager(Tool):
     """Wrapper for the prek pre-commit hook manager.
 
-    Builds `Args` for the two primary prek operations: installing hooks into
-    the local git repository and running hooks against files.
+    Builds `Args` for prek's own CLI: installing hooks into the local git
+    repository and running them against files. Also provides the shared
+    hook-metadata API every other `Tool` subclass uses to declare its own
+    hooks in the pipeline, deriving each hook's `id` and `name` from its
+    entry method, matching or chaining hook priorities, and sorting hooks
+    into a deterministic run order.
     """
 
     def group(self) -> str:
@@ -113,7 +117,7 @@ class VersionControlHookManager(Tool):
         return self.args("run", *args)
 
     def hook_sort_key(self, hook: dict[str, Any]) -> tuple[Any, ...]:
-        """Return a sort key for a hook, for deterministic ordering."""
+        """Return a sort key ordering a hook by its stages, then priority, then id."""
         return (hook["stages"], hook["priority"], hook["id"])
 
     def hook(  # noqa: PLR0913
@@ -145,15 +149,15 @@ class VersionControlHookManager(Tool):
             language: The hook's `language` value. Defaults to `"system"`,
                 since every hook here wraps a tool already installed on the
                 host rather than one prek should fetch itself.
-            groups: Extra badge groups beyond `group_all()` to tag this hook
-                with.
+            groups: Extra prek hook groups beyond `group_all()` to tag this
+                hook with.
             types: File types this hook is restricted to.
             types_or: File types this hook is restricted to, matching any one
                 of them rather than all.
             files: Regex restricting this hook to file paths that match.
-                For a tool with no path filter of its own, unlike `types`
-                and `types_or`, which filter by detected file type rather
-                than path.
+                Useful for a tool with no path filter of its own, unlike
+                `types` and `types_or`, which filter by detected file
+                type rather than path.
             exclude: Regex excluding matching file paths from this hook,
                 even when they match `types`, `types_or`, or `files`.
             args: Extra CLI arguments appended to the hook's entry command.
@@ -203,7 +207,7 @@ class VersionControlHookManager(Tool):
         return ["post-checkout", "post-merge", "post-rewrite", "pre-push"]
 
     def group_all(self) -> str:
-        """Return the badge group every hook is tagged with.
+        """Return the prek hook group every hook is tagged with.
 
         Returns:
             `"all"`, so a full `prek run --all-files --group=all` sweep

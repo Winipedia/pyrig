@@ -9,7 +9,11 @@ from pyrig.rig.tools.version_control.controller import VersionController
 
 
 class DocsBuilder(Tool):
-    """MkDocs command wrapper with GitHub Pages URL metadata."""
+    """MkDocs command wrapper with GitHub Pages URL metadata.
+
+    Also exposes the project's documentation source and built-site output
+    directories, since those follow conventions this tool defines.
+    """
 
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return `mkdocs` plus the Material, Mermaid, and mkdocstrings packages."""

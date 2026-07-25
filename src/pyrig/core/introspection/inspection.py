@@ -1,4 +1,4 @@
-"""Utilities for locating an object's source definition line."""
+"""Utilities for inspecting Python objects."""
 
 import inspect
 from collections.abc import Callable, Iterable
@@ -54,10 +54,16 @@ def def_line_sorted[
     """Sort objects by their source definition line number.
 
     Args:
-        objs: Iterable of objects to sort (functions, methods, classes, etc.).
+        objs: Modules, classes, functions or methods, tracebacks, frames, or
+            code objects to sort.
 
     Returns:
         New list of objects sorted ascending by their definition line number.
+
+    Raises:
+        OSError: If the source cannot be located for any of the objects.
+        TypeError: If any of the objects is a built-in or C extension
+            module, class, or callable whose source cannot be retrieved.
     """
     return sorted(objs, key=def_line)
 
@@ -67,12 +73,13 @@ def def_line(
 ) -> int:
     """Return the 1-based source line where an object is defined.
 
-    For properties, classmethods, staticmethods, and decorated callables, the
-    underlying function's line is returned rather than the wrapper's line.
+    Accepts a module, class, function, method, traceback, frame, or code
+    object. Properties, classmethods, staticmethods, and other decorated
+    callables are unwrapped first, so the underlying function's line is
+    returned rather than the wrapper's line.
 
     Args:
-        obj: Function, method, class, property, staticmethod, classmethod, or
-            decorated callable.
+        obj: Object whose definition line to locate.
 
     Returns:
         1-based line number of the first line of the object's definition.
@@ -80,8 +87,8 @@ def def_line(
     Raises:
         OSError: If the source cannot be located, for example when the source
             file is missing or unavailable.
-        TypeError: If the object is a built-in or C extension callable whose
-            source cannot be retrieved.
+        TypeError: If the object is a built-in or C extension module, class,
+            or callable whose source cannot be retrieved.
     """
     unwrapped = unwrap_obj(obj)
     code = getattr(unwrapped, "__code__", None)

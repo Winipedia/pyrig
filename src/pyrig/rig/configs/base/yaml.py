@@ -1,4 +1,4 @@
-"""Base class for managing YAML configuration files."""
+"""Base classes for managing YAML configuration files."""
 
 from typing import Any
 
@@ -24,7 +24,8 @@ def represent_str(representer: RoundTripRepresenter, data: str) -> ScalarNode:
         data: The string to represent.
 
     Returns:
-        The YAML representation of the string
+        A double-quoted scalar node for single-line strings, or a literal
+        block scalar node for multi-line strings.
     """
     if is_multiline(data):
         return representer.represent_literal_scalarstring(LiteralScalarString(data))
@@ -44,11 +45,11 @@ YAML_DUMP.representer.add_representer(str, represent_str)
 class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
     """Base class for YAML configuration files.
 
-    Parses and serializes YAML content using `ruamel.yaml`, which refuses to
-    construct or represent arbitrary Python objects (only ruamel.yaml's
-    separate, deprecated "unsafe" mode does that). Sequences are indented
-    under their parent key, and a mapping inside a sequence item starts on
-    its own line below the `-` rather than sharing its line.
+    Parses with `ruamel.yaml`'s safe mode and serializes with its
+    round-trip mode; both refuse to construct or represent arbitrary Python
+    objects, raising an error instead. Sequences are indented under their
+    parent key, and a mapping inside a sequence item starts on its own line
+    below the `-` rather than sharing its line.
 
     Every plain `str` is double-quoted automatically (e.g. GitHub Actions'
     `on:` key needs no special handling), and any string containing a
@@ -110,7 +111,7 @@ class YMLConfigFile[ConfigT: dict[str, Any] | list[Any]](YAMLConfigFile[ConfigT]
 
 
 class YMLDictConfigFile(YMLConfigFile[dict[str, Any]]):
-    """Base class for `.yml` configuration files with a dict structure.
+    """Abstract base for `.yml` configuration files with a dict structure.
 
     Fixes the `ConfigT` type parameter to `dict[str, Any]`, so subclasses get
     properly typed `load()`, `dump()`, and `configs()` for `.yml` files
@@ -118,7 +119,7 @@ class YMLDictConfigFile(YMLConfigFile[dict[str, Any]]):
 
     Example:
         >>> from pathlib import Path
-        >>> from pyrig.rig.configs.base.yml import YMLDictConfigFile
+        >>> from pyrig.rig.configs.base.yaml import YMLDictConfigFile
         >>>
         >>> class MySiteConfigFile(YMLDictConfigFile):
         ...     def parent_path(self) -> Path:

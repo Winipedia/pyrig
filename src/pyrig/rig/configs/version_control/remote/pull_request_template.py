@@ -29,9 +29,8 @@ Please consider the following:
 class PullRequestTemplateConfigFile(MarkdownConfigFile):
     """Configuration manager for `.github/pull_request_template.md`.
 
-    Validation is intentionally permissive: the file is considered correct
-    as soon as it has any content, so contributors can freely customize the
-    generated template without it being overwritten on later validation.
+    Seeds the file with a starter template that prompts contributors for a
+    change summary and testing notes, alongside a pre-submission checklist.
     """
 
     def content(self) -> str:

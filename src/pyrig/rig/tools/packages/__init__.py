@@ -1,1 +1,1 @@
-"""Wrappers for external CLI tools used in development and CI workflows."""
+"""Tool wrappers for managing the project's Python package and dependencies."""

@@ -1,5 +1,5 @@
-"""Configuration management for the generated MkDocs documentation site.
+"""Configuration management for the project's documentation site.
 
-Manages the files that make up the project's published documentation: the
-MkDocs site configuration, the landing page, and the API reference page.
+Assembles the MkDocs site configuration together with the Markdown pages
+that make up the published documentation.
 """

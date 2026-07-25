@@ -26,7 +26,8 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """Return all jobs for the health check workflow.
 
         Returns:
-            Dict mapping job IDs to their configurations.
+            Dict combining the quality-check job, the matrix test job, and
+            the job that aggregates their results.
         """
         jobs: dict[str, Any] = {}
         jobs.update(self.job_health_checks())
@@ -124,8 +125,8 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
     def job_health_checks(self) -> dict[str, Any]:
         """Return the single-runner job that applies all code quality checks.
 
-        Runs on a single Ubuntu runner (no matrix) and covers pre-commit hooks
-        and dependency auditing.
+        Runs on a single Ubuntu runner (no matrix) and runs every configured
+        pre-commit hook, including a dependency vulnerability audit.
 
         Returns:
             Job configuration with steps for the full quality check sequence.
@@ -140,8 +141,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
 
         Returns:
             Steps that install dependencies, create version-control-ignored
-            local files, run the configured pre-commit hooks, and audit
-            dependencies for known vulnerabilities.
+            local files, and run the configured pre-commit hooks.
         """
         return [
             *self.steps_core_installed_setup(update_dependencies=True),

@@ -8,8 +8,7 @@ from pyrig.rig.configs.base.issue_template import IssueTemplateConfigFile
 class BugReportConfigFile(IssueTemplateConfigFile):
     """Configuration manager for `.github/ISSUE_TEMPLATE/bug_report.yml`.
 
-    Generates and validates the GitHub issue form contributors use to submit
-    bug reports.
+    Defines the GitHub issue form contributors use to submit bug reports.
     """
 
     def _configs(self) -> dict[str, Any]:
@@ -26,9 +25,8 @@ class BugReportConfigFile(IssueTemplateConfigFile):
         - **Logs** (optional): Relevant log output, rendered as shell code.
 
         Returns:
-            A `dict[str, Any]` representing the full GitHub issue form YAML,
-            including metadata such as `name`, `description`, `title`,
-            `labels`, and the `body` form fields.
+            Issue form metadata (`name`, `description`, `title`, `labels`)
+            together with the `body` field definitions.
         """
         return {
             "name": "Bug Report",

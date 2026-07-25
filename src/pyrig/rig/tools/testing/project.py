@@ -16,7 +16,7 @@ class ProjectTester(Tool):
     """
 
     def group(self) -> str:
-        """Return `Group.TESTING`."""
+        """Return `Group.PROJECT_STATUS`."""
         return Group.PROJECT_STATUS
 
     def image_url(self) -> str:
@@ -33,11 +33,11 @@ class ProjectTester(Tool):
         return "pytest"
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Return `('pytest', 'pytest-cov')`."""
+        """Return `('pytest', 'pytest-cov', 'pytest-randomly')`."""
         return (*super().dev_dependencies(), "pytest-cov", "pytest-randomly")
 
     def version_control_ignore_patterns(self) -> tuple[str, ...]:
-        """Return `('.pytest_cache/',)`."""
+        """Return `('.pytest_cache/', '.coverage')`."""
         return (".pytest_cache/", ".coverage")
 
     def color(self) -> tuple[int, int, int]:

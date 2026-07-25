@@ -38,20 +38,15 @@ class SecurityConfigFile(MarkdownConfigFile):
 
     Generates SECURITY.md from a minimal best-practices template that covers
     vulnerability reporting guidelines, the information to include in reports,
-    and response expectations. The contact method placeholder in the template
-    is populated from the configured git user email.
+    and response expectations. The contact method embedded in the template
+    is the configured git user email.
 
     Any non-empty SECURITY.md is treated as valid, so users are free to
     replace or extend the generated template with their own policy.
     """
 
     def content(self) -> str:
-        """Return the security policy template content.
-
-        Returns:
-            The security policy template, with the contact method
-            placeholder filled in.
-        """
+        """Return the security policy text with the contact method filled in."""
         return f"""# Security Policy
 
 ## Reporting a Vulnerability
@@ -83,6 +78,9 @@ reasonably possible.
         Returns:
             `True` if the file has non-empty content; `False` if the file
             is empty.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
         """
         return file_has_content(self.path())
 

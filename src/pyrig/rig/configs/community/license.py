@@ -1,4 +1,8 @@
-"""LICENSE file configuration for generated projects."""
+"""Configuration management for LICENSE files.
+
+Manages the LICENSE file's content and exposes its detected SPDX license
+identifier.
+"""
 
 from datetime import UTC, datetime
 from functools import cache
@@ -27,8 +31,9 @@ from pyrig.rig.tools.version_control.remote.controller import (
 class LicenseConfigFile(StringConfigFile):
     """Configuration file management for a project's MIT `LICENSE` file.
 
-    Generates the license text from the current year and repository owner, and
-    detects the SPDX license identifier from the file content.
+    Generates the license text from the current year and repository owner,
+    detects the SPDX license identifier from the file's current content, and
+    provides a shields.io license badge for use in other generated files.
     """
 
     def content(self) -> str:
@@ -124,9 +129,15 @@ class LicenseConfigFile(StringConfigFile):
     def spdx_identifier(cls) -> str:
         """Return the SPDX license identifier detected from the LICENSE file content.
 
+        The result is cached per class and is not recomputed if the file
+        content changes afterward.
+
         Returns:
             The matched SPDX identifier (e.g., `"MIT"`, `"Apache-2.0"`), or
             `"LicenseRef-Custom"` if no standard license is recognised.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
         """
         licenses, _ = analyse_license_text(cls().read_content())
         return next(iter(licenses["licenses"]), "LicenseRef-Custom")

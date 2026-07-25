@@ -20,9 +20,9 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     the default branch, but its job only proceeds when that health check run
     both succeeded and was itself triggered by a push — so the daily
     scheduled run and pull request runs never produce a release. A
-    qualifying run tags the current version, applies repository settings
-    and branch protection rulesets, generates a changelog, and publishes a
-    GitHub release.
+    qualifying run applies repository settings and branch protection
+    rulesets, tags the current version, generates a changelog, and
+    publishes a GitHub release.
     """
 
     def job(  # noqa: PLR0913
@@ -37,11 +37,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         steps: list[dict[str, Any]] | None = None,
         job: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Build a job gated on the workflow having been triggered by a push.
-
-        Every job built through this method only runs when the run that
-        triggered this workflow both succeeded and was itself triggered by
-        a push.
+        """Build a job gated by default on a successful, push-triggered run.
 
         Args:
             method: Method to build the job.
@@ -50,7 +46,8 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             permissions: Job-level permissions override.
             runs_on: Runner label. Defaults to `ubuntu-latest`.
             if_condition: GitHub Actions conditional expression controlling
-                whether the job runs.
+                whether the job runs. Defaults to requiring the triggering
+                run to have succeeded and been push-triggered.
             steps: Ordered list of step configurations.
             job: Additional job-level keys to merge into the configuration.
 
@@ -80,7 +77,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         return {**self.job_publish()}
 
     def stem(self) -> str:
-        """Return `"release"`, giving the path `.github/workflows/release.yml`."""
+        """Return `"release"`, the workflow file's stem."""
         return "release"
 
     def workflow_triggers(self) -> dict[str, Any]:
@@ -104,7 +101,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         required to push the version tag and create the GitHub release.
 
         Returns:
-            Job configuration dict keyed by the job name, containing the
+            Job configuration dict keyed by the job ID, containing the
             guard condition and the ordered release steps.
         """
         return self.job(
@@ -162,8 +159,9 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     ) -> dict[str, Any]:
         """Build a step that creates a GitHub release.
 
-        Uses `ncipollo/release-action` to create a release tagged with the
-        extracted version and the generated changelog as its body.
+        Uses `ncipollo/release-action` to create a release named and
+        tagged with the extracted version, using the generated changelog
+        as its body.
 
         Args:
             step: Additional keys to merge into the step configuration.
@@ -286,10 +284,8 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     ) -> dict[str, Any]:
         """Build a step that patches general repository settings via the GitHub API.
 
-        Sources the generated repository-settings script and calls its
-        `settings` function, which reads the `repository` key from the
-        settings file and sends it as a `PATCH /repos/{owner}/{repo}`
-        request using `gh api`.
+        Runs the generated repository-settings script, invoking its
+        `settings` function.
 
         Args:
             step: Additional keys to merge into the step configuration.
@@ -313,10 +309,8 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     ) -> dict[str, Any]:
         """Build a step that upserts all rulesets from the settings file.
 
-        Sources the generated repository-settings script and calls its
-        `rulesets` function, which looks up whether a ruleset with each
-        name already exists and sends the full configuration with `gh api`,
-        using `POST` to create it or `PUT` to update it in place.
+        Runs the generated repository-settings script, invoking its
+        `rulesets` function.
 
         Args:
             step: Additional keys to merge into the step configuration.

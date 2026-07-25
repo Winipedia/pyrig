@@ -56,12 +56,20 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
     def mirror_module(self) -> ModuleType:
         """Return the source module whose structure will be mirrored in the test file.
 
+        The base class inspects this module's functions, classes, and methods
+        to generate missing test skeletons, and derives the test file's name
+        and path from its dotted name. Subclasses must implement this to
+        specify which module to mirror.
+
         Returns:
             The source module to mirror.
         """
 
     def create_file(self) -> None:
-        """Create the test file on disk and register it in `sys.modules`."""
+        """Create the test file with its default module docstring as content.
+
+        Also registers the newly created module in `sys.modules`.
+        """
         super().create_file()
         self.write_content(self.test_module_docstring())
         import_module_with_file_fallback(self.path(), name=self.test_module_name())
@@ -116,11 +124,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return ProjectTester.I.package_root()
 
     def parent_path(self) -> Path:
-        """Return the directory where the test file lives.
-
-        Returns:
-            Parent directory of the test file path.
-        """
+        """Return the directory where the test file lives."""
         return self.test_path().parent
 
     def stem(self) -> str:
@@ -534,33 +538,20 @@ class {test_class_name}:
         return self.test_cls_prefix() + cls.__name__
 
     def test_func_prefix(self) -> str:
-        """Return the prefix used for test function names.
-
-        Returns:
-            `"test_"`.
-        """
+        """Return `"test_"`, the prefix used for test function names."""
         return "test_"
 
     def test_cls_prefix(self) -> str:
-        """Return the prefix used for test class names.
-
-        Returns:
-            `"Test"`.
-        """
+        """Return `"Test"`, the prefix used for test class names."""
         return "Test"
 
     def test_module_prefix(self) -> str:
-        """Return the prefix used for test module names.
-
-        Returns:
-            `"test_"`.
-        """
+        """Return `"test_"`, the prefix used for test module names."""
         return "test_"
 
     def test_module_docstring(self) -> str:
-        """Return the default docstring used for newly created test modules.
+        """Return a one-line module docstring, followed by a trailing newline.
 
-        Returns:
-            A minimal module docstring string, ready to prepend to an empty file.
+        Used as the initial content of newly created test modules.
         """
         return '"""Test module."""\n'

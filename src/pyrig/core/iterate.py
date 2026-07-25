@@ -117,8 +117,10 @@ def dict_insert_key[K, V](
 ) -> None:
     """Insert a key/value pair into a dict at a specific index.
 
-    This handles inserting at the beginning and at the end if
-    the given index is out of bounds. The dict is modified in-place.
+    If `key` already exists in `dict_`, its current entry is removed first,
+    so the key moves to the new position with the new value instead of
+    appearing twice. An out-of-bounds index inserts at the beginning or end.
+    The dict is modified in-place.
 
     Args:
         dict_: The dict to modify.
@@ -194,9 +196,11 @@ def nested_structure_is_subset(subset: Any, superset: Any) -> bool:
 def match_list_items(subset: list[Any], superset: list[Any]) -> list[bool]:
     """Check whether each `subset` item is satisfied by a distinct `superset` item.
 
-    Each `superset` item can satisfy at most one `subset` item, so a value
-    that occurs multiple times in `subset` requires that many distinct
-    matches in `superset` rather than being satisfied by a single occurrence.
+    An item satisfies another using the same nested subset semantics as
+    `nested_structure_is_subset`, not plain equality. Each `superset` item
+    can satisfy at most one `subset` item, so a value that occurs multiple
+    times in `subset` requires that many distinct matches in `superset`
+    rather than being satisfied by a single occurrence.
 
     Args:
         subset: Items to find matches for.
@@ -226,18 +230,7 @@ def match_list_items(subset: list[Any], superset: list[Any]) -> list[bool]:
 
 
 def both_dicts_or_lists(a: object, b: object) -> bool:
-    """Return whether `a` and `b` are both dicts or both lists.
-
-    Such a pair is merged recursively by `merge_nested_structures` rather than
-    overwritten.
-
-    Args:
-        a: First value.
-        b: Second value.
-
-    Returns:
-        `True` if both values are dicts or both are lists.
-    """
+    """Return whether `a` and `b` are both dicts or both lists."""
     return both_dicts(a, b) or both_lists(a, b)
 
 
@@ -248,7 +241,18 @@ def deep_sorted_dict[K, V](value: dict[K, V]) -> dict[K, V]: ...
 @overload
 def deep_sorted_dict[T](value: T) -> T: ...
 def deep_sorted_dict(value: Any) -> Any:
-    """Recursively sort a nested dict by keys."""
+    """Recursively sort every nested dict by key.
+
+    Lists are recursed into item by item without reordering them, and any
+    value that is neither a dict nor a list is returned unchanged.
+
+    Args:
+        value: The dict, list, or other value to sort.
+
+    Returns:
+        A new copy of `value` with every dict layer sorted by key; `value`
+        itself is not modified.
+    """
     if isinstance(value, dict):
         return {key: deep_sorted_dict(item) for key, item in sorted(value.items())}
 
@@ -259,32 +263,10 @@ def deep_sorted_dict(value: Any) -> Any:
 
 
 def both_dicts(a: object, b: object) -> bool:
-    """Return whether `a` and `b` are both dicts.
-
-    Such a pair is merged recursively by `merge_nested_structures` rather than
-    overwritten.
-
-    Args:
-        a: First value.
-        b: Second value.
-
-    Returns:
-        `True` if both values are dicts.
-    """
+    """Return whether `a` and `b` are both dicts."""
     return isinstance(a, dict) and isinstance(b, dict)
 
 
 def both_lists(a: object, b: object) -> bool:
-    """Return whether `a` and `b` are both lists.
-
-    Such a pair is merged recursively by `merge_nested_structures` rather than
-    overwritten.
-
-    Args:
-        a: First value.
-        b: Second value.
-
-    Returns:
-        `True` if both values are lists.
-    """
+    """Return whether `a` and `b` are both lists."""
     return isinstance(a, list) and isinstance(b, list)

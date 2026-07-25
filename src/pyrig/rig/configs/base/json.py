@@ -12,18 +12,21 @@ from pyrig.rig.configs.base.config_file import (
 class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
     """Base class for JSON configuration files.
 
-    Files are written with 4-space indentation and read as UTF-8. The
-    top-level JSON structure is either a dict or a list, fixed by the
-    `ConfigT` type parameter.
+    Files are read and written as UTF-8, with output indented 2 spaces and
+    non-ASCII characters left unescaped. The top-level JSON structure is
+    either a dict or a list, fixed by the `ConfigT` type parameter.
 
     Subclasses must implement `parent_path()`, `stem()`, and `_configs()`.
     """
 
     def _dump(self, configs: ConfigT) -> None:
-        """Write configuration to the JSON file with 4-space indentation.
+        """Write configuration to the JSON file with 2-space indentation.
 
         Args:
             configs: Configuration dict or list to serialize and write.
+
+        Raises:
+            ValueError: If `configs` contains a `NaN` or infinite float value.
         """
         with open_path_with_utf8(self.path(), mode="w") as f:
             json.dump(
@@ -46,16 +49,12 @@ class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
         return data
 
     def extension(self) -> str:
-        """Return the file extension for JSON files.
-
-        Returns:
-            The string `"json"`, without a leading dot.
-        """
+        """Return `"json"`."""
         return "json"
 
 
 class JSONDictConfigFile(JSONConfigFile[dict[str, Any]]):
-    """Concrete base for JSON config files whose top-level structure is a dict.
+    """Abstract base for JSON config files whose top-level structure is a dict.
 
     Fixes the `ConfigT` type parameter to `dict[str, Any]`, so subclasses get
     properly typed `load()`, `dump()`, and `configs()` for JSON files

@@ -1,1 +1,1 @@
-"""Backend implementations for the `pyrig mk` scaffolding subcommands."""
+"""Backend implementations for the CLI subcommands that scaffold project artifacts."""

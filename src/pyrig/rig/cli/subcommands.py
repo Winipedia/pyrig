@@ -19,10 +19,8 @@ mk = make.app
 def init() -> None:
     """Initialize a new project from scratch.
 
-    Runs the full ordered setup sequence — one command to go from installing
-    pyrig to a production-ready project with version control, dependencies,
-    configuration, test scaffolding, pre-commit hooks, and an initial commit.
-    The process stops immediately if any step fails.
+    Runs pyrig's full project-setup sequence, taking a bare directory to a
+    production-ready project in one command.
 
     Example:
         ```
@@ -31,6 +29,10 @@ def init() -> None:
         $ uv add pyrig
         $ uv run pyrig init
         ```
+
+    Note:
+        Intended to be run once, right after creating the project — not as
+        part of routine development. Stops at the first step that fails.
     """
     from pyrig.rig.cli.commands.init_project import init_project  # noqa: PLC0415
 
@@ -50,19 +52,12 @@ def rmpyc() -> None:
 
 
 def scratch() -> None:
-    """Run the `.scratch.py` file at the project root.
+    """Run the `.scratch.py` file at the project root as `__main__`.
 
-    `.scratch.py` is a throwaway Python script kept at the project root for
-    local experimentation. It is automatically excluded from version control
-    via `.gitignore` and never committed. Use it to prototype ideas, test
-    quick snippets, or exercise library code without touching the main
-    source tree.
-
-    The script runs in an isolated namespace and does not affect the calling
-    environment.
-
-    It runs it as `__main__`.
-
+    `.scratch.py` is a throwaway script kept at the project root for local
+    experimentation, excluded from version control and never committed. Use
+    it to prototype ideas, test quick snippets, or exercise library code
+    without touching the main source tree.
     """
     from pyrig.rig.cli.commands.scratch import run_scratch_file  # noqa: PLC0415
 
@@ -87,12 +82,14 @@ def sync(
         files: Files to synchronize. If omitted, all files are
             synchronized.
 
-    Exits with code 1 if any file was created or updated, 0 if everything was
-    already in sync. This makes it suitable as a git hook: auto-fixes are
-    applied, the hook fails, the developer stages the changes and recommits.
+    Raises:
+        typer.Exit: With code 1 if any file was created or updated.
 
     Note:
-        Only relative paths are supported. Absolute paths are silently dropped.
+        Suitable as a git hook: fixes are applied and the command exits
+        non-zero so the hook blocks until the developer stages the changes
+        and recommits. Only relative paths are supported in `files`;
+        absolute paths are silently dropped.
     """
     from pyrig.rig.cli.commands.synchronize import synchronize_project  # noqa: PLC0415
 

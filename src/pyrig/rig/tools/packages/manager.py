@@ -1,4 +1,4 @@
-"""Wrapper for the project's Python package manager."""
+"""Wrapper for the project's package manager and source of its layout conventions."""
 
 from pathlib import Path
 from types import FunctionType
@@ -13,15 +13,16 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 
 
 class PackageManager(VersionControlHookTool):
-    """`uv` package manager wrapper and source of project layout conventions.
+    """`uv` package manager wrapper and source of the project's layout conventions.
 
-    Beyond the `*_args` methods that build commands for `uv`, this also
-    exposes the project's name, package name, and source layout, since those
-    follow conventions the package manager defines.
+    Beyond the `*_args` methods that build commands for `uv`, this also exposes
+    the project's name, package name, source layout, and build system
+    configuration, since those follow conventions the package manager defines.
 
-    Subclass and override `build_system_requires`, `build_backend`,
-    `source_root`, or `dev_dependencies` to adapt to a different build
-    back-end or project layout.
+    Subclass and override `build_system_requires` and `build_backend` to use a
+    different build back-end, `source_root` for a different project layout, and
+    `dev_dependencies` if the package manager itself must be installed as a
+    project dependency rather than assumed already present on the system.
     """
 
     def dev_dependencies(self) -> tuple[str, ...]:
@@ -83,7 +84,7 @@ class PackageManager(VersionControlHookTool):
         return "uv_build"
 
     def build_system_requires(self) -> list[str]:
-        """Return `["uv_build"]` for the `[build-system].requires` field.
+        """Return `["uv-build"]` for the `[build-system].requires` field.
 
         Override this alongside `build_backend` if the project uses a
         different build back-end, for example `["poetry-core"]` for Poetry or
@@ -161,7 +162,14 @@ class PackageManager(VersionControlHookTool):
         return self.args("add", *args)
 
     def audit_args(self, *args: str) -> Args:
-        """Construct `Args` for auditing installed dependencies."""
+        """Construct `Args` for `uv audit`.
+
+        Args:
+            *args: Additional arguments for the audit command.
+
+        Returns:
+            Args for `uv audit <args...>`.
+        """
         return self.args("audit", *args)
 
     def install_dependencies_no_dev_args(self, *args: str) -> Args:
@@ -248,7 +256,7 @@ class PackageManager(VersionControlHookTool):
         return self.args("build", *args)
 
     def hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return the dependency update and install hooks."""
+        """Return the dependency update, install, and audit hooks."""
         return (
             self.update_dependencies_hook(),
             self.install_dependencies_hook(),
@@ -309,7 +317,14 @@ class PackageManager(VersionControlHookTool):
         return self.install_dependencies_args()
 
     def audit_dependencies_hook(self) -> dict[str, Any]:
-        """Return the hook metadata for auditing installed dependencies."""
+        """Return the hook metadata for auditing installed dependencies.
+
+        Runs after `install_dependencies_hook`, since auditing requires the
+        dependencies it installs to already be present.
+
+        Returns:
+            Hook metadata dict for `uv audit`.
+        """
         return VersionControlHookManager.I.hook(
             self.audit_dependencies,
             priority=VersionControlHookManager.I.increase_priority(

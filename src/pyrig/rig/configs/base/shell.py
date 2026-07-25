@@ -9,12 +9,11 @@ class ShellConfigFile(StringConfigFile):
     r"""Abstract base for shell script (`.sh`) configuration files.
 
     Fixes the file extension to `"sh"` and prepends a shebang and strict
-    mode line to every script. The shebang pins the shell to `bash`, which
-    ShellCheck otherwise cannot infer from a fragment invoked as
-    `bash script.sh`, and without it falls back to POSIX `sh` rules that
-    misreport checks like SC2312. Strict mode (`set -euo pipefail`) makes a
-    failed command anywhere in a pipeline abort the script instead of
-    silently masking the failure, satisfying that same check.
+    mode line to every script. The shebang pins the interpreter to `bash`,
+    required because the strict mode line's `pipefail` option is a bash
+    extension that a plain POSIX `sh` does not support. Strict mode
+    (`set -euo pipefail`) makes a failed command anywhere in a pipeline
+    abort the script instead of silently masking the failure.
 
     Subclasses must implement:
         - `parent_path`: Directory containing the `.sh` file.
@@ -62,17 +61,9 @@ class ShellConfigFile(StringConfigFile):
         return "sh"
 
     def shebang_line(self) -> str:
-        """Return `"#!/usr/bin/env bash"`.
-
-        Returns:
-            The shebang line every generated script starts with.
-        """
+        """Return `"#!/usr/bin/env bash"`."""
         return "#!/usr/bin/env bash"
 
     def strict_mode_line(self) -> str:
-        """Return `"set -euo pipefail"`.
-
-        Returns:
-            The strict mode line every generated script starts with.
-        """
+        """Return `"set -euo pipefail"`."""
         return "set -euo pipefail"
