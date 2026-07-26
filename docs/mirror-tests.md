@@ -23,7 +23,7 @@ The test tree mirrors the source tree exactly:
 ## How It Works
 
 `MirrorTestConfigFile` is a `ConfigFile` subclass. Instead of managing a config
-file like `pyproject.toml`, it manages test files. Its `_configs()` returns the
+file like `pyproject.toml`, it manages test files. Its `content()` returns the
 complete expected test module content: existing tests merged with new stubs for
 every source symbol that has no test yet.
 
@@ -32,7 +32,7 @@ missing or stubs are absent — it never removes or modifies existing test
 implementations.
 
 At sync time, `MirrorTestConfigFile` dynamically generates one subclass per
-source module via `concrete_subclasses()`, so the set of managed test files
+source module via `generate_subclass()`, so the set of managed test files
 always matches the current source package — no registration or manifest needed.
 
 ### Generated Stubs
@@ -71,6 +71,4 @@ recommitting. This means a commit can never introduce untested code.
 
 `MirrorTestConfigFile` is a `DependencySubclass`. Run `pyrig mk subcls` and
 select it to generate a skeleton. Override methods to change naming conventions,
-adjust what counts as tested, or customise the stub format. All sync operations
-use `MirrorTestConfigFile.L` (the leaf subclass), so overrides are picked up
-automatically.
+adjust what counts as tested, or customise the stub format.
