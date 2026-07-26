@@ -916,7 +916,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "18.31.3"
+version = "18.31.4"
 source = { editable = "." }
 dependencies = [
     { name = "inquirerpy" },
@@ -1005,20 +1005,20 @@ dev = [
 
 [[package]]
 name = "pyrig-codecov"
-version = "3.16.6"
+version = "3.16.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
     { name = "pyrig-runtime" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/28/15/69cbb47608b894c36c3f8538824a966fb3399caa19dcdae0808512860e34/pyrig_codecov-3.16.6.tar.gz", hash = "sha256:de5005107d89c632aac9e926e3177532205cf907a3dafdbff0240188e9b6e739", size = 5600, upload-time = "2026-07-24T22:02:03.419Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b8/d2/56f279764299b9299864bec2cfa8d34c4509dfc6ec8777d204c2e87194fc/pyrig_codecov-3.16.7.tar.gz", hash = "sha256:96dc06d71536f757ef536ab27d7d4cda333b301c897e94a40a1f404ce3d4f274", size = 5582, upload-time = "2026-07-26T16:35:58.274Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5b/ff/c5607e3a272c8c39d811520d3fbec97595b5c1285d0b9a0845d22f715651/pyrig_codecov-3.16.6-py3-none-any.whl", hash = "sha256:cf280d08173ce9e1c590fe637e68a64abd8a711cabad9f8d0138c24604e58f16", size = 9925, upload-time = "2026-07-24T22:02:02.319Z" },
+    { url = "https://files.pythonhosted.org/packages/d3/fa/3f77398d55df3410cbbc56c78fc3ed555b77446ff4c26a916bdc0936bcaf/pyrig_codecov-3.16.7-py3-none-any.whl", hash = "sha256:dda7f71c2c458115accc83319ebe4896e1738ceb3fa9f92da5d88c7cba97dacd", size = 9929, upload-time = "2026-07-26T16:35:57.451Z" },
 ]
 
 [[package]]
 name = "pyrig-fixtures"
-version = "2.23.8"
+version = "2.23.9"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
@@ -1027,61 +1027,61 @@ dependencies = [
     { name = "pytest-mock" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/98/41/307a86ee12aa6fc65dca720ba3d58b3c0fb7e6e0b8ceef2e8d9d14d2455f/pyrig_fixtures-2.23.8.tar.gz", hash = "sha256:0bdff4799bf5e9f2b7df3a5720a4f751b22c71b28e8f3a37e21cdc26353ac227", size = 12590, upload-time = "2026-07-24T22:06:31.525Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8b/bb/a2ed90e0274bb2cae82371b89354bb9b4f57b0367658b66e323cf693f800/pyrig_fixtures-2.23.9.tar.gz", hash = "sha256:5d0df4a2e8d98de67c990ac29de6b1945d6cac3d3b857de5dc87f574d981be57", size = 13454, upload-time = "2026-07-26T16:37:35.983Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d1/0f/f3fbda4c73b93cac6c166da0cdfbb50e6b2127345a3151d4d859bac86532/pyrig_fixtures-2.23.8-py3-none-any.whl", hash = "sha256:66681cbb48e014b00cc0d75c981c0fe917cf3f1bcadab229fa3051eded732ef7", size = 19610, upload-time = "2026-07-24T22:06:30.711Z" },
+    { url = "https://files.pythonhosted.org/packages/92/80/3d2f4ec384740a4ff36373676a02bbab1b940aeac012d1fac592ac390946/pyrig_fixtures-2.23.9-py3-none-any.whl", hash = "sha256:a54a01c3290ad73e29c347b15baf21f980ce5a99b253f5f1c6f90b7e5d27bf2f", size = 20581, upload-time = "2026-07-26T16:37:35.019Z" },
 ]
 
 [[package]]
 name = "pyrig-overrides"
-version = "4.18.7"
+version = "4.18.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
     { name = "pyrig-pypi" },
     { name = "pyrig-runtime" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/81/79/e9da05f2eeaef103c5d6fc2bbd9531ba4ab0de8464a863efdf163a830d68/pyrig_overrides-4.18.7.tar.gz", hash = "sha256:305a37024996b7b6d93f0310fb521cdea76e2f2de0f4e969fb6a906f8ae55ef9", size = 4960, upload-time = "2026-07-24T22:05:37.762Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5a/44/12d73e62e0727ad54a0ce8f872bbc628b8d738093c8a085ca71c524641a2/pyrig_overrides-4.18.8.tar.gz", hash = "sha256:59661fabc8e7f3652f7eaf94f520de277fef409e57bd739ac2b8e49f91d68efa", size = 4933, upload-time = "2026-07-26T16:37:39.052Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8f/7c/c9e5cc29051779f956849ed694abd51bbf9e908de006a38c92ace1609360/pyrig_overrides-4.18.7-py3-none-any.whl", hash = "sha256:06ae8fa3e65a78bce94a31f3fadb9cd062cdf38ab1f9a9c34f2678efa2eca23a", size = 7627, upload-time = "2026-07-24T22:05:36.841Z" },
+    { url = "https://files.pythonhosted.org/packages/52/e2/6c7b502048b736a0cb75b9ad7d1fd7652a80fd2dcb07d9c17620f5589eaa/pyrig_overrides-4.18.8-py3-none-any.whl", hash = "sha256:2ba5de554ccd22a88893b35fb87c3395b00937e1e07a8c8c0d56232a0a72abf4", size = 7593, upload-time = "2026-07-26T16:37:38.049Z" },
 ]
 
 [[package]]
 name = "pyrig-pypi"
-version = "3.18.6"
+version = "3.18.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
     { name = "pyrig-runtime" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ee/3f/c6df01801fb8ad40d73eec1d1d5232c2458d1592ad8e9e945d6333fe3ee9/pyrig_pypi-3.18.6.tar.gz", hash = "sha256:00b23e01c2b1ba2108b3cae6d24101a4ca4abdde1986569c15025a31ca3d6013", size = 6432, upload-time = "2026-07-24T22:06:21.788Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/54/bc/8d5b74e30fc2300bfbb69cb04fb7bb8acb35ed9698ea2779d84ffa65f0bd/pyrig_pypi-3.18.7.tar.gz", hash = "sha256:161cb63b8055c226ed89f564dd092412c0b42461227f1cba72ee7e4162a11704", size = 6431, upload-time = "2026-07-26T16:40:46.693Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5c/10/aa6e4bcd441201b42cc875b0cbff8d9bd3075bffdd13202725b94320f209/pyrig_pypi-3.18.6-py3-none-any.whl", hash = "sha256:39495b696c0639256bb21101a2411775aedc0d26e0be180e5114071a1423411e", size = 11479, upload-time = "2026-07-24T22:06:20.963Z" },
+    { url = "https://files.pythonhosted.org/packages/75/dc/57c3bee2896aa523819940539af2ae2e09a7f6195e4b99b078af9b7f1cc3/pyrig_pypi-3.18.7-py3-none-any.whl", hash = "sha256:dc256bc939efef034569b6fffad890e0e5a263b002cfe5bc82cd942c6ee3d1cb", size = 11520, upload-time = "2026-07-26T16:40:45.796Z" },
 ]
 
 [[package]]
 name = "pyrig-resources"
-version = "3.13.7"
+version = "3.13.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
     { name = "pyrig-runtime" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/95/fe/7cd416e9f988c319d6d3c5491407dab42521bc85396f84d245c400c99fd5/pyrig_resources-3.13.7.tar.gz", hash = "sha256:caad227c6a4c07a03e516b0f4c414cb82f3e12ce75b734a963279ad209c3f42e", size = 4265, upload-time = "2026-07-24T22:07:29.75Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c1/ac/bf93f3325a40977ad59cf7a7d4d4132770ec4b5d33bd075f1068d5634f91/pyrig_resources-3.13.8.tar.gz", hash = "sha256:2958329cdb188f1ae3ff8ff96aca4ba32b6ef063c620f6a1ff5adfb44d1dc4db", size = 4141, upload-time = "2026-07-26T16:40:07.784Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e6/4e/24c99d9f7c6c2ef83403f5c1ecacf9029e7246cf139a3bb7def841430aee/pyrig_resources-3.13.7-py3-none-any.whl", hash = "sha256:d52ce006742b8fa3b4cdeb4001c91959ab0b39f5ccc1b46fb26ff57e4d22b88d", size = 6483, upload-time = "2026-07-24T22:07:28.877Z" },
+    { url = "https://files.pythonhosted.org/packages/55/eb/67afa61a4b3c4d8a4918c724574b2f1758fcc6b7ca478a5aef059e6cdcbf/pyrig_resources-3.13.8-py3-none-any.whl", hash = "sha256:0132832a52da23a580bd6075b146f6e6d8512eb25869775cd975900673a885d5", size = 6336, upload-time = "2026-07-26T16:40:06.891Z" },
 ]
 
 [[package]]
 name = "pyrig-runtime"
-version = "3.20.29"
+version = "3.20.30"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/73/e1/d97336b670c944e3cb128cc3e040ed2d27c97335ef4aa0ae0226edba2207/pyrig_runtime-3.20.29.tar.gz", hash = "sha256:37398881b4cbf0d4cf38f7d6de58efa56f7e66e383fabee01952e00d9ffd4a49", size = 17877, upload-time = "2026-07-24T22:07:40.061Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4c/a5/e729727dbb706578b18f7797f1021a565b0fde062170359308aa75265b9c/pyrig_runtime-3.20.30.tar.gz", hash = "sha256:9e4a11a8e02065bb961b931e3bc81e9dbc9b48068eacb306b32f1ecfb1235632", size = 17877, upload-time = "2026-07-26T16:40:29.774Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/42/2c/e17a7c7bd7069da21bc70aa7a8c58556220605a1aef72296eee8dd889f06/pyrig_runtime-3.20.29-py3-none-any.whl", hash = "sha256:b7b2afe8c418399a2bde8785db07861d63b9a1b7db13e920818c9287ef2e2e3d", size = 27265, upload-time = "2026-07-24T22:07:39.152Z" },
+    { url = "https://files.pythonhosted.org/packages/4e/e6/cb6eead0a568551cd29fdccc0ce0c211de9e6e2a275777c96ece2f9760c4/pyrig_runtime-3.20.30-py3-none-any.whl", hash = "sha256:674c8fa417aed9ed7895b90383960ef228367d5203e1df8ecd1dcbed2bc0e591", size = 27264, upload-time = "2026-07-26T16:40:28.847Z" },
 ]
 
 [[package]]
