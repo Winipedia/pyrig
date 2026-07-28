@@ -7,7 +7,17 @@ from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,
 )
 
-PULL_REQUEST_TEMPLATE = """<!--
+
+class PullRequestTemplateConfigFile(MarkdownConfigFile):
+    """Configuration manager for `.github/pull_request_template.md`.
+
+    Seeds the file with a starter template that prompts contributors for a
+    change summary and testing notes, alongside a pre-submission checklist.
+    """
+
+    def content(self) -> str:
+        """Return the required starter template content."""
+        return """<!--
 Please consider the following:
 
 - Does this pull request include a summary of the change? (See below.)
@@ -24,18 +34,6 @@ Please consider the following:
 
 <!-- How was it tested? -->
 """
-
-
-class PullRequestTemplateConfigFile(MarkdownConfigFile):
-    """Configuration manager for `.github/pull_request_template.md`.
-
-    Seeds the file with a starter template that prompts contributors for a
-    change summary and testing notes, alongside a pre-submission checklist.
-    """
-
-    def content(self) -> str:
-        """Return the required starter template content."""
-        return PULL_REQUEST_TEMPLATE
 
     def parent_path(self) -> Path:
         """Return the `RemoteVersionController`'s config directory."""
