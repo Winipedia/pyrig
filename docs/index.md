@@ -49,10 +49,9 @@
 
 ## Philosophy
 
-pyrig provides **as strict as possible**, **as simple as possible**,
-**as complete as possible**, **as modern as possible**, and
-**as best practice as possible** defaults and automations for everything any
-Python project **should** have.
+pyrig provides **as modern as possible**, **as best practice as possible**,
+**as strict as possible**, **as complete as possible**, and **as simple as possible**,
+defaults and automations for everything any Python project **should** have.
 
 This includes but is not limited to:
 
