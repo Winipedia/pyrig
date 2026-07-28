@@ -23,6 +23,7 @@ Add `*_args()` methods that return `Args` for each command the tool supports:
 from pyrig.rig.tools.base.tool import Tool, Group
 from pyrig.core.subprocesses import Args
 
+
 class MyTool(Tool):
     def name(self) -> str:
         return "mytool"
