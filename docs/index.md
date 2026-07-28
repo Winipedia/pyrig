@@ -49,10 +49,21 @@
 
 ## Philosophy
 
-pyrig provides **minimal best practices fully working defaults for everything a
-python project needs**. Every configuration, workflow, and tool is pre-configured
-and working from the start. No templates, no boilerplate - just a complete, tested,
-production-ready setup that lets you start developing code immediately.
+pyrig provides **as strict as possible**, **as simple as possible**,
+**as complete as possible**, **as modern as possible**, and
+**as best practice as possible** defaults and automations for everything any
+Python project **should** have.
+
+This includes but is not limited to:
+
+- Standardized project structure and file layout
+(src/my_project, tests/, docs/, etc.)
+- Standardized configuration files and formats
+(pyproject.toml, .gitignore, README.md, etc.)
+- Standardized development and maintenance tooling
+(prek, ruff, pytest, etc...)
+- Standardized CI/CD pipelines and repository protection
+(GitHub Actions, branch protection, etc.)
 
 ## More Detailed Documentation
 
@@ -62,6 +73,8 @@ more specific questions about how to use it than we explain here, check out the
 [CodeWiki](https://codewiki.google/github.com/winipedia/pyrig) for AI-generated
 documentation about pyrig's codebase, where you can also ask questions and get
 more detailed explanations from the AI.
+If that does not help, feel free to open an issue on GitHub and we will
+address it as soon as possible.
 
 ## Architecture Overview
 
