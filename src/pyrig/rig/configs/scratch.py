@@ -19,11 +19,6 @@ class ScratchConfigFile(PythonConfigFile):
             '"""This file is for scratch work and is ignored by version control."""\n'
         )
 
-    def create_file(self) -> None:
-        """Create `.scratch.py` and remove the root `main.py`, if present."""
-        super().create_file()
-        self.delete_root_main()
-
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
         return Path()
@@ -35,13 +30,3 @@ class ScratchConfigFile(PythonConfigFile):
     def version_control_ignored(self) -> bool:
         """Return `True`; `.scratch.py` is always excluded from version control."""
         return True
-
-    def delete_root_main(self) -> None:
-        """Delete `main.py` at the project root, if present.
-
-        `uv init` places a starter `main.py` at the project root; pyrig-managed
-        projects do not use it.
-        """
-        root_main_path = Path("main.py")
-        if root_main_path.exists():
-            root_main_path.unlink()

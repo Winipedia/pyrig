@@ -48,8 +48,7 @@ class CopyInitDocstringConfigFile(CopyInitConfigFile, CopyModuleDocstringConfigF
     The generated file is always named `__init__.py` and is placed inside the
     package directory corresponding to the source module in the target project's
     tree. Its content is the source module's docstring alone, and it is
-    considered correct whenever the source module has a docstring, regardless
-    of what is currently on disk.
+    considered correct whenever the scaffolded module has a docstring.
 
     Subclasses must implement:
         - `copy_module`: Return the source module whose docstring will be copied.
