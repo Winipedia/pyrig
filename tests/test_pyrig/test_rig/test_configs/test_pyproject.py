@@ -334,6 +334,11 @@ class TestPyprojectConfigFile:
             PackageManager.add_group_dev_args.__name__,
             return_value=mocker.Mock(),
         )
+        install_deps_mock = mocker.patch.object(
+            PackageManager,
+            PackageManager.install_dependencies.__name__,
+            return_value=mocker.Mock(),
+        )
 
         added = my_test_pyproject_config_file().add_additional_dependencies()
 
@@ -342,6 +347,7 @@ class TestPyprojectConfigFile:
         add_args_mock.return_value.run.assert_called_once()
         add_group_dev_args_mock.assert_called_once_with("new-dev-dep")
         add_group_dev_args_mock.return_value.run.assert_called_once()
+        install_deps_mock.return_value.run.assert_called_once()
 
         # cache was cleared and the config re-dumped; since add_args/
         # add_group_dev_args are mocked (no real `uv add`), the file content
@@ -356,6 +362,7 @@ class TestPyprojectConfigFile:
         # nothing missing this time -> no add calls, no cache clear/re-dump
         add_args_mock.reset_mock()
         add_group_dev_args_mock.reset_mock()
+        install_deps_mock.reset_mock()
         runtime_deps_mock.return_value = ["existing-runtime-dep"]
         dev_deps_mock.return_value = ["existing-dev-dep"]
 
@@ -364,6 +371,7 @@ class TestPyprojectConfigFile:
         assert added_again == ()
         add_args_mock.assert_not_called()
         add_group_dev_args_mock.assert_not_called()
+        install_deps_mock.assert_not_called()
 
     def test_removable(self) -> None:
         """Test method."""
