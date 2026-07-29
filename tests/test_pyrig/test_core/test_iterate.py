@@ -7,7 +7,7 @@ from pyrig.core.iterate import (
     both_dicts_or_lists,
     both_lists,
     deep_sorted_dict,
-    dict_insert_key,
+    dict_insert,
     iterator_has_items,
     match_list_items,
     merge_nested_structures,
@@ -32,32 +32,43 @@ def test_iterator_has_items() -> None:
 
 def test_merge_nested_structures() -> None:
     """Test function."""
-    # conflicting primitive is overwritten; missing list item and nested value
-    # are filled in; superset-only key is preserved.
-    subset = {"a": 1, "b": [2, 3, {"c": 4}]}
-    superset = {"a": 0, "b": [2, {"c": 5}], "d": 6}
+    # conflicting primitive is NOT overridden; missing list item and
+    # superset-only key are pulled into subset.
+    subset = {"a": 1, "b": [2, 3]}
+    superset = {"a": 0, "b": [2], "d": 6}
     merged = merge_nested_structures(subset, superset)
-    assert merged == {"a": 1, "b": [2, 3, {"c": 4}], "d": 6}
+    assert merged == {"a": 1, "b": [2, 3], "d": 6}
 
-    # an already-satisfied key is left untouched; superset-only key is kept.
+    # a key missing from subset is inserted at its position in superset,
+    # not just appended at the end.
+    subset = {"a": 1, "c": 3}
+    superset = {"a": 0, "b": 2, "c": 3, "d": 4}
+    merged = merge_nested_structures(subset, superset)
+    assert merged == {"a": 1, "b": 2, "c": 3, "d": 4}
+    assert list(merged.keys()) == ["a", "b", "c", "d"]
+
+    # an already-satisfied key is left untouched; superset-only key is pulled in.
     assert merge_nested_structures({"a": 1}, {"a": 1, "z": 9}) == {"a": 1, "z": 9}
 
-    # a required null-valued key that is absent is added ("missing" is not
-    # conflated with "present and None").
+    # a key already present with a null value is untouched by an empty superset
+    # ("missing" is not conflated with "present and None").
     assert merge_nested_structures({"x": None}, {}) == {"x": None}
 
-    # list: items missing from a shorter superset are appended.
-    assert merge_nested_structures([2, 3], [2]) == [2, 3]
+    # a null-valued key absent from subset is pulled in from superset.
+    assert merge_nested_structures({}, {"x": None}) == {"x": None}
+
+    # list: items missing from a shorter subset are inserted from superset.
+    assert merge_nested_structures([2], [2, 3]) == [2, 3]
 
     # list: a not-yet-contained item is merged into the positional element.
-    assert merge_nested_structures([[1, 2]], [[1]]) == [[1, 2]]
+    assert merge_nested_structures([[1]], [[1, 2]]) == [[1, 2]]
 
-    # mismatched top-level container types leave the superset untouched.
-    assert merge_nested_structures({"a": 1}, [1]) == [1]
+    # mismatched top-level container types leave subset untouched.
+    assert merge_nested_structures({"a": 1}, [1]) == {"a": 1}
 
-    assert merge_nested_structures([1, 1, "", 1, ""], []) == [1, 1, "", 1, ""]
+    assert merge_nested_structures([], [1, 1, "", 1, ""]) == [1, 1, "", 1, ""]
 
-    assert merge_nested_structures({"key": [1, 1, "", 1, ""]}, {"key": [1, 2]}) == {
+    assert merge_nested_structures({"key": [1, 2]}, {"key": [1, 1, "", 1, ""]}) == {
         "key": [1, 1, "", 1, "", 2],
     }
 
@@ -145,20 +156,20 @@ def test_deep_sorted_dict() -> None:
     assert sorted_dict is not unsorted  # a new dict is returned
 
 
-def test_dict_insert_key() -> None:
+def test_dict_insert() -> None:
     """Test function."""
     d = {"a": 1, "b": 2}
-    dict_insert_key(d, index=1, key="c", value=3)
+    dict_insert(d, index=1, key="c", value=3)
     assert d == {"a": 1, "c": 3, "b": 2}
 
     d = {"a": 1, "b": 2, "c": 3, "d": 4}
-    dict_insert_key(d, index=0, key="c", value=5)
+    dict_insert(d, index=0, key="c", value=5)
     assert d == {"c": 5, "a": 1, "b": 2, "d": 4}
 
     d = {"a": 1, "b": 2, "c": 3, "d": 4}
-    dict_insert_key(d, index=2, key="b", value=5)
+    dict_insert(d, index=2, key="b", value=5)
     assert d == {"a": 1, "c": 3, "b": 5, "d": 4}
 
     d = {"a": 1, "b": 2, "c": 3, "d": 4}
-    dict_insert_key(d, index=10, key="e", value=5)
+    dict_insert(d, index=10, key="e", value=5)
     assert d == {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}

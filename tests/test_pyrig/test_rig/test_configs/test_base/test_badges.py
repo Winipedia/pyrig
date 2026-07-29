@@ -5,6 +5,7 @@ from pathlib import Path
 
 from pytest_mock import MockerFixture
 
+from pyrig.core.subprocesses import Args
 from pyrig.rig.configs.base.badges import BadgesConfigFile
 from pyrig.rig.configs.community.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
@@ -16,7 +17,11 @@ from pyrig.rig.tools.version_control.controller import VersionController
 class TestBadgesConfigFile:
     """Test class."""
 
-    def test_merge_configs(self, tmp_project_root_path: Path) -> None:
+    def test_merge_configs(
+        self,
+        tmp_project_root_path: Path,
+        mocker: MockerFixture,
+    ) -> None:
         """Test method."""
         assert issubclass(ReadmeConfigFile, BadgesConfigFile)
 
@@ -29,6 +34,9 @@ class TestBadgesConfigFile:
         PyprojectConfigFile.configs.cache_clear()
         PyprojectConfigFile.load.cache_clear()
         with chdir(tmp_project_root_path):
+            # avoid real `uv add` calls: this tmp project has no installable
+            # source layout, only pyproject.toml/README/LICENSE are needed here
+            mocker.patch.object(Args, Args.run.__name__, return_value=None)
             LicenseConfigFile().validate()
             PyprojectConfigFile().validate()
             ReadmeConfigFile().validate()

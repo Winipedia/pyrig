@@ -3,9 +3,12 @@
 from contextlib import chdir
 from pathlib import Path
 
+from pytest_mock import MockerFixture
+
 from pyrig.rig.configs.version_control.hooks.manager import (
     VersionControlHookManagerConfigFile,
 )
+from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
 class TestVersionControlHookManagerConfigFile:
@@ -74,3 +77,13 @@ class TestVersionControlHookManagerConfigFile:
         assert "hooks" in repo, "Expected 'hooks' key in repo"
         assert isinstance(repo["hooks"], list), "Expected 'hooks' to be a list"
         assert len(repo["hooks"]) > 0, "Expected at least one hook in repo"
+
+    def test_validate(self, mocker: MockerFixture) -> None:
+        """Test method."""
+        mock_hook_install = mocker.patch.object(
+            VersionControlHookManager,
+            VersionControlHookManager.install_args.__name__,
+            return_value=mocker.Mock(run=lambda: True),
+        )
+        assert VersionControlHookManagerConfigFile.I.validate()
+        mock_hook_install.assert_called_once()

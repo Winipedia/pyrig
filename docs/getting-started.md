@@ -100,10 +100,14 @@ Fine-grained tokens
 On [GitHub](https://github.com), create a new repository for your project.
 It must have the same name that you want your project to have.
 This is one of pyrig's standards.
-You can but do not have to initialize the repository with a
-README, .gitignore, or license - pyrig will add all of those.
-But if you do not want a standard MIT license you can add a custom one
-when creating the repo and pyrig will not overwrite it.
+Do not initialize it with a README, .gitignore, or license - leave it
+completely empty. `pyrig init` requires the repository to have no commits
+yet and will add all of those files itself.
+If you want something other than the default MIT license, run `pyrig init`
+first, then replace the generated `LICENSE` file and commit the change, or
+override `LicenseConfigFile` as described in the
+[Config Files guide](config-files.md) if you want this to apply to every
+project you scaffold.
 
 ### 2. Clone Repository
 
@@ -175,7 +179,10 @@ uv add pyrig-executables --dev
 
 ### 7. Run pyrig init
 
-This will create an initial commit of the scaffolded and initialized project.
+`pyrig init` first deletes any existing managed config files (everything
+except `pyproject.toml`, including the placeholders `uv init` created), then
+regenerates them from scratch and creates an initial commit of the
+scaffolded and initialized project.
 
 ```bash
 # Initialize pyrig project

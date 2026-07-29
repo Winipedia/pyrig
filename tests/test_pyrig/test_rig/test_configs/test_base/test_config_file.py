@@ -11,6 +11,7 @@ from pytest_mock import MockerFixture
 from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile, Priority
 from pyrig.rig.configs.env import EnvConfigFile
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.scratch import ScratchConfigFile
 
 
@@ -243,11 +244,11 @@ class TestConfigFile:
             "key1": "value1",
             "key2": {"key3": "value3"},
             "key4": [
-                ["notvalue4", "extra_value", "value4"],
+                ["value4", "notvalue4", "extra_value"],
                 {"key5": "notvalue5", "key6": "value6"},
             ],
             "key7": "value7",
-        }, "Expected config to be correct"
+        }
 
         # remove file to trigger init dump
         my_test_config_file().path().unlink()
@@ -298,22 +299,22 @@ class TestConfigFile:
             "key1": "value1",
             "key2": {"key3": "value3"},
             "key4": [
-                ["notvalue4", "extra_value", "value4"],
+                ["value4", "notvalue4", "extra_value"],
                 {"key5": "notvalue5", "key6": "value6"},
             ],
             "key7": "value7",
         }
         actual = my_test_config_file().merge_configs()
-        assert actual == expected, "Expected config to be correct"
+        assert actual == expected
 
     def test_is_correct(
         self,
         my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
-        assert not my_test_config_file().is_correct(), "Expected config to be correct"
+        assert not my_test_config_file().is_correct()
         my_test_config_file().validate()
-        assert my_test_config_file().is_correct(), "Expected config to be correct"
+        assert my_test_config_file().is_correct()
 
     def test_is_correct_recursively(
         self,
@@ -323,6 +324,21 @@ class TestConfigFile:
         assert not my_test_config_file().is_correct_recursively()
         my_test_config_file().validate()
         assert my_test_config_file().is_correct_recursively()
+
+    def test_removable_subclasses(self) -> None:
+        """Test method."""
+        expected = set(ConfigFile.concrete_subclasses()) - {
+            PyprojectConfigFile.L,
+        }
+        assert set(ConfigFile.removable_subclasses()) == expected
+
+    def test_removable(self) -> None:
+        """Test method."""
+        for subclass in ConfigFile.concrete_subclasses():
+            if subclass is PyprojectConfigFile.L:
+                assert not subclass().removable()
+                continue
+            assert subclass().removable()
 
 
 class TestPriority:
