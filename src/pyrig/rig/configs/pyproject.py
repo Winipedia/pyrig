@@ -194,8 +194,9 @@ class PyprojectConfigFile(TOMLConfigFile):
         Compares the project's dependencies against
         `Pyrigger.I.runtime_dependencies()`, and its dev dependencies against
         `Tool.subclasses_dev_dependencies()`. Anything missing is added via
-        the package manager, then the file is reloaded and re-dumped so its
-        formatting matches pyrig's conventions again.
+        the package manager, the environment is synced so the new packages
+        are actually installed, then the file is reloaded and re-dumped so
+        its formatting matches pyrig's conventions again.
 
         Returns:
             The dependencies that were added, empty if none were missing.
@@ -224,6 +225,7 @@ class PyprojectConfigFile(TOMLConfigFile):
         if dev_dependencies:
             PackageManager.I.add_group_dev_args(*dev_dependencies).run()
         if dependencies or dev_dependencies:
+            PackageManager.I.install_dependencies().run()
             self.load.cache_clear()
             self.dump(self.load())
 

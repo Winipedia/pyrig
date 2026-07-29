@@ -112,7 +112,6 @@ class Pyrigger(VersionControlHookTool):
         return (
             (VersionController.I.init_args(), {}),
             (self.cmd_args(cmd=sync), {"check": False}),
-            (PackageManager.I.install_dependencies_args(), {}),
             (VersionController.I.add_all_args(), {}),
             (
                 VersionController.I.commit_with_msg_args(
