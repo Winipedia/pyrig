@@ -114,9 +114,9 @@ class TestPackageManager:
         result = PackageManager.I.run_args("pytest")
         assert result == ("uv", "run", "pytest")
 
-    def test_add_dev_dependencies_args(self) -> None:
+    def test_add_group_dev_args(self) -> None:
         """Test method."""
-        result = PackageManager.I.add_dev_dependencies_args("pytest", "ruff")
+        result = PackageManager.I.add_group_dev_args("pytest", "ruff")
         assert result == ("uv", "add", "--group=dev", "pytest", "ruff")
 
     def test_install_dependencies_args(self) -> None:

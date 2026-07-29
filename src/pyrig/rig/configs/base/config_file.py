@@ -282,21 +282,25 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         return nested_structure_is_subset(self.configs(), self.load())
 
     def merge_configs(self) -> ConfigT:
-        """Merge the required configuration into the current file contents.
+        """Merge the current file contents into the required configuration.
 
-        Fills in every key or list item that is present in `configs()` but
-        missing from, or different in, `load()`. Keys present only in the
-        loaded file are left untouched, preserving user customizations.
+        Fills in every key or list item that is present in `load()` but
+        missing from `configs()`. Values already required by `configs()` are
+        never overridden, only extended with whatever the loaded file adds on
+        top, preserving user customizations.
 
         Returns:
             Updated configuration containing both required and existing values.
 
         Note:
-            Mutates and returns the same object `load()` returns, so the
-            cached `load()` result reflects the merge even before `dump()`
+            Mutates and returns the same object `configs()` returns, so the
+            cached `configs()` result reflects the merge even before `dump()`
             is called.
         """
-        return merge_nested_structures(subset=self.configs(), superset=self.load())
+        return merge_nested_structures(
+            subset=self.configs(),
+            superset=self.load(),
+        )
 
     def priority(self) -> float:
         """Return the validation priority for this config file.
@@ -320,6 +324,26 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             `True` if the file is git-ignored; `False` otherwise.
         """
         return False
+
+    @classmethod
+    def removable_subclasses(cls) -> Iterator[type[Self]]:
+        """Yield config file classes whose files can be safely removed.
+
+        Yields:
+            `ConfigFile` subclasses for which `removable()` returns `True`.
+        """
+        return (cf for cf in cls.concrete_subclasses() if cf().removable())
+
+    def removable(self) -> bool:
+        """Return whether this config file can be safely removed.
+
+        Defaults to `True` (safe to remove). Override in subclasses whose file
+        is required for the project to function.
+
+        Returns:
+            `True` if the file can be safely removed; `False` otherwise.
+        """
+        return True
 
 
 class ListConfigFile(ConfigFile[list[str]]):

@@ -292,3 +292,34 @@ class VersionController(Tool):
             subprocess.CalledProcessError: If `user.email` is not configured.
         """
         return self.config_get_user_email_args().run_cached().stdout.strip()
+
+    def has_commits(self) -> bool:
+        """Return whether the repository has at least one commit.
+
+        Returns:
+            `True` if the repository has at least one commit; `False`
+            otherwise.
+        """
+        return self.rev_parse_verify_args("HEAD").run(check=False).returncode == 0
+
+    def rev_parse_verify_args(self, *args: str) -> Args:
+        """Build arguments for `git rev-parse --verify`.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for `git rev-parse --verify [args]`.
+        """
+        return self.rev_parse_args("--verify", *args)
+
+    def rev_parse_args(self, *args: str) -> Args:
+        """Build arguments for `git rev-parse`.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for `git rev-parse [args]`.
+        """
+        return self.args("rev-parse", *args)

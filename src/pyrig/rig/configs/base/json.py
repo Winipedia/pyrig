@@ -6,6 +6,7 @@ from typing import Any
 from pyrig.core.strings import open_path_with_utf8, read_text_utf8
 from pyrig.rig.configs.base.config_file import (
     ConfigFile,
+    DictConfigFile,
 )
 
 
@@ -53,7 +54,7 @@ class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
         return "json"
 
 
-class JSONDictConfigFile(JSONConfigFile[dict[str, Any]]):
+class JSONDictConfigFile(JSONConfigFile[dict[str, Any]], DictConfigFile):
     """Abstract base for JSON config files whose top-level structure is a dict.
 
     Fixes the `ConfigT` type parameter to `dict[str, Any]`, so subclasses get

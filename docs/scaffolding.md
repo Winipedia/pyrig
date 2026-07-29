@@ -59,6 +59,10 @@ my-project/
 
 ## Notes
 
+- **`pyrig init` starts from a clean slate.** Any managed config file that
+  already exists — e.g. the placeholders `uv init` creates — is deleted
+  before the tree above is regenerated. `pyproject.toml` is the only
+  exception; it is never deleted.
 - **`.env` and `.scratch.py`** are version-control-ignored and created locally.
   They are not committed and can be recreated at any time with `pyrig mk local`
   or `pyrig sync`.

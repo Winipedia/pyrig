@@ -56,59 +56,61 @@ def merge_nested_structures(subset: list[Any], superset: list[Any]) -> list[Any]
 @overload
 def merge_nested_structures[T](subset: T, superset: T) -> T: ...
 def merge_nested_structures(subset: Any, superset: Any) -> Any:
-    """Merge all values from `subset` into `superset`, filling in any gaps.
+    """Merge all values from `superset` into `subset`, filling in any gaps.
 
     Applies deeply to nested dicts and lists: for every key or item present in
-    `subset` that is missing from, or different in, `superset`, the superset is
-    updated. Nested dicts and lists are merged recursively; keys and items
-    present only in `superset` are left untouched. Anything that is not a pair
-    of dicts or a pair of lists is returned unchanged.
+    `superset` that is missing from `subset`, `subset` is extended with it, at
+    the position it occupies in `superset`. Nested dicts and lists are merged
+    recursively. A value already present in `subset` always wins: `superset`
+    can only add what is missing, never override what is already there.
+    Anything that is not a pair of dicts or a pair of lists is returned
+    unchanged.
+
+    Args:
+        subset: The structure whose values take priority. Modified in-place.
+        superset: The structure to pull missing values from.
+
+    Returns:
+        The updated `subset`.
+
+    Examples:
+        >>> merge_nested_structures({"a": 1}, {"a": 0, "b": 2})
+        {'a': 1, 'b': 2}
+        >>> merge_nested_structures([2], [2, 3])
+        [2, 3]
+        >>> merge_nested_structures([""], ["", "", "---"])
+        ['', '', '---']
 
     Note:
         Lists are matched order-independently, but multiplicity is respected:
-        an item that occurs N times in `subset` requires N distinct matches in
-        `superset` (see `match_list_items`). An item without a match is merged
-        into the item at the same index when both are dicts or both are
-        lists, and otherwise inserted at that index.
-
-    Args:
-        subset: The structure whose values are treated as required.
-        superset: The structure to update. Modified in-place.
-
-    Returns:
-        The updated `superset`.
-
-    Examples:
-        >>> merge_nested_structures({"a": 1, "b": 2}, {"a": 1})
-        {'a': 1, 'b': 2}
-        >>> merge_nested_structures([2, 3], [2])
-        [2, 3]
-        >>> merge_nested_structures(["", "", "---"], [""])
-        ['', '', '---']
+        an item that occurs N times in `superset` requires N distinct matches
+        in `subset` (see `match_list_items`). An item without a match is
+        merged into the item at the same index when both are dicts or both
+        are lists, and otherwise inserted at that index.
     """
     if both_dicts(subset, superset):
-        for index, (key, sub_val) in enumerate(subset.items()):
-            sup_val = superset.get(key, MISSING)
+        for index, (key, sup_val) in enumerate(superset.items()):
+            sub_val = subset.get(key, MISSING)
             if both_dicts_or_lists(sub_val, sup_val):
                 merge_nested_structures(sub_val, sup_val)
-            elif not nested_structure_is_subset(sub_val, sup_val):
-                dict_insert_key(superset, index=index, key=key, value=sub_val)
+            elif sub_val is MISSING:
+                dict_insert(subset, index=index, key=key, value=sup_val)
 
     elif both_lists(subset, superset):
-        matched = match_list_items(subset, superset)
-        for index, sub_val in enumerate(subset):
+        matched = match_list_items(superset, subset)
+        for index, sup_val in enumerate(superset):
             if matched[index]:
                 continue
-            sup_val = superset[index] if index < len(superset) else MISSING
+            sub_val = subset[index] if index < len(subset) else MISSING
             if both_dicts_or_lists(sub_val, sup_val):
                 merge_nested_structures(sub_val, sup_val)
             else:
-                superset.insert(index, sub_val)
+                subset.insert(index, sup_val)
 
-    return superset
+    return subset
 
 
-def dict_insert_key[K, V](
+def dict_insert[K, V](
     dict_: dict[K, V],
     *,
     index: int,
@@ -130,7 +132,7 @@ def dict_insert_key[K, V](
 
     Examples:
         >>> d = {"a": 1, "b": 2}
-        >>> dict_insert_key(d, index=1, key="c", value=3)
+        >>> dict_insert(d, index=1, key="c", value=3)
         >>> d
         {'a': 1, 'c': 3, 'b': 2}
     """

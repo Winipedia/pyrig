@@ -3,6 +3,7 @@
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
+from typing import Any
 
 import pyrig_runtime
 import pytest
@@ -14,10 +15,14 @@ from pyrig_runtime.core.dependencies.distribution import (
 from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.community.license import LicenseConfigFile
+from pyrig.rig.configs.docs.builder import DocsBuilderConfigFile
 from pyrig.rig.configs.pyproject import (
     PyprojectConfigFile,
 )
 from pyrig.rig.configs.readme import ReadmeConfigFile
+from pyrig.rig.tools.base.tool import Tool
+from pyrig.rig.tools.packages.manager import PackageManager
+from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_control.controller import VersionController
 
 
@@ -59,16 +64,6 @@ class TestPyprojectConfigFile:
             level="micro",
         )
 
-    def test_additional_dependencies(self) -> None:
-        """Test method."""
-        assert PyprojectConfigFile.I.additional_dependencies() == ["pyrig-runtime"]
-
-    def test_additional_dev_dependencies(self) -> None:
-        """Test method."""
-        deps = PyprojectConfigFile.I.additional_dev_dependencies()
-        assert "pyrig" in deps
-        assert "ruff" in deps
-
     def test_stem(self) -> None:
         """Test method."""
         assert PyprojectConfigFile.I.stem() == "pyproject"
@@ -76,7 +71,8 @@ class TestPyprojectConfigFile:
     def test_priority(self) -> None:
         """Test method."""
         assert PyprojectConfigFile.I.priority() < LicenseConfigFile.I.priority()
-        assert PyprojectConfigFile.I.priority() > ReadmeConfigFile.I.priority()
+        assert PyprojectConfigFile.I.priority() < ReadmeConfigFile.I.priority()
+        assert PyprojectConfigFile.I.priority() > DocsBuilderConfigFile.I.priority()
 
     def test_requires_python(self) -> None:
         """Test method."""
@@ -119,19 +115,6 @@ class TestPyprojectConfigFile:
 
         assert "classifiers" not in configs["project"]
         assert "keywords" not in configs["project"]
-
-    def test_merge_additional_dependencies(
-        self,
-        my_test_pyproject_config_file: type[PyprojectConfigFile],
-    ) -> None:
-        """Test method."""
-        dependencies = ["dep1", "dep1", "dep3[dev]"]
-        additional = ["dep3", "dep2"]
-        deps_versions = my_test_pyproject_config_file().merge_additional_dependencies(
-            dependencies,
-            additional,
-        )
-        assert deps_versions == ["dep1", "dep2", "dep3[dev]"]
 
     def test_dependencies(self) -> None:
         """Test method."""
@@ -305,3 +288,112 @@ class TestPyprojectConfigFile:
         assert "Changelog" in urls
         assert "Documentation" in urls
         assert "Issues" in urls
+
+    def test_validate(
+        self,
+        my_test_pyproject_config_file: type[PyprojectConfigFile],
+        mocker: MockerFixture,
+    ) -> None:
+        """Test method."""
+        mock_add = mocker.patch.object(
+            PyprojectConfigFile,
+            PyprojectConfigFile.add_additional_dependencies.__name__,
+        )
+        my_test_pyproject_config_file().validate()
+        mock_add.assert_called_once()
+
+    def test_add_additional_dependencies(
+        self,
+        my_test_pyproject_config_file: type[PyprojectConfigFile],
+        mocker: MockerFixture,
+    ) -> None:
+        """Test method."""
+        my_test_pyproject_config_file().dump(
+            {
+                "project": {"dependencies": ["existing-runtime-dep"]},
+                "dependency-groups": {"dev": ["existing-dev-dep"]},
+            },
+        )
+        runtime_deps_mock = mocker.patch.object(
+            Pyrigger,
+            Pyrigger.runtime_dependencies.__name__,
+            return_value=["existing-runtime-dep", "new-runtime-dep"],
+        )
+        dev_deps_mock = mocker.patch.object(
+            Tool,
+            Tool.subclasses_dev_dependencies.__name__,
+            return_value=["existing-dev-dep", "new-dev-dep"],
+        )
+        add_args_mock = mocker.patch.object(
+            PackageManager,
+            PackageManager.add_args.__name__,
+            return_value=mocker.Mock(),
+        )
+        add_group_dev_args_mock = mocker.patch.object(
+            PackageManager,
+            PackageManager.add_group_dev_args.__name__,
+            return_value=mocker.Mock(),
+        )
+
+        added = my_test_pyproject_config_file().add_additional_dependencies()
+
+        assert added == ("new-runtime-dep", "new-dev-dep")
+        add_args_mock.assert_called_once_with("new-runtime-dep")
+        add_args_mock.return_value.run.assert_called_once()
+        add_group_dev_args_mock.assert_called_once_with("new-dev-dep")
+        add_group_dev_args_mock.return_value.run.assert_called_once()
+
+        # cache was cleared and the config re-dumped; since add_args/
+        # add_group_dev_args are mocked (no real `uv add`), the file content
+        # itself is unchanged and still reflects what was there before
+        assert my_test_pyproject_config_file().dependencies() == [
+            "existing-runtime-dep",
+        ]
+        assert my_test_pyproject_config_file().dev_dependencies() == [
+            "existing-dev-dep",
+        ]
+
+        # nothing missing this time -> no add calls, no cache clear/re-dump
+        add_args_mock.reset_mock()
+        add_group_dev_args_mock.reset_mock()
+        runtime_deps_mock.return_value = ["existing-runtime-dep"]
+        dev_deps_mock.return_value = ["existing-dev-dep"]
+
+        added_again = my_test_pyproject_config_file().add_additional_dependencies()
+
+        assert added_again == ()
+        add_args_mock.assert_not_called()
+        add_group_dev_args_mock.assert_not_called()
+
+    def test_removable(self) -> None:
+        """Test method."""
+        assert PyprojectConfigFile.I.removable() is False
+
+    def test_merge_configs(
+        self,
+        mocker: MockerFixture,
+    ) -> None:
+        """Test method."""
+        mock_merge_build_system_requires = mocker.patch.object(
+            PyprojectConfigFile,
+            PyprojectConfigFile.merge_build_system_requires.__name__,
+        )
+        PyprojectConfigFile.I.merge_configs()
+        mock_merge_build_system_requires.assert_called_once()
+
+    def test_merge_build_system_requires(
+        self,
+        my_test_pyproject_config_file: type[PyprojectConfigFile],
+    ) -> None:
+        """Test method."""
+        configs: dict[str, Any] = {"build-system": {"requires": ["stale-requirement"]}}
+
+        my_test_pyproject_config_file().merge_build_system_requires(configs)
+
+        assert configs["build-system"]["requires"] == (
+            PackageManager.I.build_system_requires()
+        )
+
+    def test_tool_section(self) -> None:
+        """Test method."""
+        assert isinstance(PyprojectConfigFile.I.tool_section(), dict)

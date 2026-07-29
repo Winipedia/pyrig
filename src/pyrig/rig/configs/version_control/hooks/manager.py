@@ -20,11 +20,13 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
     Declares a single `local` repository entry containing hooks that cover
     the full code-quality pipeline, all running against tools already
     installed on the host rather than fetched by prek.
-
-    Note:
-        Run `prek install` once after generating the config to register the
-        hooks with git.
     """
+
+    def validate(self) -> bool:
+        """Validate the config file, then install the hooks unconditionally."""
+        correct = super().validate()
+        VersionControlHookManager.I.install_args().run()
+        return correct
 
     def _configs(self) -> dict[str, Any]:
         """Build the required `prek.toml` structure.

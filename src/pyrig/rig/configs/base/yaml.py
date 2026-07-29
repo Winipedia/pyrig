@@ -8,7 +8,7 @@ from ruamel.yaml.representer import RoundTripRepresenter
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString, LiteralScalarString
 
 from pyrig.core.strings import is_multiline, open_path_with_utf8, read_text_utf8
-from pyrig.rig.configs.base.config_file import ConfigFile
+from pyrig.rig.configs.base.config_file import ConfigFile, DictConfigFile
 
 YAML_LOAD = YAML(typ="safe")
 
@@ -110,7 +110,7 @@ class YMLConfigFile[ConfigT: dict[str, Any] | list[Any]](YAMLConfigFile[ConfigT]
         return "yml"
 
 
-class YMLDictConfigFile(YMLConfigFile[dict[str, Any]]):
+class YMLDictConfigFile(YMLConfigFile[dict[str, Any]], DictConfigFile):
     """Abstract base for `.yml` configuration files with a dict structure.
 
     Fixes the `ConfigT` type parameter to `dict[str, Any]`, so subclasses get

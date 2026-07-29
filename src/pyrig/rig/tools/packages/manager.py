@@ -127,7 +127,7 @@ class PackageManager(VersionControlHookTool):
         """
         return self.args("run", *args)
 
-    def add_dev_dependencies_args(self, *args: str) -> Args:
+    def add_group_dev_args(self, *args: str) -> Args:
         """Construct `Args` for adding packages to the dev dependency group.
 
         Args:

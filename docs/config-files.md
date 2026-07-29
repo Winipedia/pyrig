@@ -39,6 +39,8 @@ discovered and validated automatically by `pyrig sync` — no registration neede
   priority, or return any `int` or `float`.
 - **`version_control_ignored()`** — Set to `True` for files that should not be
   committed (e.g. `.env`). These are also validated by `pyrig mk local`.
+- **`removable()`** — Set to `False` for files that must survive `pyrig init`'s
+  cleanup of existing config files (e.g. `pyproject.toml`). Defaults to `True`.
 
 ---
 

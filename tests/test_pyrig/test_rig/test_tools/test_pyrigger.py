@@ -1,12 +1,19 @@
 """module."""
 
+from contextlib import chdir
+from pathlib import Path
+
+import pytest
 from pytest_mock import MockerFixture
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.cli.make import local
 from pyrig.rig.cli.subcommands import sync
+from pyrig.rig.configs.docs.builder import DocsBuilderConfigFile
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
+from pyrig.rig.tools.version_control.controller import VersionController
 
 
 class TestPyrigger:
@@ -41,14 +48,25 @@ class TestPyrigger:
             for step_args, step_kwargs in steps
         )
 
-    def test_init_project(self, mocker: MockerFixture) -> None:
+    def test_init_project(self, mocker: MockerFixture, tmp_path: Path) -> None:
         """Test function."""
-        # mock the Args run method to prevent actual
-        # execution of commands during testing
-        run_mock = mocker.patch.object(Args, Args.run.__name__, return_value=None)
-        Pyrigger.I.init_project()
-        # assert was called as many times as there are steps in setup_steps
-        assert run_mock.call_count == len(Pyrigger.I.setup_steps())
+        with pytest.raises(
+            RuntimeError,
+            match="cannot initialize project that already has commits",
+        ):
+            Pyrigger.I.init_project()
+
+        with chdir(tmp_path):
+            run_mock = mocker.patch.object(Args, Args.run.__name__, return_value=None)
+            has_commits_mock = mocker.patch.object(
+                VersionController,
+                VersionController.has_commits.__name__,
+                return_value=False,
+            )
+            Pyrigger.I.init_project()
+            has_commits_mock.assert_called_once()
+            # assert was called as many times as there are steps in setup_steps
+            assert run_mock.call_count == len(Pyrigger.I.setup_steps())
 
     def test_group(self) -> None:
         """Test method."""
@@ -87,3 +105,20 @@ class TestPyrigger:
     def test_hooks(self) -> None:
         """Test method."""
         assert Pyrigger.I.hooks() == (Pyrigger.I.synchronize_project_hook(),)
+
+    def test_remove_config_files(self, tmp_path: Path) -> None:
+        """Test method."""
+        with chdir(tmp_path):
+            PyprojectConfigFile.I.path().touch()
+            assert PyprojectConfigFile.I.path().exists()
+            Pyrigger.I.remove_config_files()
+            assert PyprojectConfigFile.I.path().exists()
+
+            DocsBuilderConfigFile.I.path().touch()
+            assert DocsBuilderConfigFile.I.path().exists()
+            Pyrigger.I.remove_config_files()
+            assert not DocsBuilderConfigFile.I.path().exists()
+
+    def test_runtime_dependencies(self) -> None:
+        """Test method."""
+        assert Pyrigger.I.runtime_dependencies() == [Pyrigger.I.runtime_dependency()]

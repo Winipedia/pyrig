@@ -226,3 +226,24 @@ class TestVersionController:
         result = VersionController.I.normalized_username()
         assert mock_run.call_count == 2  # noqa: PLR2004
         assert result == "SomeUser"
+
+    def test_has_commits(self, tmp_path: Path) -> None:
+        """Test method."""
+        result = VersionController.I.has_commits()
+        assert isinstance(result, bool)
+        assert result is True
+        with chdir(tmp_path):
+            run_subprocess_cached.cache_clear()
+            result = VersionController.I.has_commits()
+            run_subprocess_cached.cache_clear()
+            assert result is False
+
+    def test_rev_parse_verify_args(self) -> None:
+        """Test method."""
+        result = VersionController.I.rev_parse_verify_args("some-commit-hash")
+        assert result == ("git", "rev-parse", "--verify", "some-commit-hash")
+
+    def test_rev_parse_args(self) -> None:
+        """Test method."""
+        result = VersionController.I.rev_parse_args("some-commit-hash")
+        assert result == ("git", "rev-parse", "some-commit-hash")
