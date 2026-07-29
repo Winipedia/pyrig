@@ -172,18 +172,6 @@ def my_test_copy_module_only_docstring_config_file(
 class TestCopyModuleDocstringConfigFile:
     """Test class."""
 
-    def test_default_docstring(
-        self,
-        my_test_copy_module_only_docstring_config_file: type[
-            CopyModuleDocstringConfigFile
-        ],
-    ) -> None:
-        """Test method."""
-        assert isinstance(
-            my_test_copy_module_only_docstring_config_file().default_docstring(),
-            str,
-        )
-
     def test_content(
         self,
         my_test_copy_module_only_docstring_config_file: type[
@@ -215,9 +203,9 @@ class TestCopyModuleDocstringConfigFile:
         module.__doc__ = "Line one.\n\nLine two."
         assert config.content() == '"""Line one.\n\nLine two."""\n'
 
-        # no docstring falls back to `default_docstring`
+        # if no docstring is defined
         module.__doc__ = None
-        assert config.content() == f'"""{config.default_docstring()}"""\n'
+        assert config.content() == "None\n"
 
     def test_is_correct(
         self,
