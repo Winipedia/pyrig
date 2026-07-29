@@ -224,5 +224,5 @@ class TestVersionController:
 
         mock_run.return_value = mocker.Mock(stdout="Some User\n")
         result = VersionController.I.normalized_username()
-        mock_run.call_count = 2
+        assert mock_run.call_count == 2  # noqa: PLR2004
         assert result == "SomeUser"
