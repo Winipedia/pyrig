@@ -31,8 +31,7 @@ class SecurityConfigFile(MarkdownConfigFile):
 
 **Please do not report security vulnerabilities publicly.**
 
-Instead, please report them privately to
-{self.contact_method()}
+Instead, please report them privately to {self.contact_method()}.
 
 Include:
 

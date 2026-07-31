@@ -4,8 +4,7 @@
 
 **Please do not report security vulnerabilities publicly.**
 
-Instead, please report them privately to
-<winipedia@gmx.de>
+Instead, please report them privately to <winipedia@gmx.de>.
 
 Include:
 

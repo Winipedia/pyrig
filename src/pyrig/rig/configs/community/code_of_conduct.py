@@ -18,10 +18,10 @@ from pyrig.rig.tools.version_control.controller import VersionController
 class CodeOfConductConfigFile(MarkdownConfigFile):
     """CODE_OF_CONDUCT.md configuration manager.
 
-    Generates CODE_OF_CONDUCT.md using the Contributor Covenant 2.1 standard.
-    Reads the covenant text from a bundled resource file and substitutes the
-    project's version control email address for the `[INSERT CONTACT METHOD]`
-    placeholder.
+    Generates CODE_OF_CONDUCT.md using the Contributor Covenant 3.0 standard.
+    Reads the covenant text from a bundled resource file, substitutes the
+    project's version control email address for the reporting placeholder,
+    and strips the editorial note that precedes the enforcement ladder.
     """
 
     def content(self) -> str:
@@ -52,41 +52,76 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         return "CODE_OF_CONDUCT"
 
     def code_of_conduct(self) -> str:
-        """Return the Contributor Covenant with the contact method substituted.
+        """Return the Contributor Covenant with its placeholders resolved.
 
-        Replaces the `[INSERT CONTACT METHOD]` placeholder in the covenant
-        text with the project's version control email address.
+        Replaces the reporting placeholder in the covenant text with the
+        project's version control email address, and removes the editorial
+        note that precedes the enforcement ladder.
 
         Returns:
-            Contributor Covenant 2.1 text with the contact method in place.
+            Contributor Covenant 3.0 text with both placeholders resolved.
         """
-        return self.code_of_conduct_template().replace(
-            self.contact_method_placeholder(),
-            self.contact_method(),
-            1,
+        return (
+            self.code_of_conduct_template()
+            .replace(
+                self.reporting_placeholder(),
+                self.reporting_method(),
+                1,
+            )
+            .replace(
+                self.enforcement_placeholder(),
+                self.enforcement_method(),
+                1,
+            )
         )
 
     def code_of_conduct_template(self) -> str:
-        """Return the raw Contributor Covenant 2.1 template text.
+        """Return the raw Contributor Covenant 3.0 template text.
 
         Returns:
-            Full covenant text with the `[INSERT CONTACT METHOD]` placeholder intact.
+            Full covenant text with the reporting and enforcement
+            placeholders intact.
         """
         return resource_content("CONTRIBUTOR_COVENANT_CODE_OF_CONDUCT", resources)
 
-    def contact_method(self) -> str:
-        """Return the contact method for the code of conduct.
+    def reporting_method(self) -> str:
+        """Return the reporting instructions for the code of conduct.
 
         Returns:
-            Version control email address wrapped in angle brackets, e.g.
-            `<user@example.com>`.
+            A sentence directing reporters to the project's version control
+            email address, e.g. `send an email to <user@example.com>.`.
         """
-        return f"<{VersionController.I.email()}>"
+        return f"send an email to <{VersionController.I.email()}>."
 
-    def contact_method_placeholder(self) -> str:
-        """Return the placeholder for the contact method in the covenant text.
+    def reporting_placeholder(self) -> str:
+        """Return the placeholder for the reporting instructions.
 
         Returns:
-            The `[INSERT CONTACT METHOD]` placeholder string.
+            The `[NOTE: describe your means of reporting here.]` placeholder
+            string.
         """
-        return "[INSERT CONTACT METHOD]"
+        return "[NOTE: describe your means of reporting here.]"
+
+    def enforcement_method(self) -> str:
+        """Return the replacement text for the enforcement editorial note.
+
+        Returns:
+            An empty string, so the editorial note is removed rather than
+            replaced with alternate text.
+        """
+        return ""
+
+    def enforcement_placeholder(self) -> str:
+        """Return the editorial note that precedes the enforcement ladder.
+
+        Returns:
+            The bolded `[NOTE: ...]` note asking maintainers to describe
+            their own enforcement policy, surrounded by the blank lines
+            that isolate it from the rest of the covenant text.
+        """
+        return """
+**[NOTE: The remedies and repairs outlined below are suggestions based on best
+practices in code of conduct enforcement. If your community has its own
+established enforcement process, be sure to edit this section to describe your
+own policies.]**
+"""
