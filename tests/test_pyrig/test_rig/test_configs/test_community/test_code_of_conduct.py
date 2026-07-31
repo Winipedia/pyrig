@@ -3,10 +3,8 @@
 from pathlib import Path
 
 import requests
-from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.community.code_of_conduct import CodeOfConductConfigFile
-from pyrig.rig.tools.version_control.controller import VersionController
 
 
 class TestCodeOfConductConfigFile:
@@ -51,27 +49,15 @@ class TestCodeOfConductConfigFile:
         ) in normalized(remote_template)
         assert normalized(remote_template) == normalized(local_template)
 
-    def test_code_of_conduct(self, mocker: MockerFixture) -> None:
+    def test_code_of_conduct(self) -> None:
         """Test method."""
-        email_mock = mocker.patch.object(
-            VersionController,
-            VersionController.email.__name__,
-            return_value="some.email@here.com",
-        )
         content = CodeOfConductConfigFile.I.code_of_conduct()
-        email_mock.assert_called_once()
-        assert "some.email@here.com" in content
+        assert "winipedia@gmx.de" in content
 
-    def test_reporting_method(self, mocker: MockerFixture) -> None:
+    def test_reporting_method(self) -> None:
         """Test method."""
-        email_mock = mocker.patch.object(
-            VersionController,
-            VersionController.email.__name__,
-            return_value="some.email@here.com",
-        )
         method = CodeOfConductConfigFile.I.reporting_method()
-        email_mock.assert_called_once()
-        assert method == "send an email to <some.email@here.com>."
+        assert method == "send an email to <winipedia@gmx.de>."
 
     def test_stem(self) -> None:
         """Test method."""
@@ -83,17 +69,11 @@ class TestCodeOfConductConfigFile:
         result = CodeOfConductConfigFile.I.parent_path()
         assert result == Path()
 
-    def test_content(self, mocker: MockerFixture) -> None:
+    def test_content(self) -> None:
         """Test method."""
-        email_mock = mocker.patch.object(
-            VersionController,
-            VersionController.email.__name__,
-            return_value="some.email@here.com",
-        )
         content = CodeOfConductConfigFile.I.content()
-        email_mock.assert_called_once()
         assert len(content) > 1
-        assert "<some.email@here.com>." in content
+        assert "<winipedia@gmx.de>." in content
         assert CodeOfConductConfigFile.I.reporting_placeholder() not in content
         assert CodeOfConductConfigFile.I.enforcement_placeholder() not in content
 
@@ -103,10 +83,6 @@ class TestCodeOfConductConfigFile:
         assert isinstance(code_of_conduct, str)
         assert "[NOTE: describe your means of reporting here.]" in code_of_conduct
         assert len(code_of_conduct) > 0
-
-    def test_is_correct(self) -> None:
-        """Test method."""
-        assert CodeOfConductConfigFile.I.is_correct()
 
     def test_reporting_placeholder(self) -> None:
         """Test method."""

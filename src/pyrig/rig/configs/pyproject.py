@@ -98,12 +98,8 @@ class PyprojectConfigFile(TOMLConfigFile):
                 "requires-python": self.requires_python(),
                 "license": LicenseConfigFile.I.spdx_identifier(),
                 "license-files": [LicenseConfigFile.I.path().as_posix()],
-                "authors": [
-                    {"name": VersionController.I.repo_owner()},
-                ],
-                "maintainers": [
-                    {"name": VersionController.I.repo_owner()},
-                ],
+                "authors": self.authors_configs(),
+                "maintainers": self.maintainers_configs(),
                 "dependencies": [],
                 "urls": deep_sorted_dict(self.url_configs()),
                 "scripts": {
@@ -121,6 +117,19 @@ class PyprojectConfigFile(TOMLConfigFile):
             },
             "tool": deep_sorted_dict(self.tool_configs()),
         }
+
+    def maintainers_configs(self) -> list[dict[str, Any]]:
+        """Assemble the required `maintainers` section of `pyproject.toml`."""
+        return self.authors_configs()
+
+    def authors_configs(self) -> list[dict[str, Any]]:
+        """Assemble the required `authors` section of `pyproject.toml`."""
+        return [
+            {
+                "name": VersionController.I.repo_owner(),
+                "email": self.maintainer_email(),
+            },
+        ]
 
     def url_configs(self) -> dict[str, Any]:
         """Assemble the required `urls` section of `pyproject.toml`."""
@@ -382,3 +391,17 @@ class PyprojectConfigFile(TOMLConfigFile):
             (matching uv's initial scaffold value).
         """
         return self.load().get("project", {}).get("version", "0.1.0")
+
+    def maintainer_email(self) -> str:
+        """Read the author's email from `pyproject.toml`.
+
+        Returns:
+            Email string from `pyproject.toml`, or the configured git user
+            email if absent.
+        """
+        return (
+            self.load()
+            .get("project", {})
+            .get("authors", [{}])[0]
+            .get("email", VersionController.I.email())
+        )

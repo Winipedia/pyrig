@@ -266,19 +266,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         Returns:
             `True` if all required configuration is present in the file.
         """
-        return self.is_correct_recursively()
-
-    def is_correct_recursively(self) -> bool:
-        """Return whether `configs()` is recursively contained within `load()`.
-
-        Nested dicts and lists are compared level by level rather than for
-        exact equality, so extra keys or items anywhere in `load()` do not
-        cause a mismatch.
-
-        Returns:
-            `True` if everything required by `configs()` is present in
-            `load()`.
-        """
         return nested_structure_is_subset(self.configs(), self.load())
 
     def merge_configs(self) -> ConfigT:

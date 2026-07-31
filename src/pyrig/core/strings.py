@@ -131,15 +131,3 @@ def split_on_uppercase(string: str) -> Iterator[str]:
         ['alllowercase']
     """
     return (s for s in re.split(r"(?=[A-Z])", string) if s)
-
-
-def file_has_content(path: Path) -> bool:
-    """Check whether a file has any content.
-
-    Returns:
-        `True` if the file is not empty; `False` if it is empty.
-
-    Raises:
-        FileNotFoundError: If the file does not exist.
-    """
-    return path.stat().st_size > 0
