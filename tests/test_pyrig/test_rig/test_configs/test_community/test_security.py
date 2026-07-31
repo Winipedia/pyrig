@@ -31,7 +31,7 @@ class TestSecurityConfigFile:
         result = SecurityConfigFile.I.content()
         email_mock.assert_called_once()
         assert len(result) > 0
-        assert "some.email@here.com" in result
+        assert "some.email@here.com>." in result
 
     def test_contact_method(self, mocker: MockerFixture) -> None:
         """Test method."""
