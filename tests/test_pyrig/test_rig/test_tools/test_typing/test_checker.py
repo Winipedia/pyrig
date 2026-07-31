@@ -1,5 +1,10 @@
 """module."""
 
+import subprocess  # nosec: B404
+from pathlib import Path
+
+import pytest
+
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
@@ -34,6 +39,17 @@ class TestTypeChecker:
         """Test method."""
         result = TypeChecker.I.check_args()
         assert result == ("ty", "check")
+
+    def test_check_args_fails_on_warning(self, tmp_path: Path) -> None:
+        """Test method."""
+        # an unused `type: ignore` is a warning-level ty diagnostic, not an
+        # error, so this confirms ty's default of failing on warnings too
+        warning_file = tmp_path / "warning_source.py"
+        warning_file.write_text("x: int = 1  # type: ignore\n")
+
+        with pytest.raises(subprocess.CalledProcessError) as exc_info:
+            TypeChecker.I.check_args(str(warning_file)).run()
+        assert "warning[unused-type-ignore-comment]" in exc_info.value.stdout
 
     def test_check_hook(self) -> None:
         """Test method."""
