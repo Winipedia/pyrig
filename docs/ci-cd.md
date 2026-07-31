@@ -56,8 +56,8 @@ The **`publish`** job only runs when the triggering health check both succeeded
 and was itself triggered by a push to the default branch. Scheduled runs,
 manual dispatches, and pull request runs never produce a release.
 Before tagging, it applies repository settings and branch protection rulesets
-via the GitHub API. Then it tags the current commit, pushes the tag, generates
-a changelog, and creates a GitHub Release.
+via the GitHub API. Then it tags the current commit, pushes the tag, and
+creates a GitHub Release with auto-generated release notes.
 Important: The release workflow creates a new tag, which will fail if that tag
 already exists. This means you must ensure the version is updated in `pyproject.toml`
 before pushing to the default branch, otherwise the release workflow will

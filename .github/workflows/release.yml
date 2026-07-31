@@ -59,17 +59,11 @@
         "id": "extract-version"
         "run": "echo \"version=$(uv version --short)\" >> $GITHUB_OUTPUT"
       -
-        "name": "Build Changelog"
-        "id": "build-changelog"
-        "uses": "mikepenz/release-changelog-builder-action@develop"
-        "with":
-          "token": "${{ secrets.GITHUB_TOKEN }}"
-      -
         "name": "Create Release"
         "id": "create-release"
         "uses": "ncipollo/release-action@main"
         "with":
-          "body": "${{ steps.build-changelog.outputs.changelog }}"
+          "generateReleaseNotes": "true"
           "name": "${{ steps.extract-version.outputs.version }}"
           "tag": "${{ steps.extract-version.outputs.version }}"
 ...

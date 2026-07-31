@@ -152,14 +152,6 @@ class TestReleaseWorkflowConfigFile:
         result = my_test_release_workflow().step_extract_version()
         assert "run" in result
 
-    def test_step_build_changelog(
-        self,
-        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_release_workflow().step_build_changelog()
-        assert "uses" in result, "Expected 'uses' in step"
-
     def test_step_create_release(
         self,
         my_test_release_workflow: type[ReleaseWorkflowConfigFile],
@@ -175,11 +167,3 @@ class TestReleaseWorkflowConfigFile:
         """Test method."""
         result = my_test_release_workflow().insert_version_from_extract_version_step()
         assert "steps.extract-version.outputs.version" in result
-
-    def test_insert_changelog(
-        self,
-        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_release_workflow().insert_changelog()
-        assert "steps.build-changelog.outputs.changelog" in result
