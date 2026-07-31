@@ -94,6 +94,8 @@ class TestCodeOfConductConfigFile:
         email_mock.assert_called_once()
         assert len(content) > 1
         assert "<some.email@here.com>." in content
+        assert CodeOfConductConfigFile.I.reporting_placeholder() not in content
+        assert CodeOfConductConfigFile.I.enforcement_placeholder() not in content
 
     def test_code_of_conduct_template(self) -> None:
         """Test method."""
