@@ -21,8 +21,8 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     both succeeded and was itself triggered by a push — so the daily
     scheduled run and pull request runs never produce a release. A
     qualifying run applies repository settings and branch protection
-    rulesets, tags the current version, generates a changelog, and
-    publishes a GitHub release.
+    rulesets, tags the current version, and publishes a GitHub release
+    with auto-generated release notes.
     """
 
     def job(  # noqa: PLR0913
@@ -116,8 +116,8 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         Returns:
             Steps that perform the full release sequence: environment setup,
             applying repository settings and rulesets, creating and pushing
-            the version tag, exporting the version, generating a changelog,
-            and publishing the GitHub release.
+            the version tag, exporting the version, and publishing the
+            GitHub release.
         """
         return [
             *self.steps_core_setup(),
@@ -125,32 +125,8 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             self.step_create_tag(),
             self.step_push_tag(),
             self.step_extract_version(),
-            self.step_build_changelog(),
             self.step_create_release(),
         ]
-
-    def step_build_changelog(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that generates a changelog from commit history.
-
-        Uses `mikepenz/release-changelog-builder-action` to generate release
-        notes from commits since the previous tag.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step using `mikepenz/release-changelog-builder-action@develop`.
-        """
-        return self.step(
-            self.step_build_changelog,
-            uses="mikepenz/release-changelog-builder-action@develop",
-            with_={"token": self.insert_github_token()},
-            step=step,
-        )
 
     def step_create_release(
         self,
@@ -160,8 +136,8 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """Build a step that creates a GitHub release.
 
         Uses `ncipollo/release-action` to create a release named and
-        tagged with the extracted version, using the generated changelog
-        as its body.
+        tagged with the extracted version, using GitHub's auto-generated
+        release notes as its body.
 
         Args:
             step: Additional keys to merge into the step configuration.
@@ -174,21 +150,11 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             self.step_create_release,
             uses="ncipollo/release-action@main",
             with_={
-                "body": self.insert_changelog(),
+                "generateReleaseNotes": "true",
                 "name": version,
                 "tag": version,
             },
             step=step,
-        )
-
-    def insert_changelog(self) -> str:
-        """Return the expression that resolves to the generated changelog output.
-
-        Returns:
-            GitHub Actions expression for `steps.build-changelog.outputs.changelog`.
-        """
-        return self.insert_expression(
-            f"steps.{self.id_from_method(self.step_build_changelog)}.outputs.changelog",
         )
 
     def insert_version_from_extract_version_step(self) -> str:
