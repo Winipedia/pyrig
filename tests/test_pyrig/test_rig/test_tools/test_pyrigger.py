@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from pytest_mock import MockerFixture
 
-from pyrig.core.subprocesses import Args
+from pyrig.core.subprocesses import Args, run_subprocess_cached
 from pyrig.rig.cli.make import local
 from pyrig.rig.cli.subcommands import sync
 from pyrig.rig.configs.docs.builder import DocsBuilderConfigFile
@@ -50,6 +50,7 @@ class TestPyrigger:
 
     def test_init_project(self, mocker: MockerFixture, tmp_path: Path) -> None:
         """Test function."""
+        run_subprocess_cached.cache_clear()
         with pytest.raises(
             RuntimeError,
             match="cannot initialize project that already has commits",

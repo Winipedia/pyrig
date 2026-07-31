@@ -215,7 +215,9 @@ class TestCopyModuleDocstringConfigFile:
         tmp_path: Path,
     ) -> None:
         """Test method."""
-        VersionController.I.repo_owner()
+        assert VersionController.I.repo_owner()
+        assert VersionController.I.has_commits()
+        assert VersionController.I.first_commit_time()
         with chdir(tmp_path):
             LicenseConfigFile.I.validate()
             my_test_copy_module_only_docstring_config_file().validate()
