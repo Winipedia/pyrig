@@ -400,8 +400,5 @@ class PyprojectConfigFile(TOMLConfigFile):
             email if absent.
         """
         return (
-            self.load()
-            .get("project", {})
-            .get("authors", [{}])[0]
-            .get("email", VersionController.I.email())
-        )
+            self.load().get("project", {}).get("authors", [{}])[0].get("email")
+        ) or VersionController.I.email()

@@ -418,6 +418,23 @@ class TestPyprojectConfigFile:
         """Test method."""
         assert PyprojectConfigFile.I.maintainer_email() == "winipedia@gmx.de"
 
+    def test_maintainer_email_fallback(
+        self,
+        my_test_pyproject_config_file: type[PyprojectConfigFile],
+        mocker: MockerFixture,
+    ) -> None:
+        """Test method."""
+        email_mock = mocker.patch.object(
+            VersionController,
+            VersionController.email.__name__,
+            return_value="fallback@example.com",
+        )
+        my_test_pyproject_config_file().dump({"project": {}})
+        assert my_test_pyproject_config_file().maintainer_email() == (
+            "fallback@example.com"
+        )
+        email_mock.assert_called_once()
+
     def test_maintainers_configs(self) -> None:
         """Test method."""
         for author in PyprojectConfigFile.I.authors_configs():

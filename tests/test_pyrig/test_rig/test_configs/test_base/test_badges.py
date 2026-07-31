@@ -17,7 +17,7 @@ from pyrig.rig.tools.version_control.controller import VersionController
 class TestBadgesConfigFile:
     """Test class."""
 
-    def test_merge_configs(
+    def test_merge_configs(  # noqa: PLR0915
         self,
         tmp_project_root_path: Path,
         mocker: MockerFixture,
@@ -28,11 +28,15 @@ class TestBadgesConfigFile:
         # make sure repo owner is cached before entering non git folder tmp
         assert VersionController.I.repo_owner()
         assert VersionController.I.repo_owner()
+        assert VersionController.I.has_commits()
+        assert VersionController.I.first_commit_time()
 
         ReadmeConfigFile.configs.cache_clear()
         ReadmeConfigFile.load.cache_clear()
         PyprojectConfigFile.configs.cache_clear()
         PyprojectConfigFile.load.cache_clear()
+        LicenseConfigFile.configs.cache_clear()
+        LicenseConfigFile.load.cache_clear()
         with chdir(tmp_project_root_path):
             # avoid real `uv add` calls: this tmp project has no installable
             # source layout, only pyproject.toml/README/LICENSE are needed here
@@ -85,6 +89,8 @@ class TestBadgesConfigFile:
         ReadmeConfigFile.load.cache_clear()
         PyprojectConfigFile.configs.cache_clear()
         PyprojectConfigFile.load.cache_clear()
+        LicenseConfigFile.configs.cache_clear()
+        LicenseConfigFile.load.cache_clear()
 
     def test_replace_badges(self, mocker: MockerFixture) -> None:
         """Test method."""
