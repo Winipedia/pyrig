@@ -127,8 +127,8 @@ class RemoteVersionController(Tool):
 
         Returns:
             `Path(".github")`, the directory GitHub reads workflows, issue
-            templates, the pull request template, and repository settings
-            from.
+            templates, the pull request template, repository settings, and
+            `CODEOWNERS` from.
         """
         return Path(f".{self.name()}")
 
