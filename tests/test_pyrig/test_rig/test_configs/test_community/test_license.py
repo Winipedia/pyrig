@@ -1,5 +1,6 @@
 """module."""
 
+from datetime import datetime
 from pathlib import Path
 
 import requests
@@ -7,6 +8,7 @@ from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.community.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.tools.version_control.controller import VersionController
 
 
 class TestLicenseConfigFile:
@@ -83,25 +85,33 @@ class TestLicenseConfigFile:
     def test_stem(self) -> None:
         """Test method."""
         # Should return LICENSE
-        assert LicenseConfigFile.I.stem() == "LICENSE", "Expected 'LICENSE'"
+        assert LicenseConfigFile.I.stem() == "LICENSE"
 
     def test_parent_path(self) -> None:
         """Test method."""
         # Should return Path()
-        assert LicenseConfigFile.I.parent_path() == Path(), "Expected Path()"
+        assert LicenseConfigFile.I.parent_path() == Path()
 
     def test_extension(self) -> None:
         """Test method."""
         # Should return empty string
-        assert LicenseConfigFile.I.extension() == "", "Expected ''"
+        assert LicenseConfigFile.I.extension() == ""
 
-    def test_content(self) -> None:
+    def test_content(self, mocker: MockerFixture) -> None:
         """Test method."""
         assert isinstance(LicenseConfigFile.I.content(), str)
+        assert "Copyright (c) 2025 Winipedia" in LicenseConfigFile.I.content()
 
-    def test_is_correct(self) -> None:
-        """Test method."""
-        assert LicenseConfigFile.I.is_correct()
+        has_commits_mock = mocker.patch.object(
+            VersionController,
+            VersionController.has_commits.__name__,
+            return_value=False,
+        )
+        assert (
+            f"Copyright (c) {datetime.now().year} Winipedia"  # noqa: DTZ005
+            in LicenseConfigFile.I.content()
+        )
+        has_commits_mock.assert_called_once()
 
     def test_year_placeholder(self) -> None:
         """Test method."""

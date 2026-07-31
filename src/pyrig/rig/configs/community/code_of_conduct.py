@@ -9,10 +9,9 @@ from pathlib import Path
 from pyrig.core.resources import (
     resource_content,
 )
-from pyrig.core.strings import file_has_content
 from pyrig.rig import resources
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
-from pyrig.rig.tools.version_control.controller import VersionController
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
 class CodeOfConductConfigFile(MarkdownConfigFile):
@@ -20,28 +19,13 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
 
     Generates CODE_OF_CONDUCT.md using the Contributor Covenant 3.0 standard.
     Reads the covenant text from a bundled resource file, substitutes the
-    project's version control email address for the reporting placeholder,
-    and strips the editorial note that precedes the enforcement ladder.
+    project's maintainer email for the reporting placeholder, and strips the
+    editorial note that precedes the enforcement ladder.
     """
 
     def content(self) -> str:
         """Return the completed Contributor Covenant text."""
         return self.code_of_conduct()
-
-    def is_correct(self) -> bool:
-        """Check whether CODE_OF_CONDUCT.md has non-empty content.
-
-        Overrides the default content-comparison check with a simpler
-        non-emptiness test.
-
-        Returns:
-            `True` if the file has non-empty content; `False` if the file
-            is empty.
-
-        Raises:
-            FileNotFoundError: If the file does not exist.
-        """
-        return file_has_content(self.path())
 
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
@@ -88,10 +72,10 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         """Return the reporting instructions for the code of conduct.
 
         Returns:
-            A sentence directing reporters to the project's version control
-            email address, e.g. `send an email to <user@example.com>.`.
+            A sentence directing reporters to the project's maintainer
+            email, e.g. `send an email to <user@example.com>.`.
         """
-        return f"send an email to <{VersionController.I.email()}>."
+        return f"send an email to <{PyprojectConfigFile.I.maintainer_email()}>."
 
     def reporting_placeholder(self) -> str:
         """Return the placeholder for the reporting instructions.

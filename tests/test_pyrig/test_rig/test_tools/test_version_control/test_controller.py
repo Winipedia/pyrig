@@ -1,6 +1,7 @@
 """module."""
 
 from contextlib import chdir
+from datetime import datetime
 from pathlib import Path
 
 from pytest_mock import MockerFixture
@@ -247,3 +248,32 @@ class TestVersionController:
         """Test method."""
         result = VersionController.I.rev_parse_args("some-commit-hash")
         assert result == ("git", "rev-parse", "some-commit-hash")
+
+    def test_first_commit_time(self) -> None:
+        """Test method."""
+        assert VersionController.I.first_commit_time() == datetime.fromisoformat(
+            "2025-11-17T18:16:32+00:00",
+        )
+
+    def test_first_commit_time_args(self) -> None:
+        """Test method."""
+        assert VersionController.I.first_commit_time_args("smth") == (
+            "git",
+            "log",
+            "--max-parents=0",
+            "--format=%aI",
+            "smth",
+        )
+
+    def test_first_commit_args(self) -> None:
+        """Test method."""
+        assert VersionController.I.first_commit_args("smth") == (
+            "git",
+            "log",
+            "--max-parents=0",
+            "smth",
+        )
+
+    def test_log_args(self) -> None:
+        """Test method."""
+        assert VersionController.I.log_args("smth") == ("git", "log", "smth")

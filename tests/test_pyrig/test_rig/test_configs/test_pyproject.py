@@ -405,3 +405,28 @@ class TestPyprojectConfigFile:
     def test_tool_section(self) -> None:
         """Test method."""
         assert isinstance(PyprojectConfigFile.I.tool_section(), dict)
+
+    def test_authors_configs(self) -> None:
+        """Test method."""
+        authors = PyprojectConfigFile.I.authors_configs()
+        assert isinstance(authors, list)
+        assert len(authors) > 0
+        for author in authors:
+            assert isinstance(author, dict)
+            assert "name" in author
+            assert "email" in author
+            assert author["name"] == VersionController.I.repo_owner()
+            assert author["email"] == PyprojectConfigFile.I.maintainer_email()
+
+    def test_maintainer_email(self) -> None:
+        """Test method."""
+        assert PyprojectConfigFile.I.maintainer_email() == "winipedia@gmx.de"
+
+    def test_maintainers_configs(self) -> None:
+        """Test method."""
+        assert PyprojectConfigFile.I.maintainers_configs() == [
+            {
+                "name": VersionController.I.repo_owner(),
+                "email": PyprojectConfigFile.I.maintainer_email(),
+            },
+        ]

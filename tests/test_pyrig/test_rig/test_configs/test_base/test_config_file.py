@@ -316,15 +316,6 @@ class TestConfigFile:
         my_test_config_file().validate()
         assert my_test_config_file().is_correct()
 
-    def test_is_correct_recursively(
-        self,
-        my_test_config_file: type[ConfigFile[dict[str, Any]]],
-    ) -> None:
-        """Test method."""
-        assert not my_test_config_file().is_correct_recursively()
-        my_test_config_file().validate()
-        assert my_test_config_file().is_correct_recursively()
-
     def test_removable_subclasses(self) -> None:
         """Test method."""
         expected = set(ConfigFile.concrete_subclasses()) - {

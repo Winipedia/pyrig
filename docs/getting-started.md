@@ -38,11 +38,11 @@ multiple Python versions with uv's built-in python version management.
 Pyrig requires you to have git installed for version control.
 One of pyrig's standards is that your git username should match your GitHub username
 because pyrig uses the values set in your git's username and email to insert them
-into files, like your username as an author in pyproject.toml and your email in
-the CODE_OF_CONDUCT.md. The git username is only a fallback in case the repository's
-remote URL is not set, so if you have already cloned your repository before
-running `pyrig init`, pyrig will use the GitHub username parsed from the
-remote URL instead of the git username.
+into files, like your username and email as the author/maintainer in
+pyproject.toml for example. The git username is only a fallback in case the
+repository's remote URL is not set, so if you have already cloned your
+repository before running `pyrig init`, pyrig will use the GitHub username
+parsed from the remote URL instead of the git username.
 
 ```bash
 # Verify installation
