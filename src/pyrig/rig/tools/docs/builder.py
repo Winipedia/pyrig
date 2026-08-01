@@ -16,11 +16,10 @@ class DocsBuilder(Tool):
     """
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Return `mkdocs` plus the Material, Mermaid, and mkdocstrings packages."""
+        """Return `mkdocs` plus the Material and mkdocstrings packages."""
         return (
             *super().dev_dependencies(),
             "mkdocs-material",
-            "mkdocs-mermaid2-plugin",
             "mkdocstrings[python]",
         )
 

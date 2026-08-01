@@ -5,7 +5,6 @@
 "edit_uri": "edit/main/docs"
 "plugins":
   - "search"
-  - "mermaid2"
   -
     "mkdocstrings":
       "handlers":
