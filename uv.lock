@@ -678,7 +678,6 @@ dev = [
     { name = "mkdocstrings", extra = ["python"] },
     { name = "pre-commit-hooks" },
     { name = "prek" },
-    { name = "pyrig" },
     { name = "pyrig-codecov" },
     { name = "pyrig-fixtures" },
     { name = "pyrig-overrides" },
@@ -719,7 +718,6 @@ dev = [
     { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0.5" },
     { name = "pre-commit-hooks", specifier = ">=6.0.0" },
     { name = "prek", specifier = ">=0.4.11" },
-    { name = "pyrig", specifier = ">=15.0.0" },
     { name = "pyrig-codecov", specifier = ">=3.2.6" },
     { name = "pyrig-fixtures", specifier = ">=2.3.2" },
     { name = "pyrig-overrides", specifier = ">=4.2.2" },
@@ -769,16 +767,16 @@ wheels = [
 
 [[package]]
 name = "pyrig-overrides"
-version = "4.18.17"
+version = "4.19.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
     { name = "pyrig-pypi" },
     { name = "pyrig-runtime" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ec/66/a910c4c4ba0e074b580a0a1dc3060cb7eeca367792c72d6b3f26e32a2df2/pyrig_overrides-4.18.17.tar.gz", hash = "sha256:932c312f82cf45047de6e1b78f25971ad4fd5db84873fb7ad75e105411781563", size = 5210, upload-time = "2026-08-01T01:23:35.241Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/55/d7/e648e1aaf0d0d21cd4031870f058edfcea3573be90bb6958df7826ad2011/pyrig_overrides-4.19.0.tar.gz", hash = "sha256:ea3c2be4fa135880d65d67d559801de5931eccd49e69c8df66196564511140ed", size = 5564, upload-time = "2026-08-01T13:21:51.901Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d8/68/69df8e7e881859a96160dd0d372e7a422784e60ec18d1fb6d9e7f87b743a/pyrig_overrides-4.18.17-py3-none-any.whl", hash = "sha256:c61d362ca80ad7594315a7057d173f8824d5455dbab68db3acd04505a2338c7f", size = 7576, upload-time = "2026-08-01T01:23:34.32Z" },
+    { url = "https://files.pythonhosted.org/packages/8c/d5/fc19cff73c2ce1f030b513ba556952dbf593176958e0534edc368cc4285e/pyrig_overrides-4.19.0-py3-none-any.whl", hash = "sha256:f1a041b4d7976066ddc47f84c47b338974434119df0116a9bec2896faad0e03b", size = 8629, upload-time = "2026-08-01T13:21:50.789Z" },
 ]
 
 [[package]]
