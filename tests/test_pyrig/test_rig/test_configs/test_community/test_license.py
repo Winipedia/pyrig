@@ -1,6 +1,8 @@
 """module."""
 
-from datetime import datetime
+import re
+from contextlib import chdir
+from datetime import UTC, datetime
 from pathlib import Path
 
 import requests
@@ -8,7 +10,6 @@ from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.community.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.tools.version_control.controller import VersionController
 
 
 class TestLicenseConfigFile:
@@ -73,12 +74,53 @@ class TestLicenseConfigFile:
         assert "[year]" in mit_license
         assert "[fullname]" in mit_license
 
-    def test_license(self) -> None:
+    def test_license(self, tmp_path: Path) -> None:
         """Test method."""
+        # branch: an existing LICENSE file on disk -> year read from its content
         mit_license = LicenseConfigFile.I.license()
         assert "MIT License" in mit_license
-        assert "Winipedia" in mit_license
+        assert "Copyright (c) 2025 Winipedia" in mit_license
+        assert "[year]" not in mit_license
+        assert "[fullname]" not in mit_license
 
+        existing_year = re.search(
+            r"Copyright \(c\) (\d{4})",
+            LicenseConfigFile.I.read_content(),
+        )[1]  # ty: ignore[not-subscriptable]
+        assert f"Copyright (c) {existing_year} Winipedia" in mit_license
+
+        # branch: no LICENSE file on disk -> falls back to the current year
+        with chdir(tmp_path):
+            LicenseConfigFile.load.cache_clear()
+            mit_license = LicenseConfigFile.I.license()
+            LicenseConfigFile.load.cache_clear()
+        current_year = str(datetime.now(tz=UTC).astimezone().year)
+        assert f"Copyright (c) {current_year} Winipedia" in mit_license
+        assert "[year]" not in mit_license
+        assert "[fullname]" not in mit_license
+
+        # branch: an existing but empty LICENSE file, as `create_file()` leaves
+        # it on the very first `validate()` call -> also falls back to the
+        # current year rather than failing to find a year to read
+        with chdir(tmp_path):
+            LicenseConfigFile.I.path().touch()
+            LicenseConfigFile.load.cache_clear()
+            mit_license = LicenseConfigFile.I.license()
+            LicenseConfigFile.load.cache_clear()
+        assert f"Copyright (c) {current_year} Winipedia" in mit_license
+        assert "[year]" not in mit_license
+        assert "[fullname]" not in mit_license
+
+        # branch: an existing LICENSE file whose content has no
+        # `Copyright (c) YYYY` line to read (e.g. a non-MIT license the user
+        # swapped in, as documented in the getting-started guide) -> falls
+        # back to the current year instead of raising
+        with chdir(tmp_path):
+            LicenseConfigFile.I.path().write_text("Apache License 2.0\n")
+            LicenseConfigFile.load.cache_clear()
+            mit_license = LicenseConfigFile.I.license()
+            LicenseConfigFile.load.cache_clear()
+        assert f"Copyright (c) {current_year} Winipedia" in mit_license
         assert "[year]" not in mit_license
         assert "[fullname]" not in mit_license
 
@@ -97,21 +139,9 @@ class TestLicenseConfigFile:
         # Should return empty string
         assert LicenseConfigFile.I.extension() == ""
 
-    def test_content(self, mocker: MockerFixture) -> None:
+    def test_content(self) -> None:
         """Test method."""
-        assert isinstance(LicenseConfigFile.I.content(), str)
-        assert "Copyright (c) 2025 Winipedia" in LicenseConfigFile.I.content()
-
-        has_commits_mock = mocker.patch.object(
-            VersionController,
-            VersionController.has_commits.__name__,
-            return_value=False,
-        )
-        assert (
-            f"Copyright (c) {datetime.now().year} Winipedia"  # noqa: DTZ005
-            in LicenseConfigFile.I.content()
-        )
-        has_commits_mock.assert_called_once()
+        assert LicenseConfigFile.I.content() == LicenseConfigFile.I.license()
 
     def test_year_placeholder(self) -> None:
         """Test method."""

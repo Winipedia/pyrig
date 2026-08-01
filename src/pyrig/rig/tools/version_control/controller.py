@@ -1,6 +1,5 @@
 """Type-safe construction of version control CLI commands and identity resolution."""
 
-from datetime import datetime
 from functools import cache
 
 from pyrig.core.subprocesses import Args
@@ -326,49 +325,3 @@ class VersionController(Tool):
             Args for `git rev-parse [args]`.
         """
         return self.args("rev-parse", *args)
-
-    def first_commit_time(self) -> datetime:
-        """Return the timestamp of the first commit in the repository.
-
-        Returns:
-            The first commit's author date, as a timezone-aware datetime.
-
-        Raises:
-            subprocess.CalledProcessError: If the repository has no commits.
-        """
-        return datetime.fromisoformat(
-            self.first_commit_time_args().run_cached().stdout.strip(),
-        )
-
-    def first_commit_time_args(self, *args: str) -> Args:
-        """Build arguments for `git log --max-parents=0 --format=%aI`.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `git log --max-parents=0 --format=%aI [args]`.
-        """
-        return self.first_commit_args("--format=%aI", *args)
-
-    def first_commit_args(self, *args: str) -> Args:
-        """Build arguments for `git log --max-parents=0`.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `git log --max-parents=0 [args]`.
-        """
-        return self.log_args("--max-parents=0", *args)
-
-    def log_args(self, *args: str) -> Args:
-        """Build arguments for `git log`.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `git log [args]`.
-        """
-        return self.args("log", *args)
