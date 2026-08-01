@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "18.36.5"
+version = "18.37.0"
 description = "A tool that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -73,7 +73,6 @@ dev = [
   "detect-secrets>=1.5.0",
   "mkdocs>=1.6.1",
   "mkdocs-material>=9.7.6",
-  "mkdocs-mermaid2-plugin>=1.2.3",
   "mkdocstrings[python]>=1.0.5",
   "pre-commit-hooks>=6.0.0",
   "prek>=0.4.11",
@@ -144,6 +143,3 @@ select = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
-
-[tool.uv.sources]
-pyrig = { workspace = true }

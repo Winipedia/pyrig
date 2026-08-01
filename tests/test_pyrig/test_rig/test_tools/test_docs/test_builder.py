@@ -47,7 +47,6 @@ class TestDocsBuilder:
         assert result == (
             "mkdocs",
             "mkdocs-material",
-            "mkdocs-mermaid2-plugin",
             "mkdocstrings[python]",
         )
 

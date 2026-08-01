@@ -18,7 +18,7 @@ class DocsBuilderConfigFile(YMLDictConfigFile):
     Assembles the required configuration from live project metadata — name,
     documentation and repository URLs, and default branch — combined with a
     fixed Material theme, strict validation, and the plugins needed to render
-    search, Mermaid diagrams, and the API reference from docstrings.
+    search and the API reference from docstrings.
     """
 
     def _configs(self) -> dict[str, Any]:
@@ -32,7 +32,6 @@ class DocsBuilderConfigFile(YMLDictConfigFile):
             "edit_uri": f"edit/{branch}/{docs_dir}",
             "plugins": [
                 "search",
-                "mermaid2",
                 {
                     "mkdocstrings": {
                         "handlers": {
