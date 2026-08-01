@@ -469,3 +469,8 @@ class TestPyprojectConfigFile:
         """Test method."""
         for author in PyprojectConfigFile.I.authors_configs():
             assert author in PyprojectConfigFile.I.maintainers_configs()
+
+    def test_content(self) -> None:
+        """Test method."""
+        content = PyprojectConfigFile.I.path().read_text(encoding="utf-8")
+        assert "tool.uv" not in content
