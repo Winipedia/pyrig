@@ -15,7 +15,7 @@ def test_make_subclass(tmp_path: Path, mocker: MockerFixture) -> None:
     project_dir.mkdir()
 
     with chdir(project_dir):
-        cls = Pyrigger
+        cls = Pyrigger.L
 
         choose_subclass_mock = mocker.patch(
             choose_subclass.__module__ + "." + choose_subclass.__name__,
@@ -32,11 +32,12 @@ def test_make_subclass(tmp_path: Path, mocker: MockerFixture) -> None:
         content = path.read_text()
         assert "class Pyrigger(BasePyrigger):" in content
         assert (
-            "from pyrig.rig.tools.pyrigger import Pyrigger as BasePyrigger" in content
+            "from pyrig_overrides.rig.tools.pyrigger import Pyrigger as BasePyrigger"
+            in content
         )
         assert content.endswith("\n")
         assert (
-            '"""\n\nfrom pyrig.rig.tools.pyrigger import Pyrigger as BasePyrigger'
+            '"""\n\nfrom pyrig_overrides.rig.tools.pyrigger import Pyrigger as BasePyrigger'  # noqa: E501
             in content
         )
         assert "Pyrigger as BasePyrigger\n\n\nclass Pyrigger(BasePyrigger):" in content
