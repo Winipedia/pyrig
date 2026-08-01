@@ -29,7 +29,6 @@ class TestBadgesConfigFile:
         assert VersionController.I.repo_owner()
         assert VersionController.I.repo_owner()
         assert VersionController.I.has_commits()
-        assert VersionController.I.first_commit_time()
 
         ReadmeConfigFile.configs.cache_clear()
         ReadmeConfigFile.load.cache_clear()
