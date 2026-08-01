@@ -40,8 +40,15 @@ class TestBadgesConfigFile:
             # avoid real `uv add` calls: this tmp project has no installable
             # source layout, only pyproject.toml/README/LICENSE are needed here
             mocker.patch.object(Args, Args.run.__name__, return_value=None)
+            # avoid depending on a configured git user.email (absent in CI)
+            email_mock = mocker.patch.object(
+                VersionController,
+                VersionController.email.__name__,
+                return_value="fallback@example.com",
+            )
             LicenseConfigFile().validate()
             PyprojectConfigFile().validate()
+            email_mock.assert_called()
             ReadmeConfigFile().validate()
             assert ReadmeConfigFile().is_correct()
 

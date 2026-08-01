@@ -7,6 +7,7 @@ from pytest_mock import MockerFixture
 
 from pyrig.core.subprocesses import Args, run_subprocess_cached
 from pyrig.rig.tools.version_control.controller import VersionController
+from pyrig.rig.tools.version_control.remote.controller import RemoteVersionController
 
 
 class TestVersionController:
@@ -95,6 +96,9 @@ class TestVersionController:
 
     def test_email(self, mocker: MockerFixture) -> None:
         """Test method."""
+        if not RemoteVersionController.I.running_in_ci():
+            assert VersionController.I.email() == "winipedia@gmx.de"
+
         run_mock = mocker.patch.object(
             Args,
             Args.run_cached.__name__,

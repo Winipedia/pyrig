@@ -143,12 +143,20 @@ class TestPyprojectConfigFile:
     def test_latest_possible_python_version(
         self,
         my_test_pyproject_config_file: type[PyprojectConfigFile],
+        mocker: MockerFixture,
     ) -> None:
         """Test method."""
         # make sure repo owner is cached before entering non git folder tmp
         assert VersionController.I.repo_owner()
         assert VersionController.I.repo_owner()
+        # avoid depending on a configured git user.email (absent in CI)
+        email_mock = mocker.patch.object(
+            VersionController,
+            VersionController.email.__name__,
+            return_value="fallback@example.com",
+        )
         my_test_pyproject_config_file().validate()
+        email_mock.assert_called()
         config = my_test_pyproject_config_file().load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
         my_test_pyproject_config_file().dump(config)
@@ -183,12 +191,20 @@ class TestPyprojectConfigFile:
     def test_supported_python_versions(
         self,
         my_test_pyproject_config_file: type[PyprojectConfigFile],
+        mocker: MockerFixture,
     ) -> None:
         """Test method."""
         # make sure repo owner is cached before entering non git folder tmp
         assert VersionController.I.repo_owner()
         assert VersionController.I.repo_owner()
+        # avoid depending on a configured git user.email (absent in CI)
+        email_mock = mocker.patch.object(
+            VersionController,
+            VersionController.email.__name__,
+            return_value="fallback@example.com",
+        )
         my_test_pyproject_config_file().validate()
+        email_mock.assert_called()
         config = my_test_pyproject_config_file().load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
         my_test_pyproject_config_file().dump(config)
@@ -224,7 +240,14 @@ class TestPyprojectConfigFile:
         # make sure repo owner is cached before entering non git folder tmp
         assert VersionController.I.repo_owner()
         assert VersionController.I.repo_owner()
+        # avoid depending on a configured git user.email (absent in CI)
+        email_mock = mocker.patch.object(
+            VersionController,
+            VersionController.email.__name__,
+            return_value="fallback@example.com",
+        )
         my_test_pyproject_config_file().validate()
+        email_mock.assert_called()
         config = my_test_pyproject_config_file().load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
         my_test_pyproject_config_file().dump(config)
@@ -299,8 +322,15 @@ class TestPyprojectConfigFile:
             PyprojectConfigFile,
             PyprojectConfigFile.add_additional_dependencies.__name__,
         )
+        # avoid depending on a configured git user.email (absent in CI)
+        email_mock = mocker.patch.object(
+            VersionController,
+            VersionController.email.__name__,
+            return_value="fallback@example.com",
+        )
         my_test_pyproject_config_file().validate()
         mock_add.assert_called_once()
+        email_mock.assert_called()
 
     def test_add_additional_dependencies(
         self,
