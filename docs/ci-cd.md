@@ -58,12 +58,14 @@ manual dispatches, and pull request runs never produce a release.
 Before tagging, it applies repository settings and branch protection rulesets
 via the GitHub API. Then it tags the current commit, pushes the tag, and
 creates a GitHub Release with auto-generated release notes.
-Important: The release workflow creates a new tag, which will fail if that tag
-already exists. This means you must ensure the version is updated in `pyproject.toml`
-before pushing to the default branch, otherwise the release workflow will
-fail on the existing tag. This is a common source of confusion, so make sure
-to update the version in `pyproject.toml` before creating a new release.
-This is easily done by running `uv version --bump patch` (or `minor`/`major`).
+!!! warning "Important"
+    The release workflow creates a new tag, which will fail if that tag
+    already exists. This means you must ensure the version is updated in
+    `pyproject.toml` before pushing to the default branch, otherwise the
+    release workflow will fail on the existing tag. This is a common source
+    of confusion, so make sure to update the version in `pyproject.toml`
+    before creating a new release. This is easily done by running
+    `uv version --bump patch` (or `minor`/`major`).
 
 ---
 
@@ -76,9 +78,9 @@ This is easily done by running `uv version --bump patch` (or `minor`/`major`).
 One job runs in this final stage, gated on the triggering release having
 succeeded:
 
-- **`documentation`** — builds the MkDocs documentation site and
-  deploys it to GitHub Pages. This job requires `pages: write` and
-  `id-token: write` permissions at the job level.
+- **`documentation`** — builds the documentation site and deploys it to
+  GitHub Pages. This job requires `pages: write` and `id-token: write`
+  permissions at the job level.
 
 ---
 

@@ -217,5 +217,6 @@ followed by Release workflow and Deploy workflow
 3. Verify all jobs run successfully
 (should just take a 2-3 minutes on an empty project)
 
-Note: The Health Check workflow will fail if you have not written any tests yet
-and the pipeline will not run.
+!!! note
+    The Health Check workflow will fail if you have not written any tests yet
+    and the pipeline will not run.

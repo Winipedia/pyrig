@@ -38,7 +38,7 @@
       -
         "name": "Build Documentation"
         "id": "build-documentation"
-        "run": "uv run mkdocs build"
+        "run": "uv run zensical build --strict"
       -
         "name": "Configure Pages"
         "id": "configure-pages"
