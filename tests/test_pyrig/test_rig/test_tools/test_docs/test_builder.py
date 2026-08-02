@@ -26,7 +26,7 @@ class TestDocsBuilder:
 
     def test_version_control_ignore_patterns(self) -> None:
         """Test method."""
-        assert DocsBuilder.I.version_control_ignore_patterns() == ("/site",)
+        assert DocsBuilder.I.version_control_ignore_patterns() == ("/site", ".cache")
 
     def test_documentation_url(self) -> None:
         """Test method."""
