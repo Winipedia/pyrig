@@ -1,4 +1,4 @@
-"""MkDocs command construction and GitHub Pages documentation metadata."""
+"""Zensical command construction and GitHub Pages documentation metadata."""
 
 from pathlib import Path
 
@@ -9,17 +9,17 @@ from pyrig.rig.tools.version_control.controller import VersionController
 
 
 class DocsBuilder(Tool):
-    """MkDocs command wrapper with GitHub Pages URL metadata.
+    """Zensical command wrapper with GitHub Pages URL metadata.
 
-    Also exposes the project's documentation source and built-site output
-    directories, since those follow conventions this tool defines.
+    Configured via Zensical's native `zensical.toml` format. Also exposes
+    the project's documentation source and built-site output directories,
+    since those follow conventions this tool defines.
     """
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Return `mkdocs` plus the Material and mkdocstrings packages."""
+        """Return `zensical` plus the `mkdocstrings` package."""
         return (
             *super().dev_dependencies(),
-            "mkdocs-material",
             "mkdocstrings[python]",
         )
 
@@ -29,30 +29,30 @@ class DocsBuilder(Tool):
 
     def image_url(self) -> str:
         """Return the badge image URL."""
-        return f"https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo={self.name()}&logoColor=white"
+        return f"https://img.shields.io/badge/Documentation-{self.shield_name()}-326CE5"
 
     def link_url(self) -> str:
         """Return the expected GitHub Pages URL for this project."""
         return self.documentation_url()
 
     def name(self) -> str:
-        """Return `'mkdocs'`."""
-        return "mkdocs"
+        """Return `'zensical'`."""
+        return "zensical"
 
     def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return the built site output directory, `'/site'`."""
         return (f"/{self.site_dir().as_posix()}",)
 
     def build_args(self, *args: str) -> Args:
-        """Construct arguments for the `mkdocs build` command.
+        """Construct arguments for the `zensical build --strict` command.
 
         Args:
-            *args: Additional arguments appended after `build`.
+            *args: Additional arguments appended after `build --strict`.
 
         Returns:
-            Args for `mkdocs build <args...>`.
+            Args for `zensical build --strict <args...>`.
         """
-        return self.args("build", *args)
+        return self.args("build", "--strict", *args)
 
     def docs_dir(self) -> Path:
         """Return the documentation source directory, `Path('docs')`."""

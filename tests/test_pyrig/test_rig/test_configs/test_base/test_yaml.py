@@ -12,7 +12,9 @@ from pyrig.rig.configs.base.yaml import (
     YMLConfigFile,
     represent_str,
 )
-from pyrig.rig.configs.docs.builder import DocsBuilderConfigFile
+from pyrig.rig.configs.version_control.remote.workflows.health_check import (
+    HealthCheckWorkflowConfigFile,
+)
 
 
 @pytest.fixture
@@ -101,8 +103,8 @@ class TestYMLConfigFile:
 
     def test_extension(self) -> None:
         """Test method."""
-        assert issubclass(DocsBuilderConfigFile, YMLConfigFile)
-        extension = DocsBuilderConfigFile.I.extension()
+        assert issubclass(HealthCheckWorkflowConfigFile, YMLConfigFile)
+        extension = HealthCheckWorkflowConfigFile.I.extension()
         assert extension == "yml"
 
 

@@ -8,7 +8,7 @@ from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class APIDocsConfigFile(MarkdownConfigFile):
-    """Configuration manager for the MkDocs API reference page (`docs/api.md`).
+    """Configuration manager for the API reference page (`docs/api.md`).
 
     Generates a Markdown file that uses the mkdocstrings `:::` directive to
     render full API documentation from the project's Python docstrings. The
@@ -25,7 +25,7 @@ class APIDocsConfigFile(MarkdownConfigFile):
 """
 
     def parent_path(self) -> Path:
-        """Return the MkDocs documentation source directory."""
+        """Return the `DocsBuilder`'s documentation source directory."""
         return DocsBuilder.I.docs_dir()
 
     def stem(self) -> str:

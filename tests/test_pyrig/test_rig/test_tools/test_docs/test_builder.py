@@ -17,7 +17,7 @@ class TestDocsBuilder:
         """Test method."""
         assert (
             DocsBuilder.I.image_url()
-            == "https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white"
+            == "https://img.shields.io/badge/Documentation-zensical-326CE5"
         )
 
     def test_link_url(self) -> None:
@@ -45,8 +45,7 @@ class TestDocsBuilder:
         """Test method."""
         result = DocsBuilder.I.dev_dependencies()
         assert result == (
-            "mkdocs",
-            "mkdocs-material",
+            "zensical",
             "mkdocstrings[python]",
         )
 
@@ -58,9 +57,9 @@ class TestDocsBuilder:
     def test_name(self) -> None:
         """Test method."""
         result = DocsBuilder.I.name()
-        assert result == "mkdocs"
+        assert result == "zensical"
 
     def test_build_args(self) -> None:
         """Test method."""
         result = DocsBuilder.I.build_args()
-        assert result == ("mkdocs", "build")
+        assert result == ("zensical", "build", "--strict")

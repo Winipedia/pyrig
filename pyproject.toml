@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "18.37.2"
+version = "18.39.0"
 description = "A tool that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -71,8 +71,6 @@ dev = [
   "bandit>=1.9.4",
   "deptry>=0.25.1",
   "detect-secrets>=1.5.0",
-  "mkdocs>=1.6.1",
-  "mkdocs-material>=9.7.6",
   "mkdocstrings[python]>=1.0.5",
   "pre-commit-hooks>=6.0.0",
   "prek>=0.4.11",
@@ -92,6 +90,7 @@ dev = [
   "tombi",
   "ty>=0.0.58",
   "typos>=1.48.0",
+  "zensical>=0.0.52",
 ]
 
 [build-system]

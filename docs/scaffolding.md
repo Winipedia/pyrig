@@ -26,12 +26,12 @@ my-project/
 ├── CODE_OF_CONDUCT.md                      # Contributor Covenant code of conduct
 ├── CONTRIBUTING.md                         # Contribution guidelines
 ├── LICENSE                                 # MIT license
-├── mkdocs.yml                              # MkDocs documentation site configuration
 ├── prek.toml                               # Pre-commit hook definitions
 ├── pyproject.toml                          # Package metadata and tool configuration
 ├── README.md                               # Project README with badges
 ├── SECURITY.md                             # Security policy
 ├── uv.lock                                 # Locked dependency manifest
+├── zensical.toml                           # Documentation site configuration
 │
 ├── .github/
 │   ├── CODEOWNERS                          # Wildcard code ownership rule for the repo owner
@@ -44,7 +44,7 @@ my-project/
 │   └── workflows/
 │       ├── health_check.yml                # CI: tests, linting, hooks, dependency audit
 │       ├── release.yml                     # CD: tagging, repo protection, GitHub release
-│       └── deploy.yml                      # CD: MkDocs documentation deployment
+│       └── deploy.yml                      # CD: documentation deployment
 │
 ├── docs/
 │   ├── api.md                              # API reference page (mkdocstrings)
