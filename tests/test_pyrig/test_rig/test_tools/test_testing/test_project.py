@@ -15,10 +15,13 @@ class TestProjectTester:
             "--cov-branch",
             "--cov-fail-under=90",
             "--cov-report=term-missing:skip-covered",
+            "--numprocesses=auto",
+            "--dist=worksteal",
         )
         assert str(ProjectTester().additional_args()) == (
             "--cov=pyrig --cov-branch --cov-fail-under=90"
             " --cov-report=term-missing:skip-covered"
+            " --numprocesses=auto --dist=worksteal"
         )
 
     def test_threshold(self) -> None:
@@ -39,6 +42,7 @@ class TestProjectTester:
             "pytest",
             "pytest-cov",
             "pytest-randomly",
+            "pytest-xdist",
         )
 
     def test_image_url(self) -> None:

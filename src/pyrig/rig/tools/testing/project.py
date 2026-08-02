@@ -33,8 +33,13 @@ class ProjectTester(Tool):
         return "pytest"
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Return `('pytest', 'pytest-cov', 'pytest-randomly')`."""
-        return (*super().dev_dependencies(), "pytest-cov", "pytest-randomly")
+        """Return `('pytest', 'pytest-cov', 'pytest-randomly', 'pytest-xdist')`."""
+        return (
+            *super().dev_dependencies(),
+            "pytest-cov",
+            "pytest-randomly",
+            "pytest-xdist",
+        )
 
     def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return `('.pytest_cache/', '.coverage')`."""
@@ -70,13 +75,15 @@ class ProjectTester(Tool):
         `pyproject.toml`.
 
         Returns:
-            The pytest-cov CLI flags to append to the test run.
+            The pytest-cov and pytest-xdist CLI flags to append to the test run.
         """
         return Args(
             f"--cov={PackageManager.I.package_name()}",
             "--cov-branch",
             f"--cov-fail-under={self.threshold()}",
             "--cov-report=term-missing:skip-covered",
+            "--numprocesses=auto",
+            "--dist=worksteal",
         )
 
     def package_root(self) -> Path:
