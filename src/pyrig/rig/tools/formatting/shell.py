@@ -6,6 +6,7 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
+from pyrig.rig.tools.linting.shell import ShellLinter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
@@ -58,8 +59,8 @@ class ShellFormatter(FormatHookTool):
         indentation, matching the Google Shell Style Guide
         (https://google.github.io/styleguide/shellguide.html), the most
         widely adopted shell formatting convention. Also indents `case`
-        statement bodies, and pins the dialect to `bash` rather than
-        relying on shebang detection.
+        statement bodies, and pins the dialect rather than relying on
+        shebang detection.
 
         Returns:
             Hook metadata dict for `shfmt` with
@@ -74,7 +75,7 @@ class ShellFormatter(FormatHookTool):
             args=[
                 "--indent=2",
                 "--case-indent",
-                "--language-dialect=bash",
+                f"--language-dialect={ShellLinter.I.dialect()}",
                 "--write",
             ],
         )

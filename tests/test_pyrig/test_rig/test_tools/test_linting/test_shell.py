@@ -52,3 +52,7 @@ class TestShellLinter:
         """Test method."""
         base_args = ShellLinter.I.check_args()
         assert ShellLinter.I.lint_shell() == PackageManager.I.run_args(*base_args)
+
+    def test_dialect(self) -> None:
+        """Test method."""
+        assert ShellLinter.I.dialect() == "bash"
