@@ -53,6 +53,27 @@ discovered automatically — no registration needed.
 
 ---
 
+## Configuring a Tool
+
+A tool's settings live in the highest-precedence place it can actually be
+driven from:
+
+1. **`pyproject.toml`**, under `[tool.<name>]`, if the tool reads its
+   settings from there at all (e.g. `[tool.ruff]`, `[tool.pytest]`).
+2. Otherwise, **its own dedicated `ConfigFile`**, if it doesn't read from
+   `pyproject.toml` but has a rich enough format to warrant one (e.g.
+   `zensical.toml` for `zensical`).
+3. Otherwise, **CLI flags**, passed via the hook's `args` in `prek.toml`, for
+   a tool that's really just a hook with no config-file convention of its
+   own (e.g. `check-merge-conflict`).
+
+Whichever of these is primary, if it can't reach the [strictest, most
+best-practice](philosophy.md) setting on its own, supplement it with the
+other. The same goes in reverse — reach for a config file instead of
+(or in addition to) flags whenever it can express something the CLI can't.
+
+---
+
 ## Overriding an Existing Tool
 
 Run `pyrig mk subcls`, search for the tool class you want to change, and select
