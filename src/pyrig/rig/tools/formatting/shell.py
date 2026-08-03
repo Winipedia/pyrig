@@ -56,15 +56,18 @@ class ShellFormatter(FormatHookTool):
         Runs after the sequential text-fixing chain, alongside the other
         file-type-specific fixers. Passes `--write` so changes are written
         back to each file rather than only printed to stdout. Uses 2-space
-        indentation, matching the Google Shell Style Guide
+        indentation and puts a wrapped pipeline's `|`, `&&`, or `||` at the
+        start of the continuation line rather than the end of the previous
+        one, matching the Google Shell Style Guide
         (https://google.github.io/styleguide/shellguide.html), the most
         widely adopted shell formatting convention. Also indents `case`
-        statement bodies, and pins the dialect rather than relying on
-        shebang detection.
+        statement bodies, pins the dialect rather than relying on shebang
+        detection, and simplifies redundant syntax (e.g. useless
+        parentheses, duplicate subshells, and superfluous quoting).
 
         Returns:
-            Hook metadata dict for `shfmt` with
-            `--indent=2 --case-indent --language-dialect=bash --write`.
+            Hook metadata dict for `shfmt` with `--indent=2 --case-indent
+            --language-dialect=bash --simplify --binary-next-line --write`.
         """
         return VersionControlHookManager.I.hook(
             self.format_shell,
@@ -73,9 +76,11 @@ class ShellFormatter(FormatHookTool):
             ),
             types=["shell"],
             args=[
-                "--indent=2",
+                "--binary-next-line",
                 "--case-indent",
+                "--indent=2",
                 f"--language-dialect={ShellLinter.I.dialect()}",
+                "--simplify",
                 "--write",
             ],
         )

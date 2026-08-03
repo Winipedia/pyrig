@@ -62,17 +62,22 @@ class ShellLinter(CheckHookTool):
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting shell scripts at maximum strictness.
 
-        Enables every optional check on top of the default set, surfaces
-        every severity level down to style, and pins the dialect rather
-        than relying on shebang detection, since every script this project
-        generates (`ShellConfigFile`) commits to that dialect explicitly.
+        Enables every optional check on top of the default set, follows
+        `source`d files even when they aren't part of the input set and
+        surfaces warnings found inside them instead of silently skipping
+        them, and pins the dialect rather than relying on shebang
+        detection, since every script this project generates
+        (`ShellConfigFile`) commits to that dialect explicitly.
+
+        `--severity` is deliberately not passed: `style`, the lowest and
+        most inclusive tier, is already ShellCheck's own default.
 
         Ties its priority to `TypeChecker.check_hook` so it runs
         alongside the rest of the checks tier rather than after it.
 
         Returns:
-            Hook metadata dict for
-            `shellcheck --enable=all --severity=style --shell=bash`.
+            Hook metadata dict for `shellcheck --enable=all
+            --check-sourced --external-sources --shell=bash`.
         """
         return VersionControlHookManager.I.hook(
             self.lint_shell,
@@ -82,7 +87,8 @@ class ShellLinter(CheckHookTool):
             types=["shell"],
             args=[
                 "--enable=all",
-                "--severity=style",
+                "--check-sourced",
+                "--external-sources",
                 f"--shell={self.dialect()}",
             ],
         )
