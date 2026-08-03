@@ -331,6 +331,9 @@ id = "check-large-files"
 name = "check large files"
 language = "system"
 entry = "uv run check-added-large-files"
+args = [
+  "--enforce-all",
+]
 stages = [
   "pre-commit",
 ]
