@@ -120,10 +120,10 @@ Run `pyrig mk subcls` to generate a subclass for any pyrig class.
 
 ### [CI/CD & Repository Protection](https://Winipedia.github.io/pyrig/ci-cd)
 
-Pyrig generates GitHub Actions workflows for CI/CD which automatically configure
-and apply repository protection settings and branch protection rules when they run
-to ensure your repository is protected.
-Push your code to GitHub after initialization and see it in action.
+Pyrig generates GitHub Actions workflows for CI/CD which automatically test
+and release your code. They also configure and apply repository protection
+settings and protection rulesets. Push your code to GitHub after initialization
+and see it in action.
 
 ## Commands
 

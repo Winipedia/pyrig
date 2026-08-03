@@ -19,10 +19,10 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     The workflow is triggered by completion of the health check workflow on
     the default branch, but its job only proceeds when that health check run
     both succeeded and was itself triggered by a push — so the daily
-    scheduled run and pull request runs never produce a release. A
-    qualifying run applies repository settings and branch protection
-    rulesets, tags the current version, and publishes a GitHub release
-    with auto-generated release notes.
+    scheduled run and pull request runs never produce a release.
+    A qualifying run applies repository settings and protection rulesets,
+    tags the current version, and publishes a GitHub release with auto-generated
+    release notes.
     """
 
     def job(  # noqa: PLR0913

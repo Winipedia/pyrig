@@ -72,6 +72,34 @@
           "bypass_mode": "always"
         }
       ]
+    },
+    {
+      "name": "tags",
+      "target": "tag",
+      "enforcement": "active",
+      "conditions": {
+        "ref_name": {
+          "exclude": [],
+          "include": [
+            "~ALL"
+          ]
+        }
+      },
+      "rules": [
+        {
+          "type": "deletion"
+        },
+        {
+          "type": "update"
+        }
+      ],
+      "bypass_actors": [
+        {
+          "actor_id": 5,
+          "actor_type": "RepositoryRole",
+          "bypass_mode": "always"
+        }
+      ]
     }
   ]
 }

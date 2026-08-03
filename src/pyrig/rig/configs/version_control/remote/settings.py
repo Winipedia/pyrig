@@ -1,4 +1,4 @@
-"""Repository-level settings and branch protection ruleset configuration for GitHub."""
+"""Repository-level settings and protection ruleset configuration for GitHub."""
 
 from pathlib import Path
 from typing import Any
@@ -16,19 +16,21 @@ from pyrig.rig.tools.version_control.remote.controller import (
 
 
 class RepositorySettingsConfigFile(JSONDictConfigFile):
-    """Configuration file for GitHub repository settings and branch protection rulesets.
+    """Configuration file for GitHub repository settings and protection rulesets.
 
     Manages `.github/settings.json`, containing the general repository settings
-    and the branch protection rulesets to apply to the default branch.
+    and protection rulesets to apply to the repository.
     """
 
     def _configs(self) -> dict[str, Any]:
-        """Build the required repository settings and branch protection ruleset.
+        """Build the required repository settings and protection rulesets.
 
-        The ruleset targets the default branch, requires pull request review,
-        a passing health-check status check, linear history, and signed
-        commits, and blocks branch creation, deletion, and force pushes.
-        Repository admins are exempt from the ruleset.
+        The branch ruleset targets the default branch, requires pull request
+        review, a passing health-check status check, linear history, and
+        signed commits, and blocks branch creation, deletion, and force
+        pushes. The tag ruleset targets every tag and blocks deletion and
+        retargeting, keeping released versions immutable. Repository admins
+        are exempt from both rulesets.
 
         Returns:
             Dict keyed by `repository_key()` and `rulesets_key()`.
@@ -83,16 +85,44 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
                         },
                         {"type": "non_fast_forward"},
                     ],
-                    "bypass_actors": [
-                        {
-                            # 5 is GitHub's fixed ID for the Admin repository role
-                            "actor_id": 5,
-                            "actor_type": "RepositoryRole",
-                            "bypass_mode": "always",
-                        },
+                    "bypass_actors": self.bypass_actors(),
+                },
+                {
+                    "name": "tags",
+                    "target": "tag",
+                    "enforcement": "active",
+                    "conditions": {
+                        "ref_name": {"exclude": [], "include": ["~ALL"]},
+                    },
+                    "rules": [
+                        {"type": "deletion"},
+                        {"type": "update"},
                     ],
+                    "bypass_actors": self.bypass_actors(),
                 },
             ],
+        }
+
+    def bypass_actors(self) -> list[dict[str, Any]]:
+        """Return the bypass actors.
+
+        Returns:
+            Single-entry list identifying GitHub's fixed Admin repository role.
+        """
+        return [self.admin_bypass_actor()]
+
+    def admin_bypass_actor(self) -> dict[str, Any]:
+        """Return the bypass actor dict granting an always-bypass to repository admins.
+
+        5 is GitHub's fixed ID for the Admin repository role.
+
+        Returns:
+            Dict identifying GitHub's fixed Admin repository role.
+        """
+        return {
+            "actor_id": 5,
+            "actor_type": "RepositoryRole",
+            "bypass_mode": "always",
         }
 
     def parent_path(self) -> Path:
@@ -108,5 +138,5 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
         return "repository"
 
     def rulesets_key(self) -> str:
-        """Return `"rulesets"`, the top-level key for the branch protection rulesets."""
+        """Return `"rulesets"`, the top-level key for the protection rulesets."""
         return "rulesets"
