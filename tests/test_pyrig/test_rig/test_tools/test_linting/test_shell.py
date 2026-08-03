@@ -47,6 +47,13 @@ class TestShellLinter:
         types_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == types_hook["priority"]
         assert hook["types"] == ["shell"]
+        assert hook["args"] == [
+            "--check-sourced",
+            "--enable=all",
+            "--external-sources",
+            "--norc",
+            "--shell=bash",
+        ]
 
     def test_lint_shell(self) -> None:
         """Test method."""

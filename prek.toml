@@ -474,6 +474,7 @@ args = [
   "--check-sourced",
   "--enable=all",
   "--external-sources",
+  "--norc",
   "--shell=bash",
 ]
 types = [
