@@ -77,7 +77,7 @@ class ShellLinter(CheckHookTool):
 
         Returns:
             Hook metadata dict for `shellcheck --enable=all
-            --check-sourced --external-sources --shell=bash`.
+            --check-sourced --external-sources --norc --shell=bash`.
         """
         return VersionControlHookManager.I.hook(
             self.lint_shell,
@@ -86,9 +86,10 @@ class ShellLinter(CheckHookTool):
             ),
             types=["shell"],
             args=[
-                "--enable=all",
                 "--check-sourced",
+                "--enable=all",
                 "--external-sources",
+                "--norc",
                 f"--shell={self.dialect()}",
             ],
         )
