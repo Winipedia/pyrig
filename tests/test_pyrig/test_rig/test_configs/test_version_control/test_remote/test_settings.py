@@ -33,3 +33,18 @@ class TestRepositorySettingsConfigFile:
         assert RepositorySettingsConfigFile.I.repository_key() in configs
         assert RepositorySettingsConfigFile.I.rulesets_key() in configs
         assert isinstance(configs[RepositorySettingsConfigFile.I.rulesets_key()], list)
+
+    def test_bypass_actors(self) -> None:
+        """Test method."""
+        actors = RepositorySettingsConfigFile.I.bypass_actors()
+        assert actors == [
+            RepositorySettingsConfigFile.I.admin_bypass_actor(),
+        ]
+
+    def test_admin_bypass_actor(self) -> None:
+        """Test method."""
+        assert RepositorySettingsConfigFile.I.admin_bypass_actor() == {
+            "actor_id": 5,
+            "actor_type": "RepositoryRole",
+            "bypass_mode": "always",
+        }
