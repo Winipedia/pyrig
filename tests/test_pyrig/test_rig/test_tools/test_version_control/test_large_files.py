@@ -50,6 +50,7 @@ class TestLargeFileChecker:
         types_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == types_hook["priority"]
         assert "types" not in hook
+        assert hook["args"] == ["--enforce-all"]
 
     def test_check_large_files(self) -> None:
         """Test method."""

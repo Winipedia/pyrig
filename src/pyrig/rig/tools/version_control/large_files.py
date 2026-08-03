@@ -53,18 +53,19 @@ class LargeFileChecker(CheckHookTool):
 
         Left without a `types` restriction so it matches every file,
         binary included, since a large binary is exactly what this check
-        exists to catch. Ties its priority to `TypeChecker.check_hook`
-        so it runs alongside the rest of the checks tier rather than after
-        it.
+        exists to catch.
+        Ties its priority to `TypeChecker.check_hook` so it runs alongside the rest
+        of the checks tier rather than after it.
 
         Returns:
-            Hook metadata dict for `check-added-large-files`.
+            Hook metadata dict for `check-added-large-files --enforce-all`.
         """
         return VersionControlHookManager.I.hook(
             self.check_large_files,
             priority=VersionControlHookManager.I.hook_priority(
                 TypeChecker.I.check_hook(),
             ),
+            args=["--enforce-all"],
         )
 
     def check_large_files(self) -> Args:
