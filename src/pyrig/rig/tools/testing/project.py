@@ -84,6 +84,7 @@ class ProjectTester(Tool):
             "--cov-report=term-missing:skip-covered",
             "--numprocesses=auto",
             "--dist=worksteal",
+            "--report-chars=a",
         )
 
     def package_root(self) -> Path:

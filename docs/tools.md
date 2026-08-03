@@ -72,6 +72,9 @@ best-practice](philosophy.md) setting on its own, supplement it with the
 other. The same goes in reverse — reach for a config file instead of
 (or in addition to) flags whenever it can express something the CLI can't.
 
+Whenever a CLI flag is the right channel, write it in its long form (`--flag`
+or `--flag=value`) for clarity.
+
 ---
 
 ## Overriding an Existing Tool
