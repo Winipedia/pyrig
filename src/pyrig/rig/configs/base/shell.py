@@ -3,6 +3,7 @@
 from abc import abstractmethod
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
+from pyrig.rig.tools.linting.shell import ShellLinter
 
 
 class ShellConfigFile(StringConfigFile):
@@ -61,8 +62,8 @@ class ShellConfigFile(StringConfigFile):
         return "sh"
 
     def shebang_line(self) -> str:
-        """Return `"#!/usr/bin/env bash"`."""
-        return "#!/usr/bin/env bash"
+        """Return the shebang pinning the interpreter to the shell dialect."""
+        return f"#!/usr/bin/env {ShellLinter.I.dialect()}"
 
     def strict_mode_line(self) -> str:
         """Return `"set -euo pipefail"`."""

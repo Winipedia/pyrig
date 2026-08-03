@@ -13,6 +13,7 @@ from pyrig.core.strings import (
 )
 from pyrig.rig.configs.base.yaml import YMLDictConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.tools.linting.shell import ShellLinter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig.rig.tools.version_control.controller import VersionController
@@ -97,12 +98,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
     def defaults(self) -> dict[str, Any]:
         """Return the default settings applied to every step in the workflow.
 
-        Override to customize. Defaults to the `bash` shell.
-
         Returns:
             Dict of default settings.
         """
-        return {"run": {"shell": "bash"}}
+        return {"run": {"shell": ShellLinter.I.dialect()}}
 
     def global_env(self) -> dict[str, Any]:
         """Return environment variables applied to every job in the workflow.

@@ -33,6 +33,16 @@ class ShellLinter(CheckHookTool):
         """Return `('shellcheck-py',)`, the PyPI package providing `shellcheck`."""
         return ("shellcheck-py",)
 
+    def dialect(self) -> str:
+        """Return `"bash"`, the shell dialect this project standardizes on.
+
+        The single source of truth for the dialect.
+
+        Returns:
+            The shell dialect name.
+        """
+        return "bash"
+
     def check_args(self, *args: str) -> Args:
         """Construct ShellCheck check arguments.
 
@@ -53,9 +63,9 @@ class ShellLinter(CheckHookTool):
         """Return the hook metadata for linting shell scripts at maximum strictness.
 
         Enables every optional check on top of the default set, surfaces
-        every severity level down to style, and pins the dialect to `bash`
-        rather than relying on shebang detection, since every script this
-        project generates (`ShellConfigFile`) commits to `bash` explicitly.
+        every severity level down to style, and pins the dialect rather
+        than relying on shebang detection, since every script this project
+        generates (`ShellConfigFile`) commits to that dialect explicitly.
 
         Ties its priority to `TypeChecker.check_hook` so it runs
         alongside the rest of the checks tier rather than after it.
@@ -73,7 +83,7 @@ class ShellLinter(CheckHookTool):
             args=[
                 "--enable=all",
                 "--severity=style",
-                "--shell=bash",
+                f"--shell={self.dialect()}",
             ],
         )
 
