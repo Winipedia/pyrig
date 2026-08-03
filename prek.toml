@@ -205,9 +205,11 @@ name = "format shell"
 language = "system"
 entry = "uv run shfmt"
 args = [
+  "--binary-next-line",
   "--case-indent",
   "--indent=2",
   "--language-dialect=bash",
+  "--simplify",
   "--write",
 ]
 types = [
@@ -463,8 +465,9 @@ name = "lint shell"
 language = "system"
 entry = "uv run shellcheck"
 args = [
+  "--check-sourced",
   "--enable=all",
-  "--severity=style",
+  "--external-sources",
   "--shell=bash",
 ]
 types = [

@@ -82,13 +82,14 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         endpoint_ref = "${endpoint}"
         id_ref = "${id}"
         ruleset_ref = "${ruleset}"
+        ruleset_filter = ".[] | select(.name==$r.name) | .id"
         method_ref = "${method}"
-        return f"""{self.apply_rulesets_function()}() {{
+        return rf"""{self.apply_rulesets_function()}() {{
   local endpoint="repos/{repo_ref}/rulesets"
   jq --compact-output '.{rulesets_key}[]' {settings_path} | while read -r ruleset; do
-    id=$(gh api "{endpoint_ref}" |
-      jq --raw-output --argjson r "{ruleset_ref}" '.[] | select(.name==$r.name) | .id')
-    if [[ -z "{id_ref}" ]]; then method="POST"; else method="PUT"; fi
+    id=$(gh api "{endpoint_ref}" \
+      | jq --raw-output --argjson r "{ruleset_ref}" '{ruleset_filter}')
+    if [[ -z {id_ref} ]]; then method="POST"; else method="PUT"; fi
     url="{endpoint_ref}${{id:+/{id_ref}}}"
     gh api "${{url}}" --method="{method_ref}" --input=- <<<"{ruleset_ref}"
   done

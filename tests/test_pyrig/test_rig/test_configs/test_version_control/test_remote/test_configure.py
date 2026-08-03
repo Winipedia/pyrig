@@ -71,7 +71,7 @@ class TestConfigureRepositoryConfigFile:
         result = script.apply_rulesets_script()
         assert result.startswith(f"{script.apply_rulesets_function()}() {{")
         assert "${repo}" in result
-        assert 'gh api "${endpoint}" |' in result
+        assert 'gh api "${endpoint}" \\' in result
         assert 'url="${endpoint}${id:+/${id}}"' in result
         assert 'gh api "${url}"' in result
         assert "[[ -z" in result
