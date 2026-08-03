@@ -344,6 +344,9 @@ id = "check-merge-conflict"
 name = "check merge conflict"
 language = "system"
 entry = "uv run check-merge-conflict"
+args = [
+  "--assume-in-merge",
+]
 types = [
   "text",
 ]
