@@ -56,7 +56,7 @@ class MergeConflictChecker(CheckHookTool):
         alongside the rest of the checks tier rather than after it.
 
         Returns:
-            Hook metadata dict for `check-merge-conflict`.
+            Hook metadata dict for `check-merge-conflict --assume-in-merge`.
         """
         return VersionControlHookManager.I.hook(
             self.check_merge_conflict,
@@ -64,6 +64,7 @@ class MergeConflictChecker(CheckHookTool):
                 TypeChecker.I.check_hook(),
             ),
             types=["text"],
+            args=["--assume-in-merge"],
         )
 
     def check_merge_conflict(self) -> Args:

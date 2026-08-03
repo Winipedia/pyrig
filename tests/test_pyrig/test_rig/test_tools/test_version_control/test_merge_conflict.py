@@ -50,6 +50,7 @@ class TestMergeConflictChecker:
         types_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == types_hook["priority"]
         assert hook["types"] == ["text"]
+        assert hook["args"] == ["--assume-in-merge"]
 
     def test_check_merge_conflict(self) -> None:
         """Test method."""
