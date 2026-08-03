@@ -17,11 +17,12 @@ class TestProjectTester:
             "--cov-report=term-missing:skip-covered",
             "--numprocesses=auto",
             "--dist=worksteal",
+            "--report-chars=a",
         )
         assert str(ProjectTester().additional_args()) == (
             "--cov=pyrig --cov-branch --cov-fail-under=90"
             " --cov-report=term-missing:skip-covered"
-            " --numprocesses=auto --dist=worksteal"
+            " --numprocesses=auto --dist=worksteal --report-chars=a"
         )
 
     def test_threshold(self) -> None:
