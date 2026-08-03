@@ -44,6 +44,23 @@ class MyTool(Tool):
 Place the class anywhere under `<your_package>.rig.tools` and it will be
 discovered automatically — no registration needed.
 
+For `image_url()`, prefer the tool's own standard badge if it publishes one
+— `ruff` and `ty` each maintain a shields.io endpoint badge in their own repo
+(`img.shields.io/endpoint?url=...`), and pointing at that is best practice,
+since it's the badge people already recognize for that tool. Only fall back
+to defining a plain shields.io static badge,
+`https://img.shields.io/badge/LABEL-VALUE-COLOR`, when no standard badge
+exists: LABEL a short category noun for what it represents (e.g. `shell`,
+`JSON`, `secrets`) rather than the tool's own name, VALUE built from
+`self.shield_name()` (which escapes hyphens the way shields.io's URL
+segments require), and COLOR a plain CSS color name or hex code. For
+`link_url()`, point wherever is most useful to the reader — `DocsBuilder`'s
+badge links to this project's own built documentation site, not zensical's
+homepage — and only fall back to the tool's own repository when there's no
+more useful destination. `group()` decides which section the badge is
+grouped under in the generated `README.md` and docs home page; badges within
+a group are then sorted automatically, alphabetically by class name.
+
 ### Optional Overrides
 
 - **`version_control_ignore_patterns()`** — Paths (relative to project root) this
