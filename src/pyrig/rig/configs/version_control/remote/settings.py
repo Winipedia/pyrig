@@ -76,7 +76,6 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
                             "type": "required_status_checks",
                             "parameters": {
                                 "strict_required_status_checks_policy": True,
-                                "do_not_enforce_on_create": True,
                                 "required_status_checks": [
                                     {"context": status_check_id},
                                 ],
