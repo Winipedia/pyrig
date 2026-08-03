@@ -46,6 +46,7 @@ class TestMarkdownLinter:
         type_check_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == type_check_hook["priority"]
         assert hook["types"] == ["markdown"]
+        assert hook["args"] == ["--deny-config-warnings"]
 
     def test_lint_markdown(self) -> None:
         """Test method."""
@@ -64,6 +65,7 @@ class TestMarkdownLinter:
         eof_hook = EndOfFileFormatter.I.format_hook()
         assert hook["priority"] > eof_hook["priority"]
         assert hook["types"] == ["markdown"]
+        assert hook["args"] == ["--deny-config-warnings"]
 
     def test_format_markdown(self) -> None:
         """Test method."""

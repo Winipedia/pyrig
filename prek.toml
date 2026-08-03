@@ -188,6 +188,9 @@ id = "format-markdown"
 name = "format markdown"
 language = "system"
 entry = "uv run rumdl fmt"
+args = [
+  "--deny-config-warnings",
+]
 types = [
   "markdown",
 ]
@@ -454,6 +457,9 @@ id = "lint-markdown"
 name = "lint markdown"
 language = "system"
 entry = "uv run rumdl check"
+args = [
+  "--deny-config-warnings",
+]
 types = [
   "markdown",
 ]

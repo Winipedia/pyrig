@@ -67,7 +67,7 @@ class MarkdownLinter(CheckFormatHookTool):
         alongside the rest of the checks tier rather than after it.
 
         Returns:
-            Hook metadata dict for `rumdl check`.
+            Hook metadata dict for `rumdl check --deny-config-warnings`.
         """
         return VersionControlHookManager.I.hook(
             self.lint_markdown,
@@ -75,6 +75,7 @@ class MarkdownLinter(CheckFormatHookTool):
                 TypeChecker.I.check_hook(),
             ),
             types=["markdown"],
+            args=["--deny-config-warnings"],
         )
 
     def lint_markdown(self) -> Args:
@@ -92,7 +93,7 @@ class MarkdownLinter(CheckFormatHookTool):
         file-type-specific fixers.
 
         Returns:
-            Hook metadata dict for `rumdl fmt`.
+            Hook metadata dict for `rumdl fmt --deny-config-warnings`.
         """
         return VersionControlHookManager.I.hook(
             self.format_markdown,
@@ -100,6 +101,7 @@ class MarkdownLinter(CheckFormatHookTool):
                 EndOfFileFormatter.I.format_hook(),
             ),
             types=["markdown"],
+            args=["--deny-config-warnings"],
         )
 
     def format_markdown(self) -> Args:
