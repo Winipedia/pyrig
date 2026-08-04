@@ -10,8 +10,8 @@ before reporting, or mention your version if you can't.
 **Please do not report security vulnerabilities through public GitHub
 issues, discussions, or pull requests.**
 
-Instead, [report a vulnerability](https://github.com/Winipedia/pyrig/security/advisories/new) using GitHub's
-private vulnerability reporting.
+Instead, [report a vulnerability](https://github.com/Winipedia/pyrig/security/advisories/new)
+using GitHub's private vulnerability reporting.
 
 Please include:
 
