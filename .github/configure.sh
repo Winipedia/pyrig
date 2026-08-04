@@ -18,4 +18,8 @@ rulesets() {
   done
 }
 
+vulnerability_reporting() {
+  gh api "repos/${repo}/private-vulnerability-reporting" --method=PUT
+}
+
 "$@"

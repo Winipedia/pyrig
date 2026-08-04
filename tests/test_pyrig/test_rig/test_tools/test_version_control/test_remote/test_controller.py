@@ -71,6 +71,11 @@ class TestRemoteVersionController:
         result = RemoteVersionController.I.issues_url()
         assert result == "https://github.com/Winipedia/pyrig/issues"
 
+    def test_security_advisory_url(self) -> None:
+        """Test method."""
+        result = RemoteVersionController.I.security_advisory_url()
+        assert result == "https://github.com/Winipedia/pyrig/security/advisories/new"
+
     def test_releases_url(self) -> None:
         """Test method."""
         result = RemoteVersionController.I.releases_url()

@@ -47,6 +47,12 @@
         "env":
           "GH_TOKEN": "${{ secrets.REPO_TOKEN }}"
       -
+        "name": "Enable Vulnerability Reporting"
+        "id": "enable-vulnerability-reporting"
+        "run": "bash .github/configure.sh vulnerability_reporting"
+        "env":
+          "GH_TOKEN": "${{ secrets.REPO_TOKEN }}"
+      -
         "name": "Create Tag"
         "id": "create-tag"
         "run": "git tag $(uv version --short)"
