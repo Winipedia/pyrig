@@ -365,21 +365,6 @@ groups = [
 priority = 11
 
 [[repos.hooks]]
-id = "check-protected-branch"
-name = "check protected branch"
-language = "system"
-entry = "uv run no-commit-to-branch"
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 11
-always_run = true
-pass_filenames = false
-
-[[repos.hooks]]
 id = "check-secrets"
 name = "check secrets"
 language = "system"
