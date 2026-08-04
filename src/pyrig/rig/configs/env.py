@@ -15,9 +15,8 @@ from pyrig.rig.configs.base.config_file import DictConfigFile
 class EnvConfigFile(DictConfigFile):
     """Config file manager for `.env`.
 
-    Only ever creates an empty `.env` file when one is missing. Existing
-    content is never read or rewritten, so user secrets are never at risk of
-    being overwritten.
+    Only ever creates an empty `.env` file when one is missing, never reads
+    or changes the file content.
     """
 
     def _configs(self) -> dict[str, Any]:

@@ -4,6 +4,7 @@ site_description = "A tool that standardizes and automates Python project setup,
 site_url = "https://Winipedia.github.io/pyrig"
 repo_url = "https://github.com/Winipedia/pyrig"
 edit_uri = "edit/main/docs"
+strict = true
 
 [project.validation]
 shadowed_definitions = true
@@ -21,14 +22,10 @@ features = [
   "content.code.copy",
   "content.code.select",
   "content.footnote.tooltips",
-  "content.tabs.link",
-  "content.tooltips",
   "navigation.expand",
   "navigation.footer",
   "navigation.indexes",
   "navigation.instant",
-  "navigation.instant.prefetch",
-  "navigation.instant.preview",
   "navigation.instant.progress",
   "navigation.path",
   "navigation.prune",
@@ -64,23 +61,15 @@ inventories = [
 ]
 
 [project.plugins.mkdocstrings.handlers.python.options]
-backlinks = "tree"
-docstring_section_style = "list"
-inherited_members = true
 members = true
 merge_init_into_class = true
-parameter_headings = true
-relative_crossrefs = true
 scoped_crossrefs = true
 separate_signature = true
-show_root_heading = true
 show_signature_annotations = true
 show_signature_type_parameters = true
 show_submodules = true
-show_symbol_type_heading = true
 show_symbol_type_toc = true
 signature_crossrefs = true
-type_parameter_headings = true
 filters = []
 
 [project.plugins.mkdocstrings.handlers.python.options.docstring_options]

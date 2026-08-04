@@ -44,15 +44,15 @@ class DocsBuilder(Tool):
         return (f"/{self.site_dir().as_posix()}", ".cache")
 
     def build_args(self, *args: str) -> Args:
-        """Construct arguments for the `zensical build --strict` command.
+        """Construct arguments for the `zensical build` command.
 
         Args:
-            *args: Additional arguments appended after `build --strict`.
+            *args: Additional arguments appended after `build`.
 
         Returns:
-            Args for `zensical build --strict <args...>`.
+            Args for `zensical build <args...>`.
         """
-        return self.args("build", "--strict", *args)
+        return self.args("build", *args)
 
     def docs_dir(self) -> Path:
         """Return the documentation source directory, `Path('docs')`."""
