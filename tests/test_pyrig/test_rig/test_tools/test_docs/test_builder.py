@@ -62,4 +62,4 @@ class TestDocsBuilder:
     def test_build_args(self) -> None:
         """Test method."""
         result = DocsBuilder.I.build_args()
-        assert result == ("zensical", "build", "--strict")
+        assert result == ("zensical", "build")

@@ -29,6 +29,7 @@ class TestDocsBuilderConfigFile:
         assert project["site_url"].startswith("https://")
         assert project["repo_url"].startswith("https://github.com/")
         assert project["edit_uri"] == "edit/main/docs"
+        assert project["strict"] is True
         assert project["validation"] == {
             "shadowed_definitions": True,
             "shadowed_footnotes": True,
@@ -44,14 +45,10 @@ class TestDocsBuilderConfigFile:
             "content.code.copy",
             "content.code.select",
             "content.footnote.tooltips",
-            "content.tabs.link",
-            "content.tooltips",
             "navigation.expand",
             "navigation.footer",
             "navigation.indexes",
             "navigation.instant",
-            "navigation.instant.prefetch",
-            "navigation.instant.preview",
             "navigation.instant.progress",
             "navigation.path",
             "navigation.prune",
@@ -83,30 +80,22 @@ class TestDocsBuilderConfigFile:
         assert handler["paths"] == ["src"]
         assert handler["inventories"] == ["https://docs.python.org/3/objects.inv"]
         assert handler["options"] == {
+            "docstring_options": {
+                "ignore_init_summary": True,
+            },
+            "members": True,
+            "merge_init_into_class": True,
+            "scoped_crossrefs": True,
+            "separate_signature": True,
+            "show_signature_annotations": True,
+            "show_signature_type_parameters": True,
+            "show_submodules": True,
+            "show_symbol_type_toc": True,
+            "signature_crossrefs": True,
             # `filters` is added by pyrig's own `pyrig-overrides` package,
             # which `.I` resolves to in this repo: it disables mkdocstrings'
             # default single-underscore member filter so that methods like
             # `_configs()` — pyrig's own subclassing surface — appear in the
             # API reference.
             "filters": [],
-            "backlinks": "tree",
-            "docstring_options": {
-                "ignore_init_summary": True,
-            },
-            "docstring_section_style": "list",
-            "inherited_members": True,
-            "members": True,
-            "merge_init_into_class": True,
-            "parameter_headings": True,
-            "relative_crossrefs": True,
-            "scoped_crossrefs": True,
-            "separate_signature": True,
-            "show_root_heading": True,
-            "show_signature_annotations": True,
-            "show_signature_type_parameters": True,
-            "show_submodules": True,
-            "show_symbol_type_heading": True,
-            "show_symbol_type_toc": True,
-            "signature_crossrefs": True,
-            "type_parameter_headings": True,
         }
