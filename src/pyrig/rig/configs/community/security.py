@@ -82,8 +82,8 @@ before reporting, or mention your version if you can't."""
 **Please do not report security vulnerabilities through public GitHub
 issues, discussions, or pull requests.**
 
-Instead, [report a vulnerability]({security_advisory_url}) using GitHub's
-private vulnerability reporting.
+Instead, [report a vulnerability]({security_advisory_url})
+using GitHub's private vulnerability reporting.
 
 Please include:
 
