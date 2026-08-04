@@ -18,15 +18,13 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
     """Configuration manager for `prek.toml`, the version control hook pipeline.
 
     Declares a single `local` repository entry containing hooks that cover
-    the full code-quality pipeline, all running against tools already
-    installed on the host rather than fetched by prek.
+    the full code-quality pipeline.
     """
 
-    def validate(self) -> bool:
-        """Validate the config file, then install the hooks unconditionally."""
-        correct = super().validate()
+    def _dump(self, configs: dict[str, Any]) -> None:
+        """Dump the `prek.toml` structure to disk and install the hooks."""
+        super()._dump(configs)
         VersionControlHookManager.I.install_args().run()
-        return correct
 
     def _configs(self) -> dict[str, Any]:
         """Build the required `prek.toml` structure.

@@ -78,12 +78,19 @@ class TestVersionControlHookManagerConfigFile:
         assert isinstance(repo["hooks"], list), "Expected 'hooks' to be a list"
         assert len(repo["hooks"]) > 0, "Expected at least one hook in repo"
 
-    def test_validate(self, mocker: MockerFixture) -> None:
+    def test__dump(self, mocker: MockerFixture, tmp_path: Path) -> None:
         """Test method."""
-        mock_hook_install = mocker.patch.object(
-            VersionControlHookManager,
-            VersionControlHookManager.install_args.__name__,
-            return_value=mocker.Mock(run=lambda: True),
-        )
-        assert VersionControlHookManagerConfigFile.I.validate()
-        mock_hook_install.assert_called_once()
+        with chdir(tmp_path):
+            mock_hook_install = mocker.patch.object(
+                VersionControlHookManager,
+                VersionControlHookManager.install_args.__name__,
+                return_value=mocker.Mock(run=lambda: True),
+            )
+            VersionControlHookManagerConfigFile.I._dump({})  # noqa: SLF001
+            mock_hook_install.assert_called_once()
+
+            VersionControlHookManagerConfigFile.I.validate()
+            assert mock_hook_install.call_count == 2  # noqa: PLR2004
+
+            VersionControlHookManagerConfigFile.I.validate()
+            assert mock_hook_install.call_count == 2  # noqa: PLR2004
