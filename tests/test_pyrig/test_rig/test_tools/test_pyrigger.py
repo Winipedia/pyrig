@@ -39,11 +39,6 @@ class TestPyrigger:
         """Test method."""
         assert Pyrigger.I.link_url() == "https://github.com/Winipedia/pyrig"
 
-    def test_setup_branch(self) -> None:
-        """Test method."""
-        result = Pyrigger.I.setup_branch()
-        assert result == "pyrig/init-project"
-
     def test_setup_steps(self) -> None:
         """Test that setup_steps returns a non-empty list of (Args, dict) pairs."""
         steps = Pyrigger.I.setup_steps()

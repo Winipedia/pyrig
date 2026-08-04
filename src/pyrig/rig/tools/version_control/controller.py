@@ -78,29 +78,6 @@ class VersionController(Tool):
         """
         return self.args("init", *args)
 
-    def switch_create_args(self, *args: str, branch: str) -> Args:
-        """Build arguments for `git switch --create <branch>`.
-
-        Args:
-            *args: Additional arguments appended to the command.
-            branch: Name of the new branch to create and switch to.
-
-        Returns:
-            Args for `git switch --create <branch> [args]`.
-        """
-        return self.switch_args("--create", branch, *args)
-
-    def switch_args(self, *args: str) -> Args:
-        """Build base arguments for `git switch`.
-
-        Args:
-            *args: A branch name and/or flags.
-
-        Returns:
-            Args for `git switch [args]`.
-        """
-        return self.args("switch", *args)
-
     def add_all_args(self, *args: str) -> Args:
         """Build arguments equivalent to running `git add .`.
 
@@ -145,41 +122,6 @@ class VersionController(Tool):
             Args for `git commit [args]`.
         """
         return self.args("commit", *args)
-
-    def branch_create_args(self, *args: str, branch: str) -> Args:
-        """Build arguments to create a branch at the current `HEAD`.
-
-        Args:
-            *args: Additional arguments appended to the command.
-            branch: Name of the branch to create.
-
-        Returns:
-            Args for `git branch <branch> [args]`.
-        """
-        return self.branch_args(branch, *args)
-
-    def branch_delete_args(self, *args: str, branch: str) -> Args:
-        """Build arguments to delete a branch.
-
-        Args:
-            *args: Additional arguments appended to the command.
-            branch: Name of the branch to delete.
-
-        Returns:
-            Args for `git branch --delete <branch> [args]`.
-        """
-        return self.branch_args("--delete", branch, *args)
-
-    def branch_args(self, *args: str) -> Args:
-        """Build base arguments for `git branch`.
-
-        Args:
-            *args: Branch names, start points, and/or flags.
-
-        Returns:
-            Args for `git branch [args]`.
-        """
-        return self.args("branch", *args)
 
     def push_origin_tag_args(self, *args: str, tag: str) -> Args:
         """Build arguments to push a specific tag to the `origin` remote.

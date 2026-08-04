@@ -109,22 +109,12 @@ class Pyrigger(VersionControlHookTool):
         Returns:
             Ordered list of `(Args, run_kwargs)` steps.
         """
-        default_branch = VersionController.I.default_branch()
-        setup_branch = self.setup_branch()
         return (
             (VersionController.I.init_args(), {}),
-            (VersionController.I.switch_create_args(branch=setup_branch), {}),
             (self.cmd_args(cmd=sync), {"check": False}),
             (VersionController.I.add_all_args(), {}),
             (VersionController.I.commit_with_msg_args(msg=self.setup_commit_msg()), {}),
-            (VersionController.I.branch_create_args(branch=default_branch), {}),
-            (VersionController.I.switch_args(default_branch), {}),
-            (VersionController.I.branch_delete_args(branch=setup_branch), {}),
         )
-
-    def setup_branch(self) -> str:
-        """Return the name of the throwaway branch the initial commit is made on."""
-        return f"{self.name()}/{snake_to_kebab_case(self.init_project.__name__)}"
 
     def setup_commit_msg(self) -> str:
         """Return the commit message for the initial commit."""

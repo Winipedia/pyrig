@@ -170,31 +170,6 @@ class TestVersionController:
         result = VersionController.I.add_all_args()
         assert result == ("git", "add", ".")
 
-    def test_switch_create_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.switch_create_args(branch="feature")
-        assert result == ("git", "switch", "--create", "feature")
-
-    def test_switch_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.switch_args("main")
-        assert result == ("git", "switch", "main")
-
-    def test_branch_create_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.branch_create_args(branch="main")
-        assert result == ("git", "branch", "main")
-
-    def test_branch_delete_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.branch_delete_args(branch="feature")
-        assert result == ("git", "branch", "--delete", "feature")
-
-    def test_branch_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.branch_args("main")
-        assert result == ("git", "branch", "main")
-
     def test_commit_args(self) -> None:
         """Test method."""
         result = VersionController.I.commit_args("-m", "Initial commit")
