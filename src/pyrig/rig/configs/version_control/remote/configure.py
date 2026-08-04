@@ -1,4 +1,4 @@
-"""Shell script that applies repository settings and rulesets via the GitHub CLI."""
+"""Shell script that applies repository configuration via the GitHub CLI."""
 
 from pathlib import Path
 
@@ -15,29 +15,32 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     """Configuration file for `.github/configure.sh`.
 
     Defines shell functions that read `.github/settings.json` and apply its
-    contents to the repository via the GitHub CLI. The script is meant to
-    be invoked directly with one of its function names as an argument
-    (e.g. `bash .github/configure.sh settings`), rather than sourced as a
-    library.
+    contents to the repository via the GitHub CLI, plus a function that
+    enables GitHub's private vulnerability reporting feature. The script is
+    meant to be invoked directly with one of its function names as an
+    argument (e.g. `bash .github/configure.sh settings`), rather than
+    sourced as a library.
 
-    Both functions call `gh api` against this repository directly, so only a
-    token accepted by `gh` (`GH_TOKEN` or `GITHUB_TOKEN`) needs to already be
-    set in the environment.
+    Every function calls `gh api` against this repository directly, so only
+    a token accepted by `gh` (`GH_TOKEN` or `GITHUB_TOKEN`) needs to already
+    be set in the environment.
     """
 
     def script_content(self) -> str:
         """Return the required shell script content, below the shared header.
 
         Returns:
-            The shared setup code, the `settings` and `rulesets` shell
-            function definitions, and the trailing dispatch line that lets
-            the script be run directly.
+            The shared setup code, the `settings`, `rulesets`, and
+            `vulnerability_reporting` shell function definitions, and
+            the trailing dispatch line that lets the script be run directly.
         """
         return f"""{self.global_content()}
 
 {self.apply_repository_settings_script()}
 
 {self.apply_rulesets_script()}
+
+{self.enable_vulnerability_reporting_script()}
 
 {self.footer_content()}
 """
@@ -99,6 +102,22 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         """Return `"rulesets"`, the function name."""
         return "rulesets"
 
+    def enable_vulnerability_reporting_script(self) -> str:
+        """Return the `vulnerability_reporting` shell function.
+
+        Returns:
+            Function definition that `PUT`s the GitHub API endpoint that
+            enables private vulnerability reporting for the repository.
+        """
+        endpoint = f"repos/${{{self.repo_variable()}}}/private-vulnerability-reporting"
+        return f"""{self.enable_vulnerability_reporting_function()}() {{
+  gh api "{endpoint}" --method=PUT
+}}"""
+
+    def enable_vulnerability_reporting_function(self) -> str:
+        """Return `"vulnerability_reporting"`, the function name."""
+        return "vulnerability_reporting"
+
     def footer_content(self) -> str:
         """Return the line that invokes the function named by the script's arguments.
 
@@ -115,9 +134,8 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         """Return the content defined outside any function, shared by all of them.
 
         Defined once at the top of the script rather than inside each
-        function, since both `settings()` and `rulesets()` reference the
-        `repo_variable()` variable. Any other variable or setup shared
-        across functions in the future would also be returned here.
+        function for reuse. Any other variable or setup shared across functions in
+        the future would also be returned here.
 
         Returns:
             Currently just the `repo_variable()` variable assignment.

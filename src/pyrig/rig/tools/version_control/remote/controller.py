@@ -110,6 +110,15 @@ class RemoteVersionController(Tool):
         """
         return f"{self.url_base()}/{self.repository()}"
 
+    def security_advisory_url(self) -> str:
+        """Construct the URL for filing a new private security advisory.
+
+        Returns:
+            URL in the format
+            `https://github.com/{owner}/{repo}/security/advisories/new`.
+        """
+        return f"{self.repo_url()}/security/advisories/new"
+
     def repository(self) -> str:
         """Return `"owner/repo"` for this repository.
 

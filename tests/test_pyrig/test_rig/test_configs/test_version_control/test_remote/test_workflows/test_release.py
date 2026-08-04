@@ -45,6 +45,17 @@ class TestReleaseWorkflowConfigFile:
         assert ConfigureRepositoryConfigFile().apply_rulesets_function() in step["run"]
         assert step["env"]["GH_TOKEN"]
 
+    def test_step_enable_vulnerability_reporting(
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        step = my_test_release_workflow().step_enable_vulnerability_reporting()
+        config = ConfigureRepositoryConfigFile()
+        function = config.enable_vulnerability_reporting_function()
+        assert function in step["run"]
+        assert step["env"]["GH_TOKEN"]
+
     def test_run_configure_repository_function(
         self,
         my_test_release_workflow: type[ReleaseWorkflowConfigFile],
@@ -71,11 +82,13 @@ class TestReleaseWorkflowConfigFile:
     ) -> None:
         """Test method."""
         workflow = my_test_release_workflow()
-        step_settings, step_rulesets = workflow.steps_configure_repository()
+        step_settings, step_rulesets, step_pvr = workflow.steps_configure_repository()
         assert "run" in step_settings
         assert "env" in step_settings
         assert "run" in step_rulesets
         assert "env" in step_rulesets
+        assert "run" in step_pvr
+        assert "env" in step_pvr
 
     def test_job(self) -> None:
         """Test method."""

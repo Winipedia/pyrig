@@ -86,8 +86,9 @@ You will need a [GitHub](https://github.com) account.
 1. Go to GitHub Settings → Developer settings → Personal access tokens →
 Fine-grained tokens
 2. Under Repository permissions, set:
-   - Administration: Read and write (for applying repository settings
-     and protection rulesets in the release workflow)
+   - Administration: Read and write (for applying repository settings,
+     protection rulesets, and private vulnerability reporting in the
+     release workflow)
    - Pages: Read and write (for enabling GitHub Pages in the deploy workflow)
 3. Generate token
 4. **Copy token immediately** (you won't see it again)

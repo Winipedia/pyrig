@@ -24,6 +24,13 @@ class TestConfigureRepositoryConfigFile:
         """Test method."""
         assert ConfigureRepositoryConfigFile.I.apply_rulesets_function() == "rulesets"
 
+    def test_enable_vulnerability_reporting_function(self) -> None:
+        """Test method."""
+        assert (
+            ConfigureRepositoryConfigFile.I.enable_vulnerability_reporting_function()
+            == "vulnerability_reporting"
+        )
+
     def test_parent_path(self) -> None:
         """Test method."""
         assert ConfigureRepositoryConfigFile.I.parent_path() == Path(".github")
@@ -39,6 +46,7 @@ class TestConfigureRepositoryConfigFile:
         assert script.repo_variable() in content
         assert script.apply_repository_settings_function() in content
         assert script.apply_rulesets_function() in content
+        assert script.enable_vulnerability_reporting_function() in content
         assert "gh api" in content
         # the footer must come last so the functions are defined before it runs
         assert content.rstrip("\n").endswith(script.footer_content())
@@ -75,3 +83,14 @@ class TestConfigureRepositoryConfigFile:
         assert 'url="${endpoint}${id:+/${id}}"' in result
         assert 'gh api "${url}"' in result
         assert "[[ -z" in result
+
+    def test_enable_vulnerability_reporting_script(self) -> None:
+        """Test method."""
+        script = ConfigureRepositoryConfigFile.I
+        result = script.enable_vulnerability_reporting_script()
+        assert result.startswith(
+            f"{script.enable_vulnerability_reporting_function()}() {{",
+        )
+        assert "${repo}" in result
+        assert "private-vulnerability-reporting" in result
+        assert "--method=PUT" in result

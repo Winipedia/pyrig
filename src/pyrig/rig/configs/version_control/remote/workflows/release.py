@@ -21,8 +21,8 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     both succeeded and was itself triggered by a push — so the daily
     scheduled run and pull request runs never produce a release.
     A qualifying run applies repository settings and protection rulesets,
-    tags the current version, and publishes a GitHub release with auto-generated
-    release notes.
+    enables private vulnerability reporting, tags the current version, and
+    publishes a GitHub release with auto-generated release notes.
     """
 
     def job(  # noqa: PLR0913
@@ -115,9 +115,9 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
 
         Returns:
             Steps that perform the full release sequence: environment setup,
-            applying repository settings and rulesets, creating and pushing
-            the version tag, exporting the version, and publishing the
-            GitHub release.
+            applying repository settings and rulesets, enabling private
+            vulnerability reporting, creating and pushing the version tag,
+            exporting the version, and publishing the GitHub release.
         """
         return [
             *self.steps_core_setup(),
@@ -232,15 +232,16 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         )
 
     def steps_configure_repository(self) -> list[dict[str, Any]]:
-        """Return the ordered steps that apply repository settings and rulesets.
+        """Return the ordered steps that configure the repository.
 
         Returns:
-            Two steps in sequence: apply general repository settings, then
-            upsert all rulesets.
+            Three steps in sequence: apply general repository settings,
+            upsert all rulesets, then enable private vulnerability reporting.
         """
         return [
             self.step_apply_repository_settings(),
             self.step_apply_rulesets(),
+            self.step_enable_vulnerability_reporting(),
         ]
 
     def step_apply_repository_settings(
@@ -288,6 +289,32 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             self.step_apply_rulesets,
             run=self.run_configure_repository_function(
                 ConfigureRepositoryConfigFile.I.apply_rulesets_function(),
+            ),
+            env=self.configure_repository_env(),
+            step=step,
+        )
+
+    def step_enable_vulnerability_reporting(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that enables private vulnerability reporting.
+
+        Runs the generated repository-settings script, invoking its
+        `vulnerability_reporting` function.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that runs `vulnerability_reporting` from the
+            settings script.
+        """
+        return self.step(
+            self.step_enable_vulnerability_reporting,
+            run=self.run_configure_repository_function(
+                ConfigureRepositoryConfigFile.I.enable_vulnerability_reporting_function(),
             ),
             env=self.configure_repository_env(),
             step=step,
