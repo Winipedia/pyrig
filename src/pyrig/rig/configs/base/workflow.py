@@ -191,7 +191,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         uses: str | None = None,
         with_: dict[str, Any] | None = None,
         env: dict[str, Any] | None = None,
-        step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Build a step configuration dict.
 
@@ -205,31 +204,26 @@ class WorkflowConfigFile(YMLDictConfigFile):
                 `"actions/checkout@main"`).
             with_: Input parameters passed to the action.
             env: Step-level environment variables.
-            step: Additional keys to merge into the step configuration.
 
         Returns:
             Step configuration dict with at least `name` and `id` set.
         """
-        if step is None:
-            step = {}
-        step_config: dict[str, Any] = {
+        step = {
             "name": self.name_from_method(method),
             "id": self.id_from_method(method),
         }
         if if_condition is not None:
-            step_config["if"] = if_condition
+            step["if"] = if_condition
         if run is not None:
-            step_config["run"] = run
+            step["run"] = run
         if uses is not None:
-            step_config["uses"] = uses
+            step["uses"] = uses
         if with_ is not None:
-            step_config["with"] = with_
+            step["with"] = with_
         if env is not None:
-            step_config["env"] = env
+            step["env"] = env
 
-        step_config.update(step)
-
-        return step_config
+        return step
 
     def name_from_method(self, method: MethodType) -> str:
         """Generate a human-readable display name from a method.
@@ -604,35 +598,24 @@ class WorkflowConfigFile(YMLDictConfigFile):
             self.step_setup_package_manager(python_version=python_version),
         ]
 
-    def step_checkout_repository(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_checkout_repository(self) -> dict[str, Any]:
         """Build a step that checks out the repository.
 
         Uses `actions/checkout@main`, which authenticates with the automatic
         `GITHUB_TOKEN`.
 
-        Args:
-            step: Additional keys to merge into the step configuration.
-
         Returns:
             Step using `actions/checkout@main`.
         """
-        if step is None:
-            step = {}
         return self.step(
             self.step_checkout_repository,
             uses="actions/checkout@main",
-            step=step,
         )
 
     def step_setup_package_manager(
         self,
         *,
         python_version: str,
-        step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Build a step that installs uv and pins the Python version.
 
@@ -642,7 +625,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
         Args:
             python_version: Python version string to pin, e.g. `"3.13"`.
-            step: Additional keys to merge into the step configuration.
 
         Returns:
             Step using `astral-sh/setup-uv@main`.
@@ -651,21 +633,13 @@ class WorkflowConfigFile(YMLDictConfigFile):
             self.step_setup_package_manager,
             uses="astral-sh/setup-uv@main",
             with_={"python-version": python_version},
-            step=step,
         )
 
-    def step_update_dependencies(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_update_dependencies(self) -> dict[str, Any]:
         """Build a step that upgrades all pinned dependencies.
 
         Runs `uv lock --upgrade` to update the lock file to the latest
         versions allowed by the version constraints in `pyproject.toml`.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
 
         Returns:
             Step that runs `uv lock --upgrade`.
@@ -673,20 +647,12 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return self.step(
             self.step_update_dependencies,
             run=str(PackageManager.I.update_dependencies_args()),
-            step=step,
         )
 
-    def step_install_dependencies(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_install_dependencies(self) -> dict[str, Any]:
         """Build a step that synchronises the virtual environment.
 
         Runs `uv sync` to install all locked dependencies.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
 
         Returns:
             Step that runs `uv sync`.
@@ -694,7 +660,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return self.step(
             self.step_install_dependencies,
             run=str(PackageManager.I.install_dependencies_args()),
-            step=step,
         )
 
     def repo_token_var(self) -> str:

@@ -100,15 +100,8 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             self.step_deploy_documentation(),
         ]
 
-    def step_build_documentation(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_build_documentation(self) -> dict[str, Any]:
         """Build a step that builds the documentation site into the `site/` directory.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
 
         Returns:
             Step that runs the documentation build command.
@@ -116,14 +109,9 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return self.step(
             self.step_build_documentation,
             run=str(PackageManager.I.run_args(*DocsBuilder.I.build_args())),
-            step=step,
         )
 
-    def step_configure_pages(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_configure_pages(self) -> dict[str, Any]:
         """Build a step that enables GitHub Pages for the repository.
 
         Idempotent: running it on a repository where Pages is already enabled
@@ -137,9 +125,6 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         with `Resource not accessible by integration`. A fine-grained PAT
         reaches the endpoint with `pages: write` alone.
 
-        Args:
-            step: Additional keys to merge into the step configuration.
-
         Returns:
             Step that enables GitHub Pages using `REPO_TOKEN`.
         """
@@ -147,21 +132,13 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             self.step_configure_pages,
             uses="actions/configure-pages@main",
             with_={"enablement": "true", "token": self.insert_repo_token()},
-            step=step,
         )
 
-    def step_deploy_documentation(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_deploy_documentation(self) -> dict[str, Any]:
         """Build a step that deploys the uploaded Pages artifact to GitHub Pages.
 
         Requires the job to have `pages: write` and `id-token: write`
         permissions.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
 
         Returns:
             Step using `actions/deploy-pages@main`.
@@ -169,18 +146,10 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return self.step(
             self.step_deploy_documentation,
             uses="actions/deploy-pages@main",
-            step=step,
         )
 
-    def step_upload_documentation(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_upload_documentation(self) -> dict[str, Any]:
         """Build a step that uploads the `site/` directory as a Pages artifact.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
 
         Returns:
             Step using `actions/upload-pages-artifact@main`.
@@ -189,5 +158,4 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             self.step_upload_documentation,
             uses="actions/upload-pages-artifact@main",
             with_={"path": DocsBuilder.I.site_dir().as_posix()},
-            step=step,
         )

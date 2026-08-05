@@ -240,7 +240,6 @@ class TestWorkflowConfigFile:
             uses="action/checkout@v2",
             with_={"param": "value"},
             env={"ENV_VAR": "value"},
-            step={"existing": "config"},
         )
         assert "name" in result
         assert "id" in result
@@ -328,10 +327,6 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_checkout_repository()
-        assert "uses" in result, "Expected 'uses' in step"
-
-        # Test with step=None (covers lines 727-729)
-        result = my_test_workflow().step_checkout_repository(step={})
         assert "uses" in result, "Expected 'uses' in step"
 
     def test_step_setup_package_manager(
