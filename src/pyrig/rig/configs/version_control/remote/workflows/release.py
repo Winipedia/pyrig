@@ -128,11 +128,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             self.step_create_release(),
         ]
 
-    def step_create_release(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_create_release(self) -> dict[str, Any]:
         """Build a step that creates a GitHub release.
 
         Uses `ncipollo/release-action` to create a release named and
@@ -154,7 +150,6 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
                 "name": version,
                 "tag": version,
             },
-            step=step,
         )
 
     def insert_version_from_extract_version_step(self) -> str:
