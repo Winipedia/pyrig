@@ -2,7 +2,6 @@
 
 from pathlib import Path
 
-from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
@@ -58,15 +57,6 @@ class TestPackageManager:
     def test_package_root(self) -> None:
         """Test method."""
         assert PackageManager.I.package_root() == Path("src/pyrig")
-
-    def test_project_cmd_args(self) -> None:
-        """Test method."""
-
-        def test_project_cmd_args(arg: str) -> tuple[str, str, str]:
-            return ("pyrig", "test-project-cmd-args", arg)
-
-        result = PackageManager.I.project_cmd_args("arg", cmd=test_project_cmd_args)
-        assert result == Args("pyrig", "test-project-cmd-args", "arg")
 
     def test_project_name(self) -> None:
         """Test method."""

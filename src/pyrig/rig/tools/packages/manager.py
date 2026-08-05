@@ -1,7 +1,6 @@
 """Wrapper for the project's package manager and source of its layout conventions."""
 
 from pathlib import Path
-from types import FunctionType
 from typing import Any
 
 from pyrig_runtime.core.strings import kebab_to_snake_case, snake_to_kebab_case
@@ -99,22 +98,6 @@ class PackageManager(VersionControlHookTool):
     def no_auto_install_env_var(self) -> str:
         """Return the name of the env var that disables uv's implicit auto-sync."""
         return "UV_NO_SYNC"
-
-    def project_cmd_args(self, *args: str, cmd: FunctionType) -> Args:
-        """Construct `Args` for running one of the project's own CLI subcommands.
-
-        The subcommand name is derived from `cmd`'s `__name__`, converted from
-        snake_case to kebab-case.
-
-        Args:
-            *args: Additional arguments forwarded to the subcommand.
-            cmd: Callable whose `__name__` is used as the subcommand name.
-
-        Returns:
-            Args for `<project-name> <cmd-as-kebab> <args...>`.
-        """
-        cmd_name = snake_to_kebab_case(cmd.__name__)
-        return Args(self.project_name(), cmd_name, *args)
 
     def run_args(self, *args: str) -> Args:
         """Construct `Args` for `uv run`.
