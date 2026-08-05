@@ -28,7 +28,6 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         runs_on: str = WorkflowConfigFile.UBUNTU_LATEST,
         if_condition: str | None = None,
         steps: list[dict[str, Any]] | None = None,
-        job: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Build a job, defaulting `if_condition` to a success-gate condition.
 
@@ -47,7 +46,6 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             permissions=permissions,
             runs_on=runs_on,
             steps=steps,
-            job=job,
         )
 
     def jobs(self) -> dict[str, Any]:

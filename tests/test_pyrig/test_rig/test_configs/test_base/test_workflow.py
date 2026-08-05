@@ -180,13 +180,8 @@ class TestWorkflowConfigFile:
         # Test with job=None (line 222->224 False branch)
         result = my_test_workflow().job(
             self.test_job,
-            job=None,
             runs_on="ubuntu-latest",
         )
-        assert len(result) == 1, "Expected job to have one key"
-
-        # Test with job={} (line 222->224 True branch - job is not None)
-        result = my_test_workflow().job(self.test_job, job={}, runs_on="ubuntu-latest")
         assert len(result) == 1, "Expected job to have one key"
 
         # Test with steps=None (line 234->236 False branch)

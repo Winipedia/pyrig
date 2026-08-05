@@ -35,7 +35,6 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         runs_on: str = WorkflowConfigFile.UBUNTU_LATEST,
         if_condition: str | None = None,
         steps: list[dict[str, Any]] | None = None,
-        job: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Build a job gated by default on a successful, push-triggered run.
 
@@ -49,7 +48,6 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
                 whether the job runs. Defaults to requiring the triggering
                 run to have succeeded and been push-triggered.
             steps: Ordered list of step configurations.
-            job: Additional job-level keys to merge into the configuration.
 
         Returns:
             Dict mapping the derived job ID to its configuration.
@@ -65,7 +63,6 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             runs_on=runs_on,
             if_condition=if_condition,
             steps=steps,
-            job=job,
         )
 
     def jobs(self) -> dict[str, Any]:
