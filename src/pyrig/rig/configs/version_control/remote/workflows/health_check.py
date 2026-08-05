@@ -103,15 +103,8 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             self.step_aggregate_jobs(),
         ]
 
-    def step_aggregate_jobs(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_aggregate_jobs(self) -> dict[str, Any]:
         """Build a no-op step that only echoes a message.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
 
         Returns:
             Step that echoes an aggregation message.
@@ -119,7 +112,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         return self.step(
             self.step_aggregate_jobs,
             run="echo 'Aggregating jobs into one job.'",
-            step=step,
         )
 
     def job_health_checks(self) -> dict[str, Any]:
@@ -149,19 +141,12 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             self.step_run_version_control_hooks(),
         ]
 
-    def step_create_version_control_ignored_files(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_create_version_control_ignored_files(self) -> dict[str, Any]:
         """Build a step that creates version-control-ignored local config files.
 
         Must run before the pre-commit hooks step: creating these files here
         avoids a spurious failure from the hook that checks the project is
         fully synchronized.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
 
         Returns:
             Step that creates the missing local config files.
@@ -176,18 +161,10 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
                     ),
                 ),
             ),
-            step=step,
         )
 
-    def step_run_version_control_hooks(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_run_version_control_hooks(self) -> dict[str, Any]:
         """Build a step that runs all pre-commit hooks via prek.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
 
         Returns:
             Step that runs the pre-commit hooks.
@@ -199,7 +176,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
                     *VersionControlHookManager.I.run_all_files_all_hooks_args(),
                 ),
             ),
-            step=step,
         )
 
     def job_matrix_health_checks(self) -> dict[str, Any]:
@@ -234,24 +210,14 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             self.step_run_tests(),
         ]
 
-    def step_run_tests(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_run_tests(self) -> dict[str, Any]:
         """Build a step that runs the test suite with pytest.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
 
         Returns:
             Step that runs `uv run pytest`.
         """
-        if step is None:
-            step = {}
         run = str(PackageManager.I.run_args(*ProjectTester.I.test_args()))
         return self.step(
             self.step_run_tests,
             run=run,
-            step=step,
         )

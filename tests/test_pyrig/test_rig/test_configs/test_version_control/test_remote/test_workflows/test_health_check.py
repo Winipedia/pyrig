@@ -113,9 +113,6 @@ class TestHealthCheckWorkflowConfigFile:
         """Test method."""
         step = my_test_health_check_workflow().step_run_tests()
         assert "run" in step
-        step = my_test_health_check_workflow().step_run_tests(step={})
-        assert "run" in step
-
         assert "env" not in step
 
     def test_step_run_version_control_hooks(
