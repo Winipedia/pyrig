@@ -267,12 +267,8 @@ class TestWorkflowConfigFile:
 
     def test_strategy_matrix(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_workflow().strategy_matrix()
+        result = my_test_workflow().strategy_matrix(matrix={})
         assert "matrix" in result, "Expected 'matrix' in strategy"
-
-        # Test with strategy=None and matrix=None (covers lines 485-490)
-        result = my_test_workflow().strategy_matrix(strategy={}, matrix={})
-        assert "matrix" in result
 
     def test_strategy(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -284,7 +280,7 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().matrix_os()
         assert "os" in result
 
-        result = my_test_workflow().matrix_os(os=["ubuntu-latest"], matrix={})
+        result = my_test_workflow().matrix_os(os=["ubuntu-latest"])
         assert "os" in result
         assert result["os"] == ["ubuntu-latest"]
 
@@ -296,10 +292,7 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().matrix_python_version()
         assert "python-version" in result
 
-        result = my_test_workflow().matrix_python_version(
-            python_versions=["3.14"],
-            matrix={},
-        )
+        result = my_test_workflow().matrix_python_version(python_versions=["3.14"])
         assert "python-version" in result
         assert result["python-version"] == ["3.14"]
 
@@ -428,10 +421,9 @@ class TestWorkflowConfigFile:
         """Test method."""
         strategy = HealthCheckWorkflowConfigFile().strategy_matrix_python_version(
             python_versions=["3.14", "3.15"],
-            matrix={"os": ["ubuntu-latest", "windows-latest"]},
         )
         assert "matrix" in strategy, "Expected 'matrix' in strategy"
-        assert "python-version" in strategy["matrix"]
+        assert strategy["matrix"]["python-version"] == ["3.14", "3.15"]
 
         strategy = HealthCheckWorkflowConfigFile().strategy_matrix_python_version()
         assert "matrix" in strategy
