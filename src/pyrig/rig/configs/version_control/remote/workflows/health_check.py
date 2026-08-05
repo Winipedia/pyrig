@@ -144,7 +144,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
     def step_create_version_control_ignored_files(self) -> dict[str, Any]:
         """Build a step that creates version-control-ignored local config files.
 
-        Must run before the pre-commit hooks step: creating these files here
+        Must run before the pre-commit hooks step. Creating these files here
         avoids a spurious failure from the hook that checks the project is
         fully synchronized.
 
