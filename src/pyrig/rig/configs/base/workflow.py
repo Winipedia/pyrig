@@ -151,7 +151,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         runs_on: str = UBUNTU_LATEST,
         if_condition: str | None = None,
         steps: list[dict[str, Any]] | None = None,
-        job: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Build a job configuration dict.
 
@@ -165,27 +164,23 @@ class WorkflowConfigFile(YMLDictConfigFile):
             if_condition: GitHub Actions conditional expression controlling
                 whether the job runs.
             steps: Ordered list of step configurations.
-            job: Additional job-level keys to merge into the configuration.
 
         Returns:
             Dict mapping the derived job ID to its configuration.
         """
-        if job is None:
-            job = {}
-        job_config: dict[str, Any] = {}
+        job = {}
         if if_condition is not None:
-            job_config["if"] = if_condition
+            job["if"] = if_condition
         if needs is not None:
-            job_config["needs"] = needs
+            job["needs"] = needs
         if permissions is not None:
-            job_config["permissions"] = permissions
-        job_config["runs-on"] = runs_on
+            job["permissions"] = permissions
+        job["runs-on"] = runs_on
         if strategy is not None:
-            job_config["strategy"] = strategy
+            job["strategy"] = strategy
         if steps is not None:
-            job_config["steps"] = steps
-        job_config.update(job)
-        return {self.id_from_method(method): job_config}
+            job["steps"] = steps
+        return {self.id_from_method(method): job}
 
     def step(  # noqa: PLR0913
         self,
