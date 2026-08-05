@@ -115,3 +115,10 @@ pyrig provides a complete end-to-end CI/CD pipeline with GitHub Actions and
 integrated repository protection.
 See the [CI/CD Pipeline Documentation](ci-cd.md) for a walkthrough of how
 it works and how to customize it.
+
+## Drawbacks
+
+pyrig's opinionated, no-toggles approach has real trade-offs, and undoing it
+later takes more than removing one dependency.
+See the [Drawbacks Documentation](drawbacks.md) for an honest list of the
+downsides and a full checklist for removing pyrig from your project.
