@@ -285,19 +285,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().strategy(strategy={})
         assert "fail-fast" in result
 
-    def test_matrix_os_and_python_version(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().matrix_os_and_python_version()
-        assert "os" in result
-        assert "python-version" in result
-
-        result = my_test_workflow().matrix_os_and_python_version(matrix={})
-        assert "os" in result
-        assert "python-version" in result
-
     def test_matrix_os(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().matrix_os()
@@ -446,3 +433,16 @@ class TestWorkflowConfigFile:
             "github.event.workflow_run.event == 'push'"
         )
         assert result == expected
+
+    def test_strategy_matrix_python_version(self) -> None:
+        """Test method."""
+        strategy = HealthCheckWorkflowConfigFile().strategy_matrix_python_version(
+            python_versions=["3.14", "3.15"],
+            matrix={"os": ["ubuntu-latest", "windows-latest"]},
+        )
+        assert "matrix" in strategy, "Expected 'matrix' in strategy"
+        assert "python-version" in strategy["matrix"]
+
+        strategy = HealthCheckWorkflowConfigFile().strategy_matrix_python_version()
+        assert "matrix" in strategy
+        assert "python-version" in strategy["matrix"]
