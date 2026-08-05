@@ -333,8 +333,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         self,
         os: list[str] | None = None,
         python_versions: list[str] | None = None,
-        matrix: dict[str, list[Any]] | None = None,
-        strategy: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Create a strategy with OS and Python version matrix.
 
@@ -345,28 +343,21 @@ class WorkflowConfigFile(YMLDictConfigFile):
             python_versions: Python version strings to test against. Defaults
                 to all versions returned by
                 `PyprojectConfigFile.supported_python_versions()`.
-            matrix: Additional matrix dimensions to merge in.
-            strategy: Additional strategy options (e.g. `max-parallel`).
 
         Returns:
             Strategy configuration containing the combined OS and Python
             version matrix.
         """
-        return self.strategy_matrix_python_version(
-            python_versions=python_versions,
-            matrix=matrix,
-            strategy=self.strategy_matrix_os(
-                os=os,
-                matrix=matrix,
-                strategy=strategy,
-            ),
+        return self.strategy_matrix(
+            matrix={
+                **self.matrix_os(os=os),
+                **self.matrix_python_version(python_versions=python_versions),
+            },
         )
 
     def strategy_matrix_python_version(
         self,
         python_versions: list[str] | None = None,
-        matrix: dict[str, list[Any]] | None = None,
-        strategy: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Create a strategy with Python version matrix.
 
@@ -374,25 +365,17 @@ class WorkflowConfigFile(YMLDictConfigFile):
             python_versions: Python version strings to test against. Defaults
                 to all versions returned by
                 `PyprojectConfigFile.supported_python_versions()`.
-            matrix: Additional matrix dimensions to merge in.
-            strategy: Additional strategy options (e.g. `max-parallel`).
 
         Returns:
             Strategy configuration containing the Python version matrix.
         """
         return self.strategy_matrix(
-            matrix=self.matrix_python_version(
-                python_versions=python_versions,
-                matrix=matrix,
-            ),
-            strategy=strategy,
+            matrix=self.matrix_python_version(python_versions=python_versions),
         )
 
     def strategy_matrix_os(
         self,
         os: list[str] | None = None,
-        matrix: dict[str, list[Any]] | None = None,
-        strategy: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Create a strategy with OS matrix.
 
@@ -400,38 +383,26 @@ class WorkflowConfigFile(YMLDictConfigFile):
             os: Runner labels to test against. Defaults to Ubuntu, Windows,
                 and macOS latest (`ubuntu-latest`, `windows-latest`,
                 `macos-latest`).
-            matrix: Additional matrix dimensions to merge in.
-            strategy: Additional strategy options (e.g. `max-parallel`).
 
         Returns:
             Strategy configuration containing the OS matrix.
         """
-        return self.strategy_matrix(
-            matrix=self.matrix_os(os=os, matrix=matrix),
-            strategy=strategy,
-        )
+        return self.strategy_matrix(matrix=self.matrix_os(os=os))
 
     def strategy_matrix(
         self,
         *,
-        strategy: dict[str, Any] | None = None,
-        matrix: dict[str, list[Any]] | None = None,
+        matrix: dict[str, list[Any]],
     ) -> dict[str, Any]:
         """Create a matrix strategy configuration.
 
         Args:
-            strategy: Base strategy options.
             matrix: Matrix dimensions.
 
         Returns:
             Strategy configuration with matrix.
         """
-        if strategy is None:
-            strategy = {}
-        if matrix is None:
-            matrix = {}
-        strategy.setdefault("matrix", {}).update(matrix)
-        return self.strategy(strategy=strategy)
+        return self.strategy(strategy={"matrix": matrix})
 
     def strategy(
         self,
@@ -456,7 +427,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         self,
         *,
         os: list[str] | None = None,
-        matrix: dict[str, list[Any]] | None = None,
     ) -> dict[str, Any]:
         """Create a matrix with OS dimension.
 
@@ -464,23 +434,18 @@ class WorkflowConfigFile(YMLDictConfigFile):
             os: Runner labels to include. Defaults to Ubuntu, Windows, and
                 macOS latest (`ubuntu-latest`, `windows-latest`,
                 `macos-latest`).
-            matrix: Additional matrix dimensions to merge in.
 
         Returns:
             Matrix dict with the `os` key populated.
         """
         if os is None:
             os = [self.UBUNTU_LATEST, self.WINDOWS_LATEST, self.MACOS_LATEST]
-        if matrix is None:
-            matrix = {}
-        matrix["os"] = os
-        return self.matrix(matrix=matrix)
+        return self.matrix({"os": os})
 
     def matrix_python_version(
         self,
         *,
         python_versions: list[str] | None = None,
-        matrix: dict[str, list[Any]] | None = None,
     ) -> dict[str, Any]:
         """Create a matrix with Python version dimension.
 
@@ -488,7 +453,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             python_versions: Python version strings to include. Defaults to
                 all versions returned by
                 `PyprojectConfigFile.supported_python_versions()`.
-            matrix: Additional matrix dimensions to merge in.
 
         Returns:
             Matrix dict with the `python-version` key populated.
@@ -497,10 +461,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             python_versions = [
                 str(v) for v in PyprojectConfigFile.I.supported_python_versions()
             ]
-        if matrix is None:
-            matrix = {}
-        matrix["python-version"] = python_versions
-        return self.matrix(matrix=matrix)
+        return self.matrix({"python-version": python_versions})
 
     def matrix(self, matrix: dict[str, list[Any]]) -> dict[str, Any]:
         """Return the matrix configuration.
