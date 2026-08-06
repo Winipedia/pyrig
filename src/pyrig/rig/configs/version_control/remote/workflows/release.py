@@ -118,7 +118,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """
         return [
             *self.steps_core_setup(),
-            *self.steps_configure_repository(),
+            self.step_configure_repository(),
             self.step_create_tag(),
             self.step_push_tag(),
             self.step_extract_version(),
@@ -196,91 +196,21 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             ),
         )
 
-    def steps_configure_repository(self) -> list[dict[str, Any]]:
-        """Return the ordered steps that configure the repository.
+    def step_configure_repository(self) -> dict[str, Any]:
+        """Build a step that applies repository settings via the GitHub API.
+
+        Runs the generated configuration script, which invokes every
+        function it defines in turn: applying general repository settings,
+        upserting all rulesets, and enabling private vulnerability
+        reporting. A function added to `ConfigureRepositoryConfigFile` runs
+        automatically as part of this step, without a corresponding change
+        here.
 
         Returns:
-            Three steps in sequence: apply general repository settings,
-            upsert all rulesets, then enable private vulnerability reporting.
-        """
-        return [
-            self.step_apply_repository_settings(),
-            self.step_apply_rulesets(),
-            self.step_enable_vulnerability_reporting(),
-        ]
-
-    def step_apply_repository_settings(self) -> dict[str, Any]:
-        """Build a step that patches general repository settings via the GitHub API.
-
-        Runs the generated repository-settings script, invoking its
-        `settings` function.
-
-        Returns:
-            Step that runs `settings` from the settings script.
+            Step that runs the configuration script.
         """
         return self.step(
-            self.step_apply_repository_settings,
-            run=self.run_configure_repository_function(
-                ConfigureRepositoryConfigFile.I.apply_repository_settings_function(),
-            ),
-            env=self.configure_repository_env(),
+            self.step_configure_repository,
+            run=f"bash {ConfigureRepositoryConfigFile.I.path().as_posix()}",
+            env={"GH_TOKEN": self.insert_repo_token()},
         )
-
-    def step_apply_rulesets(self) -> dict[str, Any]:
-        """Build a step that upserts all rulesets from the settings file.
-
-        Runs the generated repository-settings script, invoking its
-        `rulesets` function.
-
-        Returns:
-            Step that runs `rulesets` from the settings script.
-        """
-        return self.step(
-            self.step_apply_rulesets,
-            run=self.run_configure_repository_function(
-                ConfigureRepositoryConfigFile.I.apply_rulesets_function(),
-            ),
-            env=self.configure_repository_env(),
-        )
-
-    def step_enable_vulnerability_reporting(self) -> dict[str, Any]:
-        """Build a step that enables private vulnerability reporting.
-
-        Runs the generated repository-settings script, invoking its
-        `vulnerability_reporting` function.
-
-        Returns:
-            Step that runs `vulnerability_reporting` from the
-            settings script.
-        """
-        return self.step(
-            self.step_enable_vulnerability_reporting,
-            run=self.run_configure_repository_function(
-                ConfigureRepositoryConfigFile.I.enable_vulnerability_reporting_function(),
-            ),
-            env=self.configure_repository_env(),
-        )
-
-    def configure_repository_env(self) -> dict[str, str]:
-        """Return the environment variables the settings script's functions require.
-
-        Returns:
-            Dict with `GH_TOKEN`, read automatically by `gh`. The repository
-            itself is hardcoded into the generated script, not passed in.
-        """
-        return {
-            "GH_TOKEN": self.insert_repo_token(),
-        }
-
-    def run_configure_repository_function(self, function: str) -> str:
-        """Build a `run` command that invokes a function from the settings script.
-
-        Args:
-            function: Name of the function to invoke.
-
-        Returns:
-            Shell command that runs `ConfigureRepositoryConfigFile`'s script
-            directly, passing `function` as its argument.
-        """
-        path = ConfigureRepositoryConfigFile.I.path().as_posix()
-        return f"bash {path} {function}"

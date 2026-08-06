@@ -35,21 +35,9 @@
         "with":
           "python-version": "3.14"
       -
-        "name": "Apply Repository Settings"
-        "id": "apply-repository-settings"
-        "run": "bash .github/configure.sh settings"
-        "env":
-          "GH_TOKEN": "${{ secrets.REPO_TOKEN }}"
-      -
-        "name": "Apply Rulesets"
-        "id": "apply-rulesets"
-        "run": "bash .github/configure.sh rulesets"
-        "env":
-          "GH_TOKEN": "${{ secrets.REPO_TOKEN }}"
-      -
-        "name": "Enable Vulnerability Reporting"
-        "id": "enable-vulnerability-reporting"
-        "run": "bash .github/configure.sh vulnerability_reporting"
+        "name": "Configure Repository"
+        "id": "configure-repository"
+        "run": "bash .github/configure.sh"
         "env":
           "GH_TOKEN": "${{ secrets.REPO_TOKEN }}"
       -

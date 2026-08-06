@@ -17,30 +17,25 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     Defines shell functions that read `.github/settings.json` and apply its
     contents to the repository via the GitHub CLI, plus a function that
     enables GitHub's private vulnerability reporting feature. The script is
-    meant to be invoked directly with one of its function names as an
-    argument (e.g. `bash .github/configure.sh settings`), rather than
-    sourced as a library.
+    meant to be invoked directly rather than sourced as a library: running
+    it runs every function it defines.
 
     Every function calls `gh api` against this repository directly, so only
     a token accepted by `gh` (`GH_TOKEN` or `GITHUB_TOKEN`) needs to already
     be set in the environment.
     """
 
-    def script_content(self) -> str:
+    def script(self) -> str:
         """Return the required shell script content, below the shared header.
 
         Returns:
             The shared setup code, the `settings`, `rulesets`, and
             `vulnerability_reporting` shell function definitions, and
-            the trailing dispatch line that lets the script be run directly.
+            the trailing block that runs every function.
         """
         return f"""{self.global_content()}
 
-{self.apply_repository_settings_script()}
-
-{self.apply_rulesets_script()}
-
-{self.enable_vulnerability_reporting_script()}
+{self.scripts_content()}
 
 {self.footer_content()}
 """
@@ -52,6 +47,22 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     def stem(self) -> str:
         """Return `"configure"`."""
         return "configure"
+
+    def scripts_content(self) -> str:
+        """Return the content of all scripts defined in this file.
+
+        Returns:
+            The concatenation of every script returned by `scripts()`.
+        """
+        return "\n\n".join(self.scripts())
+
+    def scripts(self) -> tuple[str, ...]:
+        """Return the shell function definitions that make up the script."""
+        return (
+            self.apply_repository_settings_script(),
+            self.apply_rulesets_script(),
+            self.enable_vulnerability_reporting_script(),
+        )
 
     def apply_repository_settings_script(self) -> str:
         """Return the `settings` shell function as a multi-line string.
@@ -119,16 +130,18 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         return "vulnerability_reporting"
 
     def footer_content(self) -> str:
-        """Return the line that invokes the function named by the script's arguments.
+        """Return the block that runs every function the script defines.
 
-        Placed at the end of the script, after every function is defined.
-        Lets the script be run directly, e.g. `bash configure.sh settings`,
-        instead of requiring it to be sourced first.
+        Placed at the end of the script, after every function is defined,
+        so they all exist by the time this runs. A newly added function
+        needs no corresponding change here to run automatically.
 
         Returns:
-            `'"$@"'`.
+            Shell code that loops over and calls every defined function.
         """
-        return '"$@"'
+        return """for step in $(declare -F | awk '{print $3}'); do
+  "${step}"
+done"""
 
     def global_content(self) -> str:
         """Return the content defined outside any function, shared by all of them.

@@ -39,10 +39,10 @@ class TestConfigureRepositoryConfigFile:
         """Test method."""
         assert ConfigureRepositoryConfigFile.I.stem() == "configure"
 
-    def test_script_content(self) -> None:
+    def test_script(self) -> None:
         """Test method."""
         script = ConfigureRepositoryConfigFile.I
-        content = script.script_content()
+        content = script.script()
         assert script.repo_variable() in content
         assert script.apply_repository_settings_function() in content
         assert script.apply_rulesets_function() in content
@@ -53,7 +53,9 @@ class TestConfigureRepositoryConfigFile:
 
     def test_footer_content(self) -> None:
         """Test method."""
-        assert ConfigureRepositoryConfigFile.I.footer_content() == '"$@"'
+        result = ConfigureRepositoryConfigFile.I.footer_content()
+        assert "declare -F" in result
+        assert "for step in" in result
 
     def test_global_content(self) -> None:
         """Test method."""
@@ -94,3 +96,17 @@ class TestConfigureRepositoryConfigFile:
         assert "${repo}" in result
         assert "private-vulnerability-reporting" in result
         assert "--method=PUT" in result
+
+    def test_scripts_content(self) -> None:
+        """Test method."""
+        script = ConfigureRepositoryConfigFile.I
+        assert script.scripts_content() == "\n\n".join(script.scripts())
+
+    def test_scripts(self) -> None:
+        """Test method."""
+        script = ConfigureRepositoryConfigFile.I
+        assert script.scripts() == (
+            script.apply_repository_settings_script(),
+            script.apply_rulesets_script(),
+            script.enable_vulnerability_reporting_script(),
+        )
