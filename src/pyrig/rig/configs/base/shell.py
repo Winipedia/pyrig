@@ -19,7 +19,7 @@ class ShellConfigFile(StringConfigFile):
     Subclasses must implement:
         - `parent_path`: Directory containing the `.sh` file.
         - `stem`: Filename without its extension.
-        - `script_content`: Required shell script content, below the header.
+        - `script`: Required shell script content, below the header.
 
     Example:
         >>> from pathlib import Path
@@ -32,12 +32,12 @@ class ShellConfigFile(StringConfigFile):
         ...     def stem(self) -> str:
         ...         return "greet"
         ...
-        ...     def script_content(self) -> str:
+        ...     def script(self) -> str:
         ...         return 'greet() {\n  echo "Hello, $1"\n}'
     """
 
     @abstractmethod
-    def script_content(self) -> str:
+    def script(self) -> str:
         """Return the script's required content, below the shared header.
 
         Returns:
@@ -46,16 +46,16 @@ class ShellConfigFile(StringConfigFile):
         """
 
     def content(self) -> str:
-        """Prepend the shebang and strict mode line to `script_content()`.
+        """Prepend the shebang and strict mode line to `script()`.
 
         Returns:
             The shebang line, the strict mode line, a blank line, and
-            `script_content()`.
+            `script()`.
         """
         return f"""{self.shebang_line()}
 {self.strict_mode_line()}
 
-{self.script_content()}"""
+{self.script()}"""
 
     def extension(self) -> str:
         """Return the file extension `"sh"`."""

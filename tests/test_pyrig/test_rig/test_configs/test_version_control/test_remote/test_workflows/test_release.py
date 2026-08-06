@@ -26,69 +26,15 @@ def my_test_release_workflow(
 class TestReleaseWorkflowConfigFile:
     """Test class."""
 
-    def test_step_apply_repository_settings(
+    def test_step_configure_repository(
         self,
         my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
-        step = my_test_release_workflow().step_apply_repository_settings()
-        function = ConfigureRepositoryConfigFile().apply_repository_settings_function()
-        assert function in step["run"]
+        step = my_test_release_workflow().step_configure_repository()
+        path = ConfigureRepositoryConfigFile().path().as_posix()
+        assert step["run"] == f"bash {path}"
         assert step["env"]["GH_TOKEN"]
-
-    def test_step_apply_rulesets(
-        self,
-        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        step = my_test_release_workflow().step_apply_rulesets()
-        assert ConfigureRepositoryConfigFile().apply_rulesets_function() in step["run"]
-        assert step["env"]["GH_TOKEN"]
-
-    def test_step_enable_vulnerability_reporting(
-        self,
-        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        step = my_test_release_workflow().step_enable_vulnerability_reporting()
-        config = ConfigureRepositoryConfigFile()
-        function = config.enable_vulnerability_reporting_function()
-        assert function in step["run"]
-        assert step["env"]["GH_TOKEN"]
-
-    def test_run_configure_repository_function(
-        self,
-        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        workflow = my_test_release_workflow()
-        result = workflow.run_configure_repository_function("some_function")
-        assert "bash" in result
-        assert ConfigureRepositoryConfigFile().path().as_posix() in result
-        assert "some_function" in result
-
-    def test_configure_repository_env(
-        self,
-        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_release_workflow().configure_repository_env()
-        assert "GH_TOKEN" in result
-        assert "REPO" not in result
-
-    def test_steps_configure_repository(
-        self,
-        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        workflow = my_test_release_workflow()
-        step_settings, step_rulesets, step_pvr = workflow.steps_configure_repository()
-        assert "run" in step_settings
-        assert "env" in step_settings
-        assert "run" in step_rulesets
-        assert "env" in step_rulesets
-        assert "run" in step_pvr
-        assert "env" in step_pvr
 
     def test_job(self) -> None:
         """Test method."""

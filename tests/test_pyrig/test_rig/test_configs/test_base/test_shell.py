@@ -25,7 +25,7 @@ def my_test_shell_config_file(
             """Get the parent path."""
             return Path()
 
-        def script_content(self) -> str:
+        def script(self) -> str:
             """Get the script content."""
             return 'greet() {\n  echo "Hello, $1"\n}'
 
@@ -55,19 +55,18 @@ class TestShellConfigFile:
         """Test method."""
         assert my_test_shell_config_file().strict_mode_line() == "set -euo pipefail"
 
-    def test_script_content(
+    def test_script(
         self,
         my_test_shell_config_file: type[ShellConfigFile],
     ) -> None:
         """Test method."""
         script = my_test_shell_config_file()
-        assert script.script_content() == 'greet() {\n  echo "Hello, $1"\n}'
+        assert script.script() == 'greet() {\n  echo "Hello, $1"\n}'
 
     def test_content(self, my_test_shell_config_file: type[ShellConfigFile]) -> None:
         """Test method."""
         script = my_test_shell_config_file()
         expected = (
-            f"{script.shebang_line()}\n{script.strict_mode_line()}\n\n"
-            f"{script.script_content()}"
+            f"{script.shebang_line()}\n{script.strict_mode_line()}\n\n{script.script()}"
         )
         assert script.content() == expected
