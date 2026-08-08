@@ -6,7 +6,7 @@ corresponding test counterpart, without overwriting tests that already exist.
 
 import inspect
 from abc import abstractmethod
-from collections.abc import Iterable, Iterator
+from collections.abc import Hashable, Iterable, Iterator
 from pathlib import Path
 from types import FunctionType, ModuleType
 from typing import Any, Self
@@ -64,6 +64,19 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         Returns:
             The source module to mirror.
         """
+
+    @classmethod
+    def merge_key(cls) -> Hashable:
+        """Return the same key for every subclass, so they always merge into one leaf.
+
+        There is only one test file generator which generates the subclasses itself,
+        so the key must be constant.
+
+        Returns:
+            The literal class name `"MirrorTestConfigFile"`, regardless of
+            which subclass it is called on.
+        """
+        return MirrorTestConfigFile.__name__
 
     def create_file(self) -> None:
         """Create the test file with its default module docstring as content.
