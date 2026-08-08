@@ -11,9 +11,9 @@ from pathlib import Path
 from types import ModuleType
 from typing import Self
 
+from pyrig_runtime.core.introspection.classes import generate_class
 from pyrig_runtime.core.introspection.modules import replace_root_module_name
 
-from pyrig.core.introspection.classes import generate_class
 from pyrig.core.introspection.modules import (
     leaf_module_name,
     module_content,
