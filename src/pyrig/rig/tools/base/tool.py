@@ -2,6 +2,7 @@
 
 from abc import abstractmethod
 from collections import defaultdict
+from collections.abc import Hashable
 from types import ModuleType
 
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
@@ -60,6 +61,19 @@ class Tool(DependencySubclass):
     def discovery_module(cls) -> ModuleType:
         """Return the `pyrig.rig.tools` package as the tool discovery scope."""
         return tools
+
+    @classmethod
+    def merge_key(cls) -> Hashable:
+        """Return the tool's name, so subclasses wrapping the same tool are merged.
+
+        Overrides the base class-name key: concrete subclasses across
+        different packages that wrap the same executable are merged into
+        one class by `leaves()`, even when their class names differ.
+
+        Returns:
+            The tool's `name()`.
+        """
+        return cls().name()
 
     @classmethod
     def sort_key(cls) -> tuple[int, str]:

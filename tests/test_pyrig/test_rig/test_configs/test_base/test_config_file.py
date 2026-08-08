@@ -12,6 +12,7 @@ from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile, Priority
 from pyrig.rig.configs.env import EnvConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.configs.readme import ReadmeConfigFile
 from pyrig.rig.configs.scratch import ScratchConfigFile
 
 
@@ -330,6 +331,11 @@ class TestConfigFile:
                 assert not subclass().removable()
                 continue
             assert subclass().removable()
+
+    def test_merge_key(self) -> None:
+        """Test method."""
+        assert PyprojectConfigFile.L.merge_key() == Path("pyproject.toml")
+        assert ReadmeConfigFile.L.merge_key() == Path("README.md")
 
 
 class TestPriority:
