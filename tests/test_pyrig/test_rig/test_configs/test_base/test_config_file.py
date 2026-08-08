@@ -319,14 +319,14 @@ class TestConfigFile:
 
     def test_removable_subclasses(self) -> None:
         """Test method."""
-        expected = set(ConfigFile.concrete_subclasses()) - {
+        expected = set(ConfigFile.concrete_leaves()) - {
             PyprojectConfigFile.L,
         }
         assert set(ConfigFile.removable_subclasses()) == expected
 
     def test_removable(self) -> None:
         """Test method."""
-        for subclass in ConfigFile.concrete_subclasses():
+        for subclass in ConfigFile.concrete_leaves():
             if subclass is PyprojectConfigFile.L:
                 assert not subclass().removable()
                 continue

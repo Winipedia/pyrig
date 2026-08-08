@@ -43,7 +43,7 @@ def validate_config_files(files: Iterable[Path] | None) -> tuple[type[ConfigFile
     Returns:
         A tuple of ConfigFile subclasses that were changed.
     """
-    subclasses = ConfigFile.concrete_subclasses()
+    subclasses = ConfigFile.concrete_leaves()
     if files is not None:
         files = set(files)
         subclasses = (cls for cls in subclasses if cls().path() in files)

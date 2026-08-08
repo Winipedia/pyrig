@@ -171,9 +171,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             `ConfigFile` subclasses for which `version_control_ignored()`
             returns `True`.
         """
-        return (
-            cf for cf in cls.concrete_subclasses() if cf().version_control_ignored()
-        )
+        return (cf for cf in cls.concrete_leaves() if cf().version_control_ignored())
 
     @classmethod
     def validate_subclasses(
@@ -332,7 +330,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         Yields:
             `ConfigFile` subclasses for which `removable()` returns `True`.
         """
-        return (cf for cf in cls.concrete_subclasses() if cf().removable())
+        return (cf for cf in cls.concrete_leaves() if cf().removable())
 
     def removable(self) -> bool:
         """Return whether this config file can be safely removed.

@@ -39,7 +39,7 @@ class VersionControlHookTool(Tool):
             sorted via `sorted_hooks()`.
         """
         return cls.sorted_hooks(
-            hook for tool in cls.concrete_subclasses() for hook in tool().hooks()
+            hook for tool in cls.concrete_leaves() for hook in tool().hooks()
         )
 
     @classmethod
