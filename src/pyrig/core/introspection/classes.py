@@ -2,8 +2,8 @@
 
 import inspect
 from collections.abc import Callable, Iterable, Iterator
-from types import FunctionType, ModuleType
-from typing import Any, cast
+from types import ModuleType
+from typing import Any
 
 from pyrig_runtime.core.introspection.inspection import obj_members
 
@@ -29,7 +29,7 @@ def cls_methods(
     )
 
 
-def discard_parent_methods(
+def filter_direct_methods(
     cls: type,
     methods: Iterable[Callable[..., Any]],
 ) -> Iterator[Callable[..., Any]]:
@@ -76,31 +76,3 @@ def filter_module_classes(
             and unwrapped_member.__module__ == module.__name__
         ):
             yield member
-
-
-def generate_class[T](
-    name: str,
-    bases: tuple[type[T], ...],
-    methods: tuple[FunctionType, ...],
-    namespace: dict[str, Any] | None = None,
-) -> type[T]:
-    """Dynamically create a class from base classes, methods, and attributes.
-
-    Args:
-        name: Name of the new class, used as its `__name__`.
-        bases: Base classes the new class inherits from.
-        methods: Functions to add to the class, each under its own `__name__`.
-        namespace: Extra attributes for the class body, keyed by name. Mutated
-            in place with the `methods` entries added on top, so a method
-            whose name matches a key here overrides it. Defaults to a new,
-            empty dict when omitted.
-
-    Returns:
-        The newly created class.
-    """
-    if namespace is None:
-        namespace = {}
-    for method in methods:
-        namespace[method.__name__] = method
-    cls = type(name, bases, namespace)
-    return cast("type[T]", cls)

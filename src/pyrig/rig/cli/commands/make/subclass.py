@@ -6,7 +6,7 @@ from operator import itemgetter
 
 from InquirerPy import inquirer
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
-from pyrig_runtime.core.introspection.classes import discard_abstract_classes
+from pyrig_runtime.core.introspection.classes import filter_concrete_classes
 
 from pyrig.rig.configs.base.copy_module import (
     CopyModuleDocstringConfigFile,
@@ -48,7 +48,7 @@ def choose_subclass() -> type[DependencySubclass]:
     """
     subclass_choices = set(DependencySubclass.subclasses())
 
-    concrete_subclass_choices = set(discard_abstract_classes(subclass_choices))
+    concrete_subclass_choices = set(filter_concrete_classes(subclass_choices))
     abstract_subclass_choices = subclass_choices - concrete_subclass_choices
 
     concrete_choices = (

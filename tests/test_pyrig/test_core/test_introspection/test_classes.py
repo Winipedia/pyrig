@@ -13,9 +13,8 @@ from pyrig_runtime.core.introspection.inspection import obj_members
 
 from pyrig.core.introspection.classes import (
     cls_methods,
-    discard_parent_methods,
+    filter_direct_methods,
     filter_module_classes,
-    generate_class,
 )
 from pyrig.core.introspection.inspection import unwrap_obj
 
@@ -156,7 +155,7 @@ def test_cls_methods() -> None:
     assert set(method_names) == expected_method_names
 
 
-def test_discard_parent_methods() -> None:
+def test_filter_direct_methods() -> None:
     """Test function."""
     cls = ChildTestClass
     methods = list(cls_methods(cls))
@@ -168,76 +167,11 @@ def test_discard_parent_methods() -> None:
         unwrap_obj(m).__name__ for m in methods
     ]
     # discard parent methods
-    methods = list(discard_parent_methods(cls, methods))
+    methods = list(filter_direct_methods(cls, methods))
     method_names = [unwrap_obj(m).__name__ for m in methods]
     assert ParentClass.parent_class_method.__name__ not in method_names
 
     assert ChildTestClass.class_method.__name__ in method_names
-
-
-def test_generate_class() -> None:
-    """Test function."""
-
-    class SomeClass:
-        """A simple class for testing."""
-
-        def method(self) -> str:
-            """Return a string."""
-            return "method"
-
-    def method2(self: SomeClass) -> str:
-        """Return another string."""
-        return self.method() + "2"
-
-    subclass = generate_class(
-        name="SubSomeClass",
-        bases=(SomeClass,),
-        methods=(method2,),
-    )
-    assert subclass.__name__ == "SubSomeClass"
-    assert issubclass(subclass, SomeClass)
-    assert hasattr(subclass, "method2")
-    assert subclass.method2.__name__ == "method2"  # ty:ignore[unresolved-attribute]
-    assert subclass().method2() == "method2"  # ty:ignore[unresolved-attribute]
-    assert subclass().method() == "method"
-
-    subclass2 = generate_class(
-        name="SubSomeClass2",
-        bases=(subclass,),
-        methods=(),
-        namespace={"new_attr": "value"},
-    )
-    assert subclass2.__name__ == "SubSomeClass2"
-    assert issubclass(subclass2, subclass)
-    assert hasattr(subclass2, "new_attr")
-    assert subclass2.new_attr == "value"
-
-    # A method whose name matches an inherited one overrides the base method.
-    def method(_self: SomeClass) -> str:
-        """Return a string that overrides the inherited method."""
-        return "overridden"
-
-    override_subclass = generate_class(
-        name="OverrideSomeClass",
-        bases=(SomeClass,),
-        methods=(method,),
-    )
-    assert override_subclass().method() == "overridden"
-    assert SomeClass().method() == "method"
-
-    # A method whose name matches a namespace key overrides that entry.
-    def collide(_self: SomeClass) -> str:
-        """Return a value that overrides the namespace entry of the same name."""
-        return "from_method"
-
-    collision_subclass = generate_class(
-        name="CollisionSomeClass",
-        bases=(SomeClass,),
-        methods=(collide,),
-        namespace={collide.__name__: "from_namespace"},
-    )
-    result = collision_subclass().collide()  # ty:ignore[unresolved-attribute]
-    assert result == "from_method"
 
 
 def test_filter_module_classes() -> None:
