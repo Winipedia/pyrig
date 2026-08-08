@@ -51,7 +51,7 @@ def test_validate_config_files(mocker: MockerFixture) -> None:
     )
 
     all_subclasses = validate_config_files(None)
-    assert set(all_subclasses) == set(ConfigFile.concrete_subclasses())
+    assert set(all_subclasses) == set(ConfigFile.concrete_leaves())
 
     target = PyprojectConfigFile.L
     one_subclass = validate_config_files([target().path()])
