@@ -151,3 +151,8 @@ class TestTool:
         result = Tool.group_order("unknown-group")
         assert isinstance(result, int)
         assert result == 4  # noqa: PLR2004
+
+    def test_merge_key(self) -> None:
+        """Test method."""
+        assert PackageManager.merge_key() == "uv"
+        assert ProjectTester.merge_key() == "pytest"

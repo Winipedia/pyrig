@@ -5,7 +5,7 @@ config files are validated.
 """
 
 from abc import abstractmethod
-from collections.abc import Iterable, Iterator
+from collections.abc import Hashable, Iterable, Iterator
 from functools import cache
 from pathlib import Path
 from types import ModuleType
@@ -113,6 +113,19 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             The `pyrig.rig.configs` package module.
         """
         return configs
+
+    @classmethod
+    def merge_key(cls) -> Hashable:
+        """Return the file path, so subclasses targeting the same file are merged.
+
+        Overrides the base class-name key: concrete subclasses across
+        different packages that write to the same path are merged into one
+        class by `leaves()`, even when their class names differ.
+
+        Returns:
+            The config file's `path()`.
+        """
+        return cls().path()
 
     @classmethod
     def sort_key(cls) -> float:
