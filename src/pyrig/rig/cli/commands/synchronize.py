@@ -81,5 +81,7 @@ def validate_test_files(
         path_as_module_name(file.relative_to(source_root)) for file in files
     )
     modules = (import_module(name) for name in module_names)
-    subclasses = (MirrorTestConfigFile.generate_subclass(module) for module in modules)
-    return MirrorTestConfigFile.validate_subclasses(subclasses)
+    subclasses = (
+        MirrorTestConfigFile.L.generate_subclass(module) for module in modules
+    )
+    return MirrorTestConfigFile.L.validate_subclasses(subclasses)

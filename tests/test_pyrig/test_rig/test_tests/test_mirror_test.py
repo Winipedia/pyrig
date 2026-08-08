@@ -620,3 +620,7 @@ class TestGamma:
         """Test method."""
         subclass = MirrorTestConfigFile.L.generate_subclass(mirror_test)
         assert subclass().mirror_module() == mirror_test
+
+    def test_merge_key(self) -> None:
+        """Test method."""
+        assert MirrorTestConfigFile.L.merge_key() == "MirrorTestConfigFile"
