@@ -42,10 +42,11 @@ def test_remove_pyrig(mocker: MockerFixture, tmp_path: Path) -> None:
 
 def test_remove_pyrig_step_from_health_check_workflow(tmp_path: Path) -> None:
     """Test function."""
+    pyproject_configs = PyprojectConfigFile.I.configs()
     with chdir(tmp_path):
         LicenseConfigFile.I.validate()
         PyprojectConfigFile.I.create_file()
-        PyprojectConfigFile.I.dump(PyprojectConfigFile.I.configs())
+        PyprojectConfigFile.I.dump(configs=pyproject_configs)
         HealthCheckWorkflowConfigFile.I.validate()
         file_content = HealthCheckWorkflowConfigFile.I.path().read_text()
         assert "pyrig mk local" in file_content
