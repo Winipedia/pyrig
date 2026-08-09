@@ -38,10 +38,12 @@ def validate_config_files(files: Iterable[Path] | None) -> tuple[type[ConfigFile
 
     Args:
         files: Specific config files to validate, relative to the project root.
+            Files that don't match any managed config file's path are ignored.
             If None, all config files are validated.
 
     Returns:
-        A tuple of ConfigFile subclasses that were changed.
+        A tuple of ConfigFile subclasses that were created or updated. Empty
+        if all were already correct.
     """
     subclasses = ConfigFile.concrete_leaves()
     if files is not None:
@@ -62,7 +64,8 @@ def validate_test_files(
             ignored. If None, every source file in the package is considered.
 
     Returns:
-        A tuple of MirrorTestConfigFile subclasses that were changed.
+        A tuple of MirrorTestConfigFile subclasses that were created or
+        updated. Empty if all were already correct.
     """
     package_root = PackageManager.I.package_root()
     if files is None:

@@ -86,10 +86,10 @@ def import_module_with_file_fallback(path: Path, name: str) -> ModuleType:
         The imported module.
 
     Raises:
-        FileNotFoundError: If the standard import fails and the file does not
-            exist.
         ImportError: If the standard import fails and the module spec cannot be
             created.
+        FileNotFoundError: If the standard import fails and the file does not
+            exist.
     """
     module = safe_import_module(name, default=None)
     if module is not None:

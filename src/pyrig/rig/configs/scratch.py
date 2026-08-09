@@ -9,8 +9,8 @@ class ScratchConfigFile(PythonConfigFile):
     """Config file manager for `.scratch.py`.
 
     `.scratch.py` is excluded from version control and never committed.
-    Validation only requires that the file's initial docstring line remain
-    present, so any other content the user adds is preserved across runs.
+    Its required content is a single module docstring line, so any other
+    code the user adds to the file is preserved across validation runs.
     """
 
     def content(self) -> str:
