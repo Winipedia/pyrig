@@ -197,3 +197,32 @@ class TestPackageManager:
     def test_audit_dependencies(self) -> None:
         """Test method."""
         assert PackageManager.I.audit_dependencies() == PackageManager.I.audit_args()
+
+    def test_remove_group_dev_args(self) -> None:
+        """Test method."""
+        assert PackageManager.I.remove_group_dev_args("some", "args") == (
+            "uv",
+            "remove",
+            "--group=dev",
+            "some",
+            "args",
+        )
+
+    def test_remove_group_args(self) -> None:
+        """Test method."""
+        assert PackageManager.I.remove_group_args("some", "args", group="smth") == (
+            "uv",
+            "remove",
+            "--group=smth",
+            "some",
+            "args",
+        )
+
+    def test_remove_args(self) -> None:
+        """Test method."""
+        assert PackageManager.I.remove_args("some", "args") == (
+            "uv",
+            "remove",
+            "some",
+            "args",
+        )

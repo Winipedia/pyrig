@@ -144,6 +144,40 @@ class PackageManager(VersionControlHookTool):
         """
         return self.args("add", *args)
 
+    def remove_group_dev_args(self, *args: str) -> Args:
+        """Construct `Args` for removing packages from the dev dependency group.
+
+        Args:
+            *args: Package names or additional `uv remove` flags.
+
+        Returns:
+            Args for `uv remove --group=dev <args...>`.
+        """
+        return self.remove_group_args(*args, group="dev")
+
+    def remove_group_args(self, *args: str, group: str) -> Args:
+        """Construct `Args` for removing packages from a dependency group.
+
+        Args:
+            *args: Package names or additional `uv remove` flags.
+            group: The dependency group to remove from.
+
+        Returns:
+            Args for `uv remove --group=<group> <args...>`.
+        """
+        return self.remove_args(f"--group={group}", *args)
+
+    def remove_args(self, *args: str) -> Args:
+        """Construct `Args` for `uv remove`.
+
+        Args:
+            *args: Package names or additional `uv remove` flags.
+
+        Returns:
+            Args for `uv remove <args...>`.
+        """
+        return self.args("remove", *args)
+
     def audit_args(self, *args: str) -> Args:
         """Construct `Args` for `uv audit`.
 
