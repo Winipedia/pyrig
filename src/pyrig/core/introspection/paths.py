@@ -55,8 +55,9 @@ def module_file_path(module: ModuleType) -> Path:
         Path to the module's source file.
 
     Raises:
-        AttributeError: If the module has no `__file__` attribute, or that
-            attribute is `None` (e.g., built-in or namespace packages).
+        AttributeError: If the module has no `__file__` attribute (e.g., a
+            built-in module) or that attribute is `None` (e.g., a
+            namespace package).
     """
     file = module.__file__
     if file is None:

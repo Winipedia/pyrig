@@ -37,7 +37,7 @@ class PyprojectConfigFile(TOMLConfigFile):
     The required configuration structure is assembled from project metadata,
     dependencies, build system settings, and tool configuration rather than
     hard-coded, so it always reflects the current state of the project and its
-    registered tools. Individual pieces of the structure can be customised by
+    registered tools. Individual pieces of the structure can be customized by
     overriding the corresponding accessor method in a subclass.
     """
 
@@ -53,10 +53,13 @@ class PyprojectConfigFile(TOMLConfigFile):
         return correct and not dependencies
 
     def merge_configs(self) -> dict[str, Any]:
-        """Merge into the required configuration, then reset `build-system.requires`.
+        """Merge into the required configuration.
 
-        The reset value is always the canonical requirement list, discarding
-        whatever the merge produced for that key from the existing file.
+        Makes sure `build-system.requires` is set to pyrig's canonical value,
+        overwriting any existing value.
+
+        Returns:
+            The merged configuration structure.
         """
         configs = super().merge_configs()
         self.merge_build_system_requires(configs)
@@ -119,7 +122,10 @@ class PyprojectConfigFile(TOMLConfigFile):
         }
 
     def maintainers_configs(self) -> list[dict[str, Any]]:
-        """Assemble the required `maintainers` section of `pyproject.toml`."""
+        """Assemble the required `maintainers` section of `pyproject.toml`.
+
+        Identical to `authors`.
+        """
         return self.authors_configs()
 
     def authors_configs(self) -> list[dict[str, Any]]:
@@ -314,9 +320,6 @@ class PyprojectConfigFile(TOMLConfigFile):
         Returns:
             Tuple of Version objects, one per supported minor version, in
             ascending order.
-
-        Raises:
-            RuntimeError: If the requires-python constraint has no lower bound.
         """
         return VersionConstraint(self.requires_python()).version_range(
             level="minor",
