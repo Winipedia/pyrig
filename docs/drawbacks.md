@@ -9,8 +9,8 @@ pyrig is deliberately opinionated, strict and complete with its setup.
 However pyrig is 100% customizable through its plugin architecture,
 so if you do not like the defaults, you can always write your own plugin to
 override them via subclassing. That process is simple and complicated at the
-same time and if you do not want to do that, you can follow the guide below
-to remove pyrig from your project entirely.
+same time and if you do not want to do that, you can run `pyrig rm pyrig` to
+remove pyrig from your project entirely, as described below.
 
 ---
 
@@ -41,23 +41,11 @@ to remove pyrig from your project entirely.
 
 ## Removing pyrig From Your Project
 
-pyrig has no built-in eject command, but only a few things in a
-pyrig-managed project actually **require** pyrig to be installed. Everything
-else it generated is plain, standalone output that keeps working
-fine without pyrig and can simply be left in place. Only these need to go:
-
-### 1. Uninstall the package
-
-Remove `pyrig` from `[dependency-groups].dev`, e.g. `uv remove pyrig --dev`.
-Remove any pyrig-plugins (`pyrig-pypi`, `pyrig-codecov`, …) the same way.
-
-### 2. Remove pyrig from the git hooks
-
-Remove the `pyrig sync` hook from the `prek.toml` file.
-
-### 3. Remove pyrig from the CI workflow
-
-Remove the `pyrig mk local` step from the `health_check.yml` workflow.
-
-After that you can now do whatever you like with your project and just enjoy the
-complete setup pyrig has given you and customize it manually.
+Only a few things in a pyrig-managed project actually **require** pyrig to
+be installed. Everything else it generated is plain, standalone output that
+keeps working fine without pyrig and can simply be left in place. Running
+`pyrig rm pyrig` takes care of all of it in one step.
+This command will remove anything that uses pyrig itself, like the
+`pyrig sync` pre-commit hook in the `prek.toml` file.
+After you ran the command, you can now do whatever you like with your project
+and just enjoy the complete setup pyrig has given you and customize it manually.
