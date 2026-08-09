@@ -55,8 +55,8 @@ pyrig is installed as a dependency:
 |---------|-------------|
 | `pyrig init` | Full project initialization |
 | `pyrig sync` | Synchronize all managed project files |
-| `pyrig rmpyc` | Remove all `__pycache__` directories from the project |
 | `pyrig scratch` | Run the project's `.scratch.py` file |
+| `pyrig rm pyc` | Remove all `__pycache__` directories from the project |
 | `pyrig mk cmd <name>` | Scaffold a new CLI command stub |
 | `pyrig mk cmd <name> --shared` | Scaffold a shared CLI command stub |
 | `pyrig mk inits` | Create all missing `__init__.py` files |

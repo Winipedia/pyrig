@@ -2,7 +2,7 @@
 
 from pytest_mock import MockerFixture
 
-from pyrig.rig.cli.commands.remove_pycache import remove_pycache
+from pyrig.rig.cli.commands.remove.pycache import remove_pycache
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 
 

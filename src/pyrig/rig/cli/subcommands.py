@@ -11,9 +11,10 @@ from typing import Annotated
 
 import typer
 
-from pyrig.rig.cli import make
+from pyrig.rig.cli import make, remove
 
 mk = make.app
+rm = remove.app
 
 
 def init() -> None:
@@ -37,18 +38,6 @@ def init() -> None:
     from pyrig.rig.cli.commands.init_project import init_project  # noqa: PLC0415
 
     init_project()
-
-
-def rmpyc() -> None:
-    """Remove all `__pycache__` directories from the project's source and test trees.
-
-    Useful for clearing stale bytecode that may cause import errors or
-    test-isolation issues after refactors, branch switches, or moving files
-    around. Safe to run repeatedly.
-    """
-    from pyrig.rig.cli.commands.remove_pycache import remove_pycache  # noqa: PLC0415
-
-    remove_pycache()
 
 
 def scratch() -> None:
