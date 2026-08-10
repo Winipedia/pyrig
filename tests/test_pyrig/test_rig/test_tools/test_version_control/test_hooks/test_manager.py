@@ -70,12 +70,14 @@ class TestVersionControlHookManager:
         priority = 2
         hook = VersionControlHookManager.I.hook(
             VersionControlHookManager.I.run_args,
+            repository="some-repo",
             priority=priority,
             types=["python"],
             files="^tests/",
             exclude="^tests/fixtures/",
             args=["--fix"],
         )
+        assert hook["repo"] == "some-repo"
         assert hook["id"] == "run-args"
         assert hook["name"] == "run args"
         assert hook["language"] == "system"
@@ -155,8 +157,9 @@ class TestVersionControlHookManager:
 
     def test_hook_sort_key(self) -> None:
         """Test method."""
-        hook = {"stages": ["pre-commit"], "priority": 2, "id": "b"}
+        hook = {"repo": "my-repo", "stages": ["pre-commit"], "priority": 2, "id": "b"}
         assert VersionControlHookManager.I.hook_sort_key(hook) == (
+            "my-repo",
             ["pre-commit"],
             2,
             "b",

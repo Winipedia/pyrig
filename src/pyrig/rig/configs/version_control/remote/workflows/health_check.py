@@ -85,8 +85,10 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Job configuration with `needs` set to both sibling jobs and a
             single aggregation step.
         """
-        matrix_health_checks_job_id = self.id_from_method(self.job_matrix_health_checks)
-        health_checks_job_id = self.id_from_method(self.job_health_checks)
+        matrix_health_checks_job_id = self.job_id_from_method(
+            self.job_matrix_health_checks,
+        )
+        health_checks_job_id = self.job_id_from_method(self.job_health_checks)
         return self.job(
             self.job_health_check,
             needs=[health_checks_job_id, matrix_health_checks_job_id],

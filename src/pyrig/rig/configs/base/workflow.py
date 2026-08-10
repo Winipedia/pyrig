@@ -180,7 +180,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             job["strategy"] = strategy
         if steps is not None:
             job["steps"] = steps
-        return {self.id_from_method(method): job}
+        return {self.job_id_from_method(method): job}
 
     def step(  # noqa: PLR0913
         self,
@@ -208,9 +208,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             Step configuration dict with at least `name` and `id` set.
         """
+        id_ = self.step_id_from_method(method)
         step = {
-            "name": self.name_from_method(method),
-            "id": self.id_from_method(method),
+            "name": self.name_from_id(id_),
+            "id": id_,
         }
         if if_condition is not None:
             step["if"] = if_condition
@@ -225,45 +226,64 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
         return step
 
-    def name_from_method(self, method: MethodType) -> str:
-        """Generate a human-readable display name from a method.
+    def name_from_id(self, id_: str) -> str:
+        """Generate a human-readable display name from a kebab-case identifier.
 
-        Splits the method name on underscores, capitalises each word, and
-        strips the first word (the type prefix, e.g. `job` or `step`).
+        Splits the identifier on hyphens and capitalises each word.
 
         Args:
-            method: The method whose name provides the source text.
+            id_: The kebab-case identifier to convert, e.g. one produced by
+                `job_id_from_method()` or `step_id_from_method()`.
 
         Returns:
-            Display name with the prefix removed, e.g. `"Do Something"`
-            from `job_do_something`.
+            Display name, e.g. `"Do Something"` from `"do-something"`.
         """
-        name = reformat_name(
-            method.__name__,
-            split_on="_",
+        return reformat_name(
+            id_,
+            split_on="-",
             join_on=" ",
             capitalize=True,
         )
-        prefix = next(split_on_uppercase(name))
-        return name.removeprefix(prefix).strip()
 
-    def id_from_method(self, method: MethodType) -> str:
-        """Generate a compact identifier from a method name.
-
-        Strips the first underscore-delimited segment (the type prefix, e.g.
-        `step` or `job`) and returns the rest in kebab-case.
+    def job_id_from_method(self, method: MethodType) -> str:
+        """Generate a job identifier from a `job_*` method name.
 
         Args:
-            method: The method whose name provides the source text.
+            method: The job method whose name provides the source text.
 
         Returns:
             Identifier string in kebab-case, e.g. `"do-something"` from
             `job_do_something`.
         """
-        name = method.__name__
-        prefix = name.split("_")[0]
-        name = name.removeprefix(f"{prefix}_")
-        return snake_to_kebab_case(name)
+        return self.id_from_method(method, prefix=self.job.__name__)
+
+    def step_id_from_method(self, method: MethodType) -> str:
+        """Generate a step identifier from a `step_*` method name.
+
+        Args:
+            method: The step method whose name provides the source text.
+
+        Returns:
+            Identifier string in kebab-case, e.g. `"do-something"` from
+            `step_do_something`.
+        """
+        return self.id_from_method(method, prefix=self.step.__name__)
+
+    def id_from_method(self, method: MethodType, prefix: str) -> str:
+        """Generate a compact identifier from a method name.
+
+        Strips the given prefix (plus the underscore joining it to the rest
+        of the name) and returns the rest in kebab-case.
+
+        Args:
+            method: The method whose name provides the source text.
+            prefix: The leading segment to strip, e.g. `"job"` or `"step"`.
+
+        Returns:
+            Identifier string in kebab-case, e.g. `"do-something"` from
+            `job_do_something` with `prefix="job"`.
+        """
+        return snake_to_kebab_case(method.__name__.removeprefix(f"{prefix}_"))
 
     def on_push(self, branches: list[str] | None = None) -> dict[str, Any]:
         """Create a `push` trigger.
