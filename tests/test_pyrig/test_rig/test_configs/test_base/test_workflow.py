@@ -112,7 +112,10 @@ class TestWorkflowConfigFile:
 
     def test_id_from_method(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_workflow().id_from_method(self.test_id_from_method)
+        result = my_test_workflow().id_from_method(
+            self.test_id_from_method,
+            prefix="test",
+        )
         assert result == "id-from-method"
 
     def test__configs(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
@@ -194,10 +197,12 @@ class TestWorkflowConfigFile:
         job_config = next(iter(result.values()))
         assert "steps" not in job_config
 
-    def test_name_from_method(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+    def test_name_from_id(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_workflow().name_from_method(self.test_name_from_method)
-        assert result == "Name From Method"
+        result = my_test_workflow().name_from_id(
+            "test-name-from-id",
+        )
+        assert result == "Test Name From Id"
 
     def test_on_push(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -428,3 +433,17 @@ class TestWorkflowConfigFile:
         strategy = HealthCheckWorkflowConfigFile().strategy_matrix_python_version()
         assert "matrix" in strategy
         assert "python-version" in strategy["matrix"]
+
+    def test_job_id_from_method(self) -> None:
+        """Test method."""
+        result = HealthCheckWorkflowConfigFile.I.job_id_from_method(
+            HealthCheckWorkflowConfigFile.I.job_health_check,
+        )
+        assert result == "health-check"
+
+    def test_step_id_from_method(self) -> None:
+        """Test method."""
+        result = HealthCheckWorkflowConfigFile.I.step_id_from_method(
+            HealthCheckWorkflowConfigFile.I.step_run_tests,
+        )
+        assert result == "run-tests"

@@ -94,3 +94,30 @@ class TestVersionControlHookManagerConfigFile:
 
             VersionControlHookManagerConfigFile.I.validate()
             assert mock_hook_install.call_count == 2  # noqa: PLR2004
+
+    def test_repositories(self) -> None:
+        """Test method."""
+        hooks = [
+            {"repo": "local", "id": "a"},
+            {"repo": "other", "id": "b"},
+            {"repo": "local", "id": "c"},
+        ]
+        result = VersionControlHookManagerConfigFile.I.repositories(hooks)
+        assert result == [
+            {"repo": "local", "hooks": [{"id": "a"}, {"id": "c"}]},
+            {"repo": "other", "hooks": [{"id": "b"}]},
+        ]
+
+    def test_hooks_by_repo(self) -> None:
+        """Test method."""
+        hooks = [
+            {"repo": "local", "id": "a"},
+            {"repo": "other", "id": "b"},
+            {"repo": "local", "id": "c"},
+        ]
+        by_repo = VersionControlHookManagerConfigFile.I.hooks_by_repo(hooks)
+        assert list(by_repo) == ["local", "other"]
+        assert by_repo["local"] == [{"id": "a"}, {"id": "c"}]
+        assert by_repo["other"] == [{"id": "b"}]
+        # the "repo" key is consumed, not left behind on each hook
+        assert "repo" not in hooks[0]

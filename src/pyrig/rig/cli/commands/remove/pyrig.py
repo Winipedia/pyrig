@@ -46,9 +46,13 @@ def remove_pyrig_step_from_health_check_workflow() -> None:
 def remove_pyrig_hooks() -> None:
     """Remove pyrig's hooks from the version control hook pipeline."""
     configs = VersionControlHookManagerConfigFile.I.load()
-    hooks = next(repo for repo in configs["repos"] if repo["repo"] == "local")["hooks"]
+    repos = configs["repos"]
     for hook in Pyrigger.I.hooks():
-        hooks.remove(hook)
+        repo = hook["repo"]
+        id_ = hook["id"]
+        hooks = next(r for r in repos if r["repo"] == repo)["hooks"]
+        index = next(i for i, h in enumerate(hooks) if h["id"] == id_)
+        hooks.pop(index)
     VersionControlHookManagerConfigFile.I.dump(configs=configs)
 
 

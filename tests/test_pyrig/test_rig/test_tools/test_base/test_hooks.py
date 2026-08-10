@@ -22,12 +22,22 @@ class TestVersionControlHookTool:
     def test_sorted_hooks(self) -> None:
         """Test method."""
         hooks = [
-            {"stages": ["pre-commit"], "priority": 2, "id": "b"},
-            {"stages": ["pre-commit"], "priority": 1, "id": "z"},
-            {"stages": ["pre-commit"], "priority": 1, "id": "a"},
+            {"repo": "my-repo", "stages": ["pre-commit"], "priority": 2, "id": "b"},
+            {"repo": "my-repo", "stages": ["pre-commit"], "priority": 1, "id": "z"},
+            {"repo": "my-repo", "stages": ["pre-commit"], "priority": 1, "id": "a"},
         ]
         sorted_hooks = VersionControlHookTool.sorted_hooks(hooks)
         assert [hook["id"] for hook in sorted_hooks] == ["a", "z", "b"]
+
+        hooks = [
+            {"repo": "a", "stages": ["pre-commit"], "priority": 1, "id": "b"},
+            {"repo": "b", "stages": ["pre-commit"], "priority": 1, "id": "a"},
+            {"repo": "a", "stages": ["pre-commit"], "priority": 1, "id": "a"},
+            {"repo": "c", "stages": ["pre-commit"], "priority": 1, "id": "a"},
+        ]
+        sorted_hooks = VersionControlHookTool.sorted_hooks(hooks)
+        assert [hook["id"] for hook in sorted_hooks] == ["a", "b", "a", "a"]
+        assert [hook["repo"] for hook in sorted_hooks] == ["a", "a", "b", "c"]
 
 
 class TestCheckHookTool:

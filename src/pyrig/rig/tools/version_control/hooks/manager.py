@@ -117,14 +117,15 @@ class VersionControlHookManager(Tool):
         return self.args("run", *args)
 
     def hook_sort_key(self, hook: dict[str, Any]) -> tuple[Any, ...]:
-        """Return a sort key ordering a hook by its stages, then priority, then id."""
-        return (hook["stages"], hook["priority"], hook["id"])
+        """Return a sort key ordering a hook by its repo, stages, priority, then id."""
+        return (hook["repo"], hook["stages"], hook["priority"], hook["id"])
 
     def hook(  # noqa: PLR0913
         self,
         method: Callable[[], Args],
         *,
         priority: int,
+        repository: str = "local",
         stages: Iterable[str] | None = None,
         language: str = "system",
         groups: Iterable[str] | None = None,
@@ -144,6 +145,9 @@ class VersionControlHookManager(Tool):
                 `name`, derived from `method.__name__`.
             priority: This hook's position among hooks sharing its `stages`,
                 lowest first. Ties break by `id`.
+            repository: The prek `repo` this hook is grouped under. Defaults
+                to `"local"`, prek's convention for a hook whose entry runs
+                directly rather than being fetched from an external repo.
             stages: Git stages that trigger this hook. Defaults to
                 `["pre-commit"]`.
             language: The hook's `language` value. Defaults to `"system"`,
@@ -172,6 +176,7 @@ class VersionControlHookManager(Tool):
         entry = method()
         method = cast("MethodType", method)
         hook: dict[str, Any] = {
+            "repo": repository,
             "id": self.id_from_method(method),
             "name": self.name_from_method(method),
             "language": language,

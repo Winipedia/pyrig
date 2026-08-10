@@ -35,7 +35,7 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
         Returns:
             Dict keyed by `repository_key()` and `rulesets_key()`.
         """
-        status_check_id = HealthCheckWorkflowConfigFile.I.id_from_method(
+        status_check_id = HealthCheckWorkflowConfigFile.I.job_id_from_method(
             HealthCheckWorkflowConfigFile.I.job_health_check,
         )
         return {

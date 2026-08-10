@@ -153,7 +153,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             GitHub Actions expression for `steps.extract-version.outputs.version`.
         """
         return self.insert_expression(
-            f"steps.{self.id_from_method(self.step_extract_version)}.outputs.version",
+            f"steps.{self.step_id_from_method(self.step_extract_version)}.outputs.version",
         )
 
     def step_create_tag(self) -> dict[str, Any]:
