@@ -98,7 +98,7 @@ to prevent it from being updated by the pipeline.
 
 ---
 
-## Customising the Pipeline
+## Customizing the Pipeline
 
 All three workflow files are managed `ConfigFile` instances, so they can be
 extended or overridden in the same way as any other managed file in pyrig.

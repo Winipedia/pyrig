@@ -67,8 +67,8 @@ recommitting. This means a commit can never introduce untested code.
 
 ---
 
-## Customising
+## Customizing
 
 `MirrorTestConfigFile` is a `DependencySubclass`. Run `pyrig mk subcls` and
 select it to generate a skeleton. Override methods to change naming conventions,
-adjust what counts as tested, or customise the stub format.
+adjust what counts as tested, or customize the stub format.

@@ -86,7 +86,7 @@ class PythonPackageConfigFile(PythonConfigFile):
     generated file immediately importable.
 
     Use this class instead of `PythonConfigFile` whenever the generated file
-    lives inside a package hierarchy that may not yet be fully initialised—for
+    lives inside a package hierarchy that may not yet be fully initialized—for
     example, when scaffolding new sub-packages or mirror test modules.
     """
 
