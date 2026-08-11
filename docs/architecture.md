@@ -61,7 +61,7 @@ PackageManager.I.install_dependencies_args().run()  # → uv sync
 ```
 
 Because every tool interaction goes through a `Tool` subclass, any command or
-behaviour can be overridden downstream without touching pyrig itself.
+behavior can be overridden downstream without touching pyrig itself.
 
 ---
 

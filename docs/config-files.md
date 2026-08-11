@@ -48,7 +48,7 @@ discovered and validated automatically by `pyrig sync` — no registration neede
 
 Run `pyrig mk subcls`, search for the class you want to change, and select it.
 A correctly placed subclass skeleton is generated for you. Override whichever
-methods need changing — the rest of the behaviour is inherited.
+methods need changing — the rest of the behavior is inherited.
 
 ---
 

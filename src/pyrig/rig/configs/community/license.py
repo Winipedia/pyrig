@@ -135,7 +135,7 @@ class LicenseConfigFile(StringConfigFile):
 
         Returns:
             The matched SPDX identifier (e.g., `"MIT"`, `"Apache-2.0"`), or
-            `"LicenseRef-Custom"` if no standard license is recognised.
+            `"LicenseRef-Custom"` if no standard license is recognized.
 
         Raises:
             FileNotFoundError: If the file does not exist.

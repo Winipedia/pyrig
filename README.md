@@ -111,7 +111,7 @@ and update them automatically as your project evolves.
 
 ### [Multi-Package Inheritance and Extensibility Architecture](https://Winipedia.github.io/pyrig/architecture)
 
-Override and customize any and all behaviour to suit your project's needs.
+Override and customize any and all behavior to suit your project's needs.
 pyrig's classes are designed for inheritance and composition, allowing you to
 create custom configurations, tools, and more by subclassing and simply
 overriding methods. pyrig will automatically discover and use your custom classes

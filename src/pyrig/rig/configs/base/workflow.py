@@ -229,7 +229,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     def name_from_id(self, id_: str) -> str:
         """Generate a human-readable display name from a kebab-case identifier.
 
-        Splits the identifier on hyphens and capitalises each word.
+        Splits the identifier on hyphens and capitalizes each word.
 
         Args:
             id_: The kebab-case identifier to convert, e.g. one produced by
@@ -631,7 +631,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         )
 
     def step_install_dependencies(self) -> dict[str, Any]:
-        """Build a step that synchronises the virtual environment.
+        """Build a step that synchronizes the virtual environment.
 
         Runs `uv sync` to install all locked dependencies.
 

@@ -98,7 +98,7 @@ or `--flag=value`) for clarity.
 
 Run `pyrig mk subcls`, search for the tool class you want to change, and select
 it. A correctly placed subclass skeleton is generated for you. Override
-whichever methods need changing — the rest of the behaviour is inherited.
+whichever methods need changing — the rest of the behavior is inherited.
 
 ---
 

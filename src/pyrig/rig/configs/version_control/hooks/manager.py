@@ -74,7 +74,7 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
 
         The `repo` key only exists to route a hook into the right bucket
         here; prek's own per-hook schema has no such key, so it's popped off
-        rather than left behind as an unrecognised field.
+        rather than left behind as an unrecognized field.
 
         Args:
             hooks: The hooks to bucket. Each hook is mutated in place: its
