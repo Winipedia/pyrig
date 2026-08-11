@@ -122,3 +122,9 @@ pyrig's opinionated, no-toggles approach has real trade-offs, and undoing it
 later takes more than removing one dependency.
 See the [Drawbacks Documentation](drawbacks.md) for an honest list of the
 downsides and a full checklist for removing pyrig from your project.
+
+## Comparisons
+
+pyrig isn't the only tool in this field.
+See the [Comparisons Documentation](https://Winipedia.github.io/pyrig/comparisons)
+to see how pyrig compares to other tools.

@@ -132,6 +132,12 @@ Run `pyrig <command> --help` for more information about a specific command and
 its usage.
 Run `my-project --help` to see the automatically generated CLI for your project.
 
+## Comparisons
+
+pyrig isn't the only tool in this field.
+See the [Comparisons Documentation](https://Winipedia.github.io/pyrig/comparisons)
+to see how pyrig compares to other tools.
+
 ## Documentation
 
 | | |
