@@ -311,14 +311,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().steps_core_setup()
         assert len(result) > 0
 
-    def test_steps_core_matrix_setup(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().steps_core_matrix_setup()
-        assert len(result) > 0
-
     def test_step_checkout_repository(
         self,
         my_test_workflow: type[WorkflowConfigFile],

@@ -498,33 +498,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return matrix
 
-    def steps_core_matrix_setup(
-        self,
-        *,
-        python_version: str | None = None,
-        update_dependencies: bool = False,
-    ) -> list[dict[str, Any]]:
-        """Build setup steps for matrix jobs.
-
-        An alias for [steps_core_installed_setup][], provided so the name
-        matches the other `steps_core_*` helpers.
-
-        Args:
-            python_version: Python version string. `None` resolves to the
-                latest supported minor version.
-            update_dependencies: Whether to include a step that updates all
-                dependencies to their latest allowed versions before installing.
-
-        Returns:
-            Ordered list of step configuration dicts.
-        """
-        return [
-            *self.steps_core_installed_setup(
-                python_version=python_version,
-                update_dependencies=update_dependencies,
-            ),
-        ]
-
     def steps_core_installed_setup(
         self,
         *,
@@ -545,12 +518,11 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             Ordered list of step configuration dicts.
         """
-        update_steps = (self.step_update_dependencies(),) if update_dependencies else ()
         return [
             *self.steps_core_setup(
                 python_version=python_version,
             ),
-            *update_steps,
+            *((self.step_update_dependencies(),) if update_dependencies else ()),
             self.step_install_dependencies(),
         ]
 
