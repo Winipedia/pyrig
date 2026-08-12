@@ -205,7 +205,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Python version and run the test suite.
         """
         return [
-            *self.steps_core_matrix_setup(
+            *self.steps_core_installed_setup(
                 python_version=self.insert_matrix_python_version(),
                 update_dependencies=True,
             ),
