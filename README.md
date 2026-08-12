@@ -125,18 +125,17 @@ and release your code. They also configure and apply repository protection
 settings and protection rulesets. Push your code to GitHub after initialization
 and see it in action.
 
-## Commands
+## [Commands](https://Winipedia.github.io/pyrig/commands)
 
 Run `pyrig --help` to see a list of all available commands and their usage.
 Run `pyrig <command> --help` for more information about a specific command and
 its usage.
 Run `my-project --help` to see the automatically generated CLI for your project.
 
-## Comparisons
+## [Comparisons](https://Winipedia.github.io/pyrig/cli/#pyrigs-own-commands)
 
-pyrig isn't the only tool in this field.
-See the [Comparisons Documentation](https://Winipedia.github.io/pyrig/comparisons)
-to see how pyrig compares to other tools.
+pyrig isn't the only tool in this field. See how it compares to other popular tools
+like cookiecutter, copier or pyscaffold.
 
 ## Documentation
 
