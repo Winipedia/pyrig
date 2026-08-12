@@ -49,11 +49,12 @@
 
 ## What is pyrig?
 
-pyrig is a package and tool that **rigs up** your project.
+pyrig is a package and tool that **rigs up** Python projects.
 It scaffolds and initializes a complete, fully configured, installed and
-working Python project with one command and makes the process of developing
-and maintaining it more seamless and efficient by automating things like
-configuration management, CLI generation, testing infrastructure, and more.
+working Python project with everything a modern Python project **should** have
+and makes the process of developing and maintaining it more seamless and efficient
+by automating things like configuration management, CLI generation, testing infrastructure,
+and more.
 
 ## Requirements
 
@@ -78,8 +79,8 @@ CI/CD from the start.
 
 ### [Project Scaffolding & Initialization](https://Winipedia.github.io/pyrig/scaffolding)
 
-`pyrig init` generates a complete project in one command that works out of the box.
-This includes everything a modern python project needs:
+The `pyrig init` command generates a complete project, this includes, but is not
+limited to:
 
 - Standardized directory structure
 - Fully configured dev tools (linters, formatters, type checkers, test
@@ -90,11 +91,13 @@ frameworks, git hooks, etc.)
 
 ### [File & Configuration Management](https://Winipedia.github.io/pyrig/config-files)
 
-Every generated file is backed by a Python class that validates and merges
-automatically. Override any config by subclassing, or define entirely new
-config files — pyrig discovers and manages them for you.
+pyrig manages and validates project files via classes, where every file is treated
+as a data structure (dict or list), the content is loaded and validated against
+the class schema. This makes it possible to override and adjust any and all behaviour
+of pyrig via subclassing said classes. pyrig will automatically discover and use
+your custom classes without any additional configuration.
+Run `pyrig mk subcls` to generate a subclass for any pyrig class.
 Run `pyrig sync` to create or update all config files at once.
-Run `pyrig mk subcls` to generate a subclass for overriding a specific file.
 
 ### [Automatic CLI](https://Winipedia.github.io/pyrig/cli)
 
