@@ -2,6 +2,7 @@
   "repository": {
     "name": "pyrig",
     "description": "A tool that standardizes and automates Python project setup, configuration, development, and maintenance.",
+    "homepage": "https://Winipedia.github.io/pyrig",
     "default_branch": "main",
     "delete_branch_on_merge": true,
     "allow_update_branch": true,
