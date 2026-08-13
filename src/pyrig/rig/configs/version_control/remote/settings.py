@@ -8,6 +8,7 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.version_control.remote.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
 )
+from pyrig.rig.tools.docs.builder import DocsBuilder
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote.controller import (
@@ -42,6 +43,7 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
             self.repository_key(): {
                 "name": PackageManager.I.project_name(),
                 "description": PyprojectConfigFile.I.project_description(),
+                "homepage": DocsBuilder.I.documentation_url(),
                 "default_branch": VersionController.I.default_branch(),
                 "delete_branch_on_merge": True,
                 "allow_update_branch": True,
