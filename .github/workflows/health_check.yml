@@ -42,10 +42,6 @@
         "id": "install-dependencies"
         "run": "uv sync"
       -
-        "name": "Create Version Control Ignored Files"
-        "id": "create-version-control-ignored-files"
-        "run": "uv run pyrig mk local"
-      -
         "name": "Run Version Control Hooks"
         "id": "run-version-control-hooks"
         "run": "uv run prek run --all-files --group=all"
