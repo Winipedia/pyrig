@@ -7,10 +7,9 @@ from pyrig_runtime.core.strings import snake_to_kebab_case
 
 from pyrig.core.subprocesses import run_subprocess
 from pyrig.rig.cli.commands.make.inits import make_project_init_files
-from pyrig.rig.cli.commands.make.local import make_local_files
 from pyrig.rig.cli.commands.make.subclass import make_subclass
 from pyrig.rig.cli.commands.make.subcommand import make_subcommand
-from pyrig.rig.cli.make import cmd, inits, local, subcls
+from pyrig.rig.cli.make import cmd, inits, subcls
 
 
 def test_cmd(
@@ -18,13 +17,6 @@ def test_cmd(
 ) -> None:
     """Test function."""
     assert command_calls_function(cmd, make_subcommand, ["my-command"])
-
-
-def test_local(
-    command_calls_function: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
-) -> None:
-    """Test function."""
-    assert command_calls_function(local, make_local_files, [])
 
 
 def test_subcls(

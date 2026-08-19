@@ -10,16 +10,10 @@ from pyrig.rig.cli.commands.remove import pyrig
 from pyrig.rig.cli.commands.remove.pyrig import (
     remove_pyrig,
     remove_pyrig_hooks,
-    remove_pyrig_step_from_health_check_workflow,
     uninstall_pyrig,
 )
-from pyrig.rig.configs.community.license import LicenseConfigFile
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.version_control.hooks.manager import (
     VersionControlHookManagerConfigFile,
-)
-from pyrig.rig.configs.version_control.remote.workflows.health_check import (
-    HealthCheckWorkflowConfigFile,
 )
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
@@ -27,42 +21,12 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 
 def test_remove_pyrig(mocker: MockerFixture, tmp_path: Path) -> None:
     """Test function."""
-    mock_remove_step = mocker.patch.object(
-        pyrig,
-        remove_pyrig_step_from_health_check_workflow.__name__,
-    )
     mock_remove_hooks = mocker.patch.object(pyrig, remove_pyrig_hooks.__name__)
     mock_uninstall = mocker.patch.object(pyrig, uninstall_pyrig.__name__)
     with chdir(tmp_path):
         remove_pyrig()
-    mock_remove_step.assert_called_once()
     mock_remove_hooks.assert_called_once()
     mock_uninstall.assert_called_once()
-
-
-def test_remove_pyrig_step_from_health_check_workflow(tmp_path: Path) -> None:
-    """Test function."""
-    pyproject_configs = PyprojectConfigFile.I.configs()
-    with chdir(tmp_path):
-        LicenseConfigFile.I.validate()
-        PyprojectConfigFile.I.create_file()
-        PyprojectConfigFile.I.dump(configs=pyproject_configs)
-        HealthCheckWorkflowConfigFile.I.validate()
-        file_content = HealthCheckWorkflowConfigFile.I.path().read_text()
-        assert "pyrig mk local" in file_content
-
-        remove_pyrig_step_from_health_check_workflow()
-
-        assert (
-            "pyrig mk local" not in HealthCheckWorkflowConfigFile.I.path().read_text()
-        )
-
-    LicenseConfigFile.I.configs.cache_clear()
-    LicenseConfigFile.I.load.cache_clear()
-    PyprojectConfigFile.I.configs.cache_clear()
-    PyprojectConfigFile.I.load.cache_clear()
-    HealthCheckWorkflowConfigFile.I.configs.cache_clear()
-    HealthCheckWorkflowConfigFile.I.load.cache_clear()
 
 
 def test_remove_pyrig_hooks(tmp_path: Path, mocker: MockerFixture) -> None:

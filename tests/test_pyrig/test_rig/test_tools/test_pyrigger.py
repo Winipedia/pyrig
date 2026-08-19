@@ -7,7 +7,7 @@ import pytest
 from pytest_mock import MockerFixture
 
 from pyrig.core.subprocesses import Args, run_subprocess_cached
-from pyrig.rig.cli.make import local
+from pyrig.rig.cli.make import inits
 from pyrig.rig.cli.subcommands import sync
 from pyrig.rig.configs.docs.builder import DocsBuilderConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
@@ -25,8 +25,8 @@ class TestPyrigger:
 
     def test_group_cmd_args(self) -> None:
         """Test method."""
-        result = Pyrigger.I.group_cmd_args(group="mk", cmd=local)
-        assert result == Args("pyrig", "mk", "local")
+        result = Pyrigger.I.group_cmd_args(group="mk", cmd=inits)
+        assert result == Args("pyrig", "mk", "inits")
 
     def test_image_url(self) -> None:
         """Test method."""

@@ -23,13 +23,6 @@ def my_test_health_check_workflow(
 class TestHealthCheckWorkflowConfigFile:
     """Test class."""
 
-    def test_step_create_version_control_ignored_files(self) -> None:
-        """Test method."""
-        step = (
-            HealthCheckWorkflowConfigFile().step_create_version_control_ignored_files()
-        )
-        assert step["run"] == "uv run pyrig mk local"
-
     def test_stem(self) -> None:
         """Test method."""
         assert HealthCheckWorkflowConfigFile().stem() == "health_check"

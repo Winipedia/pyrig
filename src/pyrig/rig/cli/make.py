@@ -50,17 +50,6 @@ def inits() -> None:
 
 
 @app.command()
-def local() -> None:
-    """Create or update every version-control-ignored config file that needs it.
-
-    Files that are already correct are left untouched.
-    """
-    from pyrig.rig.cli.commands.make.local import make_local_files  # noqa: PLC0415
-
-    make_local_files()
-
-
-@app.command()
 def subcls() -> None:
     """Scaffold a subclass of an interactively chosen extensible pyrig class."""
     from pyrig.rig.cli.commands.make.subclass import make_subclass  # noqa: PLC0415

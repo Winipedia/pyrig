@@ -2,12 +2,8 @@
 
 from typing import Any, Literal
 
-from pyrig.core.strings import fstring_var_name
-from pyrig.rig.cli.make import local
-from pyrig.rig.cli.subcommands import mk
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.testing.project import ProjectTester
 from pyrig.rig.tools.version_control.hooks.manager import (
     VersionControlHookManager,
@@ -134,36 +130,13 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """Return the steps for the single-runner quality check job.
 
         Returns:
-            Steps that install dependencies, create version-control-ignored
-            local files, and run the configured pre-commit hooks.
+            Steps that install dependencies and run the configured
+            pre-commit hooks.
         """
         return [
             *self.steps_core_installed_setup(update_dependencies=True),
-            self.step_create_version_control_ignored_files(),
             self.step_run_version_control_hooks(),
         ]
-
-    def step_create_version_control_ignored_files(self) -> dict[str, Any]:
-        """Build a step that creates version-control-ignored local config files.
-
-        Must run before the pre-commit hooks step. Creating these files here
-        avoids a spurious failure from the hook that checks the project is
-        fully synchronized.
-
-        Returns:
-            Step that creates the missing local config files.
-        """
-        return self.step(
-            self.step_create_version_control_ignored_files,
-            run=str(
-                PackageManager.I.run_args(
-                    *Pyrigger.I.group_cmd_args(
-                        group=fstring_var_name(f"{mk=}"),
-                        cmd=local,
-                    ),
-                ),
-            ),
-        )
 
     def step_run_version_control_hooks(self) -> dict[str, Any]:
         """Build a step that runs all pre-commit hooks via prek.

@@ -22,8 +22,7 @@ def pyc() -> None:
 def pyrig() -> None:
     """Remove pyrig and its footprint from the project entirely.
 
-    Strips the `pyrig mk local` step from the health check workflow, removes
-    the `pyrig sync` hook from the version control hook pipeline, and
+    Removes the `pyrig sync` hook from the version control hook pipeline, and
     uninstalls pyrig and its plugins from the dev dependency group.
 
     Warning:
