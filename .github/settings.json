@@ -102,5 +102,18 @@
         }
       ]
     }
+  ],
+  "topics": [
+    "automation",
+    "boilerplate",
+    "ci-cd",
+    "code-quality",
+    "configuration",
+    "developer-tools",
+    "devops",
+    "project-setup",
+    "project-template",
+    "pyrig",
+    "scaffolding"
   ]
 }
