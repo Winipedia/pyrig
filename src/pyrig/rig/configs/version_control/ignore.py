@@ -15,7 +15,7 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
 
     Produces the final `.gitignore` content by merging a bundled Python gitignore
     baseline with pyrig-specific additions such as tool caches, build artifacts, and
-    the paths of config files that are excluded from version control (e.g. `.env`,
+    the paths of config files that are excluded from version control (e.g.
     `.scratch.py`). Additions already present in the baseline are not duplicated.
     """
 

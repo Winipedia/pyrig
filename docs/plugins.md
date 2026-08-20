@@ -25,7 +25,7 @@ documentation.
 
 ---
 
-## Available Plugins
+## Some Available Plugins
 
 - **[pyrig-pypi](https://Winipedia.github.io/pyrig-pypi)** — Publishes your
   package to PyPI automatically from your CI/CD pipeline.
@@ -43,6 +43,9 @@ documentation.
 - **[pyrig-resources](https://Winipedia.github.io/pyrig-resources)** — Adds a
   conventional resources package for bundling static assets that ship with your
   project.
+- **[pyrig-env](https://Winipedia.github.io/pyrig-env)** — Adds a
+  version-control-ignored `.env` file for local environment variables and
+  secrets.
 - **[pyrig-fixtures](https://Winipedia.github.io/pyrig-fixtures)** — Provides a
   library of reusable pytest fixtures, plus a `pyrig mk fixture` scaffolder, for
   testing pyrig-based projects.
