@@ -10,7 +10,6 @@ from pytest_mock import MockerFixture
 
 from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile, Priority
-from pyrig.rig.configs.env import EnvConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.readme import ReadmeConfigFile
 from pyrig.rig.configs.scratch import ScratchConfigFile
@@ -95,7 +94,6 @@ class TestConfigFile:
     def test_version_control_ignored_subclasses(self) -> None:
         """Test method."""
         assert set(ConfigFile.version_control_ignored_subclasses()) == {
-            EnvConfigFile,
             ScratchConfigFile,
         }
 
