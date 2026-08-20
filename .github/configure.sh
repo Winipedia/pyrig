@@ -22,6 +22,10 @@ vulnerability_reporting() {
   gh api "repos/${repo}/private-vulnerability-reporting" --method=PUT
 }
 
+topics() {
+  jq '{names: .topics}' .github/settings.json | gh api "repos/${repo}/topics" --method=PUT --input=-
+}
+
 for step in $(declare -F | awk '{print $3}'); do
   "${step}"
 done
