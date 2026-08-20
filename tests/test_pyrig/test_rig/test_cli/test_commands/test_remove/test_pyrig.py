@@ -71,4 +71,5 @@ def test_uninstall_pyrig(mocker: MockerFixture, tmp_path: Path) -> None:
         "pyrig-resources",
         "pyrig-fixtures",
         "pyrig-overrides",
+        "pyrig-env",
     }
