@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 import pytest
+from pyrig_env.rig.configs.env import EnvConfigFile
 from pytest_mock import MockerFixture
 
 from pyrig.rig import configs
@@ -95,6 +96,7 @@ class TestConfigFile:
         """Test method."""
         assert set(ConfigFile.version_control_ignored_subclasses()) == {
             ScratchConfigFile,
+            EnvConfigFile,
         }
 
     def test_sort_key(
