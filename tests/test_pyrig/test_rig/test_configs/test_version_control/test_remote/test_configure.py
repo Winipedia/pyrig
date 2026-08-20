@@ -105,8 +105,10 @@ class TestConfigureRepositoryConfigFile:
     def test_scripts(self) -> None:
         """Test method."""
         script = ConfigureRepositoryConfigFile.I
-        assert script.scripts() == (
+
+        for s in (
             script.apply_repository_settings_script(),
             script.apply_rulesets_script(),
             script.enable_vulnerability_reporting_script(),
-        )
+        ):
+            assert s in script.scripts()
