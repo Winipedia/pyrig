@@ -22,6 +22,10 @@ vulnerability_reporting() {
   gh api "repos/${repo}/private-vulnerability-reporting" --method=PUT
 }
 
+watch() {
+  gh api "repos/${repo}/subscription" --method=PUT --input=- <<<'{"subscribed":true}'
+}
+
 topics() {
   jq '{names: .topics}' .github/settings.json | gh api "repos/${repo}/topics" --method=PUT --input=-
 }
