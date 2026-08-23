@@ -55,9 +55,8 @@ merging PRs, since it runs on every PR and blocks merging until it passes.
 The **`publish`** job only runs when the triggering health check both succeeded
 and was itself triggered by a push to the default branch. Scheduled runs,
 manual dispatches, and pull request runs never produce a release.
-Before tagging, it applies repository settings and protection rulesets,
-enables GitHub's private vulnerability reporting, and subscribes the
-repository to notifications, all via the GitHub API.
+Before tagging, it applies repository settings and protection rulesets, and
+enables GitHub's private vulnerability reporting, all via the GitHub API.
 Then it tags the current commit, pushes the tag, and creates a GitHub
 Release with auto-generated release notes.
 !!! warning "Important"
