@@ -15,11 +15,10 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     """Configuration file for `.github/configure.sh`.
 
     Defines shell functions that read `.github/settings.json` and apply its
-    contents to the repository via the GitHub CLI, plus functions that
-    enable GitHub's private vulnerability reporting feature and subscribe
-    the repository to notifications. The script is meant to be invoked
-    directly rather than sourced as a library: running it runs every
-    function it defines.
+    contents to the repository via the GitHub CLI, plus a function that
+    enables GitHub's private vulnerability reporting feature. The script is
+    meant to be invoked directly rather than sourced as a library: running
+    it runs every function it defines.
 
     Every function calls `gh api` against this repository directly, so only
     a token accepted by `gh` (`GH_TOKEN` or `GITHUB_TOKEN`) needs to already
@@ -30,9 +29,9 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         """Return the required shell script content, below the shared header.
 
         Returns:
-            The shared setup code, the `settings`, `rulesets`,
-            `vulnerability_reporting`, and `watch` shell function
-            definitions, and the trailing block that runs every function.
+            The shared setup code, the `settings`, `rulesets`, and
+            `vulnerability_reporting` shell function definitions, and
+            the trailing block that runs every function.
         """
         return f"""{self.global_content()}
 
@@ -63,7 +62,6 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
             self.repository_settings_script(),
             self.rulesets_script(),
             self.vulnerability_reporting_script(),
-            self.watch_repository_script(),
         )
 
     def repository_settings_script(self) -> str:
@@ -130,22 +128,6 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     def vulnerability_reporting_function(self) -> str:
         """Return `"vulnerability_reporting"`, the function name."""
         return "vulnerability_reporting"
-
-    def watch_repository_script(self) -> str:
-        """Return the `watch` shell function.
-
-        Returns:
-            Function definition that `PUT`s the GitHub API endpoint that
-            subscribes the repository to notifications.
-        """
-        endpoint = f"repos/${{{self.repo_variable()}}}/subscription"
-        return f"""{self.watch_repository_function()}() {{
-  gh api "{endpoint}" --method=PUT --input=- <<<'{{"subscribed":true}}'
-}}"""
-
-    def watch_repository_function(self) -> str:
-        """Return `"watch"`, the function name."""
-        return "watch"
 
     def footer_content(self) -> str:
         """Return the block that runs every function the script defines.

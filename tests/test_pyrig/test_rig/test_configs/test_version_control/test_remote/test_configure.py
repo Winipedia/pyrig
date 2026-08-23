@@ -30,10 +30,6 @@ class TestConfigureRepositoryConfigFile:
             == "vulnerability_reporting"
         )
 
-    def test_watch_repository_function(self) -> None:
-        """Test method."""
-        assert ConfigureRepositoryConfigFile.I.watch_repository_function() == "watch"
-
     def test_parent_path(self) -> None:
         """Test method."""
         assert ConfigureRepositoryConfigFile.I.parent_path() == Path(".github")
@@ -50,7 +46,6 @@ class TestConfigureRepositoryConfigFile:
         assert script.repository_settings_function() in content
         assert script.rulesets_function() in content
         assert script.vulnerability_reporting_function() in content
-        assert script.watch_repository_function() in content
         assert "gh api" in content
         # the footer must come last so the functions are defined before it runs
         assert content.rstrip("\n").endswith(script.footer_content())
@@ -101,15 +96,6 @@ class TestConfigureRepositoryConfigFile:
         assert "private-vulnerability-reporting" in result
         assert "--method=PUT" in result
 
-    def test_watch_repository_script(self) -> None:
-        """Test method."""
-        script = ConfigureRepositoryConfigFile.I
-        result = script.watch_repository_script()
-        assert result.startswith(f"{script.watch_repository_function()}() {{")
-        assert "${repo}" in result
-        assert "subscription" in result
-        assert "--method=PUT" in result
-
     def test_scripts_content(self) -> None:
         """Test method."""
         script = ConfigureRepositoryConfigFile.I
@@ -123,6 +109,5 @@ class TestConfigureRepositoryConfigFile:
             script.repository_settings_script(),
             script.rulesets_script(),
             script.vulnerability_reporting_script(),
-            script.watch_repository_script(),
         ):
             assert s in script.scripts()
