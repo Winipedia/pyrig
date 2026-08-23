@@ -36,12 +36,15 @@ def test_run_subprocess(caplog: pytest.LogCaptureFixture) -> None:
         assert record.name == "pyrig.core.subprocesses"
         assert record.levelname == "ERROR"
         assert record.exc_info is not None, "Expected exception info to be logged"
-        assert record.getMessage() == (
-            f"Subprocess command failed: {tuple(fail_cmd)}\n"
-            "Return code: 1\n"
-            "Stdout: \n"
-            "Stderr: "
-        ), "Expected formatted log message to include command, return code, and streams"
+        assert (
+            record.getMessage()
+            == f"""Subprocess command failed: {tuple(fail_cmd)}
+Return code: 1
+Stdout:
+
+Stderr:
+"""
+        )
 
 
 def test_run_subprocess_cached() -> None:

@@ -169,7 +169,12 @@ def run_subprocess(
         )
     except subprocess.CalledProcessError as e:
         logger.exception(
-            "Subprocess command failed: %s\nReturn code: %s\nStdout: %s\nStderr: %s",
+            """Subprocess command failed: %s
+Return code: %s
+Stdout:
+%s
+Stderr:
+%s""",
             e.cmd,
             e.returncode,
             e.stdout,
