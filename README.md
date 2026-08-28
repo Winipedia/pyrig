@@ -93,7 +93,7 @@ frameworks, git hooks, etc.)
 pyrig manages and validates project files via classes, where every file is treated
 as a data structure (dict or list), the content is loaded and validated against
 the declared state in the class. This makes it possible to override and adjust
-any and all behaviour of pyrig via subclassing said classes. pyrig will automatically
+any and all behavior of pyrig via subclassing said classes. pyrig will automatically
 discover and use your custom classes without any additional configuration.
 Run `pyrig mk subcls` to generate a subclass for any pyrig class.
 Run `pyrig sync` to create or update all config files at once.
