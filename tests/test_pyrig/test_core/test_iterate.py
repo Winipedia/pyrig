@@ -10,8 +10,8 @@ from pyrig.core.iterate import (
     dict_insert,
     iterator_has_items,
     match_list_items,
-    merge_nested_structures,
-    nested_structure_is_subset,
+    merge_structures,
+    structure_is_subset,
 )
 
 
@@ -30,71 +30,71 @@ def test_iterator_has_items() -> None:
     assert list(items) == []
 
 
-def test_merge_nested_structures() -> None:
+def test_merge_structures() -> None:
     """Test function."""
     # conflicting primitive is NOT overridden; missing list item and
     # superset-only key are pulled into subset.
     subset = {"a": 1, "b": [2, 3]}
     superset = {"a": 0, "b": [2], "d": 6}
-    merged = merge_nested_structures(subset, superset)
+    merged = merge_structures(subset, superset)
     assert merged == {"a": 1, "b": [2, 3], "d": 6}
 
     # a key missing from subset is inserted at its position in superset,
     # not just appended at the end.
     subset = {"a": 1, "c": 3}
     superset = {"a": 0, "b": 2, "c": 3, "d": 4}
-    merged = merge_nested_structures(subset, superset)
+    merged = merge_structures(subset, superset)
     assert merged == {"a": 1, "b": 2, "c": 3, "d": 4}
     assert list(merged.keys()) == ["a", "b", "c", "d"]
 
     # an already-satisfied key is left untouched; superset-only key is pulled in.
-    assert merge_nested_structures({"a": 1}, {"a": 1, "z": 9}) == {"a": 1, "z": 9}
+    assert merge_structures({"a": 1}, {"a": 1, "z": 9}) == {"a": 1, "z": 9}
 
     # a key already present with a null value is untouched by an empty superset
     # ("missing" is not conflated with "present and None").
-    assert merge_nested_structures({"x": None}, {}) == {"x": None}
+    assert merge_structures({"x": None}, {}) == {"x": None}
 
     # a null-valued key absent from subset is pulled in from superset.
-    assert merge_nested_structures({}, {"x": None}) == {"x": None}
+    assert merge_structures({}, {"x": None}) == {"x": None}
 
     # list: items missing from a shorter subset are inserted from superset.
-    assert merge_nested_structures([2], [2, 3]) == [2, 3]
+    assert merge_structures([2], [2, 3]) == [2, 3]
 
     # list: a not-yet-contained item is merged into the positional element.
-    assert merge_nested_structures([[1]], [[1, 2]]) == [[1, 2]]
+    assert merge_structures([[1]], [[1, 2]]) == [[1, 2]]
 
     # mismatched top-level container types leave subset untouched.
-    assert merge_nested_structures({"a": 1}, [1]) == {"a": 1}
+    assert merge_structures({"a": 1}, [1]) == {"a": 1}
 
-    assert merge_nested_structures([], [1, 1, "", 1, ""]) == [1, 1, "", 1, ""]
+    assert merge_structures([], [1, 1, "", 1, ""]) == [1, 1, "", 1, ""]
 
-    assert merge_nested_structures({"key": [1, 2]}, {"key": [1, 1, "", 1, ""]}) == {
+    assert merge_structures({"key": [1, 2]}, {"key": [1, 1, "", 1, ""]}) == {
         "key": [1, 1, "", 1, "", 2],
     }
 
 
-def test_nested_structure_is_subset() -> None:
+def test_structure_is_subset() -> None:
     """Test function."""
     # extra keys and list items in the superset are allowed.
-    assert nested_structure_is_subset(
+    assert structure_is_subset(
         {"a": 1, "b": [2, 3, {"c": 4}]},
         {"a": 1, "b": [2, 3, {"c": 4}, 5], "d": 6},
     )
     # a differing nested primitive breaks containment.
-    assert not nested_structure_is_subset(
+    assert not structure_is_subset(
         {"a": 1, "b": [2, 3, {"c": 4}]},
         {"a": 1, "b": [2, 3, {"c": 5}]},
     )
     # list matching is order-independent.
-    assert nested_structure_is_subset(
+    assert structure_is_subset(
         {"b": [2, 3, {"d": 5}, {"c": 4}]},
         {"b": [3, 2, {"c": 4}, {"d": 5}]},
     )
     # a required null-valued key that is absent is NOT contained.
-    assert not nested_structure_is_subset({"a": None}, {})
-    assert not nested_structure_is_subset([1, None], [1])
+    assert not structure_is_subset({"a": None}, {})
+    assert not structure_is_subset([1, None], [1])
     # primitives compare by equality.
-    assert nested_structure_is_subset(1, 1)
+    assert structure_is_subset(1, 1)
 
 
 def test_both_dicts_or_lists() -> None:

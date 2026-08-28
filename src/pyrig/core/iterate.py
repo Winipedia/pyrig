@@ -47,15 +47,15 @@ def iterator_has_items[T](
 
 
 @overload
-def merge_nested_structures(
+def merge_structures(
     subset: dict[Any, Any],
     superset: dict[Any, Any],
 ) -> dict[Any, Any]: ...
 @overload
-def merge_nested_structures(subset: list[Any], superset: list[Any]) -> list[Any]: ...
+def merge_structures(subset: list[Any], superset: list[Any]) -> list[Any]: ...
 @overload
-def merge_nested_structures[T](subset: T, superset: T) -> T: ...
-def merge_nested_structures(subset: Any, superset: Any) -> Any:
+def merge_structures[T](subset: T, superset: T) -> T: ...
+def merge_structures(subset: Any, superset: Any) -> Any:
     """Merge all values from `superset` into `subset`, filling in any gaps.
 
     Applies deeply to nested dicts and lists: for every key or item present in
@@ -74,11 +74,11 @@ def merge_nested_structures(subset: Any, superset: Any) -> Any:
         The updated `subset`.
 
     Examples:
-        >>> merge_nested_structures({"a": 1}, {"a": 0, "b": 2})
+        >>> merge_structures({"a": 1}, {"a": 0, "b": 2})
         {'a': 1, 'b': 2}
-        >>> merge_nested_structures([2], [2, 3])
+        >>> merge_structures([2], [2, 3])
         [2, 3]
-        >>> merge_nested_structures([""], ["", "", "---"])
+        >>> merge_structures([""], ["", "", "---"])
         ['', '', '---']
 
     Note:
@@ -92,7 +92,7 @@ def merge_nested_structures(subset: Any, superset: Any) -> Any:
         for index, (key, sup_val) in enumerate(superset.items()):
             sub_val = subset.get(key, MISSING)
             if both_dicts_or_lists(sub_val, sup_val):
-                merge_nested_structures(sub_val, sup_val)
+                merge_structures(sub_val, sup_val)
             elif sub_val is MISSING:
                 dict_insert(subset, index=index, key=key, value=sup_val)
 
@@ -103,7 +103,7 @@ def merge_nested_structures(subset: Any, superset: Any) -> Any:
                 continue
             sub_val = subset[index] if index < len(subset) else MISSING
             if both_dicts_or_lists(sub_val, sup_val):
-                merge_nested_structures(sub_val, sup_val)
+                merge_structures(sub_val, sup_val)
             else:
                 subset.insert(index, sup_val)
 
@@ -144,15 +144,15 @@ def dict_insert[K, V](
 
 
 @overload
-def nested_structure_is_subset(
+def structure_is_subset(
     subset: dict[Any, Any],
     superset: dict[Any, Any],
 ) -> bool: ...
 @overload
-def nested_structure_is_subset(subset: list[Any], superset: list[Any]) -> bool: ...
+def structure_is_subset(subset: list[Any], superset: list[Any]) -> bool: ...
 @overload
-def nested_structure_is_subset[T](subset: T, superset: T) -> bool: ...
-def nested_structure_is_subset(subset: Any, superset: Any) -> bool:
+def structure_is_subset[T](subset: T, superset: T) -> bool: ...
+def structure_is_subset(subset: Any, superset: Any) -> bool:
     """Check whether one nested structure is contained within another.
 
     Compares dicts, lists, and primitives using subset semantics:
@@ -174,20 +174,20 @@ def nested_structure_is_subset(subset: Any, superset: Any) -> bool:
         `True` if `subset` is fully contained within `superset`.
 
     Examples:
-        >>> nested_structure_is_subset({"a": 1}, {"a": 1, "b": 2})
+        >>> structure_is_subset({"a": 1}, {"a": 1, "b": 2})
         True
-        >>> nested_structure_is_subset({"a": 1}, {"a": 2})
+        >>> structure_is_subset({"a": 1}, {"a": 2})
         False
-        >>> nested_structure_is_subset([2, 3], [1, 2, 3])
+        >>> structure_is_subset([2, 3], [1, 2, 3])
         True
-        >>> nested_structure_is_subset({"a": None}, {})
+        >>> structure_is_subset({"a": None}, {})
         False
-        >>> nested_structure_is_subset(["", ""], [""])
+        >>> structure_is_subset(["", ""], [""])
         False
     """
     if both_dicts(subset, superset):
         return all(
-            key in superset and nested_structure_is_subset(value, superset[key])
+            key in superset and structure_is_subset(value, superset[key])
             for key, value in subset.items()
         )
     if both_lists(subset, superset):
@@ -199,7 +199,7 @@ def match_list_items(subset: list[Any], superset: list[Any]) -> list[bool]:
     """Check whether each `subset` item is satisfied by a distinct `superset` item.
 
     An item satisfies another using the same nested subset semantics as
-    `nested_structure_is_subset`, not plain equality. Each `superset` item
+    `structure_is_subset`, not plain equality. Each `superset` item
     can satisfy at most one `subset` item, so a value that occurs multiple
     times in `subset` requires that many distinct matches in `superset`
     rather than being satisfied by a single occurrence.
@@ -222,7 +222,7 @@ def match_list_items(subset: list[Any], superset: list[Any]) -> list[bool]:
     matched: list[bool] = []
     for sub_val in subset:
         for index, other in enumerate(pool):
-            if nested_structure_is_subset(sub_val, other):
+            if structure_is_subset(sub_val, other):
                 del pool[index]
                 matched.append(True)
                 break
