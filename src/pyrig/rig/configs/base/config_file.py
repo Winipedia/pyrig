@@ -15,8 +15,8 @@ import typer
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 
 from pyrig.core.iterate import (
-    merge_nested_structures,
-    nested_structure_is_subset,
+    merge_structures,
+    structure_is_subset,
 )
 from pyrig.rig import configs
 
@@ -277,7 +277,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         Returns:
             `True` if all required configuration is present in the file.
         """
-        return nested_structure_is_subset(self.configs(), self.load())
+        return structure_is_subset(self.configs(), self.load())
 
     def merge_configs(self) -> ConfigT:
         """Merge the current file contents into the required configuration.
@@ -295,7 +295,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             cached `configs()` result reflects the merge even before `dump()`
             is called.
         """
-        return merge_nested_structures(
+        return merge_structures(
             subset=self.configs(),
             superset=self.load(),
         )
