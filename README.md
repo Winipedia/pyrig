@@ -111,7 +111,7 @@ Generate test skeletons with `pyrig sync`.
 This will generate test skeletons for all source modules
 and update them automatically as your project evolves.
 
-### [Multi-Package Inheritance and Extensibility Architecture](https://Winipedia.github.io/pyrig/architecture)
+### [Plugin Architecture](https://Winipedia.github.io/pyrig/architecture)
 
 Override and customize any and all behavior to suit your project's needs.
 pyrig's classes are designed for inheritance and composition, allowing you to
@@ -119,6 +119,7 @@ create custom configurations, tools, and more by subclassing and simply
 overriding methods. pyrig will automatically discover and use your custom classes
 without any additional configuration.
 Run `pyrig mk subcls` to generate a subclass for any pyrig class.
+Create your own plugins this way to extend pyrig's functionality.
 
 ### [CI/CD & Repository Protection](https://Winipedia.github.io/pyrig/ci-cd)
 
