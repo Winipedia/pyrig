@@ -105,7 +105,7 @@ Generate and add new commands by running `pyrig mk cmd <name>`.
 An automatic version command is included that shows the version of your project.
 Run `my-project version` to see it in action.
 
-### [Mirror Test Generation & Maintenance](https://Winipedia.github.io/pyrig/mirror-tests)
+### [Mirror Test Structure](https://Winipedia.github.io/pyrig/mirror-tests)
 
 Generate test skeletons with `pyrig sync`.
 This will generate test skeletons for all source modules
