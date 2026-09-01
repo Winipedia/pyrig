@@ -7,6 +7,83 @@ everything else untouched.
 
 ---
 
+## How Merging Works
+
+`validate()` decides what to do with three checks:
+
+- **Missing file** — created and dumped with `_configs()` verbatim.
+- **`is_correct()`** — `True` if every key/item declared by `_configs()` is
+  already present in the file on disk, recursively. Extra keys, extra list
+  items, or whole extra sections you've added are ignored by this check and
+  never make a file "incorrect" on their own.
+- **Otherwise** — `_configs()` is deep-merged into whatever the file already
+  contains, and the merged result is written back.
+
+The merge itself follows a few rules:
+
+- **Dicts** — for each key `_configs()` requires, if it's missing on disk it's
+  inserted at the position `_configs()` declares it; if the key already
+  exists, the value on disk is kept and merging recurses into it, so nested
+  keys you've added survive too. A required key you've hand-edited to a
+  *different* value doesn't count as "already there" (the values differ), so
+  it's treated as missing and reset back to what `_configs()` declares.
+- **Lists** — items are matched by content, not position, so reordering an
+  existing list doesn't cause spurious changes. A required item without a
+  match is inserted; everything else already in the list — duplicates and
+  items pyrig doesn't require included — is left as is.
+- **Everything else** (strings, numbers, …) — compared with plain equality.
+
+At its simplest, for a plain list of lines: if a file's current content is
+`["line 1", "line 2", "line 3"]` but its declared content is
+`["line 1", "line 2", "line 4"]`, pyrig merges the two into
+`["line 1", "line 2", "line 4", "line 3"]` — declared content is always
+present, `"line 3"` is kept because it's already there, and nothing is ever
+removed or overridden.
+
+### Example
+
+Say a fictional `ExampleConfigFile` declares this as `_configs()`:
+
+```json
+{
+  "version": 2,
+  "tags": ["stable"]
+}
+```
+
+`example.json`, before `pyrig sync`:
+
+```json
+{
+  "version": 1,
+  "tags": ["beta"],
+  "owner": "me"
+}
+```
+
+`example.json`, after `pyrig sync`:
+
+```json
+{
+  "version": 2,
+  "tags": ["beta", "stable"],
+  "owner": "me"
+}
+```
+
+- `"owner"` isn't part of the required structure, so it survives untouched.
+- `"version"` is required, so the hand-edited `1` is reset back to `2`.
+- `"tags"` is a required list: `"beta"` wasn't required, so it's left alone;
+  `"stable"` is required and wasn't already present, so it gets added.
+
+In short: anything you add on top of the required structure is permanent,
+pyrig never removes it. The required structure itself is enforced — if you
+change one of the values pyrig declares as required, `pyrig sync` puts it
+back on the next run. To change a value pyrig manages, override the
+`ConfigFile` subclass instead of hand-editing the file (see below).
+
+---
+
 ## Implementing a New Config File
 
 Subclass one of the format-specific bases and implement the required members:
