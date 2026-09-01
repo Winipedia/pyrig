@@ -24,4 +24,14 @@ applicable (no such mechanism exists at all)
 
 <!-- rumdl-enable MD013 -->
 
+Ratings reflect each tool's default, out-of-the-box behavior, not what a
+sufficiently customized template or config could theoretically be made to do.
+
+pyrig's own "➖" on *"Never overwrites or removes what you've already
+changed"* means: anything you add on top of what pyrig requires is never
+touched, but a value you hand-edit that pyrig itself declares as required
+gets reset back on the next `pyrig sync`. See
+[How Merging Works](config-files.md#how-merging-works) for the full
+explanation and examples.
+
 For pyrig's own trade-offs, see [Drawbacks](drawbacks.md).

@@ -16,6 +16,34 @@ src/pyrig/
 
 ---
 
+## pyrig vs. pyrig-runtime as Dependencies
+
+At the core of pyrig is pyrig-runtime, the runtime dependency that pyrig
+itself, and every project scaffolded or managed with pyrig, depends on.
+
+- **For pyrig**, pyrig-runtime enables both the plugin/discovery system
+  (described below) and the CLI, built with Typer and exposed to the command
+  line via the standard packaging entry-point mechanism.
+- **For a project built with pyrig**, pyrig-runtime only enables that
+  project's own CLI, and can be removed at the cost of that CLI — every
+  other part of the project is otherwise completely independent of
+  pyrig-runtime.
+- **pyrig itself** is a development tool and is therefore only ever added to
+  a project as a development dependency, never as a runtime dependency. You
+  add it yourself with `uv add pyrig --dev` before running `pyrig init` to
+  scaffold the initial project. `pyrig rm pyrig` removes it and its footprint
+  entirely — it does not remove pyrig-runtime, which isn't a dev dependency —
+  and everything pyrig already generated keeps working standalone afterward.
+
+This split is also why pyrig can't be installed once, globally, the way a
+templating tool like Cookiecutter can (e.g. via `uv tool install`): discovery
+(see below) works by building a directed graph of the packages installed in
+the *current* Python environment and finding which ones depend on
+pyrig-runtime, so pyrig has to be installed alongside a project to discover
+it — an isolated global install would never find that project's code at all.
+
+---
+
 ## Extensibility — `DependencySubclass`
 
 All major pyrig classes (`ConfigFile`, `Tool`, etc.) inherit from
