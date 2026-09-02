@@ -226,3 +226,7 @@ class TestPackageManager:
             "some",
             "args",
         )
+
+    def test_dist_dir(self) -> None:
+        """Test method."""
+        assert PackageManager.I.dist_dir() == Path("dist")

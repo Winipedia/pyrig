@@ -123,6 +123,24 @@ class TestRemoteVersionController:
             "--generate-notes",
         )
 
+    def test_create_release_args_with_files(self) -> None:
+        """Test method."""
+        files = (f for f in ("dist/foo.whl", "dist/bar.tar.gz#Source"))
+        result = RemoteVersionController.I.create_release_args(
+            tag="1.2.3",
+            files=files,
+        )
+        assert tuple(result) == (
+            "gh",
+            "release",
+            "create",
+            "1.2.3",
+            "dist/foo.whl",
+            "dist/bar.tar.gz#Source",
+            "--title=1.2.3",
+            "--generate-notes",
+        )
+
     def test_api_args(self) -> None:
         """Test method."""
         result = RemoteVersionController.I.api_args(

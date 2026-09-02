@@ -46,7 +46,7 @@ class PackageManager(VersionControlHookTool):
 
     def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return `(".venv", "dist/")`."""
-        return (".venv", "dist/")
+        return (".venv", f"{self.dist_dir().as_posix()}/")
 
     def package_root(self) -> Path:
         """Return the directory where the importable package lives.
@@ -98,6 +98,10 @@ class PackageManager(VersionControlHookTool):
     def no_auto_install_env_var(self) -> str:
         """Return the name of the env var that disables uv's implicit auto-sync."""
         return "UV_NO_SYNC"
+
+    def dist_dir(self) -> Path:
+        """Return the relative directory where distribution artifacts are stored."""
+        return Path("dist")
 
     def run_args(self, *args: str) -> Args:
         """Construct `Args` for `uv run`.

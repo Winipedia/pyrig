@@ -1,6 +1,7 @@
 """Identity, URL, and environment metadata for a repository's remote hosting service."""
 
 import os
+from collections.abc import Iterable
 from pathlib import Path
 
 from pyrig.core.strings import make_linked_badge_markdown
@@ -183,20 +184,28 @@ class RemoteVersionController(Tool):
         """
         return self.args("release", *args)
 
-    def create_release_args(self, *args: str, tag: str) -> Args:
+    def create_release_args(
+        self,
+        *args: str,
+        tag: str,
+        files: Iterable[str] = (),
+    ) -> Args:
         """Build arguments to create a GitHub release for a tag.
 
         Args:
             *args: Additional arguments appended to the command.
             tag: The tag to release, also used as the release title.
+            files: Release asset paths to upload alongside the release,
+                e.g. built distributions or binaries.
 
         Returns:
-            Args for `gh release create <tag> --title=<tag> --generate-notes
-            [args]`.
+            Args for `gh release create <tag> [files] --title=<tag>
+            --generate-notes [args]`.
         """
         return self.release_args(
             "create",
             tag,
+            *files,
             f"--title={tag}",
             "--generate-notes",
             *args,
