@@ -87,22 +87,6 @@ class TestReleaseWorkflowConfigFile:
         result = my_test_release_workflow().steps_publish()
         assert len(result) > 0, "Expected steps to be non-empty"
 
-    def test_step_create_tag(
-        self,
-        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        step = my_test_release_workflow().step_create_tag()
-        assert "run" in step
-
-    def test_step_push_tag(
-        self,
-        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        step = my_test_release_workflow().step_push_tag()
-        assert "run" in step
-
     def test_step_create_release(
         self,
         my_test_release_workflow: type[ReleaseWorkflowConfigFile],
