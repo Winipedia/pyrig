@@ -62,3 +62,4 @@ pyrig is installed as a dependency:
 | `pyrig mk cmd <name> --shared` | Scaffold a shared CLI command stub |
 | `pyrig mk inits` | Create all missing `__init__.py` files |
 | `pyrig mk subcls` | Interactively scaffold a subclass of any pyrig class |
+| `pyrig mk subcls <module> <class>` | Scaffold a subclass without prompting |

@@ -81,6 +81,11 @@ In our case search for `ty` and select the right option which looks like this:
 We select it and once we hit enter this scaffold a new file with a subclass
 skeleton for us to modify. The file path is printed to the terminal.
 
+!!! tip
+    Once you know the module and class you want to subclass, you can skip the
+    prompt entirely: `uv run pyrig mk subcls pyrig.rig.tools.typing.checker
+    TypeChecker`. This can be useful for agents or scripts.
+
 The scaffolded file lives at `src/pyrig_mypy/rig/tools/typing/checker.py` —
 the same sub-path as the original, but rooted at our own package instead of
 `pyrig`'s. It looks like this:

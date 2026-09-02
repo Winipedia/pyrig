@@ -124,8 +124,10 @@ discovered and validated automatically by `pyrig sync` — no registration neede
 ## Overriding an Existing Config File
 
 Run `pyrig mk subcls`, search for the class you want to change, and select it.
-A correctly placed subclass skeleton is generated for you. Override whichever
-methods need changing — the rest of the behavior is inherited.
+A correctly placed subclass skeleton is generated for you. If you already know
+the module and class, skip the prompt with `pyrig mk subcls <module> <class>`.
+Override whichever methods need changing — the rest of the behavior is
+inherited.
 
 See the [plugin example](plugins.md#example) for a full walkthrough of
 overriding a config file from scratch.

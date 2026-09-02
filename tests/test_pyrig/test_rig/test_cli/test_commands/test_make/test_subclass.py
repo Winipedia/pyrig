@@ -22,7 +22,7 @@ def test_make_subclass(tmp_path: Path, mocker: MockerFixture) -> None:
             return_value=cls,
         )
 
-        make_subclass()
+        make_subclass(None)
 
         choose_subclass_mock.assert_called_once()
 
@@ -41,6 +41,35 @@ def test_make_subclass(tmp_path: Path, mocker: MockerFixture) -> None:
             in content
         )
         assert "Pyrigger as BasePyrigger\n\n\nclass Pyrigger(BasePyrigger):" in content
+
+
+def test_make_subclass_with_reference(
+    tmp_path: Path,
+    mocker: MockerFixture,
+) -> None:
+    """Test function."""
+    project_dir = tmp_path / "my-project"
+    project_dir.mkdir()
+
+    with chdir(project_dir):
+        choose_subclass_mock = mocker.patch(
+            choose_subclass.__module__ + "." + choose_subclass.__name__,
+        )
+
+        reference = (Pyrigger.__module__, Pyrigger.__name__)
+
+        make_subclass(reference)
+
+        choose_subclass_mock.assert_not_called()
+
+        path = Path("src/my_project/rig/tools/pyrigger.py")
+
+        assert path.exists()
+        content = path.read_text()
+        assert "class Pyrigger(BasePyrigger):" in content
+        assert (
+            "from pyrig.rig.tools.pyrigger import Pyrigger as BasePyrigger" in content
+        )
 
 
 def test_choose_subclass(mocker: MockerFixture) -> None:
