@@ -151,6 +151,8 @@ uv add pyrig --dev
 If you are writing a pyrig plugin, you must add pyrig as a regular dependency
 to your plugin project so that it can be discovered and the later you then add
 your plugin as a dev dependency to the project you are scaffolding with pyrig.
+See the [plugin example](plugins.md#example) for a full walkthrough of
+writing one.
 
 ```bash
 # Add pyrig to plugin project
