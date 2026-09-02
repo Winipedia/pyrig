@@ -24,8 +24,9 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     both succeeded and was itself triggered by a push — so the daily
     scheduled run and pull request runs never produce a release.
     A qualifying run applies repository settings and protection rulesets,
-    enables private vulnerability reporting, tags the current version, and
-    publishes a GitHub release with auto-generated release notes.
+    enables private vulnerability reporting, and publishes a GitHub release
+    with auto-generated release notes, tagging the current version in the
+    same call.
     """
 
     def job(  # noqa: PLR0913
@@ -95,10 +96,10 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         )
 
     def job_publish(self) -> dict[str, Any]:
-        """Return the job that tags, configures, and releases the project.
+        """Return the job that configures and releases the project.
 
         Requests `contents: write` permission at the job level, which is
-        required to push the version tag and create the GitHub release.
+        required to create the version tag and the GitHub release.
 
         Returns:
             Job configuration dict keyed by the job ID, containing the
@@ -116,23 +117,21 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         Returns:
             Steps that perform the full release sequence: environment setup,
             applying repository settings and rulesets, enabling private
-            vulnerability reporting, creating and pushing the version tag,
-            and publishing the GitHub release.
+            vulnerability reporting, and publishing the GitHub release.
         """
         return [
             *self.steps_core_setup(),
             self.step_configure_repository(),
-            self.step_create_tag(),
-            self.step_push_tag(),
             self.step_create_release(),
         ]
 
     def step_create_release(self) -> dict[str, Any]:
-        """Build a step that creates a GitHub release.
+        """Build a step that creates a version tag and GitHub release.
 
         Uses the `gh` CLI (preinstalled on GitHub-hosted runners) to create
-        a release named and tagged with the current project version,
-        using GitHub's auto-generated release notes as its body.
+        a release named and tagged with the current project version, using
+        GitHub's auto-generated release notes as its body. If no tag
+        named after the current version exists yet, `gh` creates one.
 
         Returns:
             Step that runs `gh release create`.
@@ -142,35 +141,6 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             self.step_create_release,
             run=RemoteVersionController.I.create_release_args(tag=version).multiline(),
             env={"GH_TOKEN": self.insert_github_token()},
-        )
-
-    def step_create_tag(self) -> dict[str, Any]:
-        """Build a step that creates a version tag.
-
-        The tag name (e.g. `1.2.3`) is resolved from the project version at
-        runtime, when the step executes.
-
-        Returns:
-            Step that runs `git tag` to create the version tag.
-        """
-        return self.step(
-            self.step_create_tag,
-            run=str(VersionController.I.tag_args(tag=self.shell_insert_version())),
-        )
-
-    def step_push_tag(self) -> dict[str, Any]:
-        """Build a step that pushes the version tag to the remote repository.
-
-        Returns:
-            Step that runs `git push origin <tag>`.
-        """
-        return self.step(
-            self.step_push_tag,
-            run=str(
-                VersionController.I.push_origin_tag_args(
-                    tag=self.shell_insert_version(),
-                ),
-            ),
         )
 
     def step_configure_repository(self) -> dict[str, Any]:

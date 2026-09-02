@@ -43,14 +43,6 @@
         "env":
           "GH_TOKEN": "${{ secrets.REPO_TOKEN }}"
       -
-        "name": "Create Tag"
-        "id": "create-tag"
-        "run": "git tag $(uv version --short)"
-      -
-        "name": "Push Tag"
-        "id": "push-tag"
-        "run": "git push origin $(uv version --short)"
-      -
         "name": "Create Release"
         "id": "create-release"
         "run": |-

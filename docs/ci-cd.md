@@ -55,10 +55,10 @@ merging PRs, since it runs on every PR and blocks merging until it passes.
 The **`publish`** job only runs when the triggering health check both succeeded
 and was itself triggered by a push to the default branch. Scheduled runs,
 manual dispatches, and pull request runs never produce a release.
-Before tagging, it applies repository settings and protection rulesets, and
+Before releasing, it applies repository settings and protection rulesets, and
 enables GitHub's private vulnerability reporting, all via the GitHub API.
-Then it tags the current commit, pushes the tag, and creates a GitHub
-Release with auto-generated release notes.
+Then it creates a GitHub Release with auto-generated release notes, tagging
+the current commit in the same call.
 !!! warning "Important"
     The release workflow creates a new tag, which will fail if that tag
     already exists. This means you must ensure the version is updated in
