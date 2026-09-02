@@ -127,6 +127,9 @@ Run `pyrig mk subcls`, search for the class you want to change, and select it.
 A correctly placed subclass skeleton is generated for you. Override whichever
 methods need changing — the rest of the behavior is inherited.
 
+See the [plugin example](plugins.md#example) for a full walkthrough of
+overriding a config file from scratch.
+
 ---
 
 ## Disabling Validation for a File

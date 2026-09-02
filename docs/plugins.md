@@ -38,6 +38,10 @@ be correct as well.
   version-control-ignored `.env` file for local environment variables and
   secrets.
 
+!!! note
+    Inspecting these plugins to see how to create your own plugin can be very helpful.
+    They are great examples of how to utilize pyrig's plugin system effectively.
+
 ## Example
 
 Let's say we want to create a plugin that replaces the type-checker `ty` with `mypy`.
