@@ -11,6 +11,9 @@ from pyrig.rig.configs.version_control.remote.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
 )
 from pyrig.rig.tools.version_control.controller import VersionController
+from pyrig.rig.tools.version_control.remote.controller import (
+    RemoteVersionController,
+)
 
 
 class ReleaseWorkflowConfigFile(WorkflowConfigFile):
@@ -114,46 +117,31 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             Steps that perform the full release sequence: environment setup,
             applying repository settings and rulesets, enabling private
             vulnerability reporting, creating and pushing the version tag,
-            exporting the version, and publishing the GitHub release.
+            and publishing the GitHub release.
         """
         return [
             *self.steps_core_setup(),
             self.step_configure_repository(),
             self.step_create_tag(),
             self.step_push_tag(),
-            self.step_extract_version(),
             self.step_create_release(),
         ]
 
     def step_create_release(self) -> dict[str, Any]:
         """Build a step that creates a GitHub release.
 
-        Uses `ncipollo/release-action` to create a release named and
-        tagged with the extracted version, using GitHub's auto-generated
-        release notes as its body.
+        Uses the `gh` CLI (preinstalled on GitHub-hosted runners) to create
+        a release named and tagged with the current project version,
+        using GitHub's auto-generated release notes as its body.
 
         Returns:
-            Step using `ncipollo/release-action@main`.
+            Step that runs `gh release create`.
         """
-        version = self.insert_version_from_extract_version_step()
+        version = self.shell_insert_version()
         return self.step(
             self.step_create_release,
-            uses="ncipollo/release-action@main",
-            with_={
-                "generateReleaseNotes": "true",
-                "name": version,
-                "tag": version,
-            },
-        )
-
-    def insert_version_from_extract_version_step(self) -> str:
-        """Return the expression that resolves to the extracted version output.
-
-        Returns:
-            GitHub Actions expression for `steps.extract-version.outputs.version`.
-        """
-        return self.insert_expression(
-            f"steps.{self.step_id_from_method(self.step_extract_version)}.outputs.version",
+            run=RemoteVersionController.I.create_release_args(tag=version).multiline(),
+            env={"GH_TOKEN": self.insert_github_token()},
         )
 
     def step_create_tag(self) -> dict[str, Any]:
@@ -168,17 +156,6 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         return self.step(
             self.step_create_tag,
             run=str(VersionController.I.tag_args(tag=self.shell_insert_version())),
-        )
-
-    def step_extract_version(self) -> dict[str, Any]:
-        """Build a step that writes the current version to `GITHUB_OUTPUT`.
-
-        Returns:
-            Step that appends `version=<x.y.z>` to the `$GITHUB_OUTPUT` file.
-        """
-        return self.step(
-            self.step_extract_version,
-            run=f'echo "version={self.shell_insert_version()}" >> $GITHUB_OUTPUT',
         )
 
     def step_push_tag(self) -> dict[str, Any]:
@@ -201,10 +178,10 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
 
         Runs the generated configuration script, which invokes every
         function it defines in turn: applying general repository settings,
-        upserting all rulesets, and enabling private vulnerability
-        reporting. A function added to `ConfigureRepositoryConfigFile` runs
-        automatically as part of this step, without a corresponding change
-        here.
+        creating or updating all rulesets, and enabling private
+        vulnerability reporting. A function added to
+        `ConfigureRepositoryConfigFile` runs automatically as part of this
+        step, without a corresponding change here.
 
         Returns:
             Step that runs the configuration script.

@@ -100,3 +100,56 @@ class TestRemoteVersionController:
     def test_config_dir(self) -> None:
         """Test method."""
         assert RemoteVersionController.I.config_dir().as_posix() == ".github"
+
+    def test_args(self) -> None:
+        """Test method."""
+        result = RemoteVersionController.I.args("release")
+        assert tuple(result) == ("gh", "release")
+
+    def test_release_args(self) -> None:
+        """Test method."""
+        result = RemoteVersionController.I.release_args("create")
+        assert tuple(result) == ("gh", "release", "create")
+
+    def test_create_release_args(self) -> None:
+        """Test method."""
+        result = RemoteVersionController.I.create_release_args(tag="1.2.3")
+        assert tuple(result) == (
+            "gh",
+            "release",
+            "create",
+            "1.2.3",
+            "--title=1.2.3",
+            "--generate-notes",
+        )
+
+    def test_api_args(self) -> None:
+        """Test method."""
+        result = RemoteVersionController.I.api_args(
+            "--method=PATCH",
+            endpoint='"repos/${repo}"',
+        )
+        assert tuple(result) == ("gh", "api", '"repos/${repo}"', "--method=PATCH")
+
+    def test_api_method_args(self) -> None:
+        """Test method."""
+        result = RemoteVersionController.I.api_method_args(
+            endpoint='"repos/${repo}"',
+            method="PUT",
+        )
+        assert tuple(result) == ("gh", "api", '"repos/${repo}"', "--method=PUT")
+
+    def test_api_method_input_args(self) -> None:
+        """Test method."""
+        result = RemoteVersionController.I.api_method_input_args(
+            endpoint='"repos/${repo}"',
+            method="PATCH",
+            input_="-",
+        )
+        assert tuple(result) == (
+            "gh",
+            "api",
+            '"repos/${repo}"',
+            "--method=PATCH",
+            "--input=-",
+        )

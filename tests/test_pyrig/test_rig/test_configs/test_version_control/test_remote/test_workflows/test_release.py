@@ -103,26 +103,15 @@ class TestReleaseWorkflowConfigFile:
         step = my_test_release_workflow().step_push_tag()
         assert "run" in step
 
-    def test_step_extract_version(
-        self,
-        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_release_workflow().step_extract_version()
-        assert "run" in result
-
     def test_step_create_release(
         self,
         my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().step_create_release()
-        assert "uses" in result, "Expected 'uses' in step"
-
-    def test_insert_version_from_extract_version_step(
-        self,
-        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_release_workflow().insert_version_from_extract_version_step()
-        assert "steps.extract-version.outputs.version" in result
+        assert "gh" in result["run"]
+        assert "release" in result["run"]
+        assert "create" in result["run"]
+        assert "--title=" in result["run"]
+        assert "--generate-notes" in result["run"]
+        assert result["env"]["GH_TOKEN"]

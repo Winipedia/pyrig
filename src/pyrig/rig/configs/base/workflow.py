@@ -555,7 +555,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Build a step that checks out the repository.
 
         Uses `actions/checkout@main`, which authenticates with the automatic
-        `GITHUB_TOKEN`.
+        `GITHUB_TOKEN`. Credential persistence is disabled since no later
+        step needs the checked-out git credentials.
 
         Returns:
             Step using `actions/checkout@main`.
@@ -563,6 +564,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return self.step(
             self.step_checkout_repository,
             uses="actions/checkout@main",
+            with_={"persist-credentials": False},
         )
 
     def step_setup_package_manager(
