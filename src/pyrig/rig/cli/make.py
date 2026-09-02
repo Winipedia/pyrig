@@ -50,8 +50,27 @@ def inits() -> None:
 
 
 @app.command()
-def subcls() -> None:
-    """Scaffold a subclass of an interactively chosen extensible pyrig class."""
+def subcls(
+    reference: Annotated[
+        tuple[str, str] | None,
+        typer.Argument(
+            help="""Dotted module path and name of the class to subclass.
+For example: pyrig.rig.tools.pyrigger Pyrigger""",
+        ),
+    ] = None,
+) -> None:
+    """Scaffold a subclass of an extensible pyrig class.
+
+    Args:
+        reference: A `(module_name, class_name)` pair identifying the class to
+            subclass. If omitted, prompts the user to choose one interactively.
+
+    Examples:
+        ```
+        $ uv run pyrig mk subcls
+        $ uv run pyrig mk subcls pyrig.rig.tools.pyrigger Pyrigger
+        ```
+    """
     from pyrig.rig.cli.commands.make.subclass import make_subclass  # noqa: PLC0415
 
-    make_subclass()
+    make_subclass(reference)

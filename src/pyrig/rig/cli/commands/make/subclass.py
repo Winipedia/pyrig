@@ -13,19 +13,27 @@ from pyrig.rig.configs.base.copy_module import (
 )
 
 
-def make_subclass() -> None:
+def make_subclass(reference: tuple[str, str] | None) -> None:
     """Scaffold a subclass module in the current project for the chosen class.
 
-    Prompts the user to select a class interactively, then writes a module
-    file containing the selected class's source module docstring and a
-    subclass skeleton that imports and extends the chosen class.
+    Resolves the class to subclass either from `reference` or, if `None`, by
+    prompting the user to select one interactively. Then writes a module file
+    containing the selected class's source module docstring and a subclass
+    skeleton that imports and extends the chosen class.
+
+    Args:
+        reference: A `(module_name, class_name)` pair identifying the class to
+            subclass, or `None` to choose one interactively.
     """
-    subclass = choose_subclass()
+    if reference is None:
+        subclass = choose_subclass()
+        module_name, class_name = subclass.__module__, subclass.__name__
+    else:
+        module_name, class_name = reference
 
-    module_name, class_name = subclass.__module__, subclass.__name__
-    module = import_module(module_name)
-
-    config_file = CopyModuleDocstringConfigFile.generate_subclass(module)()
+    config_file = CopyModuleDocstringConfigFile.generate_subclass(
+        import_module(module_name),
+    )()
     config_file.validate()
     content = config_file.read_content()
 
