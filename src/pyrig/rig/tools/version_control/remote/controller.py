@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 from pyrig.core.strings import make_linked_badge_markdown
+from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
@@ -15,12 +16,12 @@ class RemoteVersionController(Tool):
     Builds the repository page, issues tracker, releases, and GitHub
     Actions workflow URLs, plus the badge and access-token metadata
     needed to reference them from README and workflow files. Also
-    resolves GitHub's `.github` config directory and detects the
-    GitHub Actions CI environment.
+    resolves GitHub's `.github` config directory, detects the GitHub
+    Actions CI environment, and builds `gh` CLI commands.
     """
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Return an empty tuple; GitHub is not installed as a Python package."""
+        """Return an empty tuple; `gh` is a system dependency, not a pip package."""
         return ()
 
     def group(self) -> str:
@@ -155,3 +156,110 @@ class RemoteVersionController(Tool):
             `True` if running inside GitHub Actions, `False` otherwise.
         """
         return os.getenv("GITHUB_ACTIONS", "false") == "true"
+
+    def args(self, *args: str) -> Args:
+        """Build an `Args` command starting with `gh`, the GitHub CLI.
+
+        Overrides the base implementation, which would otherwise start the
+        command with `name()` (`"github"`, used for badges and the
+        `.github` config directory, not an executable).
+
+        Args:
+            *args: Command arguments to follow `gh`.
+
+        Returns:
+            An `Args` object whose first element is `gh`.
+        """
+        return Args("gh", *args)
+
+    def release_args(self, *args: str) -> Args:
+        """Build base arguments for `gh release`.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for `gh release [args]`.
+        """
+        return self.args("release", *args)
+
+    def create_release_args(self, *args: str, tag: str) -> Args:
+        """Build arguments to create a GitHub release for a tag.
+
+        Args:
+            *args: Additional arguments appended to the command.
+            tag: The tag to release, also used as the release title.
+
+        Returns:
+            Args for `gh release create <tag> --title=<tag> --generate-notes
+            [args]`.
+        """
+        return self.release_args(
+            "create",
+            tag,
+            f"--title={tag}",
+            "--generate-notes",
+            *args,
+        )
+
+    def api_args(self, *args: str, endpoint: str) -> Args:
+        """Build arguments for `gh api`, meant for embedding in shell scripts.
+
+        Callers are responsible for quoting `endpoint` themselves if it
+        contains a shell variable expansion that must survive word
+        splitting once expanded at runtime (e.g. `'"repos/${repo}"'`).
+
+        Args:
+            *args: Additional arguments appended to the command, e.g.
+                `"--input=-"`.
+            endpoint: The GitHub API endpoint path.
+
+        Returns:
+            Args for `gh api <endpoint> [args]`.
+        """
+        return self.args("api", endpoint, *args)
+
+    def api_method_args(self, *args: str, endpoint: str, method: str) -> Args:
+        """Build arguments for `gh api` with an HTTP method, for shell scripts.
+
+        Callers are responsible for quoting `endpoint` and `method`
+        themselves if either contains a shell variable expansion.
+
+        Args:
+            *args: Additional arguments appended to the command.
+            endpoint: The GitHub API endpoint path.
+            method: The HTTP method, e.g. `"PATCH"` or `'"${method}"'` if
+                it's a shell variable expansion.
+
+        Returns:
+            Args for `gh api <endpoint> --method=<method> [args]`.
+        """
+        return self.api_args(f"--method={method}", *args, endpoint=endpoint)
+
+    def api_method_input_args(
+        self,
+        *args: str,
+        endpoint: str,
+        method: str,
+        input_: str,
+    ) -> Args:
+        """Build arguments for `gh api` with a method and request body input.
+
+        Args:
+            *args: Additional arguments appended to the command.
+            endpoint: The GitHub API endpoint path.
+            method: The HTTP method, e.g. `"PATCH"` or `'"${method}"'` if
+                it's a shell variable expansion.
+            input_: Value for `--input`, e.g. `"-"` to read the request
+                body from stdin.
+
+        Returns:
+            Args for `gh api <endpoint> --method=<method> --input=<input_>
+            [args]`.
+        """
+        return self.api_method_args(
+            f"--input={input_}",
+            *args,
+            endpoint=endpoint,
+            method=method,
+        )

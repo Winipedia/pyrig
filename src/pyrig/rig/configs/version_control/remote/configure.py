@@ -73,9 +73,14 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         """
         settings_path = RepositorySettingsConfigFile.I.path().as_posix()
         repository_key = RepositorySettingsConfigFile.I.repository_key()
-        endpoint = f"repos/${{{self.repo_variable()}}}"
+        endpoint = f'"repos/${{{self.repo_variable()}}}"'
+        api_call = RemoteVersionController.I.api_method_input_args(
+            endpoint=endpoint,
+            method="PATCH",
+            input_="-",
+        )
         return f"""{self.repository_settings_function()}() {{
-  jq '.{repository_key}' {settings_path} | gh api "{endpoint}" --method=PATCH --input=-
+  jq '.{repository_key}' {settings_path} | {api_call}
 }}"""
 
     def repository_settings_function(self) -> str:
@@ -86,9 +91,9 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         """Return the `rulesets` shell function as a multi-line string.
 
         Returns:
-            Function definition that upserts each entry of the `rulesets`
-            key of the settings file, using `POST` to create a ruleset or
-            `PUT` to update one that already exists.
+            Function definition that creates or updates each entry of the
+            `rulesets` key of the settings file, using `POST` to create a
+            ruleset or `PUT` to update one that already exists.
         """
         settings_path = RepositorySettingsConfigFile.I.path().as_posix()
         rulesets_key = RepositorySettingsConfigFile.I.rulesets_key()
@@ -98,14 +103,22 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         ruleset_ref = "${ruleset}"
         ruleset_filter = ".[] | select(.name==$r.name) | .id"
         method_ref = "${method}"
+        get_ruleset_id_call = RemoteVersionController.I.api_args(
+            endpoint=f'"{endpoint_ref}"',
+        )
+        ruleset_call = RemoteVersionController.I.api_method_input_args(
+            endpoint='"${url}"',
+            method=f'"{method_ref}"',
+            input_="-",
+        )
         return rf"""{self.rulesets_function()}() {{
   local endpoint="repos/{repo_ref}/rulesets"
   jq --compact-output '.{rulesets_key}[]' {settings_path} | while read -r ruleset; do
-    id=$(gh api "{endpoint_ref}" \
+    id=$({get_ruleset_id_call} \
       | jq --raw-output --argjson r "{ruleset_ref}" '{ruleset_filter}')
     if [[ -z {id_ref} ]]; then method="POST"; else method="PUT"; fi
     url="{endpoint_ref}${{id:+/{id_ref}}}"
-    gh api "${{url}}" --method="{method_ref}" --input=- <<<"{ruleset_ref}"
+    {ruleset_call} <<<"{ruleset_ref}"
   done
 }}"""
 
@@ -120,9 +133,15 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
             Function definition that `PUT`s the GitHub API endpoint that
             enables private vulnerability reporting for the repository.
         """
-        endpoint = f"repos/${{{self.repo_variable()}}}/private-vulnerability-reporting"
+        endpoint = (
+            f'"repos/${{{self.repo_variable()}}}/private-vulnerability-reporting"'
+        )
+        api_call = RemoteVersionController.I.api_method_args(
+            endpoint=endpoint,
+            method="PUT",
+        )
         return f"""{self.vulnerability_reporting_function()}() {{
-  gh api "{endpoint}" --method=PUT
+  {api_call}
 }}"""
 
     def vulnerability_reporting_function(self) -> str:
