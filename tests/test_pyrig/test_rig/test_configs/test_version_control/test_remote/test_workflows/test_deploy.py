@@ -8,14 +8,6 @@ from pyrig.rig.configs.version_control.remote.workflows.deploy import (
 class TestDeployWorkflowConfigFile:
     """Test class."""
 
-    def test_job(self) -> None:
-        """Test method."""
-        result = DeployWorkflowConfigFile.I.job(self.test_job, steps=[])
-        assert len(result) == 1, "Expected job to have one key"
-        job_config = next(iter(result.values()))
-        expected = "github.event.workflow_run.conclusion == 'success'"
-        assert job_config["if"] == expected
-
     def test_stem(self) -> None:
         """Test method."""
         assert DeployWorkflowConfigFile.I.stem() == "deploy"
@@ -35,8 +27,9 @@ class TestDeployWorkflowConfigFile:
     def test_workflow_triggers(self) -> None:
         """Test method."""
         result = DeployWorkflowConfigFile.I.workflow_triggers()
-        assert "workflow_run" in result, "Expected 'workflow_run' in triggers"
-        assert "workflow_dispatch" not in result
+        assert "release" in result, "Expected 'release' in triggers"
+        assert result["release"]["types"] == ["published"]
+        assert "workflow_run" not in result
 
     def test_jobs(self) -> None:
         """Test method."""

@@ -1,12 +1,8 @@
 """GitHub Actions workflow generator for deploying documentation to GitHub Pages."""
 
-from types import MethodType
 from typing import Any
 
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
-from pyrig.rig.configs.version_control.remote.workflows.release import (
-    ReleaseWorkflowConfigFile,
-)
 from pyrig.rig.tools.docs.builder import DocsBuilder
 from pyrig.rig.tools.packages.manager import PackageManager
 
@@ -14,39 +10,8 @@ from pyrig.rig.tools.packages.manager import PackageManager
 class DeployWorkflowConfigFile(WorkflowConfigFile):
     """GitHub Actions workflow that publishes documentation to GitHub Pages.
 
-    Triggered whenever the release workflow completes, but its job only
-    runs if that completion was a success.
+    Triggered whenever a GitHub Release is published.
     """
-
-    def job(  # noqa: PLR0913
-        self,
-        method: MethodType,
-        *,
-        needs: list[str] | None = None,
-        strategy: dict[str, Any] | None = None,
-        permissions: dict[str, Any] | None = None,
-        runs_on: str = WorkflowConfigFile.UBUNTU_LATEST,
-        if_condition: str | None = None,
-        steps: list[dict[str, Any]] | None = None,
-    ) -> dict[str, Any]:
-        """Build a job, defaulting `if_condition` to a success-gate condition.
-
-        When `if_condition` is not given, it defaults to a condition that is
-        true only if the workflow run that triggered this workflow succeeded.
-
-        Returns:
-            Dict mapping the derived job ID to its configuration.
-        """
-        if_condition = if_condition or self.if_workflow_run_is_success()
-        return super().job(
-            method,
-            needs=needs,
-            strategy=strategy,
-            permissions=permissions,
-            runs_on=runs_on,
-            if_condition=if_condition,
-            steps=steps,
-        )
 
     def concurrency_cancel_in_progress(self) -> bool:
         """Return `False`; a deploy run must not be cancelled mid-publish."""
@@ -65,14 +30,12 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return "deploy"
 
     def workflow_triggers(self) -> dict[str, Any]:
-        """Return a `workflow_run` trigger for completion of the release workflow.
+        """Return a `release` trigger for published releases.
 
         Returns:
-            Trigger configuration dict with a `workflow_run` entry.
+            Trigger configuration dict with a `release` entry.
         """
-        return self.on_workflow_run(
-            workflows=[ReleaseWorkflowConfigFile.I.workflow_name()],
-        )
+        return self.on_release()
 
     def job_documentation(self) -> dict[str, Any]:
         """Build the job that builds and deploys the documentation site.

@@ -260,6 +260,15 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().on_workflow_run(workflows=["Test Workflow"])
         assert "workflow_run" in result, "Expected 'workflow_run' in result"
 
+    def test_on_release(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        result = my_test_workflow().on_release()
+        assert "release" in result, "Expected 'release' in result"
+        assert result["release"]["types"] == ["published"]
+
+        result = my_test_workflow().on_release(types=["created"])
+        assert result["release"]["types"] == ["created"]
+
     def test_step(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().step(

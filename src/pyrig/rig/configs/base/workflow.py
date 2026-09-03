@@ -102,9 +102,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Return the workflow's default `GITHUB_TOKEN` permissions.
 
         Denies all permissions by default so that jobs receive no token
-        access unless they explicitly declare what they need, rather than
-        relying on the ambient repository/organization default (which is
-        not visible from the workflow file and can be broader than expected).
+        access unless they explicitly declare what they need.
 
         Returns:
             Empty dict, denying every permission.
@@ -428,6 +426,20 @@ class WorkflowConfigFile(YMLDictConfigFile):
         if types is None:
             types = ["opened", "synchronize", "reopened"]
         return {"pull_request": {"types": types}}
+
+    def on_release(self, types: list[str] | None = None) -> dict[str, Any]:
+        """Create a `release` trigger.
+
+        Args:
+            types: Release activity types to react to. Defaults to
+                `["published"]`.
+
+        Returns:
+            Trigger configuration for release events.
+        """
+        if types is None:
+            types = ["published"]
+        return {"release": {"types": types}}
 
     def on_workflow_run(
         self,

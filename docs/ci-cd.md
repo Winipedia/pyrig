@@ -22,17 +22,19 @@ Pull Request / Push / Schedule / Manual
     ┌─────────────────┐
     │    Release      │  ← tags and publishes a GitHub Release
     └────────┬────────┘
-             │ completes
+             │ release published
              ▼
     ┌─────────────────┐
     │     Deploy      │  ← deploys documentation to GitHub Pages
     └─────────────────┘
 ```
 
-All transitions use `workflow_run: completed` triggers, meaning a stage only
-fires when the previous stage finishes. Each downstream stage also guards its
-jobs with an `if` condition that checks the triggering run succeeded, so a
-failure anywhere in the chain stops propagation cleanly.
+Health Check → Release uses a `workflow_run: completed` trigger, guarded by an
+`if` condition that checks the triggering run succeeded and was push-triggered,
+so only a successful push-triggered health check produces a release. Release →
+Deploy uses the native `release: published` event instead: since only the
+`publish` job's own `gh release create` call can produce that event, no `if`
+guard is needed downstream — the event firing at all already implies success.
 
 ---
 
@@ -74,10 +76,9 @@ the current commit in the same call.
 
 **File:** `.github/workflows/deploy.yml`
 
-**Trigger:** `Release` workflow completes.
+**Trigger:** a GitHub Release is published (native `release: published` event).
 
-One job runs in this final stage, gated on the triggering release having
-succeeded:
+One job runs in this final stage:
 
 - **`documentation`** — builds the documentation site and deploys it to
   GitHub Pages. This job requires `contents: read`, `pages: write`, and
