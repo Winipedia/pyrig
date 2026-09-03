@@ -510,30 +510,38 @@ class TestWorkflowConfigFile:
         """Test method."""
         assert my_test_workflow().permissions() == {}
 
-    def test_permission_contents_read(
+    def test_permission_id_token(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        assert my_test_workflow().permission_contents_read() == {"contents": "read"}
+        workflow = my_test_workflow()
+        assert workflow.permission_id_token() == {"id-token": "read"}
+        assert workflow.permission_id_token(write=True) == {"id-token": "write"}
 
-    def test_permission_id_token_write(
+    def test_permission_pages(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        assert my_test_workflow().permission_id_token_write() == {"id-token": "write"}
+        workflow = my_test_workflow()
+        assert workflow.permission_pages() == {"pages": "read"}
+        assert workflow.permission_pages(write=True) == {"pages": "write"}
 
-    def test_permission_pages_write(
+    def test_permission_contents(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        assert my_test_workflow().permission_pages_write() == {"pages": "write"}
+        workflow = my_test_workflow()
+        assert workflow.permission_contents() == {"contents": "read"}
+        assert workflow.permission_contents(write=True) == {"contents": "write"}
 
-    def test_permission_contents_write(
+    def test_permission(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        assert my_test_workflow().permission_contents_write() == {"contents": "write"}
+        workflow = my_test_workflow()
+        assert workflow.permission("actions") == {"actions": "read"}
+        assert workflow.permission("actions", write=True) == {"actions": "write"}

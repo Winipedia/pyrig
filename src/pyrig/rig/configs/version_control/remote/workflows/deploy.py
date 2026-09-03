@@ -87,9 +87,9 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return self.job(
             self.job_documentation,
             permissions={
-                **self.permission_contents_read(),
-                **self.permission_id_token_write(),
-                **self.permission_pages_write(),
+                **self.permission_contents(),
+                **self.permission_id_token(write=True),
+                **self.permission_pages(write=True),
             },
             steps=self.steps_documentation(),
         )

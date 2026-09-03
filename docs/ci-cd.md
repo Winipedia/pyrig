@@ -80,8 +80,8 @@ One job runs in this final stage, gated on the triggering release having
 succeeded:
 
 - **`documentation`** — builds the documentation site and deploys it to
-  GitHub Pages. This job requires `pages: write` and `id-token: write`
-  permissions at the job level.
+  GitHub Pages. This job requires `contents: read`, `pages: write`, and
+  `id-token: write` permissions at the job level.
 
 ---
 
