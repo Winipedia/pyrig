@@ -68,6 +68,7 @@
     "name": "Package"
     "permissions":
       "contents": "read"
+      "id-token": "write"
     "if": "github.event.workflow_run.conclusion == 'success'"
     "runs-on": "ubuntu-latest"
     "steps":
@@ -90,5 +91,5 @@
       -
         "name": "Publish Package"
         "id": "publish-package"
-        "run": "uv publish --token=${{ secrets.PYPI_TOKEN }}"
+        "run": "uv publish --trusted-publishing=always"
 ...
