@@ -15,6 +15,7 @@
 "run-name": "Deploy"
 "jobs":
   "documentation":
+    "name": "Documentation"
     "if": "github.event.workflow_run.conclusion == 'success'"
     "permissions":
       "id-token": "write"
@@ -59,6 +60,7 @@
         "id": "deploy-documentation"
         "uses": "actions/deploy-pages@main"
   "package":
+    "name": "Package"
     "if": "github.event.workflow_run.conclusion == 'success'"
     "runs-on": "ubuntu-latest"
     "steps":
