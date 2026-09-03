@@ -168,7 +168,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             Dict mapping the derived job ID to its configuration.
         """
-        job = {}
+        job_id = self.job_id_from_method(method)
+        job = {"name": self.name_from_id(job_id)}
         if if_condition is not None:
             job["if"] = if_condition
         if needs is not None:
@@ -180,7 +181,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             job["strategy"] = strategy
         if steps is not None:
             job["steps"] = steps
-        return {self.job_id_from_method(method): job}
+        return {job_id: job}
 
     def step(  # noqa: PLR0913
         self,

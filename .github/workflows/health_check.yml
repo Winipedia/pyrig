@@ -21,6 +21,7 @@
 "run-name": "Health Check"
 "jobs":
   "health-checks":
+    "name": "Health Checks"
     "runs-on": "ubuntu-latest"
     "steps":
       -
@@ -48,6 +49,7 @@
         "id": "run-version-control-hooks"
         "run": "uv run prek run --all-files --group=all"
   "matrix-health-checks":
+    "name": "Matrix Health Checks"
     "runs-on": "${{ matrix.os }}"
     "strategy":
       "matrix":
@@ -95,6 +97,7 @@
           "fail_ci_if_error": "true"
           "skip_validation": "true"
   "health-check":
+    "name": "Health Check"
     "needs":
       - "health-checks"
       - "matrix-health-checks"
