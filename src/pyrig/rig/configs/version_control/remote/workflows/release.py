@@ -77,6 +77,10 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """
         return {**self.job_publish()}
 
+    def concurrency_cancel_in_progress(self) -> bool:
+        """Return `False`; a release run must not be cancelled mid-publish."""
+        return False
+
     def stem(self) -> str:
         """Return `"release"`, the workflow file's stem."""
         return "release"

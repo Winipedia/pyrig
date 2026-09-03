@@ -91,6 +91,32 @@ class TestWorkflowConfigFile:
         expected = "${{ condition }}"
         assert result == expected, f"Expected '{expected}', got {result}"
 
+    def test_combined_if_and(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().combined_if_and(
+            "condition1",
+            "condition2",
+            "condition3",
+        )
+        expected = "condition1 &&\ncondition2 &&\ncondition3"
+        assert result == expected, f"Expected '{expected}', got {result}"
+
+    def test_combined_if_or(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().combined_if_or(
+            "condition1",
+            "condition2",
+            "condition3",
+        )
+        expected = "condition1 ||\ncondition2 ||\ncondition3"
+        assert result == expected, f"Expected '{expected}', got {result}"
+
     def test_combined_if(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().combined_if(
@@ -123,6 +149,7 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().configs()
         assert "name" in result, "Expected 'name' in configs"
         assert "on" in result, "Expected 'on' in configs"
+        assert "concurrency" in result, "Expected 'concurrency' in configs"
         assert "jobs" in result, "Expected 'jobs' in configs"
 
     def test_parent_path(
@@ -439,3 +466,47 @@ class TestWorkflowConfigFile:
             HealthCheckWorkflowConfigFile.I.step_run_tests,
         )
         assert result == "run-tests"
+
+    def test_concurrency(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        result = my_test_workflow().concurrency()
+        assert result["group"] == "${{ github.workflow }}-${{ github.ref }}"
+        assert result["cancel-in-progress"] is True
+
+    def test_concurrency_cancel_in_progress(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().concurrency_cancel_in_progress() is True
+
+    def test_insert_github_workflow(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().insert_github_workflow()
+        assert result == "${{ github.workflow }}", (
+            f"Expected '${{{{ github.workflow }}}}', got {result}"
+        )
+        assert HealthCheckWorkflowConfigFile.I.concurrency_cancel_in_progress() is True
+
+    def test_insert_github_ref(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().insert_github_ref()
+        assert result == "${{ github.ref }}", (
+            f"Expected '${{{{ github.ref }}}}', got {result}"
+        )
+
+    def test_insert_github_workflow_and_ref(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().insert_github_workflow_and_ref()
+        assert result == "${{ github.workflow }}-${{ github.ref }}", (
+            f"Expected '${{{{ github.workflow }}}}-${{{{ github.ref }}}}', got {result}"
+        )

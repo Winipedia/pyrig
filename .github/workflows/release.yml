@@ -8,6 +8,9 @@
       - "completed"
     "workflows":
       - "Health Check"
+"concurrency":
+  "group": "${{ github.workflow }}-${{ github.ref }}"
+  "cancel-in-progress": false
 "defaults":
   "run":
     "shell": "bash"

@@ -40,13 +40,17 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         if_condition = if_condition or self.if_workflow_run_is_success()
         return super().job(
             method,
-            if_condition=if_condition,
             needs=needs,
             strategy=strategy,
             permissions=permissions,
             runs_on=runs_on,
+            if_condition=if_condition,
             steps=steps,
         )
+
+    def concurrency_cancel_in_progress(self) -> bool:
+        """Return `False`; a deploy run must not be cancelled mid-publish."""
+        return False
 
     def jobs(self) -> dict[str, Any]:
         """Build the top-level jobs configuration.

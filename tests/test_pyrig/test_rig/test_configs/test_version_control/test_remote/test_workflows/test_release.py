@@ -99,3 +99,7 @@ class TestReleaseWorkflowConfigFile:
         assert "--title=" in result["run"]
         assert "--generate-notes" in result["run"]
         assert result["env"]["GH_TOKEN"]
+
+    def test_concurrency_cancel_in_progress(self) -> None:
+        """Test method."""
+        assert ReleaseWorkflowConfigFile.I.concurrency_cancel_in_progress() is False
