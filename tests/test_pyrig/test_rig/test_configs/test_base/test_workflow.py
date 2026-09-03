@@ -30,10 +30,6 @@ def my_test_workflow(
             """Get the workflow triggers."""
             return {"workflow_dispatch": {}}
 
-        def permissions(self) -> dict[str, Any]:
-            """Get the workflow permissions."""
-            return {}
-
         def jobs(self) -> dict[str, Any]:
             """Get the workflow jobs."""
             return {
@@ -147,10 +143,11 @@ class TestWorkflowConfigFile:
     def test__configs(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().configs()
-        assert "name" in result, "Expected 'name' in configs"
-        assert "on" in result, "Expected 'on' in configs"
-        assert "concurrency" in result, "Expected 'concurrency' in configs"
-        assert "jobs" in result, "Expected 'jobs' in configs"
+        assert "name" in result
+        assert "on" in result
+        assert "concurrency" in result
+        assert "jobs" in result
+        assert "permissions" in result
 
     def test_parent_path(
         self,
@@ -507,6 +504,36 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_workflow().insert_github_workflow_and_ref()
-        assert result == "${{ github.workflow }}-${{ github.ref }}", (
-            f"Expected '${{{{ github.workflow }}}}-${{{{ github.ref }}}}', got {result}"
-        )
+        assert result == "${{ github.workflow }}-${{ github.ref }}"
+
+    def test_permissions(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        assert my_test_workflow().permissions() == {}
+
+    def test_permission_contents_read(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().permission_contents_read() == {"contents": "read"}
+
+    def test_permission_id_token_write(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().permission_id_token_write() == {"id-token": "write"}
+
+    def test_permission_pages_write(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().permission_pages_write() == {"pages": "write"}
+
+    def test_permission_contents_write(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().permission_contents_write() == {"contents": "write"}

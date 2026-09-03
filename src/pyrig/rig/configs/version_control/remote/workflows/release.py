@@ -111,7 +111,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.job(
             self.job_publish,
-            permissions={"contents": "write"},
+            permissions=self.permission_contents_write(),
             steps=self.steps_publish(),
         )
 

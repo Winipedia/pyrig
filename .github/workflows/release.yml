@@ -8,6 +8,7 @@
       - "completed"
     "workflows":
       - "Health Check"
+"permissions": {}
 "concurrency":
   "group": "${{ github.workflow }}-${{ github.ref }}"
   "cancel-in-progress": false
@@ -21,11 +22,11 @@
 "jobs":
   "publish":
     "name": "Publish"
+    "permissions":
+      "contents": "write"
     "if": |-
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push'
-    "permissions":
-      "contents": "write"
     "runs-on": "ubuntu-latest"
     "steps":
       -
