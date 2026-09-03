@@ -528,6 +528,15 @@ class TestWorkflowConfigFile:
         assert workflow.permission_pages() == {"pages": "read"}
         assert workflow.permission_pages(write=True) == {"pages": "write"}
 
+    def test_permission_packages(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        assert workflow.permission_packages() == {"packages": "read"}
+        assert workflow.permission_packages(write=True) == {"packages": "write"}
+
     def test_permission_contents(
         self,
         my_test_workflow: type[WorkflowConfigFile],

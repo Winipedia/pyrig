@@ -144,6 +144,17 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.permission("pages", write=write)
 
+    def permission_packages(self, *, write: bool = False) -> dict[str, str]:
+        """Return the permission needed to read or write GitHub Packages.
+
+        Args:
+            write: Whether the permission should be write (`True`) or read (`False`).
+
+        Returns:
+            Dict with the "packages" permission set to either "write" or "read".
+        """
+        return self.permission("packages", write=write)
+
     def permission(self, name: str, *, write: bool = False) -> dict[str, str]:
         """Return a permission dictionary for the given permission name.
 
