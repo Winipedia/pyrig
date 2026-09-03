@@ -31,7 +31,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     triggers, and expression helpers so subclasses can assemble complete
     workflows without writing raw YAML. Workflows deny all `GITHUB_TOKEN`
     permissions by default; jobs that check out the repository must explicitly
-    request `self.permission_contents_read()` (or a broader permission when
+    request `self.permission_contents()` (or a broader permission when
     required).
 
     Attributes:
@@ -46,7 +46,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         ...     def jobs(self) -> dict[str, Any]:
         ...         return self.job(
         ...             self.jobs,
-        ...             permissions=self.permission_contents_read(),
+        ...             permissions=self.permission_contents(),
         ...             steps=self.steps_core_installed_setup(),
         ...         )
         ...
@@ -104,48 +104,57 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Denies all permissions by default so that jobs receive no token
         access unless they explicitly declare what they need, rather than
         relying on the ambient repository/organization default (which is
-        not visible from the workflow file and can be broader than
-        expected).
+        not visible from the workflow file and can be broader than expected).
 
         Returns:
             Empty dict, denying every permission.
         """
         return {}
 
-    def permission_contents_read(self) -> dict[str, str]:
-        """Return the permission needed to check out the repository.
+    def permission_contents(self, *, write: bool = False) -> dict[str, str]:
+        """Return the permission needed to read or write repository contents.
+
+        Args:
+            write: Whether the permission should be write (`True`) or read (`False`).
 
         Returns:
-            `{"contents": "read"}`.
+            Dict with the "contents" permission set to either "write" or "read".
         """
-        return {"contents": "read"}
+        return self.permission("contents", write=write)
 
-    def permission_contents_write(self) -> dict[str, str]:
-        """Return the permission needed to create tags and releases.
-
-        Returns:
-            `{"contents": "write"}`.
-        """
-        return {"contents": "write"}
-
-    def permission_id_token_write(self) -> dict[str, str]:
+    def permission_id_token(self, *, write: bool = False) -> dict[str, str]:
         """Return the permission needed to mint an OIDC token.
 
-        Required by GitHub Pages deployment and other flows that exchange
-        an OIDC token for short-lived credentials.
+        Args:
+            write: Whether the permission should be write (`True`) or read (`False`).
 
         Returns:
-            `{"id-token": "write"}`.
+            Dict with the "id-token" permission set to either "write" or "read".
         """
-        return {"id-token": "write"}
+        return self.permission("id-token", write=write)
 
-    def permission_pages_write(self) -> dict[str, str]:
-        """Return the permission needed to deploy to GitHub Pages.
+    def permission_pages(self, *, write: bool = False) -> dict[str, str]:
+        """Return the permission needed to deploy to GitHub Pages, optionally as write.
+
+        Args:
+            write: Whether the permission should be write (`True`) or read (`False`).
 
         Returns:
-            `{"pages": "write"}`.
+            Dict with the "pages" permission set to either "write" or "read".
         """
-        return {"pages": "write"}
+        return self.permission("pages", write=write)
+
+    def permission(self, name: str, *, write: bool = False) -> dict[str, str]:
+        """Return a permission dictionary for the given permission name.
+
+        Args:
+            name: The name of the permission.
+            write: Whether the permission should be write (`True`) or read (`False`).
+
+        Returns:
+            Dict with the permission name mapped to either "write" or "read".
+        """
+        return {name: "write" if write else "read"}
 
     def concurrency(self) -> dict[str, Any]:
         """Return the workflow's concurrency setting.
@@ -618,7 +627,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
         Checks out the repository and installs the package manager (`uv`) with
         the specified Python version. The containing job must grant at least
-        `contents: read` through `permission_contents_read()`.
+        `contents: read` through `permission_contents()`.
 
         Args:
             python_version: Python version string for `uv`. Defaults to the
@@ -643,7 +652,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         `GITHUB_TOKEN`. Credential persistence is disabled since no later
         step needs the checked-out git credentials. The containing job must
         grant at least `contents: read` through
-        `permission_contents_read()`.
+        `permission_contents()`.
 
         Returns:
             Step using `actions/checkout@main`.
