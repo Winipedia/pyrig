@@ -62,3 +62,7 @@ class TestDeployWorkflowConfigFile:
         """Test method."""
         result = DeployWorkflowConfigFile.I.step_deploy_documentation()
         assert "uses" in result, f"Expected 'uses' in step, got {result}"
+
+    def test_concurrency_cancel_in_progress(self) -> None:
+        """Test method."""
+        assert DeployWorkflowConfigFile.I.concurrency_cancel_in_progress() is False

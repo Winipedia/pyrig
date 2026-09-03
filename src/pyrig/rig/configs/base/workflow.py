@@ -79,17 +79,45 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
         Returns:
             Top-level workflow configuration with `name`, `on`,
-            `defaults`, `env`, `run-name`, and `jobs` keys populated from
-            the overridable methods.
+            `concurrency`, `defaults`, `env`, `run-name`, and `jobs` keys
+            populated from the overridable methods.
         """
         return {
             "name": self.workflow_name(),
             "on": self.workflow_triggers(),
+            "concurrency": self.concurrency(),
             "defaults": self.defaults(),
             "env": self.global_env(),
             "run-name": self.run_name(),
             "jobs": self.jobs(),
         }
+
+    def concurrency(self) -> dict[str, Any]:
+        """Return the workflow's concurrency setting.
+
+        Groups runs by workflow and ref so that superseded runs are queued
+        or cancelled instead of running redundantly alongside newer ones.
+
+        Returns:
+            Dict of concurrency settings.
+        """
+        return {
+            "group": self.insert_github_workflow_and_ref(),
+            "cancel-in-progress": self.concurrency_cancel_in_progress(),
+        }
+
+    def concurrency_cancel_in_progress(self) -> bool:
+        """Return whether superseded runs of this workflow should be cancelled.
+
+        Override to `False` for workflows that mutate external state (e.g.
+        publishing a release or package) and therefore shouldn't be
+        interrupted mid-run; such runs are still serialized via the shared
+        concurrency group, just not cancelled.
+
+        Returns:
+            `True` by default.
+        """
+        return True
 
     def parent_path(self) -> Path:
         """Return the GitHub Actions workflows directory."""
@@ -692,6 +720,31 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.insert_expression("matrix.python-version")
 
+    def insert_github_workflow(self) -> str:
+        """Return the expression that resolves to the current workflow's name.
+
+        Returns:
+            GitHub Actions expression for `github.workflow`.
+        """
+        return self.insert_expression("github.workflow")
+
+    def insert_github_ref(self) -> str:
+        """Return the expression that resolves to the triggering ref.
+
+        Returns:
+            GitHub Actions expression for `github.ref`.
+        """
+        return self.insert_expression("github.ref")
+
+    def insert_github_workflow_and_ref(self) -> str:
+        """Return the workflow name and ref joined into one group key.
+
+        Returns:
+            The `insert_github_workflow()` and `insert_github_ref()`
+            expressions joined by a hyphen.
+        """
+        return f"{self.insert_github_workflow()}-{self.insert_github_ref()}"
+
     def shell_insert_expression(self, var: str) -> str:
         """Wrap an expression in shell command substitution `$( ... )` syntax.
 
@@ -724,10 +777,9 @@ class WorkflowConfigFile(YMLDictConfigFile):
             GitHub Actions condition, true when the triggering workflow run
             both succeeded and was itself triggered by a push event.
         """
-        return self.combined_if(
+        return self.combined_if_and(
             self.if_workflow_run_is_success(),
             self.if_workflow_run_is_push_triggered(),
-            operator="&&",
         )
 
     def if_workflow_run_is_success(self) -> str:
@@ -754,6 +806,22 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return "github.event.workflow_run.event == 'push'"
 
+    def combined_if_and(self, *conditions: str) -> str:
+        """Combine bare GitHub Actions conditions with a logical AND.
+
+        Returns:
+            The combined condition, one input condition per line.
+        """
+        return self.combined_if(*conditions, operator="&&")
+
+    def combined_if_or(self, *conditions: str) -> str:
+        """Combine bare GitHub Actions conditions with a logical OR.
+
+        Returns:
+            The combined condition, one input condition per line.
+        """
+        return self.combined_if(*conditions, operator="||")
+
     def combined_if(self, *conditions: str, operator: str) -> str:
         """Combine bare GitHub Actions conditions with a logical operator.
 
@@ -764,7 +832,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         an expression automatically, and only the bare form supports
         splitting a condition across multiple lines — a `${{ }}`-wrapped
         multi-line value is read as a literal string instead of being
-        evaluated.
+        evaluated. If one condition is provided, it is returned unchanged.
 
         Args:
             *conditions: Bare condition expressions (no `${{ }}` wrapper).
