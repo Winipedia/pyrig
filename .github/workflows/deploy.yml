@@ -6,6 +6,7 @@
       - "completed"
     "workflows":
       - "Release"
+"permissions": {}
 "concurrency":
   "group": "${{ github.workflow }}-${{ github.ref }}"
   "cancel-in-progress": false
@@ -19,10 +20,11 @@
 "jobs":
   "documentation":
     "name": "Documentation"
-    "if": "github.event.workflow_run.conclusion == 'success'"
     "permissions":
+      "contents": "read"
       "id-token": "write"
       "pages": "write"
+    "if": "github.event.workflow_run.conclusion == 'success'"
     "runs-on": "ubuntu-latest"
     "steps":
       -

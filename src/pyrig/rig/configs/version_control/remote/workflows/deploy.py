@@ -77,15 +77,20 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
     def job_documentation(self) -> dict[str, Any]:
         """Build the job that builds and deploys the documentation site.
 
-        Requests `pages: write` and `id-token: write` permissions at the job
-        level, required by the GitHub Pages deployment API.
+        Requests `contents: read` to check out the repository, plus
+        `pages: write` and `id-token: write` permissions at the job level,
+        required by the GitHub Pages deployment API.
 
         Returns:
             Dict mapping the derived job ID to its configuration.
         """
         return self.job(
             self.job_documentation,
-            permissions={"id-token": "write", "pages": "write"},
+            permissions={
+                **self.permission_contents_read(),
+                **self.permission_id_token_write(),
+                **self.permission_pages_write(),
+            },
             steps=self.steps_documentation(),
         )
 

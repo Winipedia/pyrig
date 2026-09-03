@@ -29,7 +29,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
     overriding the trigger, default, and environment methods. The base class
     provides composable building blocks for jobs, steps, strategies,
     triggers, and expression helpers so subclasses can assemble complete
-    workflows without writing raw YAML.
+    workflows without writing raw YAML. Workflows deny all `GITHUB_TOKEN`
+    permissions by default; jobs that check out the repository must explicitly
+    request `self.permission_contents_read()` (or a broader permission when
+    required).
 
     Attributes:
         UBUNTU_LATEST: Runner label for Ubuntu (`"ubuntu-latest"`).
@@ -43,6 +46,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         ...     def jobs(self) -> dict[str, Any]:
         ...         return self.job(
         ...             self.jobs,
+        ...             permissions=self.permission_contents_read(),
         ...             steps=self.steps_core_installed_setup(),
         ...         )
         ...
@@ -79,18 +83,69 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
         Returns:
             Top-level workflow configuration with `name`, `on`,
-            `concurrency`, `defaults`, `env`, `run-name`, and `jobs` keys
-            populated from the overridable methods.
+            `permissions`, `concurrency`, `defaults`, `env`, `run-name`, and
+            `jobs` keys populated from the overridable methods. The default
+            permissions policy denies all `GITHUB_TOKEN` access.
         """
         return {
             "name": self.workflow_name(),
             "on": self.workflow_triggers(),
+            "permissions": self.permissions(),
             "concurrency": self.concurrency(),
             "defaults": self.defaults(),
             "env": self.global_env(),
             "run-name": self.run_name(),
             "jobs": self.jobs(),
         }
+
+    def permissions(self) -> dict[str, Any]:
+        """Return the workflow's default `GITHUB_TOKEN` permissions.
+
+        Denies all permissions by default so that jobs receive no token
+        access unless they explicitly declare what they need, rather than
+        relying on the ambient repository/organization default (which is
+        not visible from the workflow file and can be broader than
+        expected).
+
+        Returns:
+            Empty dict, denying every permission.
+        """
+        return {}
+
+    def permission_contents_read(self) -> dict[str, str]:
+        """Return the permission needed to check out the repository.
+
+        Returns:
+            `{"contents": "read"}`.
+        """
+        return {"contents": "read"}
+
+    def permission_contents_write(self) -> dict[str, str]:
+        """Return the permission needed to create tags and releases.
+
+        Returns:
+            `{"contents": "write"}`.
+        """
+        return {"contents": "write"}
+
+    def permission_id_token_write(self) -> dict[str, str]:
+        """Return the permission needed to mint an OIDC token.
+
+        Required by GitHub Pages deployment and other flows that exchange
+        an OIDC token for short-lived credentials.
+
+        Returns:
+            `{"id-token": "write"}`.
+        """
+        return {"id-token": "write"}
+
+    def permission_pages_write(self) -> dict[str, str]:
+        """Return the permission needed to deploy to GitHub Pages.
+
+        Returns:
+            `{"pages": "write"}`.
+        """
+        return {"pages": "write"}
 
     def concurrency(self) -> dict[str, Any]:
         """Return the workflow's concurrency setting.
@@ -198,12 +253,12 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         job_id = self.job_id_from_method(method)
         job = {"name": self.name_from_id(job_id)}
+        if permissions is not None:
+            job["permissions"] = permissions
         if if_condition is not None:
             job["if"] = if_condition
         if needs is not None:
             job["needs"] = needs
-        if permissions is not None:
-            job["permissions"] = permissions
         job["runs-on"] = runs_on
         if strategy is not None:
             job["strategy"] = strategy
@@ -562,7 +617,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Build the base checkout and environment setup steps.
 
         Checks out the repository and installs the package manager (`uv`) with
-        the specified Python version.
+        the specified Python version. The containing job must grant at least
+        `contents: read` through `permission_contents_read()`.
 
         Args:
             python_version: Python version string for `uv`. Defaults to the
@@ -585,7 +641,9 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
         Uses `actions/checkout@main`, which authenticates with the automatic
         `GITHUB_TOKEN`. Credential persistence is disabled since no later
-        step needs the checked-out git credentials.
+        step needs the checked-out git credentials. The containing job must
+        grant at least `contents: read` through
+        `permission_contents_read()`.
 
         Returns:
             Step using `actions/checkout@main`.

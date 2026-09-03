@@ -123,6 +123,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.job(
             self.job_health_checks,
+            permissions=self.permission_contents_read(),
             steps=self.steps_health_checks(),
         )
 
@@ -166,6 +167,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         return self.job(
             self.job_matrix_health_checks,
             strategy=self.strategy_matrix_os_and_python_version(),
+            permissions=self.permission_contents_read(),
             runs_on=self.insert_matrix_os(),
             steps=self.steps_matrix_health_checks(),
         )

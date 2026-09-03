@@ -12,6 +12,7 @@
   "schedule":
     -
       "cron": "0 1 * * *"
+"permissions": {}
 "concurrency":
   "group": "${{ github.workflow }}-${{ github.ref }}"
   "cancel-in-progress": true
@@ -25,6 +26,8 @@
 "jobs":
   "health-checks":
     "name": "Health Checks"
+    "permissions":
+      "contents": "read"
     "runs-on": "ubuntu-latest"
     "steps":
       -
@@ -53,6 +56,8 @@
         "run": "uv run prek run --all-files --group=all"
   "matrix-health-checks":
     "name": "Matrix Health Checks"
+    "permissions":
+      "contents": "read"
     "runs-on": "${{ matrix.os }}"
     "strategy":
       "matrix":
