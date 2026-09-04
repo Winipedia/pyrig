@@ -19,6 +19,7 @@
 "jobs":
   "documentation":
     "name": "Documentation"
+    "environment": "documentation"
     "permissions":
       "contents": "read"
       "id-token": "write"
