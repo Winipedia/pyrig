@@ -227,8 +227,9 @@ class WorkflowConfigFile(YMLDictConfigFile):
         needs: list[str] | None = None,
         strategy: dict[str, Any] | None = None,
         permissions: dict[str, Any] | None = None,
-        runs_on: str = UBUNTU_LATEST,
         if_condition: str | None = None,
+        runs_on: str = UBUNTU_LATEST,
+        environment: str | None = None,
         steps: list[dict[str, Any]] | None = None,
         uses: str | None = None,
         secrets: dict[str, Any] | None = None,
@@ -248,6 +249,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
                 when `uses` is set, since GitHub disallows combining the two.
             if_condition: GitHub Actions conditional expression controlling
                 whether the job runs.
+            environment: GitHub Actions deployment environment associated with
+                the job. Omitted when `None`.
             steps: Ordered list of step configurations. Not valid together
                 with `uses`; passing both is the caller's mistake to avoid.
             uses: Reference to a reusable workflow to call instead of
@@ -275,6 +278,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
                 job["secrets"] = deep_sorted_dict(secrets)
         else:
             job["runs-on"] = runs_on
+        if environment is not None:
+            job["environment"] = environment
         if strategy is not None:
             job["strategy"] = strategy
         if steps is not None:

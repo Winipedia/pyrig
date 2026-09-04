@@ -40,6 +40,9 @@ from `release.yml`. `Deploy` only runs via `workflow_call`, invoked by
 dependency order (`needs:`), no `if` guard is required — `deploy` never
 executes unless `publish` (and, transitively, `health-check`) succeeded.
 
+Every job in the deployment workflow gets its own GitHub Actions environment,
+named after the job's stable ID automatically.
+
 ---
 
 ## Stage 1 — Health Check

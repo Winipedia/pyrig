@@ -63,3 +63,20 @@ class TestDeployWorkflowConfigFile:
     def test_concurrency_cancel_in_progress(self) -> None:
         """Test method."""
         assert DeployWorkflowConfigFile.I.concurrency_cancel_in_progress() is False
+
+    def test_job(self) -> None:
+        """Test method."""
+        workflow = DeployWorkflowConfigFile()
+
+        result = workflow.job(self.test_job, steps=[])
+        assert len(result) == 1, "Expected job to have one key"
+        job_config = next(iter(result.values()))
+        assert job_config["environment"] == "test-job"
+
+        result = workflow.job(
+            self.test_job,
+            environment="custom",
+            steps=[],
+        )
+        job_config = next(iter(result.values()))
+        assert job_config["environment"] == "custom"

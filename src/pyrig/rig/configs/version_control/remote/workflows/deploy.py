@@ -1,5 +1,6 @@
 """Deployment workflow configuration."""
 
+from types import MethodType
 from typing import Any
 
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
@@ -13,6 +14,54 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
     This includes jobs for building and deploying the documentation site
     to GitHub Pages.
     """
+
+    def job(  # noqa: PLR0913
+        self,
+        method: MethodType,
+        *,
+        needs: list[str] | None = None,
+        strategy: dict[str, Any] | None = None,
+        permissions: dict[str, Any] | None = None,
+        if_condition: str | None = None,
+        runs_on: str = WorkflowConfigFile.UBUNTU_LATEST,
+        environment: str | None = None,
+        steps: list[dict[str, Any]] | None = None,
+        uses: str | None = None,
+        secrets: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a deployment job with an environment derived from its ID.
+
+        Args:
+            method: Method representing this job; its name is used to derive
+                the job ID and default environment name.
+            needs: IDs of jobs that must complete before this job starts.
+            strategy: Matrix or other strategy configuration.
+            permissions: Job-level permissions override.
+            if_condition: GitHub Actions conditional expression controlling
+                whether the job runs.
+            runs_on: Runner label. Defaults to `ubuntu-latest`.
+            environment: Deployment environment name. Defaults to the job ID
+                when omitted.
+            steps: Ordered list of job steps.
+            uses: Reference to a reusable workflow instead of job steps.
+            secrets: Named secrets to forward to a called workflow.
+
+        Returns:
+            A single job configuration keyed by its derived job ID.
+        """
+        environment = environment or self.job_id_from_method(method)
+        return super().job(
+            method,
+            needs=needs,
+            strategy=strategy,
+            permissions=permissions,
+            if_condition=if_condition,
+            runs_on=runs_on,
+            environment=environment,
+            steps=steps,
+            uses=uses,
+            secrets=secrets,
+        )
 
     def concurrency_cancel_in_progress(self) -> bool:
         """Return `False`; a deploy run must not be cancelled mid-publish."""

@@ -19,12 +19,12 @@
 "jobs":
   "documentation":
     "name": "Documentation"
-    "environment": "documentation"
     "permissions":
       "contents": "read"
       "id-token": "write"
       "pages": "write"
     "runs-on": "ubuntu-latest"
+    "environment": "documentation"
     "steps":
       -
         "name": "Checkout Repository"
@@ -69,6 +69,7 @@
       "contents": "read"
       "id-token": "write"
     "runs-on": "ubuntu-latest"
+    "environment": "package"
     "steps":
       -
         "name": "Checkout Repository"
