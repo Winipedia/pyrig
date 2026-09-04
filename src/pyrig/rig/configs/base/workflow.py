@@ -145,14 +145,15 @@ class WorkflowConfigFile(YMLDictConfigFile):
     def concurrency(self) -> dict[str, Any]:
         """Return the workflow's concurrency setting.
 
-        Groups runs by workflow and ref so that superseded runs are queued
-        or cancelled instead of running redundantly alongside newer ones.
+        Groups runs by this generated workflow's name and ref so that
+        superseded runs are queued or cancelled without colliding with a
+        caller when this workflow is reused.
 
         Returns:
             Dict of concurrency settings.
         """
         return {
-            "group": self.insert_github_workflow_and_ref(),
+            "group": f"{self.workflow_name()}-{self.insert_github_ref()}",
             "cancel-in-progress": self.concurrency_cancel_in_progress(),
         }
 
@@ -825,14 +826,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.insert_expression("matrix.python-version")
 
-    def insert_github_workflow(self) -> str:
-        """Return the expression that resolves to the current workflow's name.
-
-        Returns:
-            GitHub Actions expression for `github.workflow`.
-        """
-        return self.insert_expression("github.workflow")
-
     def insert_github_ref(self) -> str:
         """Return the expression that resolves to the triggering ref.
 
@@ -840,15 +833,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             GitHub Actions expression for `github.ref`.
         """
         return self.insert_expression("github.ref")
-
-    def insert_github_workflow_and_ref(self) -> str:
-        """Return the workflow name and ref joined into one group key.
-
-        Returns:
-            The `insert_github_workflow()` and `insert_github_ref()`
-            expressions joined by a hyphen.
-        """
-        return f"{self.insert_github_workflow()}-{self.insert_github_ref()}"
 
     def shell_insert_expression(self, var: str) -> str:
         """Wrap an expression in shell command substitution `$( ... )` syntax.

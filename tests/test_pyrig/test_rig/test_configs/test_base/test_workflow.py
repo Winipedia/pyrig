@@ -525,8 +525,9 @@ class TestWorkflowConfigFile:
 
     def test_concurrency(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_workflow().concurrency()
-        assert result["group"] == "${{ github.workflow }}-${{ github.ref }}"
+        workflow = my_test_workflow()
+        result = workflow.concurrency()
+        assert result["group"] == f"{workflow.workflow_name()}-${{{{ github.ref }}}}"
         assert result["cancel-in-progress"] is True
 
     def test_concurrency_cancel_in_progress(
@@ -535,17 +536,6 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Test method."""
         assert my_test_workflow().concurrency_cancel_in_progress() is True
-
-    def test_insert_github_workflow(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_github_workflow()
-        assert result == "${{ github.workflow }}", (
-            f"Expected '${{{{ github.workflow }}}}', got {result}"
-        )
-        assert HealthCheckWorkflowConfigFile.I.concurrency_cancel_in_progress() is True
 
     def test_insert_github_ref(
         self,
@@ -556,14 +546,6 @@ class TestWorkflowConfigFile:
         assert result == "${{ github.ref }}", (
             f"Expected '${{{{ github.ref }}}}', got {result}"
         )
-
-    def test_insert_github_workflow_and_ref(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_github_workflow_and_ref()
-        assert result == "${{ github.workflow }}-${{ github.ref }}"
 
     def test_permissions(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""

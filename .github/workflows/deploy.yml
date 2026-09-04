@@ -7,7 +7,7 @@
         "required": true
 "permissions": {}
 "concurrency":
-  "group": "${{ github.workflow }}-${{ github.ref }}"
+  "group": "Deploy-${{ github.ref }}"
   "cancel-in-progress": false
 "defaults":
   "run":
