@@ -1,4 +1,4 @@
-"""GitHub Actions workflow generator for deploying documentation to GitHub Pages."""
+"""Deployment workflow configuration."""
 
 from typing import Any
 
@@ -8,9 +8,10 @@ from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class DeployWorkflowConfigFile(WorkflowConfigFile):
-    """GitHub Actions workflow that publishes documentation to GitHub Pages.
+    """Workflow configurations for deployments.
 
-    Triggered whenever a GitHub Release is published.
+    This includes jobs for building and deploying the documentation site
+    to GitHub Pages.
     """
 
     def concurrency_cancel_in_progress(self) -> bool:
@@ -30,12 +31,12 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return "deploy"
 
     def workflow_triggers(self) -> dict[str, Any]:
-        """Return a `release` trigger for published releases.
+        """Return a reusable-workflow trigger.
 
         Returns:
-            Trigger configuration dict with a `release` entry.
+            Workflow-call trigger configuration.
         """
-        return self.on_release()
+        return self.on_workflow_call()
 
     def job_documentation(self) -> dict[str, Any]:
         """Build the job that builds and deploys the documentation site.
@@ -84,21 +85,10 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         )
 
     def step_configure_pages(self) -> dict[str, Any]:
-        """Build a step that enables GitHub Pages for the repository.
-
-        Idempotent: running it on a repository where Pages is already enabled
-        has no effect.
-
-        Authenticates with `REPO_TOKEN` rather than the automatic
-        `GITHUB_TOKEN`: enabling Pages calls
-        `POST /repos/{owner}/{repo}/pages`, and for an installation token
-        like `GITHUB_TOKEN` that call also requires `administration: write`
-        -- a scope the automatic token can never hold -- so it would fail
-        with `Resource not accessible by integration`. A fine-grained PAT
-        reaches the endpoint with `pages: write` alone.
+        """Build a step that enables GitHub Pages.
 
         Returns:
-            Step that enables GitHub Pages using `REPO_TOKEN`.
+            Pages-configuration step using the repository token.
         """
         return self.step(
             self.step_configure_pages,

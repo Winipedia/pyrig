@@ -1,9 +1,10 @@
 ---
 "name": "Deploy"
 "on":
-  "release":
-    "types":
-      - "published"
+  "workflow_call":
+    "secrets":
+      "REPO_TOKEN":
+        "required": true
 "permissions": {}
 "concurrency":
   "group": "${{ github.workflow }}-${{ github.ref }}"

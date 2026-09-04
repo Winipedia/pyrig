@@ -87,43 +87,6 @@ class TestWorkflowConfigFile:
         expected = "${{ condition }}"
         assert result == expected, f"Expected '{expected}', got {result}"
 
-    def test_combined_if_and(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().combined_if_and(
-            "condition1",
-            "condition2",
-            "condition3",
-        )
-        expected = "condition1 &&\ncondition2 &&\ncondition3"
-        assert result == expected, f"Expected '{expected}', got {result}"
-
-    def test_combined_if_or(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().combined_if_or(
-            "condition1",
-            "condition2",
-            "condition3",
-        )
-        expected = "condition1 ||\ncondition2 ||\ncondition3"
-        assert result == expected, f"Expected '{expected}', got {result}"
-
-    def test_combined_if(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().combined_if(
-            "condition1",
-            "condition2",
-            "condition3",
-            operator="&&",
-        )
-        expected = "condition1 &&\ncondition2 &&\ncondition3"
-        assert result == expected, f"Expected '{expected}', got {result}"
-
     def test_steps_core_installed_setup(
         self,
         my_test_workflow: type[WorkflowConfigFile],
@@ -204,6 +167,15 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().job(self.test_job, steps=[])
         assert len(result) == 1, "Expected job to have one key"
 
+        # Test with if_condition set
+        result = my_test_workflow().job(
+            self.test_job,
+            steps=[],
+            if_condition="condition",
+        )
+        job_config = next(iter(result.values()))
+        assert job_config["if"] == "condition"
+
         # Test with job=None (line 222->224 False branch)
         result = my_test_workflow().job(
             self.test_job,
@@ -220,6 +192,39 @@ class TestWorkflowConfigFile:
         assert len(result) == 1, "Expected job to have one key"
         job_config = next(iter(result.values()))
         assert "steps" not in job_config
+
+        # Test with uses set: only runs-on must not be applied
+        result = my_test_workflow().job(
+            self.test_job,
+            uses="$/.github/workflows/other.yml",
+            runs_on="ubuntu-latest",
+            strategy={"matrix": {}},
+            steps=[{"name": "unused"}],
+        )
+        job_config = next(iter(result.values()))
+        assert job_config["uses"] == "$/.github/workflows/other.yml"
+        assert "runs-on" not in job_config
+        assert job_config["strategy"] == {"matrix": {}}
+        assert job_config["steps"] == [{"name": "unused"}]
+        assert "secrets" not in job_config
+
+        # Test with uses and named secrets set
+        result = my_test_workflow().job(
+            self.test_job,
+            uses="$/.github/workflows/other.yml",
+            secrets={"TOKEN": "${{ secrets.TOKEN }}"},
+        )
+        job_config = next(iter(result.values()))
+        assert job_config["secrets"] == {"TOKEN": "${{ secrets.TOKEN }}"}
+
+    def test_workflow_call_reference(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        result = workflow.workflow_call_reference()
+        assert result == f"$/{workflow.path().as_posix()}"
 
     def test_name_from_id(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -255,19 +260,101 @@ class TestWorkflowConfigFile:
         )
         assert result["pull_request"]["types"] == ["opened", "synchronize", "reopened"]
 
-    def test_on_workflow_run(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+    def test_on_workflow_call(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_workflow().on_workflow_run(workflows=["Test Workflow"])
-        assert "workflow_run" in result, "Expected 'workflow_run' in result"
+        result = my_test_workflow().on_workflow_call()
+        assert result == {"workflow_call": {}}
 
-    def test_on_release(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+    def test_used_secrets(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
         """Test method."""
-        result = my_test_workflow().on_release()
-        assert "release" in result, "Expected 'release' in result"
-        assert result["release"]["types"] == ["published"]
+        assert my_test_workflow().used_secrets() == []
 
-        result = my_test_workflow().on_release(types=["created"])
-        assert result["release"]["types"] == ["created"]
+    def test_used_secrets_discovered(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+
+        class WithSecretUsage(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
+            """Test workflow whose steps reference secrets."""
+
+            def jobs(self) -> dict[str, Any]:
+                """Return a job with secrets, GITHUB_TOKEN, and a non-string leaf."""
+                return {
+                    "job_a": {
+                        "continue-on-error": True,
+                        "steps": [
+                            {"env": {"TOKEN": "${{ secrets.TOKEN }}"}},
+                            {"with": {"gh-token": "${{ secrets.GITHUB_TOKEN }}"}},
+                        ],
+                    },
+                    "job_b": {"if": "${{ secrets.TOKEN != '' }}"},
+                }
+
+        result = WithSecretUsage().used_secrets()
+        assert result == ["TOKEN"]
+
+    def test_on_workflow_call_with_secrets(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+
+        class WithSecretUsage(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
+            """Test workflow whose steps reference a secret."""
+
+            def jobs(self) -> dict[str, Any]:
+                """Return a job referencing `TOKEN`."""
+                return {
+                    "job_a": {"steps": [{"env": {"TOKEN": "${{ secrets.TOKEN }}"}}]},
+                }
+
+        result = WithSecretUsage().on_workflow_call()
+        assert result == {"workflow_call": {"secrets": {"TOKEN": {"required": True}}}}
+
+    def test_used_secrets_mapping(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().used_secrets_mapping()
+        assert result == {}
+
+        class WithSecretUsage(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
+            """Test workflow whose steps reference a secret."""
+
+            def jobs(self) -> dict[str, Any]:
+                """Return a job referencing `TOKEN`."""
+                return {
+                    "job_a": {"steps": [{"env": {"TOKEN": "${{ secrets.TOKEN }}"}}]},
+                }
+
+        result = WithSecretUsage().used_secrets_mapping()
+        assert result == {"TOKEN": "${{ secrets.TOKEN }}"}
+
+    def test_used_permissions(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+
+        class WithJobs(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
+            """Test workflow with jobs requesting overlapping permissions."""
+
+            def jobs(self) -> dict[str, Any]:
+                """Return jobs with overlapping and write-escalating permissions."""
+                return {
+                    "job_a": {"permissions": {"pages": "write", "contents": "read"}},
+                    "job_b": {"permissions": {"contents": "read"}},
+                    "job_c": {},
+                }
+
+        result = WithJobs().used_permissions()
+        assert result == {"contents": "read", "pages": "write"}
+        assert list(result.keys()) == ["contents", "pages"]
 
     def test_step(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -409,43 +496,6 @@ class TestWorkflowConfigFile:
         assert "matrix.python-version" in result, (
             "Expected 'matrix.python-version' in result"
         )
-
-    def test_if_workflow_run_is_success(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        my_test_workflow().validate()
-        result = my_test_workflow().if_workflow_run_is_success()
-        assert "success" in result, "Expected 'success' in result"
-
-        # Test that a workflow with proper config is correct
-        proper_config = my_test_workflow().configs()
-        my_test_workflow().dump(proper_config)
-        assert my_test_workflow().is_correct()
-
-    def test_if_workflow_run_is_push_triggered(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        assert (
-            my_test_workflow().if_workflow_run_is_push_triggered()
-            == "github.event.workflow_run.event == 'push'"
-        )
-
-    def test_if_workflow_run_is_success_and_push_triggered(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        workflow = my_test_workflow()
-        result = workflow.if_workflow_run_is_success_and_push_triggered()
-        expected = (
-            "github.event.workflow_run.conclusion == 'success' &&\n"
-            "github.event.workflow_run.event == 'push'"
-        )
-        assert result == expected
 
     def test_strategy_matrix_python_version(self) -> None:
         """Test method."""

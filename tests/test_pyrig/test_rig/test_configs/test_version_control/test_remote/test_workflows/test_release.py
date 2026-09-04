@@ -36,17 +36,6 @@ class TestReleaseWorkflowConfigFile:
         assert step["run"] == f"bash {path}"
         assert step["env"]["GH_TOKEN"]
 
-    def test_job(self) -> None:
-        """Test method."""
-        result = ReleaseWorkflowConfigFile().job(self.test_job, steps=[])
-        assert len(result) == 1, "Expected job to have one key"
-        job_config = next(iter(result.values()))
-        expected = (
-            "github.event.workflow_run.conclusion == 'success' &&\n"
-            "github.event.workflow_run.event == 'push'"
-        )
-        assert job_config["if"] == expected
-
     def test_stem(self) -> None:
         """Test method."""
         assert ReleaseWorkflowConfigFile().stem() == "release"
@@ -57,7 +46,8 @@ class TestReleaseWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().workflow_triggers()
-        assert "workflow_run" in result, "Expected 'workflow_run' in triggers"
+        assert "push" in result, "Expected 'push' in triggers"
+        assert "workflow_run" not in result
         assert "workflow_dispatch" not in result
         assert "pull_request" not in result
 
@@ -69,6 +59,19 @@ class TestReleaseWorkflowConfigFile:
         result = my_test_release_workflow().jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
+    def test_job_health_check(
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_release_workflow().job_health_check()
+        assert len(result) == 1, "Expected job to have one key"
+        job_config = next(iter(result.values()))
+        assert job_config["uses"] == "$/.github/workflows/health_check.yml"
+        assert job_config["secrets"] == {
+            "CODECOV_TOKEN": "${{ secrets.CODECOV_TOKEN }}",
+        }
+
     def test_job_publish(
         self,
         my_test_release_workflow: type[ReleaseWorkflowConfigFile],
@@ -78,6 +81,19 @@ class TestReleaseWorkflowConfigFile:
         assert len(result) == 1, "Expected job to have one key"
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name], "Expected 'steps' in job"
+        assert "needs" in result[job_name], "Expected 'needs' in job"
+
+    def test_job_deploy(
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_release_workflow().job_deploy()
+        assert len(result) == 1, "Expected job to have one key"
+        job_config = next(iter(result.values()))
+        assert job_config["uses"] == "$/.github/workflows/deploy.yml"
+        assert job_config["secrets"] == {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"}
+        assert "needs" in job_config, "Expected 'needs' in job"
 
     def test_steps_publish(
         self,

@@ -53,10 +53,7 @@ class PyprojectConfigFile(TOMLConfigFile):
         return correct and not dependencies
 
     def merge_configs(self) -> dict[str, Any]:
-        """Merge into the required configuration.
-
-        Makes sure `build-system.requires` is set to pyrig's canonical value,
-        overwriting any existing value.
+        """Merge the required configuration structure.
 
         Returns:
             The merged configuration structure.

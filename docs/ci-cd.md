@@ -8,33 +8,37 @@ automatically by the `pyrig sync` pre-commit hook, just like any other managed f
 
 ## Pipeline Overview
 
-The three workflows form a chain where each stage triggers the next on completion:
+`release.yml` is the only workflow triggered by a push to the default branch.
+It calls the other two workflows as **reusable workflows** (`workflow_call`),
+running them as jobs in sequence:
 
 ```text
-Pull Request / Push / Schedule / Manual
-            │
-            ▼
-    ┌─────────────────┐
-    │  Health Check   │  ← the only gate for merging PRs
-    └────────┬────────┘
-             │ completes on default branch (push-triggered only)
-             ▼
-    ┌─────────────────┐
-    │    Release      │  ← tags and publishes a GitHub Release
-    └────────┬────────┘
-             │ release published
-             ▼
-    ┌─────────────────┐
-    │     Deploy      │  ← deploys documentation to GitHub Pages
-    └─────────────────┘
+                Push to default branch
+                        │
+                        ▼
+              ┌───────────────────┐
+              │     Release       │
+              │                   │
+              │  ┌─────────────┐  │
+              │  │Health Check │  │  ← called via workflow_call
+              │  └──────┬──────┘  │
+              │         ▼         │
+              │  ┌─────────────┐  │
+              │  │   Publish   │  │  ← tags and publishes a GitHub Release
+              │  └──────┬──────┘  │
+              │         ▼         │
+              │  ┌─────────────┐  │
+              │  │   Deploy    │  │  ← called via workflow_call
+              │  └─────────────┘  │
+              └───────────────────┘
 ```
 
-Health Check → Release uses a `workflow_run: completed` trigger, guarded by an
-`if` condition that checks the triggering run succeeded and was push-triggered,
-so only a successful push-triggered health check produces a release. Release →
-Deploy uses the native `release: published` event instead: since only the
-`publish` job's own `gh release create` call can produce that event, no `if`
-guard is needed downstream — the event firing at all already implies success.
+`Health Check` is also independently triggered by every pull request and a
+nightly schedule, so it doubles as both a PR gate and a reusable job called
+from `release.yml`. `Deploy` only runs via `workflow_call`, invoked by
+`release.yml`'s `deploy` job after `publish` succeeds; since jobs run in
+dependency order (`needs:`), no `if` guard is required — `deploy` never
+executes unless `publish` (and, transitively, `health-check`) succeeded.
 
 ---
 
@@ -42,9 +46,12 @@ guard is needed downstream — the event firing at all already implies success.
 
 **File:** `.github/workflows/health_check.yml`
 
-This workflow executes tests and other general health checks on every push to
-`main`, every pull request, and on a nightly schedule. It is a gate for
-merging PRs, since it runs on every PR and blocks merging until it passes.
+This workflow executes tests and other general health checks. It has three
+triggers: every pull request, a nightly schedule, and `workflow_call` (so
+`release.yml` can run it as a job). As a PR gate it blocks merging until it
+passes; as a nightly job it catches regressions from automatic dependency
+upgrades (see below); as a reusable workflow it acts as the first job in the
+release pipeline, gating `publish`.
 
 ---
 
@@ -52,15 +59,19 @@ merging PRs, since it runs on every PR and blocks merging until it passes.
 
 **File:** `.github/workflows/release.yml`
 
-**Trigger:** `Health Check` workflow completes on the default branch.
+**Trigger:** `push` to the default branch.
 
-The **`publish`** job only runs when the triggering health check both succeeded
-and was itself triggered by a push to the default branch. Scheduled runs,
-manual dispatches, and pull request runs never produce a release.
-Before releasing, it applies repository settings and protection rulesets, and
-enables GitHub's private vulnerability reporting, all via the GitHub API.
-Then it creates a GitHub Release with auto-generated release notes, tagging
-the current commit in the same call.
+Three jobs run in dependency order:
+
+- **`health-check`** — calls `health_check.yml` as a reusable workflow.
+- **`publish`** — runs only if `health-check` succeeds (`needs:`). Applies
+  repository settings and protection rulesets, and enables GitHub's private
+  vulnerability reporting, all via the GitHub API. Then creates a GitHub
+  Release with auto-generated release notes, tagging the current commit in
+  the same call.
+- **`deploy`** — runs only if `publish` succeeds (`needs:`). Calls
+  `deploy.yml` as a reusable workflow.
+
 !!! warning "Important"
     The release workflow creates a new tag, which will fail if that tag
     already exists. This means you must ensure the version is updated in
@@ -76,7 +87,7 @@ the current commit in the same call.
 
 **File:** `.github/workflows/deploy.yml`
 
-**Trigger:** a GitHub Release is published (native `release: published` event).
+**Trigger:** `workflow_call` only, invoked by `release.yml`'s `deploy` job.
 
 One job runs in this final stage:
 

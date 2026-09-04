@@ -68,11 +68,7 @@ class ProjectTester(Tool):
         return 90
 
     def additional_args(self) -> Args:
-        """Return additional pytest command arguments to include in the config.
-
-        This hook exists to allow overriding and therefore easier integration
-        for pytest plugins and flags that do not support configuration via
-        `pyproject.toml`.
+        """Return additional pytest command arguments.
 
         Returns:
             The pytest-cov and pytest-xdist CLI flags to append to the test run.

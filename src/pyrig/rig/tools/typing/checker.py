@@ -41,11 +41,7 @@ class TypeChecker(CheckHookTool):
         return self.args("check", *args)
 
     def check_hook(self) -> dict[str, Any]:
-        """Return the hook metadata for type checking Python source.
-
-        Anchors the checks tier: it runs after Python formatting, and every
-        other check ties its own priority to this one via `hook_priority`
-        rather than each picking its own, so the whole tier runs together.
+        """Return hook metadata for type checking Python source.
 
         Returns:
             Hook metadata dict for `ty check`.

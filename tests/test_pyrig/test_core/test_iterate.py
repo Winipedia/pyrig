@@ -12,6 +12,7 @@ from pyrig.core.iterate import (
     match_list_items,
     merge_structures,
     structure_is_subset,
+    traverse_structure,
 )
 
 
@@ -173,3 +174,9 @@ def test_dict_insert() -> None:
     d = {"a": 1, "b": 2, "c": 3, "d": 4}
     dict_insert(d, index=10, key="e", value=5)
     assert d == {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}
+
+
+def test_traverse_structure() -> None:
+    """Test function."""
+    result = list(traverse_structure({"a": [1, {"b": 2}], "c": 3}))
+    assert result == [1, 2, 3]

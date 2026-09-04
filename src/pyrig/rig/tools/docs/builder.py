@@ -59,11 +59,7 @@ class DocsBuilder(Tool):
         return Path("docs")
 
     def documentation_url(self) -> str:
-        """Construct the expected GitHub Pages URL for this project.
-
-        The owner comes from `VersionController` and the repository name
-        from `PackageManager`. Does not verify that the remote is configured
-        or that GitHub Pages is enabled.
+        """Construct this project's GitHub Pages URL.
 
         Returns:
             URL in the form `https://{owner}.github.io/{repo}`.

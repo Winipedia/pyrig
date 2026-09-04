@@ -1,81 +1,37 @@
 """Workflow configuration for automated GitHub release creation."""
 
-from types import MethodType
 from typing import Any
 
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.version_control.remote.configure import (
     ConfigureRepositoryConfigFile,
 )
+from pyrig.rig.configs.version_control.remote.workflows.deploy import (
+    DeployWorkflowConfigFile,
+)
 from pyrig.rig.configs.version_control.remote.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
 )
-from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,
 )
 
 
 class ReleaseWorkflowConfigFile(WorkflowConfigFile):
-    """Generator for the `release.yml` GitHub Actions workflow.
-
-    The workflow is triggered by completion of the health check workflow on
-    the default branch, but its job only proceeds when that health check run
-    both succeeded and was itself triggered by a push — so the daily
-    scheduled run and pull request runs never produce a release.
-    A qualifying run applies repository settings and protection rulesets,
-    enables private vulnerability reporting, and publishes a GitHub release
-    with auto-generated release notes, tagging the current version in the
-    same call.
-    """
-
-    def job(  # noqa: PLR0913
-        self,
-        method: MethodType,
-        *,
-        needs: list[str] | None = None,
-        strategy: dict[str, Any] | None = None,
-        permissions: dict[str, Any] | None = None,
-        runs_on: str = WorkflowConfigFile.UBUNTU_LATEST,
-        if_condition: str | None = None,
-        steps: list[dict[str, Any]] | None = None,
-    ) -> dict[str, Any]:
-        """Build a job gated by default on a successful, push-triggered run.
-
-        Args:
-            method: Method to build the job.
-            needs: IDs of jobs that must complete before this job starts.
-            strategy: Matrix or other strategy configuration.
-            permissions: Job-level permissions override.
-            runs_on: Runner label. Defaults to `ubuntu-latest`.
-            if_condition: GitHub Actions conditional expression controlling
-                whether the job runs. Defaults to requiring the triggering
-                run to have succeeded and been push-triggered.
-            steps: Ordered list of step configurations.
-
-        Returns:
-            Dict mapping the derived job ID to its configuration.
-        """
-        if_condition = (
-            if_condition or self.if_workflow_run_is_success_and_push_triggered()
-        )
-        return super().job(
-            method,
-            needs=needs,
-            strategy=strategy,
-            permissions=permissions,
-            runs_on=runs_on,
-            if_condition=if_condition,
-            steps=steps,
-        )
+    """GitHub Actions workflow configuration for releasing project changes."""
 
     def jobs(self) -> dict[str, Any]:
         """Return all jobs for the release workflow.
 
         Returns:
-            Dict containing the single release job.
+            Dict containing the health check, publish, and deploy jobs, in
+            dependency order.
         """
-        return {**self.job_publish()}
+        return {
+            **self.job_health_check(),
+            **self.job_publish(),
+            **self.job_deploy(),
+        }
 
     def concurrency_cancel_in_progress(self) -> bool:
         """Return `False`; a release run must not be cancelled mid-publish."""
@@ -86,33 +42,60 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         return "release"
 
     def workflow_triggers(self) -> dict[str, Any]:
-        """Return the triggers for the release workflow.
-
-        A single `workflow_run` trigger that fires when the health check
-        workflow completes on the default branch.
+        """Return a `push` trigger for the default branch.
 
         Returns:
-            Trigger configuration dict with a `workflow_run` entry.
+            Trigger configuration dict with a `push` entry.
         """
-        return self.on_workflow_run(
-            workflows=[HealthCheckWorkflowConfigFile.I.workflow_name()],
-            branches=[VersionController.I.default_branch()],
+        return self.on_push()
+
+    def job_health_check(self) -> dict[str, Any]:
+        """Return the health check job configuration.
+
+        Returns:
+            Reusable job configuration with its required permissions and secrets.
+        """
+        secrets = HealthCheckWorkflowConfigFile.I.used_secrets_mapping() or None
+        permissions = HealthCheckWorkflowConfigFile.I.used_permissions() or None
+        return self.job(
+            self.job_health_check,
+            uses=HealthCheckWorkflowConfigFile.I.workflow_call_reference(),
+            permissions=permissions,
+            secrets=secrets,
         )
 
     def job_publish(self) -> dict[str, Any]:
         """Return the job that configures and releases the project.
 
-        Requests `contents: write` permission at the job level, which is
-        required to create the version tag and the GitHub release.
+        Requires the health check job to have passed first. Requests
+        `contents: write` permission at the job level, which is required to
+        create the version tag and the GitHub release.
 
         Returns:
             Job configuration dict keyed by the job ID, containing the
-            guard condition and the ordered release steps.
+            ordered release steps.
         """
         return self.job(
             self.job_publish,
+            needs=[self.job_id_from_method(self.job_health_check)],
             permissions=self.permission_contents(write=True),
             steps=self.steps_publish(),
+        )
+
+    def job_deploy(self) -> dict[str, Any]:
+        """Return the deployment job configuration.
+
+        Returns:
+            Reusable job configuration that runs after publishing.
+        """
+        secrets = DeployWorkflowConfigFile.I.used_secrets_mapping() or None
+        permissions = DeployWorkflowConfigFile.I.used_permissions() or None
+        return self.job(
+            self.job_deploy,
+            uses=DeployWorkflowConfigFile.I.workflow_call_reference(),
+            needs=[self.job_id_from_method(self.job_publish)],
+            permissions=permissions,
+            secrets=secrets,
         )
 
     def steps_publish(self) -> list[dict[str, Any]]:
@@ -132,13 +115,8 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     def step_create_release(self) -> dict[str, Any]:
         """Build a step that creates a version tag and GitHub release.
 
-        Uses the `gh` CLI (preinstalled on GitHub-hosted runners) to create
-        a release named and tagged with the current project version, using
-        GitHub's auto-generated release notes as its body. If no tag
-        named after the current version exists yet, `gh` creates one.
-
         Returns:
-            Step that runs `gh release create`.
+            Release-creation step with generated release notes.
         """
         version = self.shell_insert_version()
         return self.step(
@@ -148,17 +126,10 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         )
 
     def step_configure_repository(self) -> dict[str, Any]:
-        """Build a step that applies repository settings via the GitHub API.
-
-        Runs the generated configuration script, which invokes every
-        function it defines in turn: applying general repository settings,
-        creating or updating all rulesets, and enabling private
-        vulnerability reporting. A function added to
-        `ConfigureRepositoryConfigFile` runs automatically as part of this
-        step, without a corresponding change here.
+        """Build a step that applies repository configuration.
 
         Returns:
-            Step that runs the configuration script.
+            Repository-configuration step.
         """
         return self.step(
             self.step_configure_repository,

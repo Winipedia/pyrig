@@ -11,11 +11,9 @@ from pyrig.rig.tools.version_control.hooks.manager import (
 
 
 class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
-    """GitHub Actions workflow that runs code quality checks and tests.
+    """Code quality and test workflow configuration.
 
-    Triggered on every pull request, on push to the default branch, and on a
-    daily cron schedule. Its aggregation job is the single required status
-    check for merging, so this workflow is the CI gate the project relies on.
+    This workflow runs quality and health checks to ensure the project's integrity.
     """
 
     def jobs(self) -> dict[str, Any]:
@@ -36,18 +34,15 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         return "health_check"
 
     def workflow_triggers(self) -> dict[str, Any]:
-        """Return the triggers for the health check workflow.
-
-        Combines pull request, push, and scheduled cron triggers.
+        """Return pull request, scheduled, and reusable-workflow triggers.
 
         Returns:
-            Trigger configuration dict with `pull_request`, `push`, and
-            `schedule` entries.
+            Trigger configuration keyed by event name.
         """
         return {
             **self.on_pull_request(),
-            **self.on_push(),
             **self.on_schedule(cron=" ".join(map(str, self.cron_schedule()))),
+            **self.on_workflow_call(),
         }
 
     def cron_schedule(

@@ -50,11 +50,7 @@ class TrailingWhitespaceFormatter(FormatHookTool):
         return self.args(*args)
 
     def format_hook(self) -> dict[str, Any]:
-        """Return the hook metadata for fixing trailing whitespace.
-
-        Runs after mixed line endings are normalized, so a stray CR left
-        over from a CRLF ending is never mistaken for meaningful content
-        this hook should leave alone.
+        """Return hook metadata for fixing trailing whitespace.
 
         Returns:
             Hook metadata dict for `trailing-whitespace-fixer`.

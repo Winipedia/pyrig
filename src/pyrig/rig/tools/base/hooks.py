@@ -105,10 +105,4 @@ class FormatHookTool(VersionControlHookTool):
 
 
 class CheckFormatHookTool(CheckHookTool, FormatHookTool):
-    """Abstract base for a `Tool` that has both a check hook and a format hook.
-
-    `hooks()` combines both via cooperative inheritance: `CheckHookTool` and
-    `FormatHookTool` each append their own hook on top of `super().hooks()`,
-    so a concrete subclass gets both hooks without overriding `hooks()`
-    itself.
-    """
+    """Tool with both check and format hooks."""

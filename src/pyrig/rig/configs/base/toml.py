@@ -10,14 +10,7 @@ from pyrig.rig.configs.base.config_file import DictConfigFile
 
 
 class TOMLConfigFile(DictConfigFile):
-    """Base class for TOML configuration files.
-
-    Reads with `tomllib`, writes with `tomli_w`. `tomli_w` forces every
-    array onto multiple lines (one item per line), even single-element
-    ones, rather than keeping short arrays inline. Tables and arrays of
-    tables need no special handling: `tomli_w` converts nested dicts and
-    lists of dicts to valid TOML natively.
-    """
+    """Base class for TOML configuration files."""
 
     def _dump(self, configs: dict[str, Any]) -> None:
         """Write configuration to the TOML file via `pretty_dump()`.

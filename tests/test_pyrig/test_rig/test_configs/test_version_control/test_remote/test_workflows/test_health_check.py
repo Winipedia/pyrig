@@ -51,6 +51,8 @@ class TestHealthCheckWorkflowConfigFile:
         result = my_test_health_check_workflow().workflow_triggers()
         assert "pull_request" in result, "Expected 'pull_request' in triggers"
         assert "schedule" in result, "Expected 'schedule' in triggers"
+        assert "workflow_call" in result, "Expected 'workflow_call' in triggers"
+        assert "push" not in result, "Expected 'push' not in triggers"
 
     def test_jobs(
         self,

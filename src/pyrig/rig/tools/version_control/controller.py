@@ -39,8 +39,6 @@ class VersionController(Tool):
     def repo_owner(cls) -> str:
         """Return the repository owner.
 
-        The result is cached, so repeated calls incur no subprocess overhead.
-
         Returns:
             The repository owner.
         """
@@ -60,11 +58,7 @@ class VersionController(Tool):
         return "main"
 
     def end_of_line(self) -> str:
-        """Return `'lf'`, the line-ending convention enforced across the project.
-
-        Kept as a single source of truth so every config or tool that
-        encodes a line-ending setting stays in sync.
-        """
+        """Return `'lf'`, the project's line-ending convention."""
         return "lf"
 
     def init_args(self, *args: str) -> Args:

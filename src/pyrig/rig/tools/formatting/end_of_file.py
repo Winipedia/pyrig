@@ -51,11 +51,7 @@ class EndOfFileFormatter(FormatHookTool):
         return self.args(*args)
 
     def format_hook(self) -> dict[str, Any]:
-        """Return the hook metadata for fixing a file's trailing newline.
-
-        Runs last among the sequential text-fixing hooks: it normalizes
-        the very end of the file, a property no earlier fixer in the chain
-        touches or could reintroduce a violation of.
+        """Return hook metadata for fixing a file's trailing newline.
 
         Returns:
             Hook metadata dict for `end-of-file-fixer`.

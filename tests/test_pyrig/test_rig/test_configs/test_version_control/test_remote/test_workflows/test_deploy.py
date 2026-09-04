@@ -27,9 +27,13 @@ class TestDeployWorkflowConfigFile:
     def test_workflow_triggers(self) -> None:
         """Test method."""
         result = DeployWorkflowConfigFile.I.workflow_triggers()
-        assert "release" in result, "Expected 'release' in triggers"
-        assert result["release"]["types"] == ["published"]
-        assert "workflow_run" not in result
+        assert "workflow_call" in result, "Expected 'workflow_call' in triggers"
+        assert result["workflow_call"]["secrets"] == {"REPO_TOKEN": {"required": True}}
+        assert "release" not in result
+
+    def test_used_secrets(self) -> None:
+        """Test method."""
+        assert DeployWorkflowConfigFile.I.used_secrets() == ["REPO_TOKEN"]
 
     def test_jobs(self) -> None:
         """Test method."""

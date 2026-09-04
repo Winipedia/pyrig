@@ -123,7 +123,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         class by `leaves()`, even when their class names differ.
 
         Returns:
-            The config file's `path()`.
+            Path to the configuration file.
         """
         return cls().path()
 

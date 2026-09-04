@@ -14,14 +14,7 @@ from pyrig.rig.tools.testing.project import ProjectTester
 
 
 class ProgrammingLanguage(Tool):
-    """Tool wrapper for the Python programming language.
-
-    Python is the only supported language; this wrapper gives a single,
-    consistent access point for language-level details so callers never
-    hard-code language-specific strings. Beyond that, it also owns
-    Python-specific project file conventions: creating missing
-    `__init__.py` files and clearing `__pycache__` directories.
-    """
+    """Python language and project file-convention tool."""
 
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return `()`, since Python is the runtime and not a dev dependency."""

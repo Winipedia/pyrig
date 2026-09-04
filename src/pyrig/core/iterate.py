@@ -272,3 +272,22 @@ def both_dicts(a: object, b: object) -> bool:
 def both_lists(a: object, b: object) -> bool:
     """Return whether `a` and `b` are both lists."""
     return isinstance(a, list) and isinstance(b, list)
+
+
+def traverse_structure(structure: object) -> Iterator[Any]:
+    """Yield leaf values from nested dictionaries and lists.
+
+    Args:
+        structure: The nested dict/list structure to walk.
+
+    Yields:
+        All values that are not themselves dictionaries or lists, in traversal order.
+    """
+    if isinstance(structure, dict):
+        for value in structure.values():
+            yield from traverse_structure(value)
+    elif isinstance(structure, list):
+        for item in structure:
+            yield from traverse_structure(item)
+    else:
+        yield structure

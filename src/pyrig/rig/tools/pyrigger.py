@@ -42,9 +42,6 @@ class Pyrigger(VersionControlHookTool):
     def group_cmd_args(self, *args: str, group: str, cmd: FunctionType) -> Args:
         """Construct `Args` for a pyrig CLI subcommand within a command group.
 
-        Converts both `group` and `cmd.__name__` from snake_case to
-        kebab-case to derive the group and subcommand names.
-
         Args:
             *args: Additional arguments appended after the command name.
             group: Name of the command group, in snake_case.

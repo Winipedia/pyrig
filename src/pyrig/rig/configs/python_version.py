@@ -32,14 +32,10 @@ class PythonVersionConfigFile(StringConfigFile):
         return ""
 
     def extension_separator(self) -> str:
-        """Return an empty string, overriding the default `.` separator.
-
-        Prevents a trailing dot from being appended when the extension is
-        empty, so the path remains `.python-version` instead of
-        `.python-version.`.
+        """Return an empty extension separator.
 
         Returns:
-            Always an empty string.
+            An empty string.
         """
         return ""
 

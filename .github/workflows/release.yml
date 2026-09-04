@@ -1,13 +1,9 @@
 ---
 "name": "Release"
 "on":
-  "workflow_run":
+  "push":
     "branches":
       - "main"
-    "types":
-      - "completed"
-    "workflows":
-      - "Health Check"
 "permissions": {}
 "concurrency":
   "group": "${{ github.workflow }}-${{ github.ref }}"
@@ -20,13 +16,19 @@
   "UV_NO_SYNC": 1
 "run-name": "Release"
 "jobs":
+  "health-check":
+    "name": "Health Check"
+    "permissions":
+      "contents": "read"
+    "uses": "$/.github/workflows/health_check.yml"
+    "secrets":
+      "CODECOV_TOKEN": "${{ secrets.CODECOV_TOKEN }}"
   "publish":
     "name": "Publish"
     "permissions":
       "contents": "write"
-    "if": |-
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'push'
+    "needs":
+      - "health-check"
     "runs-on": "ubuntu-latest"
     "steps":
       -
@@ -59,4 +61,15 @@
           --generate-notes
         "env":
           "GH_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
+  "deploy":
+    "name": "Deploy"
+    "permissions":
+      "contents": "read"
+      "id-token": "write"
+      "pages": "write"
+    "needs":
+      - "publish"
+    "uses": "$/.github/workflows/deploy.yml"
+    "secrets":
+      "REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"
 ...

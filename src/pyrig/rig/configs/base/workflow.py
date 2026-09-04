@@ -1,5 +1,6 @@
 """GitHub Actions workflow YAML generation utilities and abstract base classes."""
 
+import re
 from abc import abstractmethod
 from pathlib import Path
 from types import MethodType
@@ -7,6 +8,7 @@ from typing import Any
 
 from pyrig_runtime.core.strings import snake_to_kebab_case
 
+from pyrig.core.iterate import deep_sorted_dict, traverse_structure
 from pyrig.core.strings import (
     reformat_name,
     split_on_uppercase,
@@ -21,37 +23,16 @@ from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,
 )
 
+SECRET_EXPRESSION_PATTERN = re.compile(r"secrets\.([A-Za-z0-9_]+)")
+
 
 class WorkflowConfigFile(YMLDictConfigFile):
-    """Abstract base class for generating GitHub Actions workflow YAML files.
-
-    Subclasses define a workflow by implementing `jobs` and optionally
-    overriding the trigger, default, and environment methods. The base class
-    provides composable building blocks for jobs, steps, strategies,
-    triggers, and expression helpers so subclasses can assemble complete
-    workflows without writing raw YAML. Workflows deny all `GITHUB_TOKEN`
-    permissions by default; jobs that check out the repository must explicitly
-    request `self.permission_contents()` (or a broader permission when
-    required).
+    """Base class for GitHub Actions workflow configuration files.
 
     Attributes:
         UBUNTU_LATEST: Runner label for Ubuntu (`"ubuntu-latest"`).
         WINDOWS_LATEST: Runner label for Windows (`"windows-latest"`).
         MACOS_LATEST: Runner label for macOS (`"macos-latest"`).
-
-    Example:
-        >>> from pyrig.rig.configs.base.workflow import WorkflowConfigFile
-        >>>
-        >>> class MyWorkflowConfigFile(WorkflowConfigFile):
-        ...     def jobs(self) -> dict[str, Any]:
-        ...         return self.job(
-        ...             self.jobs,
-        ...             permissions=self.permission_contents(),
-        ...             steps=self.steps_core_installed_setup(),
-        ...         )
-        ...
-        ...     def workflow_triggers(self) -> dict[str, Any]:
-        ...         return {**self.on_workflow_dispatch(), **self.on_push()}
     """
 
     UBUNTU_LATEST = "ubuntu-latest"
@@ -68,14 +49,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
     @abstractmethod
     def workflow_triggers(self) -> dict[str, Any]:
-        """Return the events that trigger this workflow.
-
-        Build the dict from the `on_*` trigger helpers, e.g.
-        `on_workflow_dispatch()` for manual runs or `on_push()` for
-        pushes to the default branch.
+        """Return this workflow's trigger configuration.
 
         Returns:
-            Dict of trigger configurations.
+            Trigger configuration keyed by event name.
         """
 
     def _configs(self) -> dict[str, Any]:
@@ -252,6 +229,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
         runs_on: str = UBUNTU_LATEST,
         if_condition: str | None = None,
         steps: list[dict[str, Any]] | None = None,
+        uses: str | None = None,
+        secrets: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Build a job configuration dict.
 
@@ -259,12 +238,24 @@ class WorkflowConfigFile(YMLDictConfigFile):
             method: Method representing this job; its name is used to derive
                 the job ID.
             needs: IDs of jobs that must complete before this job starts.
-            strategy: Matrix or other strategy configuration.
-            permissions: Job-level permissions override.
-            runs_on: Runner label. Defaults to `ubuntu-latest`.
+            strategy: Matrix or other strategy configuration. Valid together
+                with `uses` (e.g. a matrix-driven reusable-workflow call).
+            permissions: Job-level permissions override. When `uses` is set,
+                this is the ceiling on what the called workflow's own jobs
+                may request.
+            runs_on: Runner label. Defaults to `ubuntu-latest`. Not applied
+                when `uses` is set, since GitHub disallows combining the two.
             if_condition: GitHub Actions conditional expression controlling
                 whether the job runs.
-            steps: Ordered list of step configurations.
+            steps: Ordered list of step configurations. Not valid together
+                with `uses`; passing both is the caller's mistake to avoid.
+            uses: Reference to a reusable workflow to call instead of
+                running steps directly, e.g. one built by
+                `workflow_call_reference()`. When set, `runs_on` is not
+                applied.
+            secrets: Named secrets to forward to the called workflow, e.g.
+                built by `used_secrets_mapping()`. Only meaningful together
+                with `uses`.
 
         Returns:
             Dict mapping the derived job ID to its configuration.
@@ -272,17 +263,67 @@ class WorkflowConfigFile(YMLDictConfigFile):
         job_id = self.job_id_from_method(method)
         job = {"name": self.name_from_id(job_id)}
         if permissions is not None:
-            job["permissions"] = permissions
+            job["permissions"] = deep_sorted_dict(permissions)
         if if_condition is not None:
             job["if"] = if_condition
         if needs is not None:
             job["needs"] = needs
-        job["runs-on"] = runs_on
+        if uses is not None:
+            job["uses"] = uses
+            if secrets is not None:
+                job["secrets"] = deep_sorted_dict(secrets)
+        else:
+            job["runs-on"] = runs_on
         if strategy is not None:
             job["strategy"] = strategy
         if steps is not None:
             job["steps"] = steps
         return {job_id: job}
+
+    def workflow_call_reference(self) -> str:
+        """Return a same-repository reusable-workflow reference.
+
+        Returns:
+            Reference to this workflow at the caller's commit.
+        """
+        return f"$/{self.path().as_posix()}"
+
+    def used_secrets(self) -> list[str]:
+        """Return non-default secrets referenced by this workflow.
+
+        Returns:
+            Distinct secret names in sorted order.
+        """
+        names: set[str] = set()
+        for leaf in traverse_structure(self.jobs()):
+            if isinstance(leaf, str):
+                names.update(SECRET_EXPRESSION_PATTERN.findall(leaf))
+        names.discard("GITHUB_TOKEN")
+        return sorted(names)
+
+    def used_secrets_mapping(self) -> dict[str, str]:
+        """Return the secret mapping required to call this workflow.
+
+        Returns:
+            Referenced secret names mapped to caller expressions.
+        """
+        return {
+            name: self.insert_expression(self.secrets_var(name))
+            for name in self.used_secrets()
+        }
+
+    def used_permissions(self) -> dict[str, str]:
+        """Return the permissions required by this workflow's jobs.
+
+        Returns:
+            Permission names mapped to their highest requested levels.
+        """
+        permissions: dict[str, str] = {}
+        for job in self.jobs().values():
+            for name, level in job.get("permissions", {}).items():
+                if name not in permissions or level == "write":
+                    permissions[name] = level
+        return deep_sorted_dict(permissions)
 
     def step(  # noqa: PLR0913
         self,
@@ -427,43 +468,17 @@ class WorkflowConfigFile(YMLDictConfigFile):
             types = ["opened", "synchronize", "reopened"]
         return {"pull_request": {"types": types}}
 
-    def on_release(self, types: list[str] | None = None) -> dict[str, Any]:
-        """Create a `release` trigger.
-
-        Args:
-            types: Release activity types to react to. Defaults to
-                `["published"]`.
+    def on_workflow_call(self) -> dict[str, Any]:
+        """Create a reusable-workflow trigger.
 
         Returns:
-            Trigger configuration for release events.
+            Workflow-call configuration declaring required secrets.
         """
-        if types is None:
-            types = ["published"]
-        return {"release": {"types": types}}
-
-    def on_workflow_run(
-        self,
-        workflows: list[str],
-        branches: list[str] | None = None,
-    ) -> dict[str, Any]:
-        """Create a `workflow_run` trigger.
-
-        Args:
-            workflows: Names of workflows whose completion triggers this
-                workflow.
-            branches: Optional branch filter. When provided, only completions
-                of the listed workflows on these branches fire the trigger.
-
-        Returns:
-            Trigger configuration for `workflow_run` events with
-            `types: [completed]`.
-        """
-        configs: dict[str, Any] = {}
-        if branches is not None:
-            configs["branches"] = branches
-        configs["types"] = ["completed"]
-        configs["workflows"] = workflows
-        return {"workflow_run": configs}
+        secret_names = self.used_secrets()
+        trigger: dict[str, Any] = {}
+        if secret_names:
+            trigger["secrets"] = {name: {"required": True} for name in secret_names}
+        return {"workflow_call": trigger}
 
     def strategy_matrix_os_and_python_version(
         self,
@@ -859,77 +874,3 @@ class WorkflowConfigFile(YMLDictConfigFile):
             `"${{ secrets.REPO_TOKEN }}"`.
         """
         return f"${{{{ {var} }}}}"
-
-    def if_workflow_run_is_success_and_push_triggered(self) -> str:
-        """Build a condition true for a successful, push-triggered workflow run.
-
-        Returns:
-            GitHub Actions condition, true when the triggering workflow run
-            both succeeded and was itself triggered by a push event.
-        """
-        return self.combined_if_and(
-            self.if_workflow_run_is_success(),
-            self.if_workflow_run_is_push_triggered(),
-        )
-
-    def if_workflow_run_is_success(self) -> str:
-        """Build a condition that is true when the triggering workflow run succeeded.
-
-        Not wrapped in `${{ }}`: GitHub evaluates a job/step `if:` value as
-        an expression automatically.
-
-        Returns:
-            Bare GitHub Actions condition checking
-            `github.event.workflow_run.conclusion == 'success'`.
-        """
-        return "github.event.workflow_run.conclusion == 'success'"
-
-    def if_workflow_run_is_push_triggered(self) -> str:
-        """Build a condition that is true when the triggering run was a push event.
-
-        Not wrapped in `${{ }}`: GitHub evaluates a job/step `if:` value as
-        an expression automatically.
-
-        Returns:
-            Bare GitHub Actions condition checking
-            `github.event.workflow_run.event == 'push'`.
-        """
-        return "github.event.workflow_run.event == 'push'"
-
-    def combined_if_and(self, *conditions: str) -> str:
-        """Combine bare GitHub Actions conditions with a logical AND.
-
-        Returns:
-            The combined condition, one input condition per line.
-        """
-        return self.combined_if(*conditions, operator="&&")
-
-    def combined_if_or(self, *conditions: str) -> str:
-        """Combine bare GitHub Actions conditions with a logical OR.
-
-        Returns:
-            The combined condition, one input condition per line.
-        """
-        return self.combined_if(*conditions, operator="||")
-
-    def combined_if(self, *conditions: str, operator: str) -> str:
-        """Combine bare GitHub Actions conditions with a logical operator.
-
-        One condition per line: the embedded newlines make the YAML dumper
-        render this as a literal block scalar automatically, so a long
-        combined condition stays within a linter's line-length limit.
-        GitHub evaluates a bare (without `${{ }}`) job/step `if:` value as
-        an expression automatically, and only the bare form supports
-        splitting a condition across multiple lines — a `${{ }}`-wrapped
-        multi-line value is read as a literal string instead of being
-        evaluated. If one condition is provided, it is returned unchanged.
-
-        Args:
-            *conditions: Bare condition expressions (no `${{ }}` wrapper).
-            operator: Logical operator to join conditions with, e.g. `"&&"`
-                or `"||"`.
-
-        Returns:
-            The combined condition, one input condition per line.
-        """
-        return f" {operator}\n".join(conditions)

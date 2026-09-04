@@ -60,10 +60,7 @@ class PythonLinter(CheckFormatHookTool):
         return "google"
 
     def check_hook(self) -> dict[str, Any]:
-        """Return the hook metadata for linting and auto-fixing Python source.
-
-        Runs after the sequential text-fixing chain, alongside the other
-        file-type-specific fixers.
+        """Return hook metadata for linting and auto-fixing Python source.
 
         Returns:
             Hook metadata dict for `ruff check --fix`.
@@ -86,10 +83,7 @@ class PythonLinter(CheckFormatHookTool):
         return PackageManager.I.run_args(*self.check_args())
 
     def format_hook(self) -> dict[str, Any]:
-        """Return the hook metadata for formatting Python source.
-
-        Runs after linting, so formatting never fights the fixes ruff's
-        linter just applied.
+        """Return hook metadata for formatting Python source.
 
         Returns:
             Hook metadata dict for `ruff format`.

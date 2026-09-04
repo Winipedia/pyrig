@@ -52,11 +52,7 @@ class SecurityChecker(CheckHookTool):
         return self.args(*args)
 
     def check_hook(self) -> dict[str, Any]:
-        """Return the hook metadata for scanning Python source for vulnerabilities.
-
-        Excludes the project's test package from the scan via `--exclude`.
-        Ties its priority to `TypeChecker.check_hook` so it runs alongside
-        the rest of the checks tier rather than after it.
+        """Return hook metadata for scanning Python source for vulnerabilities.
 
         Returns:
             Hook metadata dict for `bandit`.
