@@ -7,11 +7,11 @@ from typing import Any
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.configs.community.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.configs.version_control.remote.workflows.deploy import (
-    DeployWorkflowConfigFile,
-)
 from pyrig.rig.configs.version_control.remote.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
+)
+from pyrig.rig.configs.version_control.remote.workflows.release import (
+    ReleaseWorkflowConfigFile,
 )
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.version_control.remote.controller import (
@@ -137,7 +137,7 @@ class BadgesConfigFile(MarkdownConfigFile):
 
         The result includes badges for each registered tool, a license badge in
         the `"project-info"` group, and CI/CD workflow status badges for the
-        health check and deploy workflows in the `"project-status"` group.
+        health check and release workflows in the `"project-status"` group.
 
         Returns:
             Category name to list of badge Markdown strings. The
@@ -158,7 +158,7 @@ class BadgesConfigFile(MarkdownConfigFile):
                 "CI",
             ),
             RemoteVersionController.I.cicd_badge(
-                DeployWorkflowConfigFile.I.stem(),
+                ReleaseWorkflowConfigFile.I.stem(),
                 "CD",
             ),
             *badge_groups[Group.PROJECT_STATUS],
