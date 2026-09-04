@@ -3,6 +3,7 @@
 from contextlib import chdir
 from pathlib import Path
 
+from pyrig_overrides.rig.tools.pyrigger import Pyrigger as OverridePyrigger
 from pytest_mock import MockerFixture
 
 from pyrig.rig.cli.commands.make.subclass import choose_subclass, make_subclass
@@ -15,11 +16,9 @@ def test_make_subclass(tmp_path: Path, mocker: MockerFixture) -> None:
     project_dir.mkdir()
 
     with chdir(project_dir):
-        cls = Pyrigger.L
-
         choose_subclass_mock = mocker.patch(
             choose_subclass.__module__ + "." + choose_subclass.__name__,
-            return_value=cls,
+            return_value=OverridePyrigger,
         )
 
         make_subclass(None)
