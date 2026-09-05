@@ -497,18 +497,6 @@ class TestWorkflowConfigFile:
             "Expected 'matrix.python-version' in result"
         )
 
-    def test_strategy_matrix_python_version(self) -> None:
-        """Test method."""
-        strategy = HealthCheckWorkflowConfigFile().strategy_matrix_python_version(
-            python_versions=["3.14", "3.15"],
-        )
-        assert "matrix" in strategy, "Expected 'matrix' in strategy"
-        assert strategy["matrix"]["python-version"] == ["3.14", "3.15"]
-
-        strategy = HealthCheckWorkflowConfigFile().strategy_matrix_python_version()
-        assert "matrix" in strategy
-        assert "python-version" in strategy["matrix"]
-
     def test_job_id_from_method(self) -> None:
         """Test method."""
         result = HealthCheckWorkflowConfigFile.I.job_id_from_method(

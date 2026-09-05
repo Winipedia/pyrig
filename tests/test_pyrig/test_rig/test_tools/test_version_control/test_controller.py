@@ -133,23 +133,6 @@ class TestVersionController:
         result = VersionController.I.config_get_username_args()
         assert result == ("git", "config", "--get", "user.name")
 
-    def test_push_origin_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.push_origin_args()
-        assert result == ("git", "push", "origin")
-
-    def test_push_origin_tag_args(self) -> None:
-        """Test method."""
-        tag = "v1.2.3"
-        result = VersionController.I.push_origin_tag_args(tag=tag)
-        assert result == ("git", "push", "origin", tag)
-
-    def test_tag_args(self) -> None:
-        """Test method."""
-        tag = "v1.2.3"
-        result = VersionController.I.tag_args(tag=tag)
-        assert result == ("git", "tag", tag)
-
     def test_name(self) -> None:
         """Test method."""
         result = VersionController.I.name()
@@ -174,11 +157,6 @@ class TestVersionController:
         """Test method."""
         result = VersionController.I.commit_args("-m", "Initial commit")
         assert result == ("git", "commit", "-m", "Initial commit")
-
-    def test_push_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.push_args()
-        assert result == ("git", "push")
 
     def test_config_args(self) -> None:
         """Test method."""

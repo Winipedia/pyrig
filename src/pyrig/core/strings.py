@@ -50,11 +50,6 @@ def write_text_utf8(path: Path, content: str) -> int:
     return path.write_text(content, encoding=UTF_8_ENCODING, newline="\n")
 
 
-def fstring_var_name(fstring: str) -> str:
-    """Extract the text preceding `=` in a debug f-string's `name=value` output."""
-    return fstring.split("=", maxsplit=1)[0].strip()
-
-
 def is_multiline(string: str) -> bool:
     """Check whether a string contains one or more newline characters."""
     return "\n" in string

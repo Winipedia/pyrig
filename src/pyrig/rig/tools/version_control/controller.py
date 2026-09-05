@@ -117,52 +117,6 @@ class VersionController(Tool):
         """
         return self.args("commit", *args)
 
-    def push_origin_tag_args(self, *args: str, tag: str) -> Args:
-        """Build arguments to push a specific tag to the `origin` remote.
-
-        Args:
-            *args: Additional arguments appended to the command.
-            tag: The tag ref to push (e.g. `1.2.3`).
-
-        Returns:
-            Args for `git push origin <tag> [args]`.
-        """
-        return self.push_origin_args(tag, *args)
-
-    def push_origin_args(self, *args: str) -> Args:
-        """Build arguments for `git push origin`.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `git push origin [args]`.
-        """
-        return self.push_args("origin", *args)
-
-    def push_args(self, *args: str) -> Args:
-        """Build base arguments for `git push`.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `git push [args]`.
-        """
-        return self.args("push", *args)
-
-    def tag_args(self, *args: str, tag: str) -> Args:
-        """Build arguments to create a local tag.
-
-        Args:
-            *args: Additional arguments appended to the command.
-            tag: The tag name to create (e.g. `1.2.3`).
-
-        Returns:
-            Args for `git tag <tag> [args]`.
-        """
-        return self.args("tag", tag, *args)
-
     def config_get_user_email_args(self, *args: str) -> Args:
         """Build arguments to read the configured `user.email` value.
 

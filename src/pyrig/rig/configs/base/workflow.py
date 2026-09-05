@@ -512,24 +512,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             },
         )
 
-    def strategy_matrix_python_version(
-        self,
-        python_versions: list[str] | None = None,
-    ) -> dict[str, Any]:
-        """Create a strategy with Python version matrix.
-
-        Args:
-            python_versions: Python version strings to test against. Defaults
-                to all versions returned by
-                `PyprojectConfigFile.supported_python_versions()`.
-
-        Returns:
-            Strategy configuration containing the Python version matrix.
-        """
-        return self.strategy_matrix(
-            matrix=self.matrix_python_version(python_versions=python_versions),
-        )
-
     def strategy_matrix_os(
         self,
         os: list[str] | None = None,

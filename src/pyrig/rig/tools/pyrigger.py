@@ -39,21 +39,6 @@ class Pyrigger(VersionControlHookTool):
         """Return `"pyrig"`."""
         return snake_to_kebab_case(pyrig.__name__)
 
-    def group_cmd_args(self, *args: str, group: str, cmd: FunctionType) -> Args:
-        """Construct `Args` for a pyrig CLI subcommand within a command group.
-
-        Args:
-            *args: Additional arguments appended after the command name.
-            group: Name of the command group, in snake_case.
-            cmd: Callable whose `__name__` is used as the subcommand name.
-
-        Returns:
-            Args for `pyrig <group_name> <cmd_name> [args...]`.
-        """
-        group_name = snake_to_kebab_case(group)
-        cmd_name = snake_to_kebab_case(cmd.__name__)
-        return self.args(group_name, cmd_name, *args)
-
     def init_project(self) -> None:
         """Run the ordered project initialization sequence with a progress bar.
 

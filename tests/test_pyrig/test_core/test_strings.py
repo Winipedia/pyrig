@@ -3,7 +3,6 @@
 from pathlib import Path
 
 from pyrig.core.strings import (
-    fstring_var_name,
     is_multiline,
     make_linked_badge_markdown,
     open_path_with_utf8,
@@ -147,12 +146,6 @@ def test_open_path_with_utf8(tmp_path: Path) -> None:
     with open_path_with_utf8(file_path, mode="r") as f:
         result = f.read()
     assert result == text
-
-
-def test_fstring_var_name() -> None:
-    """Test function."""
-    var = "value"
-    assert fstring_var_name(f"{var=}") == "var"
 
 
 def test_is_multiline() -> None:
