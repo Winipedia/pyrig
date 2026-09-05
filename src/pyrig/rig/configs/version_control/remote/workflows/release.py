@@ -79,6 +79,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             self.job_publish,
             needs=[self.job_id_from_method(self.job_health_check)],
             permissions=self.permission_contents(write=True),
+            environment=self.job_id_from_method(self.job_publish),
             steps=self.steps_publish(),
         )
 

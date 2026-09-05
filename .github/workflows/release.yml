@@ -30,6 +30,7 @@
     "needs":
       - "health-check"
     "runs-on": "ubuntu-latest"
+    "environment": "publish"
     "steps":
       -
         "name": "Checkout Repository"

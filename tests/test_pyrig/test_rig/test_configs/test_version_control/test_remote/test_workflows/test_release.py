@@ -71,6 +71,7 @@ class TestReleaseWorkflowConfigFile:
         assert job_config["secrets"] == {
             "CODECOV_TOKEN": "${{ secrets.CODECOV_TOKEN }}",
         }
+        assert "environment" not in job_config
 
     def test_job_publish(
         self,
@@ -82,6 +83,7 @@ class TestReleaseWorkflowConfigFile:
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name], "Expected 'steps' in job"
         assert "needs" in result[job_name], "Expected 'needs' in job"
+        assert result[job_name]["environment"] == job_name
 
     def test_job_deploy(
         self,
@@ -94,6 +96,7 @@ class TestReleaseWorkflowConfigFile:
         assert job_config["uses"] == "$/.github/workflows/deploy.yml"
         assert job_config["secrets"] == {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"}
         assert "needs" in job_config, "Expected 'needs' in job"
+        assert "environment" not in job_config
 
     def test_steps_publish(
         self,
