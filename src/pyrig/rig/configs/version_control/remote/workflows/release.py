@@ -3,9 +3,6 @@
 from typing import Any
 
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
-from pyrig.rig.configs.version_control.remote.configure import (
-    ConfigureRepositoryConfigFile,
-)
 from pyrig.rig.configs.version_control.remote.workflows.deploy import (
     DeployWorkflowConfigFile,
 )
@@ -65,11 +62,11 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         )
 
     def job_publish(self) -> dict[str, Any]:
-        """Return the job that configures and releases the project.
+        """Return the job that creates the version tag and GitHub release.
 
         Requires the health check job to have passed first. Requests
-        `contents: write` permission at the job level, which is required to
-        create the version tag and the GitHub release.
+        `contents: write` permission at the job level, required to create
+        the version tag and the GitHub release.
 
         Returns:
             Job configuration dict keyed by the job ID, containing the
@@ -79,7 +76,6 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             self.job_publish,
             needs=[self.job_id_from_method(self.job_health_check)],
             permissions=self.permission_contents(write=True),
-            environment=self.job_id_from_method(self.job_publish),
             steps=self.steps_publish(),
         )
 
@@ -103,13 +99,10 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """Return the ordered steps for the release job.
 
         Returns:
-            Steps that perform the full release sequence: environment setup,
-            applying repository settings and rulesets, enabling private
-            vulnerability reporting, and publishing the GitHub release.
+            Steps that create and publish the GitHub release.
         """
         return [
             *self.steps_core_setup(),
-            self.step_configure_repository(),
             self.step_create_release(),
         ]
 
@@ -124,16 +117,4 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             self.step_create_release,
             run=RemoteVersionController.I.create_release_args(tag=version).multiline(),
             env={"GH_TOKEN": self.insert_github_token()},
-        )
-
-    def step_configure_repository(self) -> dict[str, Any]:
-        """Build a step that applies repository configuration.
-
-        Returns:
-            Repository-configuration step.
-        """
-        return self.step(
-            self.step_configure_repository,
-            run=f"bash {ConfigureRepositoryConfigFile.I.path().as_posix()}",
-            env={"GH_TOKEN": self.insert_repo_token()},
         )

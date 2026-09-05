@@ -17,6 +17,25 @@
   "UV_NO_SYNC": 1
 "run-name": "Deploy"
 "jobs":
+  "repository":
+    "name": "Repository"
+    "permissions":
+      "contents": "read"
+    "runs-on": "ubuntu-latest"
+    "environment": "repository"
+    "steps":
+      -
+        "name": "Checkout Repository"
+        "id": "checkout-repository"
+        "uses": "actions/checkout@main"
+        "with":
+          "persist-credentials": false
+      -
+        "name": "Configure Repository"
+        "id": "configure-repository"
+        "run": "bash .github/configure.sh"
+        "env":
+          "GH_TOKEN": "${{ secrets.REPO_TOKEN }}"
   "documentation":
     "name": "Documentation"
     "permissions":

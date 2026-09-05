@@ -4,15 +4,17 @@ from types import MethodType
 from typing import Any
 
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
+from pyrig.rig.configs.version_control.remote.configure import (
+    ConfigureRepositoryConfigFile,
+)
 from pyrig.rig.tools.docs.builder import DocsBuilder
 from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class DeployWorkflowConfigFile(WorkflowConfigFile):
-    """Workflow configurations for deployments.
+    """Workflow configuration for deployment-style jobs.
 
-    This includes jobs for building and deploying the documentation site
-    to GitHub Pages.
+    Each job runs under its own auto-derived environment.
     """
 
     def job(  # noqa: PLR0913
@@ -71,9 +73,9 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """Build the top-level jobs configuration.
 
         Returns:
-            Dict containing the documentation job.
+            Dict containing the repository and documentation jobs.
         """
-        return {**self.job_documentation()}
+        return {**self.job_repository(), **self.job_documentation()}
 
     def stem(self) -> str:
         """Return `"deploy"`, the workflow file's stem."""
@@ -86,6 +88,45 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             Workflow-call trigger configuration.
         """
         return self.on_workflow_call()
+
+    def job_repository(self) -> dict[str, Any]:
+        """Build the job that applies repository-level configuration.
+
+        Requests `contents: read` to check out the repository; the
+        configuration step itself authenticates separately via `REPO_TOKEN`,
+        not `GITHUB_TOKEN`.
+
+        Returns:
+            Dict mapping the derived job ID to its configuration.
+        """
+        return self.job(
+            self.job_repository,
+            permissions=self.permission_contents(),
+            steps=self.steps_repository(),
+        )
+
+    def steps_repository(self) -> list[dict[str, Any]]:
+        """Build the ordered steps for the repository job.
+
+        Returns:
+            Checkout followed by the repository-configuration step.
+        """
+        return [
+            self.step_checkout_repository(),
+            self.step_configure_repository(),
+        ]
+
+    def step_configure_repository(self) -> dict[str, Any]:
+        """Build a step that applies repository configuration.
+
+        Returns:
+            Repository-configuration step.
+        """
+        return self.step(
+            self.step_configure_repository,
+            run=f"bash {ConfigureRepositoryConfigFile.I.path().as_posix()}",
+            env={"GH_TOKEN": self.insert_repo_token()},
+        )
 
     def job_documentation(self) -> dict[str, Any]:
         """Build the job that builds and deploys the documentation site.

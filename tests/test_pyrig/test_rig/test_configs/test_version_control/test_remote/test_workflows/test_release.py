@@ -4,9 +4,6 @@ from collections.abc import Callable
 
 import pytest
 
-from pyrig.rig.configs.version_control.remote.configure import (
-    ConfigureRepositoryConfigFile,
-)
 from pyrig.rig.configs.version_control.remote.workflows.release import (
     ReleaseWorkflowConfigFile,
 )
@@ -25,16 +22,6 @@ def my_test_release_workflow(
 
 class TestReleaseWorkflowConfigFile:
     """Test class."""
-
-    def test_step_configure_repository(
-        self,
-        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        step = my_test_release_workflow().step_configure_repository()
-        path = ConfigureRepositoryConfigFile().path().as_posix()
-        assert step["run"] == f"bash {path}"
-        assert step["env"]["GH_TOKEN"]
 
     def test_stem(self) -> None:
         """Test method."""
@@ -83,7 +70,7 @@ class TestReleaseWorkflowConfigFile:
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name], "Expected 'steps' in job"
         assert "needs" in result[job_name], "Expected 'needs' in job"
-        assert result[job_name]["environment"] == job_name
+        assert "environment" not in result[job_name]
 
     def test_job_deploy(
         self,

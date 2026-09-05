@@ -24,9 +24,9 @@ remove pyrig from your project entirely, as described below.
   are pushed directly to GitHub via `gh api`, and the release/deploy pipeline
   is GitHub Actions. Anything else needs its own substitution plugin.
 - **Needs an elevated access token.** The default `GITHUB_TOKEN` can't change
-  repository settings or enable Pages, so the release and deploy workflows
-  need a personal access token with broader permissions, stored as a
-  `REPO_TOKEN` secret.
+  repository settings or enable Pages, so the deploy workflow needs a
+  personal access token with broader permissions, stored as a `REPO_TOKEN`
+  secret.
 - **Mandatory signed commits and linear history.** The generated branch
   protection ruleset requires signed commits, blocks force-pushes, and
   enforces a linear history. Contributors need commit signing already set up.

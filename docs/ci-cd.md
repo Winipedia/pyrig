@@ -40,7 +40,7 @@ from `release.yml`. `Deploy` only runs via `workflow_call`, invoked by
 dependency order (`needs:`), no `if` guard is required — `deploy` never
 executes unless `publish` (and, transitively, `health-check`) succeeded.
 
-Every job in the deployment workflow gets its own GitHub Actions environment,
+Every job in the deploy workflow gets its own GitHub Actions environment,
 named after the job's stable ID automatically.
 
 ---
@@ -67,11 +67,9 @@ release pipeline, gating `publish`.
 Three jobs run in dependency order:
 
 - **`health-check`** — calls `health_check.yml` as a reusable workflow.
-- **`publish`** — runs only if `health-check` succeeds (`needs:`). Applies
-  repository settings and protection rulesets, and enables GitHub's private
-  vulnerability reporting, all via the GitHub API. Then creates a GitHub
-  Release with auto-generated release notes, tagging the current commit in
-  the same call.
+- **`publish`** — runs only if `health-check` succeeds (`needs:`). Creates a
+  GitHub Release with auto-generated release notes, tagging the current
+  commit in the same call.
 - **`deploy`** — runs only if `publish` succeeds (`needs:`). Calls
   `deploy.yml` as a reusable workflow.
 
@@ -92,8 +90,12 @@ Three jobs run in dependency order:
 
 **Trigger:** `workflow_call` only, invoked by `release.yml`'s `deploy` job.
 
-One job runs in this final stage:
+Two jobs run in this final stage:
 
+- **`repository`** — applies repository settings and protection rulesets,
+  and enables GitHub's private vulnerability reporting, all via the GitHub
+  API. Requires `contents: read` at the job level; the configuration step
+  itself authenticates separately via the `REPO_TOKEN` secret.
 - **`documentation`** — builds the documentation site and deploys it to
   GitHub Pages. This job requires `contents: read`, `pages: write`, and
   `id-token: write` permissions at the job level.
