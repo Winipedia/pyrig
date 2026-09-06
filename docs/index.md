@@ -47,9 +47,15 @@
 
 <!-- rumdl-enable MD013 -->
 
+In principle, pyrig is a Convention-Over-Configuration tool for Python projects
+regarding the project itself. Just like frameworks such as Django or Flask that
+implement the "convention over configuration" principle for web development,
+pyrig does the same for Python project setup and management.
+
 ## Philosophy
 
-Learn more about the philosophy behind pyrig in the [Philosophy Documentation](philosophy.md).
+Pyrig derives its conventions [according to its philosophy](philosophy.md) and then
+configures them for you.
 
 ## More Detailed Documentation
 
@@ -78,7 +84,8 @@ pyrig.
 pyrig has a range of plugins that extend your project with extra capabilities —
 publishing to PyPI, building executables, container images, coverage uploads,
 and more. Just add one as a dev dependency and it wires itself in automatically.
-Check them out in the [Plugins Documentation](plugins.md).
+Learn more about how plugins work, some available plugins, and how to create your
+own in the [Plugins Documentation](plugins.md).
 
 ## Scaffolding
 
