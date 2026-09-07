@@ -40,8 +40,8 @@
     "name": "Documentation"
     "permissions":
       "contents": "read"
-      "id-token": "write"
-      "pages": "write"
+      "id-token": "write"  # required
+      "pages": "write"  # required
     "runs-on": "ubuntu-latest"
     "environment": "documentation"
     "steps":
@@ -86,7 +86,7 @@
     "name": "Package"
     "permissions":
       "contents": "read"
-      "id-token": "write"
+      "id-token": "write"  # required
     "runs-on": "ubuntu-latest"
     "environment": "package"
     "steps":

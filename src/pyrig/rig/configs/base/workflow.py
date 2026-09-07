@@ -7,6 +7,7 @@ from types import MethodType
 from typing import Any
 
 from pyrig_runtime.core.strings import snake_to_kebab_case
+from ruamel.yaml.comments import CommentedMap
 
 from pyrig.core.iterate import deep_sorted_dict, traverse_structure
 from pyrig.core.strings import (
@@ -142,6 +143,41 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return {name: "write" if write else "read"}
 
+    def documented_permissions(self, permissions: dict[str, str]) -> CommentedMap:
+        """Return `permissions` as a `CommentedMap` that documents permissions.
+
+        zizmor's `undocumented-permissions` audit requires an explanatory
+        comment on any permission entry other than `contents: read`.
+
+        Is assembled via multiple single-entry `CommentedMap` instances to ensure
+        consistent inline comment placement.
+
+        Args:
+            permissions: Mapping of permission name to `"read"` or `"write"`.
+
+        Returns:
+            Equivalent `CommentedMap`; every entry except `contents: read`
+            carries an inline comment.
+        """
+        commented = CommentedMap()
+        for name, level in permissions.items():
+            if (name, level) == ("contents", "read"):
+                commented[name] = level
+                continue
+            permission = CommentedMap({name: level})
+            permission.yaml_add_eol_comment(self.permission_comment(), name)
+            commented[name] = level
+            commented.ca.items[name] = permission.ca.items[name]
+        return commented
+
+    def permission_comment(self) -> str:
+        """Return the comment attached to every documented permission entry.
+
+        Returns:
+            `"required"`.
+        """
+        return "required"
+
     def concurrency(self) -> dict[str, Any]:
         """Return the workflow's concurrency setting.
 
@@ -267,7 +303,9 @@ class WorkflowConfigFile(YMLDictConfigFile):
         job_id = self.job_id_from_method(method)
         job = {"name": self.name_from_id(job_id)}
         if permissions is not None:
-            job["permissions"] = deep_sorted_dict(permissions)
+            job["permissions"] = self.documented_permissions(
+                deep_sorted_dict(permissions),
+            )
         if if_condition is not None:
             job["if"] = if_condition
         if needs is not None:

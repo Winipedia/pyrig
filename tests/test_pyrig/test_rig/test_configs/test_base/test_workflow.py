@@ -1,13 +1,16 @@
 """module."""
 
+import io
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
 from typing import Any
 
 import pytest
+from ruamel.yaml.comments import CommentedMap
 
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
+from pyrig.rig.configs.base.yaml import YAML_DUMP
 from pyrig.rig.configs.version_control.remote.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
 )
@@ -625,3 +628,36 @@ class TestWorkflowConfigFile:
         workflow = my_test_workflow()
         assert workflow.permission("actions") == {"actions": "read"}
         assert workflow.permission("actions", write=True) == {"actions": "write"}
+
+    def test_documented_permissions(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        result = workflow.documented_permissions(
+            {"contents": "read", "pages": "write"},
+        )
+
+        assert isinstance(result, CommentedMap)
+        assert result == {"contents": "read", "pages": "write"}
+
+        buffer = io.StringIO()
+        YAML_DUMP.dump(result, buffer)
+        dumped = buffer.getvalue()
+        assert '"contents": "read"\n' in dumped
+        assert f'"pages": "write"  # {workflow.permission_comment()}' in dumped
+
+        # No entry needs a comment.
+        undocumented = workflow.documented_permissions({"contents": "read"})
+        assert isinstance(undocumented, CommentedMap)
+        buffer_undocumented = io.StringIO()
+        YAML_DUMP.dump(undocumented, buffer_undocumented)
+        assert "#" not in buffer_undocumented.getvalue()
+
+    def test_permission_comment(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().permission_comment() == "required"
