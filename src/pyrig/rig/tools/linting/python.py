@@ -71,7 +71,7 @@ class PythonLinter(CheckFormatHookTool):
                 EndOfFileFormatter.I.format_hook(),
             ),
             types=["python"],
-            args=["--fix"],
+            args=Args("--fix"),
         )
 
     def lint_python(self) -> Args:

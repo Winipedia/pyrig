@@ -47,11 +47,12 @@
         "name": "Create Release"
         "id": "create-release"
         "run": |-
+          VERSION="$(uv version --short)"
           gh \
           release \
           create \
-          $(uv version --short) \
-          --title=$(uv version --short) \
+          "${VERSION}" \
+          --title="${VERSION}" \
           --generate-notes
         "env":
           "GH_TOKEN": "${{ secrets.GITHUB_TOKEN }}"

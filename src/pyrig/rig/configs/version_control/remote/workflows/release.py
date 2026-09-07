@@ -112,9 +112,18 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         Returns:
             Release-creation step with generated release notes.
         """
-        version = self.shell_insert_version()
+        version_key = "VERSION"
+        assign_version = f"{version_key}={self.shell_insert_version()}"
+        create_release = RemoteVersionController.I.create_release_args(
+            tag=self.shell_insert_parameter_expansion(version_key),
+        ).multiline()
+
+        run = f"{assign_version}\n{create_release}"
+
         return self.step(
             self.step_create_release,
-            run=RemoteVersionController.I.create_release_args(tag=version).multiline(),
-            env={"GH_TOKEN": self.insert_github_token()},
+            run=run,
+            env={
+                "GH_TOKEN": self.insert_github_token(),
+            },
         )

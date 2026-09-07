@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.version_control.hooks.manager import (
     VersionControlHookManager,
 )
@@ -75,7 +76,7 @@ class TestVersionControlHookManager:
             types=["python"],
             files="^tests/",
             exclude="^tests/fixtures/",
-            args=["--fix"],
+            args=Args("--fix"),
         )
         assert hook["repo"] == "some-repo"
         assert hook["id"] == "run-args"

@@ -73,7 +73,7 @@ class JSONFormatter(FormatHookTool):
                 EndOfFileFormatter.I.format_hook(),
             ),
             types=["json"],
-            args=["--autofix", "--no-ensure-ascii", "--no-sort-keys"],
+            args=Args("--autofix", "--no-ensure-ascii", "--no-sort-keys"),
         )
 
     def format_json(self) -> Args:

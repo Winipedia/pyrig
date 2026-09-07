@@ -59,7 +59,7 @@ class SpellChecker(CheckHookTool):
                 ByteOrderMarkerFormatter.I.format_hook(),
             ),
             types=["text"],
-            args=["--write-changes"],
+            args=Args("--write-changes"),
         )
 
     def fix_spelling(self) -> Args:

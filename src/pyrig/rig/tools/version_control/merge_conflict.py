@@ -64,7 +64,7 @@ class MergeConflictChecker(CheckHookTool):
                 TypeChecker.I.check_hook(),
             ),
             types=["text"],
-            args=["--assume-in-merge"],
+            args=Args("--assume-in-merge"),
         )
 
     def check_merge_conflict(self) -> Args:

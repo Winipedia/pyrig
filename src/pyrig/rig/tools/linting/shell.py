@@ -72,13 +72,13 @@ class ShellLinter(CheckHookTool):
                 TypeChecker.I.check_hook(),
             ),
             types=["shell"],
-            args=[
+            args=Args(
                 "--check-sourced",
                 "--enable=all",
                 "--external-sources",
                 "--norc",
                 f"--shell={self.dialect()}",
-            ],
+            ),
         )
 
     def lint_shell(self) -> Args:

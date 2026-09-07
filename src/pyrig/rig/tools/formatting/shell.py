@@ -75,14 +75,14 @@ class ShellFormatter(FormatHookTool):
                 EndOfFileFormatter.I.format_hook(),
             ),
             types=["shell"],
-            args=[
+            args=Args(
                 "--binary-next-line",
                 "--case-indent",
                 "--indent=2",
                 f"--language-dialect={ShellLinter.I.dialect()}",
                 "--simplify",
                 "--write",
-            ],
+            ),
         )
 
     def format_shell(self) -> Args:

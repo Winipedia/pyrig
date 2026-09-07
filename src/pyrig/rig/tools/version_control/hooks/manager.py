@@ -133,7 +133,7 @@ class VersionControlHookManager(Tool):
         types_or: Iterable[str] | None = None,
         files: str | None = None,
         exclude: str | None = None,
-        args: Iterable[str] | None = None,
+        args: Args | None = None,
         always_run: bool | None = None,
         pass_filenames: bool | None = None,
     ) -> dict[str, Any]:

@@ -208,7 +208,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
     def parent_path(self) -> Path:
         """Return the GitHub Actions workflows directory."""
-        return RemoteVersionController.I.config_dir() / "workflows"
+        return RemoteVersionController.I.ci_cd_dir()
 
     def defaults(self) -> dict[str, Any]:
         """Return the default settings applied to every step in the workflow.
@@ -857,7 +857,9 @@ class WorkflowConfigFile(YMLDictConfigFile):
             This syntax only works in shell contexts, not in GitHub Actions
             expressions.
         """
-        return self.shell_insert_expression(str(PackageManager.I.version_short_args()))
+        return self.shell_insert_command_substitution(
+            str(PackageManager.I.version_short_args()),
+        )
 
     def insert_github_token(self) -> str:
         """Return the `${{ secrets.GITHUB_TOKEN }}` expression.
@@ -892,17 +894,17 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.insert_expression("github.ref")
 
-    def shell_insert_expression(self, var: str) -> str:
-        """Wrap an expression in shell command substitution `$( ... )` syntax.
+    def shell_insert_command_substitution(self, command: str) -> str:
+        """Wrap a shell command in command substitution syntax "`$(...)"`."""
+        return self.shell_insert_expansion(f"({command})")
 
-        Args:
-            var: The raw expression to wrap (e.g. `"uv version --short"`).
+    def shell_insert_parameter_expansion(self, parameter: str) -> str:
+        """Wrap a shell parameter in parameter expansion syntax `"${...}"`."""
+        return self.shell_insert_expansion(f"{{{parameter}}}")
 
-        Returns:
-            The expression surrounded by `$( )` delimiters, e.g.
-            `"$(uv version --short)"`.
-        """
-        return f"$({var})"
+    def shell_insert_expansion(self, expansion: str) -> str:
+        """Wrap an expansion in basic shell expansion syntax `"$..."`."""
+        return f'"${expansion}"'
 
     def insert_expression(self, var: str) -> str:
         """Wrap an expression in GitHub Actions `${{ ... }}` syntax.

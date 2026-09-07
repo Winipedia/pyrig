@@ -69,7 +69,7 @@ class ModuleTestNamingChecker(CheckHookTool):
             ),
             types=["python"],
             files=f"^{ProjectTester.I.package_root().as_posix()}/",
-            args=["--pytest-test-first"],
+            args=Args("--pytest-test-first"),
         )
 
     def check_test_naming(self) -> Args:

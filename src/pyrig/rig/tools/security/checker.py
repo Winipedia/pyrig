@@ -63,9 +63,9 @@ class SecurityChecker(CheckHookTool):
                 TypeChecker.I.check_hook(),
             ),
             types=["python"],
-            args=[
+            args=Args(
                 f"--exclude={ProjectTester.I.package_root().as_posix()}",
-            ],
+            ),
         )
 
     def check_security(self) -> Args:

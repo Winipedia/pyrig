@@ -171,3 +171,18 @@ class TestRemoteVersionController:
             "--method=PATCH",
             "--input=-",
         )
+
+    def test_ci_cd_dir(self) -> None:
+        """Test method."""
+        assert RemoteVersionController.I.ci_cd_dir().as_posix() == ".github/workflows"
+
+    def test_dependency_bot_path(self) -> None:
+        """Test method."""
+        assert (
+            RemoteVersionController.I.dependency_bot_path().as_posix()
+            == ".github/dependabot.yml"
+        )
+
+    def test_action_path(self) -> None:
+        """Test method."""
+        assert RemoteVersionController.I.action_path().as_posix() == "action.yml"

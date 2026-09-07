@@ -79,7 +79,7 @@ class TOMLLinter(CheckFormatHookTool):
             ),
             types=["toml"],
             exclude=self.lock_file_exclude_pattern(),
-            args=["--error-on-warnings"],
+            args=Args("--error-on-warnings"),
         )
 
     def lint_toml(self) -> Args:

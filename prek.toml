@@ -312,6 +312,28 @@ groups = [
 priority = 11
 
 [[repos.hooks]]
+id = "check-ci-cd"
+name = "check ci cd"
+language = "system"
+entry = "uv run zizmor"
+args = [
+  "--fix",
+  "--persona=auditor",
+  "--strict-collection",
+]
+types = [
+  "yaml",
+]
+files = "^\\.github/workflows/|^\\.github/dependabot\\.|/action\\."
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 11
+
+[[repos.hooks]]
 id = "check-dependencies"
 name = "check dependencies"
 language = "system"
@@ -435,6 +457,28 @@ groups = [
 ]
 priority = 11
 pass_filenames = false
+
+[[repos.hooks]]
+id = "lint-ci-cd"
+name = "lint ci cd"
+language = "system"
+entry = "uv run actionlint"
+args = [
+  "--ignore=reusable workflow call \"\\$/.*\" at \"uses\" is not following the format",
+  "--pyflakes=pyflakes",
+  "--shellcheck=uv run shellcheck --check-sourced --enable=all --external-sources --norc --shell=bash",
+]
+types = [
+  "yaml",
+]
+files = "^\\.github/workflows/"
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 11
 
 [[repos.hooks]]
 id = "lint-json"

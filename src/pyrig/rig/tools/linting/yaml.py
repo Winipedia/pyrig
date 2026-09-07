@@ -69,10 +69,10 @@ class YAMLLinter(CheckHookTool):
                 EndOfFileFormatter.I.format_hook(),
             ),
             types=["yaml"],
-            args=[
+            args=Args(
                 "--fix",
                 "--config-data={extends: default, rules: {line-length: {max: 90}}}",
-            ],
+            ),
         )
 
     def lint_yaml(self) -> Args:

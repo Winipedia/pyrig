@@ -68,7 +68,7 @@ class EndOfLineFormatter(FormatHookTool):
                 SpellChecker.I.check_hook(),
             ),
             types=["text"],
-            args=[f"--fix={VersionController.I.end_of_line()}"],
+            args=Args(f"--fix={VersionController.I.end_of_line()}"),
         )
 
     def fix_end_of_line(self) -> Args:

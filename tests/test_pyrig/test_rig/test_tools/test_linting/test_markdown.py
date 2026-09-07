@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.linting.markdown import MarkdownLinter
 from pyrig.rig.tools.packages.manager import PackageManager
@@ -73,3 +74,7 @@ class TestMarkdownLinter:
         assert MarkdownLinter.I.format_markdown() == PackageManager.I.run_args(
             *base_args,
         )
+
+    def test_hook_args(self) -> None:
+        """Test method."""
+        assert MarkdownLinter.I.hook_args() == Args("--deny-config-warnings")

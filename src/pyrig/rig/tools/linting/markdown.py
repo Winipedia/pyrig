@@ -75,7 +75,7 @@ class MarkdownLinter(CheckFormatHookTool):
                 TypeChecker.I.check_hook(),
             ),
             types=["markdown"],
-            args=["--deny-config-warnings"],
+            args=self.hook_args(),
         )
 
     def lint_markdown(self) -> Args:
@@ -101,7 +101,7 @@ class MarkdownLinter(CheckFormatHookTool):
                 EndOfFileFormatter.I.format_hook(),
             ),
             types=["markdown"],
-            args=["--deny-config-warnings"],
+            args=self.hook_args(),
         )
 
     def format_markdown(self) -> Args:
@@ -111,3 +111,14 @@ class MarkdownLinter(CheckFormatHookTool):
             Args for `uv run rumdl fmt`.
         """
         return PackageManager.I.run_args(*self.format_args())
+
+    def hook_args(self, *args: str) -> Args:
+        """Construct generic hook arguments both hooks use.
+
+        Args:
+            *args: Additional arguments forwarded to the hook.
+
+        Returns:
+            Args for the hook.
+        """
+        return Args("--deny-config-warnings", *args)

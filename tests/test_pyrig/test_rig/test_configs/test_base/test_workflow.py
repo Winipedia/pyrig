@@ -48,13 +48,6 @@ def my_test_workflow(
 class TestWorkflowConfigFile:
     """Test class."""
 
-    def test_shell_insert_expression(self) -> None:
-        """Test method."""
-        assert (
-            HealthCheckWorkflowConfigFile.I.shell_insert_expression("something")
-            == "$(something)"
-        )
-
     def test_repo_token_var(self) -> None:
         """Test method."""
         assert HealthCheckWorkflowConfigFile.I.repo_token_var() == "secrets.REPO_TOKEN"
@@ -661,3 +654,33 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Test method."""
         assert my_test_workflow().permission_comment() == "required"
+
+    def test_shell_insert_command_substitution(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_workflow().shell_insert_command_substitution("some command")
+            == '"$(some command)"'
+        )
+
+    def test_shell_insert_parameter_expansion(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_workflow().shell_insert_parameter_expansion("some parameter")
+            == '"${some parameter}"'
+        )
+
+    def test_shell_insert_expansion(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_workflow().shell_insert_expansion("[some expansion]")
+            == '"$[some expansion]"'
+        )

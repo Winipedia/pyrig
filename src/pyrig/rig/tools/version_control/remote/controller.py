@@ -133,6 +133,18 @@ class RemoteVersionController(Tool):
         """Return `'https://github.com'` as GitHub's base URL."""
         return "https://github.com"
 
+    def ci_cd_dir(self) -> Path:
+        """Return the directory containing GitHub Actions workflows."""
+        return self.config_dir() / "workflows"
+
+    def dependency_bot_path(self) -> Path:
+        """Return the configuration file path for dependabot."""
+        return self.config_dir() / "dependabot.yml"
+
+    def action_path(self) -> Path:
+        """Return the name of a custom Github action file."""
+        return Path("action.yml")
+
     def config_dir(self) -> Path:
         """Return GitHub's special repository configuration directory.
 

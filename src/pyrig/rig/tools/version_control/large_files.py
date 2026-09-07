@@ -65,7 +65,7 @@ class LargeFileChecker(CheckHookTool):
             priority=VersionControlHookManager.I.hook_priority(
                 TypeChecker.I.check_hook(),
             ),
-            args=["--enforce-all"],
+            args=Args("--enforce-all"),
         )
 
     def check_large_files(self) -> Args:
