@@ -431,21 +431,63 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().steps_core_setup()
         assert len(result) > 0
 
+    def test_checkout_action(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().checkout_action()
+        assert isinstance(result, str)
+        assert result
+
+    def test_checkout_action_sha(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().checkout_action_sha()
+        assert isinstance(result, str)
+        assert result
+
     def test_step_checkout_repository(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        result = my_test_workflow().step_checkout_repository()
+        workflow = my_test_workflow()
+        result = workflow.step_checkout_repository()
         assert "uses" in result, "Expected 'uses' in step"
+        expected_uses = f"{workflow.checkout_action()}@{workflow.checkout_action_sha()}"
+        assert result["uses"] == expected_uses
+
+    def test_setup_uv_action(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().setup_uv_action()
+        assert isinstance(result, str)
+        assert result
+
+    def test_setup_uv_action_sha(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().setup_uv_action_sha()
+        assert isinstance(result, str)
+        assert result
 
     def test_step_setup_package_manager(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        result = my_test_workflow().step_setup_package_manager(python_version="3.14")
+        workflow = my_test_workflow()
+        result = workflow.step_setup_package_manager(python_version="3.14")
         assert "uses" in result, "Expected 'uses' in step"
+        expected_uses = f"{workflow.setup_uv_action()}@{workflow.setup_uv_action_sha()}"
+        assert result["uses"] == expected_uses
 
     def test_step_install_dependencies(
         self,

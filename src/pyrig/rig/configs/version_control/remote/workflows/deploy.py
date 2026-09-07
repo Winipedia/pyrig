@@ -174,6 +174,22 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             run=str(PackageManager.I.run_args(*DocsBuilder.I.build_args())),
         )
 
+    def configure_pages_action(self) -> str:
+        """Return the `actions/configure-pages` action slug.
+
+        Returns:
+            The `"actions/configure-pages"` action slug.
+        """
+        return "actions/configure-pages"
+
+    def configure_pages_action_sha(self) -> str:
+        """Return the pinned commit SHA for `actions/configure-pages`.
+
+        Returns:
+            Commit SHA `actions/configure-pages` is pinned to.
+        """
+        return "45bfe0192ca1faeb007ade9deae92b16b8254a0d"  # pragma: allowlist secret
+
     def step_configure_pages(self) -> dict[str, Any]:
         """Build a step that enables GitHub Pages.
 
@@ -182,9 +198,25 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.step(
             self.step_configure_pages,
-            uses="actions/configure-pages@main",
+            uses=f"{self.configure_pages_action()}@{self.configure_pages_action_sha()}",
             with_={"enablement": "true", "token": self.insert_repo_token()},
         )
+
+    def deploy_pages_action(self) -> str:
+        """Return the `actions/deploy-pages` action slug.
+
+        Returns:
+            The `"actions/deploy-pages"` action slug.
+        """
+        return "actions/deploy-pages"
+
+    def deploy_pages_action_sha(self) -> str:
+        """Return the pinned commit SHA for `actions/deploy-pages`.
+
+        Returns:
+            Commit SHA `actions/deploy-pages` is pinned to.
+        """
+        return "368f82528645a54fb793d4d04e342629a3f51346"  # pragma: allowlist secret
 
     def step_deploy_documentation(self) -> dict[str, Any]:
         """Build a step that deploys the uploaded Pages artifact to GitHub Pages.
@@ -193,21 +225,40 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         permissions.
 
         Returns:
-            Step using `actions/deploy-pages@main`.
+            Step using `actions/deploy-pages@<sha>`.
         """
         return self.step(
             self.step_deploy_documentation,
-            uses="actions/deploy-pages@main",
+            uses=f"{self.deploy_pages_action()}@{self.deploy_pages_action_sha()}",
         )
+
+    def upload_pages_artifact_action(self) -> str:
+        """Return the `actions/upload-pages-artifact` action slug.
+
+        Returns:
+            The `"actions/upload-pages-artifact"` action slug.
+        """
+        return "actions/upload-pages-artifact"
+
+    def upload_pages_artifact_action_sha(self) -> str:
+        """Return the pinned commit SHA for `actions/upload-pages-artifact`.
+
+        Returns:
+            Commit SHA `actions/upload-pages-artifact` is pinned to.
+        """
+        return "fc324d3547104276b827a68afc52ff2a11cc49c9"  # pragma: allowlist secret
 
     def step_upload_documentation(self) -> dict[str, Any]:
         """Build a step that uploads the `site/` directory as a Pages artifact.
 
         Returns:
-            Step using `actions/upload-pages-artifact@main`.
+            Step using `actions/upload-pages-artifact@<sha>`.
         """
         return self.step(
             self.step_upload_documentation,
-            uses="actions/upload-pages-artifact@main",
+            uses=(
+                f"{self.upload_pages_artifact_action()}"
+                f"@{self.upload_pages_artifact_action_sha()}"
+            ),
             with_={"path": DocsBuilder.I.site_dir().as_posix()},
         )

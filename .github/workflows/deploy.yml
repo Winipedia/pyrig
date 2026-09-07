@@ -27,7 +27,7 @@
       -
         "name": "Checkout Repository"
         "id": "checkout-repository"
-        "uses": "actions/checkout@main"
+        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
         "with":
           "persist-credentials": false
       -
@@ -48,13 +48,13 @@
       -
         "name": "Checkout Repository"
         "id": "checkout-repository"
-        "uses": "actions/checkout@main"
+        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
         "with":
           "persist-credentials": false
       -
         "name": "Setup Package Manager"
         "id": "setup-package-manager"
-        "uses": "astral-sh/setup-uv@main"
+        "uses": "astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d"
         "with":
           "python-version": "3.14"
       -
@@ -68,20 +68,20 @@
       -
         "name": "Configure Pages"
         "id": "configure-pages"
-        "uses": "actions/configure-pages@main"
+        "uses": "actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d"
         "with":
           "enablement": "true"
           "token": "${{ secrets.REPO_TOKEN }}"
       -
         "name": "Upload Documentation"
         "id": "upload-documentation"
-        "uses": "actions/upload-pages-artifact@main"
+        "uses": "actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9"
         "with":
           "path": "site"
       -
         "name": "Deploy Documentation"
         "id": "deploy-documentation"
-        "uses": "actions/deploy-pages@main"
+        "uses": "actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346"
   "package":
     "name": "Package"
     "permissions":
@@ -93,13 +93,13 @@
       -
         "name": "Checkout Repository"
         "id": "checkout-repository"
-        "uses": "actions/checkout@main"
+        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
         "with":
           "persist-credentials": false
       -
         "name": "Setup Package Manager"
         "id": "setup-package-manager"
-        "uses": "astral-sh/setup-uv@main"
+        "uses": "astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d"
         "with":
           "python-version": "3.14"
       -

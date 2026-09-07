@@ -34,13 +34,13 @@
       -
         "name": "Checkout Repository"
         "id": "checkout-repository"
-        "uses": "actions/checkout@main"
+        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
         "with":
           "persist-credentials": false
       -
         "name": "Setup Package Manager"
         "id": "setup-package-manager"
-        "uses": "astral-sh/setup-uv@main"
+        "uses": "astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d"
         "with":
           "python-version": "3.14"
       -

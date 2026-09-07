@@ -268,7 +268,7 @@ name = "lint yaml"
 language = "system"
 entry = "uv run ryl check"
 args = [
-  "--config-data=extends: default",
+  "--config-data={extends: default, rules: {line-length: {max: 90}}}",
   "--fix",
 ]
 types = [

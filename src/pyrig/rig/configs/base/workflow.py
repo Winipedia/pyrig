@@ -350,7 +350,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             if_condition: GitHub Actions conditional expression controlling
                 whether the step runs.
             uses: GitHub Action reference to use (e.g.
-                `"actions/checkout@main"`).
+                `"actions/checkout@<sha>"`).
             with_: Input parameters passed to the action.
             env: Step-level environment variables.
 
@@ -671,23 +671,55 @@ class WorkflowConfigFile(YMLDictConfigFile):
             self.step_setup_package_manager(python_version=python_version),
         ]
 
+    def checkout_action(self) -> str:
+        """Return the `actions/checkout` action slug.
+
+        Returns:
+            The `"actions/checkout"` action slug.
+        """
+        return "actions/checkout"
+
+    def checkout_action_sha(self) -> str:
+        """Return the pinned commit SHA for `actions/checkout`.
+
+        Returns:
+            Commit SHA `actions/checkout` is pinned to.
+        """
+        return "3d3c42e5aac5ba805825da76410c181273ba90b1"  # pragma: allowlist secret
+
     def step_checkout_repository(self) -> dict[str, Any]:
         """Build a step that checks out the repository.
 
-        Uses `actions/checkout@main`, which authenticates with the automatic
-        `GITHUB_TOKEN`. Credential persistence is disabled since no later
-        step needs the checked-out git credentials. The containing job must
-        grant at least `contents: read` through
-        `permission_contents()`.
+        Uses `checkout_action()`, pinned to `checkout_action_sha()`, which
+        authenticates with the automatic `GITHUB_TOKEN`. Credential
+        persistence is disabled since no later step needs the checked-out
+        git credentials. The containing job must grant at least
+        `contents: read` through `permission_contents()`.
 
         Returns:
-            Step using `actions/checkout@main`.
+            Step using `actions/checkout@<sha>`.
         """
         return self.step(
             self.step_checkout_repository,
-            uses="actions/checkout@main",
+            uses=f"{self.checkout_action()}@{self.checkout_action_sha()}",
             with_={"persist-credentials": False},
         )
+
+    def setup_uv_action(self) -> str:
+        """Return the `astral-sh/setup-uv` action slug.
+
+        Returns:
+            The `"astral-sh/setup-uv"` action slug.
+        """
+        return "astral-sh/setup-uv"
+
+    def setup_uv_action_sha(self) -> str:
+        """Return the pinned commit SHA for `astral-sh/setup-uv`.
+
+        Returns:
+            Commit SHA `astral-sh/setup-uv` is pinned to.
+        """
+        return "20cfd1bf945f4377ade1205e4dbc17946fc9a30d"  # pragma: allowlist secret
 
     def step_setup_package_manager(
         self,
@@ -696,19 +728,20 @@ class WorkflowConfigFile(YMLDictConfigFile):
     ) -> dict[str, Any]:
         """Build a step that installs uv and pins the Python version.
 
-        Uses `astral-sh/setup-uv` to install uv on the runner and configure
-        it to use the given Python version. All subsequent `uv run` and
-        `uv sync` commands will use this version.
+        Uses `setup_uv_action()`, pinned to `setup_uv_action_sha()`, to
+        install uv on the runner and configure it to use the given Python
+        version. All subsequent `uv run` and `uv sync` commands will use
+        this version.
 
         Args:
             python_version: Python version string to pin, e.g. `"3.13"`.
 
         Returns:
-            Step using `astral-sh/setup-uv@main`.
+            Step using `astral-sh/setup-uv@<sha>`.
         """
         return self.step(
             self.step_setup_package_manager,
-            uses="astral-sh/setup-uv@main",
+            uses=f"{self.setup_uv_action()}@{self.setup_uv_action_sha()}",
             with_={"python-version": python_version},
         )
 
