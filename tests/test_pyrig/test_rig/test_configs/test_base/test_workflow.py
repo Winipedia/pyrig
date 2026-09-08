@@ -9,6 +9,7 @@ from typing import Any
 import pytest
 from ruamel.yaml.comments import CommentedMap
 
+from pyrig.core.subprocesses import Args
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.base.yaml import YAML_DUMP
 from pyrig.rig.configs.version_control.remote.workflows.health_check import (
@@ -676,33 +677,70 @@ class TestWorkflowConfigFile:
             == '"$[some expansion]"'
         )
 
-    def test_insert_version_variable(
+    def test_step_extract_version(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        assert my_test_workflow().insert_version_variable() == '"${VERSION}"'
+        step = my_test_workflow().step_extract_version()
+        assert (
+            step["run"]
+            == 'VERSION="$(uv version --short)"\necho version="${VERSION}" >> "${GITHUB_OUTPUT}"'  # noqa: E501
+        )
 
-    def test_assign_version_variable(
+    def test_assign_command_substitution_output_var(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         assert (
-            my_test_workflow().assign_version_variable()
-            == 'VERSION="$(uv version --short)"'
+            my_test_workflow().assign_command_substitution_output_var(
+                "name",
+                Args("echo", "value"),
+            )
+            == 'NAME="$(echo value)"\necho name="${NAME}" >> "${GITHUB_OUTPUT}"'
         )
 
-    def test_version_variable(
+    def test_assign_output_var(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        assert my_test_workflow().version_variable() == "VERSION"
+        assert (
+            my_test_workflow().assign_output_var("NAME", "value")
+            == 'echo name=value >> "${GITHUB_OUTPUT}"'
+        )
 
-    def test_assign_variable(
+    def test_insert_output_version(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        assert my_test_workflow().assign_variable("NAME", "value") == "NAME=value"
+        assert (
+            my_test_workflow().insert_output_version()
+            == "${{ steps.extract-version.outputs.version }}"
+        )
+
+    def test_insert_output_var(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_workflow().insert_output_var(
+                my_test_workflow().step_extract_version,
+                my_test_workflow().version_var(),
+            )
+            == "${{ steps.extract-version.outputs.version }}"
+        )
+
+    def test_insert_version_expansion(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().insert_version_expansion() == '"${VERSION}"'
+
+    def test_version_var(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        assert my_test_workflow().version_var() == "VERSION"

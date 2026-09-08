@@ -14,6 +14,7 @@ from pyrig.core.strings import (
     reformat_name,
     split_on_uppercase,
 )
+from pyrig.core.subprocesses import Args
 from pyrig.rig.configs.base.yaml import YMLDictConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.linting.shell import ShellLinter
@@ -810,6 +811,59 @@ class WorkflowConfigFile(YMLDictConfigFile):
             run=str(PackageManager.I.install_dependencies_args()),
         )
 
+    def step_extract_version(self) -> dict[str, Any]:
+        """Build a step that extracts the current version.
+
+        The project version is extracted and assigned to the `VERSION`
+        variable in the GITHUB_OUTPUT.
+        """
+        return self.step(
+            self.step_extract_version,
+            run=self.assign_command_substitution_output_var(
+                self.version_var(),
+                PackageManager.I.version_short_args(),
+            ),
+        )
+
+    def assign_command_substitution_output_var(self, name: str, args: Args) -> str:
+        """Shell script to assign the output of a command substitution to a variable.
+
+        Args:
+            name: The name of the variable.
+            args: The command substitution arguments.
+
+        Returns:
+            Shell script string that assigns the output of the command substitution to
+            the variable.
+        """
+        var_name = name.upper()
+        shell_assignment = f"{var_name}={self.insert_command_substitution(str(args))}"
+        output_assignment = self.assign_output_var(
+            name,
+            self.insert_parameter_expansion(var_name),
+        )
+        return f"{shell_assignment}\n{output_assignment}"
+
+    def assign_output_var(self, name: str, value: str) -> str:
+        """Shell command to assign a value to a GitHub Actions output variable.
+
+        Args:
+            name: The name of the output variable.
+            value: The value to assign to the output variable.
+
+        Returns:
+            Shell command string to assign the value to the output variable in
+            `GITHUB_OUTPUT`.
+        """
+        return str(
+            Args(
+                "echo",
+                f"{name.lower()}={value}",
+                ">>",
+                self.insert_parameter_expansion("GITHUB_OUTPUT"),
+            ),
+        )
+
     def repo_token_var(self) -> str:
         """Return the raw secrets expression for `REPO_TOKEN`.
 
@@ -846,47 +900,48 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.insert_expression(self.repo_token_var())
 
-    def insert_version_variable(self) -> str:
+    def insert_output_version(self) -> str:
+        """Return the expression that resolves to the project version output variable.
+
+        Inserts the version saved in GITHUB_OUTPUT from the extract version step.
+
+        Returns:
+            GitHub Actions expression for the project version output variable.
+        """
+        return self.insert_output_var(
+            self.step_extract_version,
+            self.version_var(),
+        )
+
+    def insert_output_var(self, step: MethodType, name: str) -> str:
+        """Return the expression that resolves to the output variable of a step.
+
+        Args:
+            step: The step method whose output variable to reference.
+            name: The name of the output variable.
+
+        Returns:
+            GitHub Actions expression for the step's output variable.
+        """
+        return self.insert_expression(
+            f"steps.{self.step_id_from_method(step)}.outputs.{name.lower()}",
+        )
+
+    def insert_version_expansion(self) -> str:
         """Return the shell parameter expansion for the `VERSION` environment variable.
 
         Returns:
             Shell parameter expansion string for the `VERSION` variable: `"${VERSION}"`.
         """
-        return self.insert_parameter_expansion(self.version_variable())
+        return self.insert_parameter_expansion(self.version_var())
 
-    def assign_version_variable(self) -> str:
-        """Build a shell command to assign the project version to an environment var.
-
-        Returns:
-            Shell command string that assigns the project version to the
-            `VERSION` environment variable.
-        """
-        return self.assign_variable(
-            self.version_variable(),
-            self.insert_command_substitution(
-                str(PackageManager.I.version_short_args()),
-            ),
-        )
-
-    def version_variable(self) -> str:
+    def version_var(self) -> str:
         """Return the name of the environment variable that holds the project version.
 
         Returns:
             The `"VERSION"` environment variable name.
         """
         return "VERSION"
-
-    def assign_variable(self, name: str, value: str) -> str:
-        """Build a shell command to assign a value to a variable.
-
-        Args:
-            name: The name of the variable.
-            value: The value to assign to the variable.
-
-        Returns:
-            Shell command string for assigning the value to the variable.
-        """
-        return f"{name}={value}"
 
     def insert_github_token(self) -> str:
         """Return the `${{ secrets.GITHUB_TOKEN }}` expression.
