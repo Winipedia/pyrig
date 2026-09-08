@@ -846,20 +846,47 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.insert_expression(self.repo_token_var())
 
-    def shell_insert_version(self) -> str:
-        """Build a shell command substitution for the project version.
-
-        Evaluates `uv version --short` at workflow execution time, yielding the
-        PEP 440 version string without any prefix (e.g. `1.2.3`).
+    def insert_version_variable(self) -> str:
+        """Return the shell parameter expansion for the `VERSION` environment variable.
 
         Returns:
-            Shell command substitution string, e.g. `"$(uv version --short)"`.
-            This syntax only works in shell contexts, not in GitHub Actions
-            expressions.
+            Shell parameter expansion string for the `VERSION` variable: `"${VERSION}"`.
         """
-        return self.shell_insert_command_substitution(
-            str(PackageManager.I.version_short_args()),
+        return self.insert_parameter_expansion(self.version_variable())
+
+    def assign_version_variable(self) -> str:
+        """Build a shell command to assign the project version to an environment var.
+
+        Returns:
+            Shell command string that assigns the project version to the
+            `VERSION` environment variable.
+        """
+        return self.assign_variable(
+            self.version_variable(),
+            self.insert_command_substitution(
+                str(PackageManager.I.version_short_args()),
+            ),
         )
+
+    def version_variable(self) -> str:
+        """Return the name of the environment variable that holds the project version.
+
+        Returns:
+            The `"VERSION"` environment variable name.
+        """
+        return "VERSION"
+
+    def assign_variable(self, name: str, value: str) -> str:
+        """Build a shell command to assign a value to a variable.
+
+        Args:
+            name: The name of the variable.
+            value: The value to assign to the variable.
+
+        Returns:
+            Shell command string for assigning the value to the variable.
+        """
+        return f"{name}={value}"
 
     def insert_github_token(self) -> str:
         """Return the `${{ secrets.GITHUB_TOKEN }}` expression.
@@ -894,15 +921,15 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.insert_expression("github.ref")
 
-    def shell_insert_command_substitution(self, command: str) -> str:
+    def insert_command_substitution(self, command: str) -> str:
         """Wrap a shell command in command substitution syntax "`$(...)"`."""
-        return self.shell_insert_expansion(f"({command})")
+        return self.insert_expansion(f"({command})")
 
-    def shell_insert_parameter_expansion(self, parameter: str) -> str:
+    def insert_parameter_expansion(self, parameter: str) -> str:
         """Wrap a shell parameter in parameter expansion syntax `"${...}"`."""
-        return self.shell_insert_expansion(f"{{{parameter}}}")
+        return self.insert_expansion(f"{{{parameter}}}")
 
-    def shell_insert_expansion(self, expansion: str) -> str:
+    def insert_expansion(self, expansion: str) -> str:
         """Wrap an expansion in basic shell expansion syntax `"$..."`."""
         return f'"${expansion}"'
 

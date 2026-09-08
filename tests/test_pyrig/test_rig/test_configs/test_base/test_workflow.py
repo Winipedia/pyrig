@@ -501,15 +501,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().insert_repo_token()
         assert result == "${{ secrets.REPO_TOKEN }}"
 
-    def test_shell_insert_version(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().shell_insert_version()
-        assert "uv version" in result, "Expected 'uv version' in result"
-        assert not result.startswith("v"), "Expected no 'v' prefix in result"
-
     def test_insert_github_token(
         self,
         my_test_workflow: type[WorkflowConfigFile],
@@ -655,32 +646,63 @@ class TestWorkflowConfigFile:
         """Test method."""
         assert my_test_workflow().permission_comment() == "required"
 
-    def test_shell_insert_command_substitution(
+    def test_insert_command_substitution(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         assert (
-            my_test_workflow().shell_insert_command_substitution("some command")
+            my_test_workflow().insert_command_substitution("some command")
             == '"$(some command)"'
         )
 
-    def test_shell_insert_parameter_expansion(
+    def test_insert_parameter_expansion(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         assert (
-            my_test_workflow().shell_insert_parameter_expansion("some parameter")
+            my_test_workflow().insert_parameter_expansion("some parameter")
             == '"${some parameter}"'
         )
 
-    def test_shell_insert_expansion(
+    def test_insert_expansion(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         assert (
-            my_test_workflow().shell_insert_expansion("[some expansion]")
+            my_test_workflow().insert_expansion("[some expansion]")
             == '"$[some expansion]"'
         )
+
+    def test_insert_version_variable(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().insert_version_variable() == '"${VERSION}"'
+
+    def test_assign_version_variable(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_workflow().assign_version_variable()
+            == 'VERSION="$(uv version --short)"'
+        )
+
+    def test_version_variable(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().version_variable() == "VERSION"
+
+    def test_assign_variable(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().assign_variable("NAME", "value") == "NAME=value"
