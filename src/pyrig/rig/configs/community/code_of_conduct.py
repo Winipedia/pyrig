@@ -66,7 +66,10 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
             Full covenant text with the reporting and enforcement
             placeholders intact.
         """
-        return resource_content("CONTRIBUTOR_COVENANT_CODE_OF_CONDUCT", resources)
+        return resource_content(
+            self.code_of_conduct_template.__name__.upper(),
+            resources,
+        )
 
     def reporting_method(self) -> str:
         """Return the reporting instructions for the code of conduct.

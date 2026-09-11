@@ -95,7 +95,7 @@ class LicenseConfigFile(StringConfigFile):
 
     def license_template(self) -> str:
         """Return the raw MIT license template text."""
-        return resource_content("MIT_LICENSE", resources)
+        return resource_content(self.license_template.__name__.upper(), resources)
 
     def license_badge(self) -> str:
         """Return a Markdown image-link badge for the project license.

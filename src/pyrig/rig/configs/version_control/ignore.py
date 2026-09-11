@@ -74,4 +74,4 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
 
     def standard_ignore_text(self) -> str:
         """Return GitHub's canonical Python gitignore template as a single string."""
-        return resource_content("GITIGNORE", resources)
+        return resource_content(self.standard_ignore_text.__name__.upper(), resources)
