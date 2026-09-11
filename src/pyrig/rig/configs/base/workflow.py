@@ -10,11 +10,13 @@ from pyrig_runtime.core.strings import snake_to_kebab_case
 from ruamel.yaml.comments import CommentedMap
 
 from pyrig.core.iterate import deep_sorted_dict, traverse_structure
+from pyrig.core.resources import resource_content
 from pyrig.core.strings import (
     reformat_name,
     split_on_uppercase,
 )
 from pyrig.core.subprocesses import Args
+from pyrig.rig import resources
 from pyrig.rig.configs.base.yaml import YMLDictConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.linting.shell import ShellLinter
@@ -724,7 +726,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             Commit SHA `actions/checkout` is pinned to.
         """
-        return "3d3c42e5aac5ba805825da76410c181273ba90b1"  # pragma: allowlist secret
+        return resource_content(
+            self.checkout_action_sha.__name__.upper(),
+            resources,
+        ).strip()
 
     def step_checkout_repository(self) -> dict[str, Any]:
         """Build a step that checks out the repository.
@@ -758,7 +763,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             Commit SHA `astral-sh/setup-uv` is pinned to.
         """
-        return "20cfd1bf945f4377ade1205e4dbc17946fc9a30d"  # pragma: allowlist secret
+        return resource_content(
+            self.setup_uv_action_sha.__name__.upper(),
+            resources,
+        ).strip()
 
     def step_setup_package_manager(
         self,

@@ -3,6 +3,8 @@
 from types import MethodType
 from typing import Any
 
+from pyrig.core.resources import resource_content
+from pyrig.rig import resources
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.version_control.remote.configure import (
     ConfigureRepositoryConfigFile,
@@ -188,7 +190,10 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         Returns:
             Commit SHA `actions/configure-pages` is pinned to.
         """
-        return "45bfe0192ca1faeb007ade9deae92b16b8254a0d"  # pragma: allowlist secret
+        return resource_content(
+            self.configure_pages_action_sha.__name__.upper(),
+            resources,
+        ).strip()
 
     def step_configure_pages(self) -> dict[str, Any]:
         """Build a step that enables GitHub Pages.
@@ -216,7 +221,10 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         Returns:
             Commit SHA `actions/deploy-pages` is pinned to.
         """
-        return "368f82528645a54fb793d4d04e342629a3f51346"  # pragma: allowlist secret
+        return resource_content(
+            self.deploy_pages_action_sha.__name__.upper(),
+            resources,
+        ).strip()
 
     def step_deploy_documentation(self) -> dict[str, Any]:
         """Build a step that deploys the uploaded Pages artifact to GitHub Pages.
@@ -248,7 +256,10 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         Returns:
             Commit SHA `actions/upload-pages-artifact` is pinned to.
         """
-        return "fc324d3547104276b827a68afc52ff2a11cc49c9"  # pragma: allowlist secret
+        return resource_content(
+            self.upload_pages_artifact_action_sha.__name__.upper(),
+            resources,
+        ).strip()
 
     def step_upload_documentation(self) -> dict[str, Any]:
         """Build a step that uploads the `site/` directory as a Pages artifact.

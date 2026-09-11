@@ -9,7 +9,9 @@ from typing import Any
 import pytest
 from ruamel.yaml.comments import CommentedMap
 
+from pyrig.core.resources import resource_content
 from pyrig.core.subprocesses import Args
+from pyrig.rig import resources
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.base.yaml import YAML_DUMP
 from pyrig.rig.configs.version_control.remote.workflows.health_check import (
@@ -443,9 +445,14 @@ class TestWorkflowConfigFile:
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        result = my_test_workflow().checkout_action_sha()
-        assert isinstance(result, str)
-        assert result
+        workflow = my_test_workflow()
+        assert (
+            workflow.checkout_action_sha()
+            == resource_content(
+                "CHECKOUT_ACTION_SHA",
+                resources,
+            ).strip()
+        )
 
     def test_step_checkout_repository(
         self,
@@ -472,9 +479,14 @@ class TestWorkflowConfigFile:
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        result = my_test_workflow().setup_uv_action_sha()
-        assert isinstance(result, str)
-        assert result
+        workflow = my_test_workflow()
+        assert (
+            workflow.setup_uv_action_sha()
+            == resource_content(
+                "SETUP_UV_ACTION_SHA",
+                resources,
+            ).strip()
+        )
 
     def test_step_setup_package_manager(
         self,

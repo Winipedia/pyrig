@@ -1,5 +1,7 @@
 """module."""
 
+from pyrig.core.resources import resource_content
+from pyrig.rig import resources
 from pyrig.rig.configs.version_control.remote.configure import (
     ConfigureRepositoryConfigFile,
 )
@@ -78,9 +80,9 @@ class TestDeployWorkflowConfigFile:
 
     def test_configure_pages_action_sha(self) -> None:
         """Test method."""
-        result = DeployWorkflowConfigFile.I.configure_pages_action_sha()
-        assert isinstance(result, str)
-        assert result
+        assert DeployWorkflowConfigFile.I.configure_pages_action_sha() == (
+            resource_content("CONFIGURE_PAGES_ACTION_SHA", resources).strip()
+        )
 
     def test_step_configure_pages(self) -> None:
         """Test method."""
@@ -98,9 +100,9 @@ class TestDeployWorkflowConfigFile:
 
     def test_upload_pages_artifact_action_sha(self) -> None:
         """Test method."""
-        result = DeployWorkflowConfigFile.I.upload_pages_artifact_action_sha()
-        assert isinstance(result, str)
-        assert result
+        assert DeployWorkflowConfigFile.I.upload_pages_artifact_action_sha() == (
+            resource_content("UPLOAD_PAGES_ARTIFACT_ACTION_SHA", resources).strip()
+        )
 
     def test_step_upload_documentation(self) -> None:
         """Test method."""
@@ -119,9 +121,9 @@ class TestDeployWorkflowConfigFile:
 
     def test_deploy_pages_action_sha(self) -> None:
         """Test method."""
-        result = DeployWorkflowConfigFile.I.deploy_pages_action_sha()
-        assert isinstance(result, str)
-        assert result
+        assert DeployWorkflowConfigFile.I.deploy_pages_action_sha() == (
+            resource_content("DEPLOY_PAGES_ACTION_SHA", resources).strip()
+        )
 
     def test_step_deploy_documentation(self) -> None:
         """Test method."""
