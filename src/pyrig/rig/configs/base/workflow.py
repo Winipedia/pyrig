@@ -711,12 +711,12 @@ class WorkflowConfigFile(YMLDictConfigFile):
         ]
 
     def checkout_action(self) -> str:
-        """Return the `actions/checkout` action slug.
+        """Return the pinned `actions/checkout` action reference.
 
         Returns:
-            The `"actions/checkout"` action slug.
+            The `"actions/checkout@<sha>"` action reference.
         """
-        return "actions/checkout"
+        return f"actions/checkout@{self.checkout_action_sha()}"
 
     def checkout_action_sha(self) -> str:
         """Return the pinned commit SHA for `actions/checkout`.
@@ -740,17 +740,17 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.step(
             self.step_checkout_repository,
-            uses=f"{self.checkout_action()}@{self.checkout_action_sha()}",
+            uses=self.checkout_action(),
             with_={"persist-credentials": False},
         )
 
     def setup_uv_action(self) -> str:
-        """Return the `astral-sh/setup-uv` action slug.
+        """Return the pinned `astral-sh/setup-uv` action reference.
 
         Returns:
-            The `"astral-sh/setup-uv"` action slug.
+            The `"astral-sh/setup-uv@<sha>"` action reference.
         """
-        return "astral-sh/setup-uv"
+        return f"astral-sh/setup-uv@{self.setup_uv_action_sha()}"
 
     def setup_uv_action_sha(self) -> str:
         """Return the pinned commit SHA for `astral-sh/setup-uv`.
@@ -780,7 +780,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.step(
             self.step_setup_package_manager,
-            uses=f"{self.setup_uv_action()}@{self.setup_uv_action_sha()}",
+            uses=self.setup_uv_action(),
             with_={"python-version": python_version},
         )
 

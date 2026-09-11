@@ -433,9 +433,10 @@ class TestWorkflowConfigFile:
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        result = my_test_workflow().checkout_action()
-        assert isinstance(result, str)
-        assert result
+        workflow = my_test_workflow()
+        assert workflow.checkout_action() == (
+            f"actions/checkout@{workflow.checkout_action_sha()}"
+        )
 
     def test_checkout_action_sha(
         self,
@@ -454,17 +455,17 @@ class TestWorkflowConfigFile:
         workflow = my_test_workflow()
         result = workflow.step_checkout_repository()
         assert "uses" in result, "Expected 'uses' in step"
-        expected_uses = f"{workflow.checkout_action()}@{workflow.checkout_action_sha()}"
-        assert result["uses"] == expected_uses
+        assert result["uses"] == workflow.checkout_action()
 
     def test_setup_uv_action(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        result = my_test_workflow().setup_uv_action()
-        assert isinstance(result, str)
-        assert result
+        workflow = my_test_workflow()
+        assert workflow.setup_uv_action() == (
+            f"astral-sh/setup-uv@{workflow.setup_uv_action_sha()}"
+        )
 
     def test_setup_uv_action_sha(
         self,
@@ -483,8 +484,7 @@ class TestWorkflowConfigFile:
         workflow = my_test_workflow()
         result = workflow.step_setup_package_manager(python_version="3.14")
         assert "uses" in result, "Expected 'uses' in step"
-        expected_uses = f"{workflow.setup_uv_action()}@{workflow.setup_uv_action_sha()}"
-        assert result["uses"] == expected_uses
+        assert result["uses"] == workflow.setup_uv_action()
 
     def test_step_install_dependencies(
         self,

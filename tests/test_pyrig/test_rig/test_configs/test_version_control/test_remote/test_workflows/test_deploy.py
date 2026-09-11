@@ -71,9 +71,10 @@ class TestDeployWorkflowConfigFile:
 
     def test_configure_pages_action(self) -> None:
         """Test method."""
-        result = DeployWorkflowConfigFile.I.configure_pages_action()
-        assert isinstance(result, str)
-        assert result
+        workflow = DeployWorkflowConfigFile.I
+        assert workflow.configure_pages_action() == (
+            f"actions/configure-pages@{workflow.configure_pages_action_sha()}"
+        )
 
     def test_configure_pages_action_sha(self) -> None:
         """Test method."""
@@ -85,15 +86,15 @@ class TestDeployWorkflowConfigFile:
         """Test method."""
         result = DeployWorkflowConfigFile.I.step_configure_pages()
         assert "uses" in result, f"Expected 'uses' in step, got {result}"
-        action = DeployWorkflowConfigFile.I.configure_pages_action()
-        sha = DeployWorkflowConfigFile.I.configure_pages_action_sha()
-        assert result["uses"] == f"{action}@{sha}"
+        assert result["uses"] == DeployWorkflowConfigFile.I.configure_pages_action()
 
     def test_upload_pages_artifact_action(self) -> None:
         """Test method."""
-        result = DeployWorkflowConfigFile.I.upload_pages_artifact_action()
-        assert isinstance(result, str)
-        assert result
+        workflow = DeployWorkflowConfigFile.I
+        assert workflow.upload_pages_artifact_action() == (
+            "actions/upload-pages-artifact@"
+            f"{workflow.upload_pages_artifact_action_sha()}"
+        )
 
     def test_upload_pages_artifact_action_sha(self) -> None:
         """Test method."""
@@ -105,15 +106,16 @@ class TestDeployWorkflowConfigFile:
         """Test method."""
         result = DeployWorkflowConfigFile.I.step_upload_documentation()
         assert "uses" in result, f"Expected 'uses' in step, got {result}"
-        action = DeployWorkflowConfigFile.I.upload_pages_artifact_action()
-        sha = DeployWorkflowConfigFile.I.upload_pages_artifact_action_sha()
-        assert result["uses"] == f"{action}@{sha}"
+        assert result["uses"] == (
+            DeployWorkflowConfigFile.I.upload_pages_artifact_action()
+        )
 
     def test_deploy_pages_action(self) -> None:
         """Test method."""
-        result = DeployWorkflowConfigFile.I.deploy_pages_action()
-        assert isinstance(result, str)
-        assert result
+        workflow = DeployWorkflowConfigFile.I
+        assert workflow.deploy_pages_action() == (
+            f"actions/deploy-pages@{workflow.deploy_pages_action_sha()}"
+        )
 
     def test_deploy_pages_action_sha(self) -> None:
         """Test method."""
@@ -125,9 +127,7 @@ class TestDeployWorkflowConfigFile:
         """Test method."""
         result = DeployWorkflowConfigFile.I.step_deploy_documentation()
         assert "uses" in result, f"Expected 'uses' in step, got {result}"
-        action = DeployWorkflowConfigFile.I.deploy_pages_action()
-        sha = DeployWorkflowConfigFile.I.deploy_pages_action_sha()
-        assert result["uses"] == f"{action}@{sha}"
+        assert result["uses"] == DeployWorkflowConfigFile.I.deploy_pages_action()
 
     def test_concurrency_cancel_in_progress(self) -> None:
         """Test method."""
