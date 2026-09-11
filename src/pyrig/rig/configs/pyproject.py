@@ -14,7 +14,7 @@ from pyrig.core.iterate import deep_sorted_dict
 from pyrig.core.resources import (
     resource_content,
 )
-from pyrig.core.version import VersionConstraint, adjust_version_to_level
+from pyrig.core.version import VersionConstraint, leveled_version
 from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.toml import TOMLConfigFile
@@ -301,7 +301,7 @@ class PyprojectConfigFile(TOMLConfigFile):
         Returns:
             The highest allowed Python version at the requested precision level.
         """
-        return adjust_version_to_level(
+        return leveled_version(
             VersionConstraint(self.requires_python()).find_upper_inclusive(
                 default=self.latest_python_version(level=level),
             ),
@@ -336,15 +336,15 @@ class PyprojectConfigFile(TOMLConfigFile):
         Returns:
             Latest stable Python version at the requested precision level.
         """
-        return adjust_version_to_level(Version(self.latest_python_version_str()), level)
-
-    def latest_python_version_str(self) -> str:
-        """Return the latest known stable Python version as a string.
-
-        Returns:
-            Latest stable Python version as a string (e.g., `"3.14.4"`).
-        """
-        return resource_content("LATEST_PYTHON_VERSION", resources).strip()
+        return leveled_version(
+            Version(
+                resource_content(
+                    self.latest_python_version.__name__.upper(),
+                    resources,
+                ).strip(),
+            ),
+            level,
+        )
 
     def requires_python(self) -> str:
         """Read the requires-python constraint from `pyproject.toml`.
@@ -362,7 +362,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             .get(
                 "requires-python",
                 f">={
-                    adjust_version_to_level(
+                    leveled_version(
                         Version(platform.python_version()),
                         level='minor',
                     )

@@ -3,25 +3,25 @@
 import pytest
 from packaging.version import Version
 
-from pyrig.core.version import VersionConstraint, adjust_version_to_level
+from pyrig.core.version import VersionConstraint, leveled_version
 
 
-def test_adjust_version_to_level() -> None:
+def test_leveled_version() -> None:
     """Test method."""
     version = Version("3.8.1")
-    new_version = adjust_version_to_level(version, "major")
+    new_version = leveled_version(version, "major")
     expected = Version("3")
     assert new_version == expected
 
     assert str(new_version) == "3"
 
-    new_version = adjust_version_to_level(version, "minor")
+    new_version = leveled_version(version, "minor")
     expected = Version("3.8")
     assert new_version == expected
 
     assert str(new_version) == "3.8"
 
-    new_version = adjust_version_to_level(version, "micro")
+    new_version = leveled_version(version, "micro")
     expected = Version("3.8.1")
     assert new_version == expected
 

@@ -59,7 +59,11 @@ class TestPyprojectConfigFile:
         assert isinstance(latest_version, str)
         assert len(latest_version) > 0
         assert "." in latest_version
-        assert latest_version == PyprojectConfigFile.I.latest_python_version_str()
+        assert latest_version == str(
+            PyprojectConfigFile.I.latest_python_version(
+                level="micro",
+            ),
+        )
         assert Version(latest_version) == PyprojectConfigFile.I.latest_python_version(
             level="micro",
         )
@@ -282,16 +286,6 @@ class TestPyprojectConfigFile:
         latest_version = PyprojectConfigFile().latest_python_version()
         assert isinstance(latest_version, Version)
         assert latest_version > Version("3.13")
-
-    def test_latest_python_version_str(self) -> None:
-        """Test method."""
-        latest_version_str = PyprojectConfigFile.I.latest_python_version_str()
-        assert isinstance(latest_version_str, str)
-        assert len(latest_version_str) > 0
-        assert "." in latest_version_str
-        assert Version(
-            latest_version_str,
-        ) == PyprojectConfigFile.I.latest_python_version(level="micro")
 
     def test_tool_configs(self) -> None:
         """Test method."""

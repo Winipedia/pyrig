@@ -329,7 +329,7 @@ class VersionConstraint:
         return Version(str(default))
 
 
-def adjust_version_to_level(
+def leveled_version(
     version: Version,
     level: Literal["major", "minor", "micro"],
 ) -> Version:
