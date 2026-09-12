@@ -176,22 +176,14 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             run=str(PackageManager.I.run_args(*DocsBuilder.I.build_args())),
         )
 
-    def configure_pages_action(self) -> str:
-        """Return the pinned `actions/configure-pages` action reference.
-
-        Returns:
-            The `"actions/configure-pages@<sha>"` action reference.
-        """
-        return f"actions/configure-pages@{self.configure_pages_action_sha()}"
-
-    def configure_pages_action_sha(self) -> str:
+    def configure_pages_action_ref(self) -> str:
         """Return the pinned commit SHA for `actions/configure-pages`.
 
         Returns:
             Commit SHA `actions/configure-pages` is pinned to.
         """
         return resource_content(
-            self.configure_pages_action_sha.__name__.upper(),
+            self.configure_pages_action_ref.__name__.upper(),
             resources,
         ).strip()
 
@@ -203,26 +195,21 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.step(
             self.step_configure_pages,
-            uses=self.configure_pages_action(),
+            uses=(
+                "actions/configure-pages",
+                self.configure_pages_action_ref(),
+            ),
             with_={"enablement": "true", "token": self.insert_repo_token()},
         )
 
-    def deploy_pages_action(self) -> str:
-        """Return the pinned `actions/deploy-pages` action reference.
-
-        Returns:
-            The `"actions/deploy-pages@<sha>"` action reference.
-        """
-        return f"actions/deploy-pages@{self.deploy_pages_action_sha()}"
-
-    def deploy_pages_action_sha(self) -> str:
+    def deploy_pages_action_ref(self) -> str:
         """Return the pinned commit SHA for `actions/deploy-pages`.
 
         Returns:
             Commit SHA `actions/deploy-pages` is pinned to.
         """
         return resource_content(
-            self.deploy_pages_action_sha.__name__.upper(),
+            self.deploy_pages_action_ref.__name__.upper(),
             resources,
         ).strip()
 
@@ -237,27 +224,20 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.step(
             self.step_deploy_documentation,
-            uses=self.deploy_pages_action(),
+            uses=(
+                "actions/deploy-pages",
+                self.deploy_pages_action_ref(),
+            ),
         )
 
-    def upload_pages_artifact_action(self) -> str:
-        """Return the pinned `actions/upload-pages-artifact` action reference.
-
-        Returns:
-            The `"actions/upload-pages-artifact@<sha>"` action reference.
-        """
-        return (
-            f"actions/upload-pages-artifact@{self.upload_pages_artifact_action_sha()}"
-        )
-
-    def upload_pages_artifact_action_sha(self) -> str:
+    def upload_pages_artifact_action_ref(self) -> str:
         """Return the pinned commit SHA for `actions/upload-pages-artifact`.
 
         Returns:
             Commit SHA `actions/upload-pages-artifact` is pinned to.
         """
         return resource_content(
-            self.upload_pages_artifact_action_sha.__name__.upper(),
+            self.upload_pages_artifact_action_ref.__name__.upper(),
             resources,
         ).strip()
 
@@ -269,6 +249,9 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.step(
             self.step_upload_documentation,
-            uses=self.upload_pages_artifact_action(),
+            uses=(
+                "actions/upload-pages-artifact",
+                self.upload_pages_artifact_action_ref(),
+            ),
             with_={"path": DocsBuilder.I.site_dir().as_posix()},
         )

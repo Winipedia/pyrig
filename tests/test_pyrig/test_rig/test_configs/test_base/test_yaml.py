@@ -37,6 +37,10 @@ def my_test_yaml_config_file(
             """Get the stem."""
             return "test_yaml"
 
+        def empty_configs(self) -> dict[str, Any]:
+            """Get the empty config."""
+            return {}
+
         def _configs(self) -> dict[str, Any]:
             """Get the config."""
             return {"key": "value"}

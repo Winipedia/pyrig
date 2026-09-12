@@ -378,7 +378,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         *,
         run: str | None = None,
         if_condition: str | None = None,
-        uses: str | None = None,
+        uses: tuple[str, str] | None = None,
         with_: dict[str, Any] | None = None,
         env: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -390,8 +390,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
             run: Shell command to execute.
             if_condition: GitHub Actions conditional expression controlling
                 whether the step runs.
-            uses: GitHub Action reference to use (e.g.
-                `"actions/checkout@<sha>"`).
+            uses: GitHub Action tuple of `(action, default_ref)` (e.g.
+                `("actions/checkout", "<ref>")`).
             with_: Input parameters passed to the action.
             env: Step-level environment variables.
 
@@ -408,7 +408,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
         if run is not None:
             step["run"] = run
         if uses is not None:
-            step["uses"] = uses
+            action, ref = uses
+            step["uses"] = f"{action}@{self.action_ref(action, default=ref)}"
         if with_ is not None:
             step["with"] = with_
         if env is not None:
@@ -712,29 +713,46 @@ class WorkflowConfigFile(YMLDictConfigFile):
             self.step_setup_package_manager(python_version=python_version),
         ]
 
-    def checkout_action(self) -> str:
-        """Return the pinned `actions/checkout` action reference.
-
-        Returns:
-            The `"actions/checkout@<sha>"` action reference.
-        """
-        return f"actions/checkout@{self.checkout_action_sha()}"
-
-    def checkout_action_sha(self) -> str:
+    def checkout_action_ref(self) -> str:
         """Return the pinned commit SHA for `actions/checkout`.
 
         Returns:
             Commit SHA `actions/checkout` is pinned to.
         """
         return resource_content(
-            self.checkout_action_sha.__name__.upper(),
+            self.checkout_action_ref.__name__.upper(),
             resources,
         ).strip()
+
+    def action_ref(self, name: str, *, default: str) -> str:
+        """Return the ref for an action, preferring the existing ref in the file.
+
+        Looks for an existing step using `name` in the loaded workflow file. If
+        present, returns the currently configured ref; otherwise returns `default`.
+
+        Args:
+            name: The action name (e.g. `"actions/checkout"`).
+            default: The fallback ref to use when the action is not found in the file.
+
+        Returns:
+            The action ref string (commit SHA or version tag).
+        """
+        steps = (
+            step
+            for job in self.safe_load().get("jobs", {}).values()
+            for step in job.get("steps", [])
+        )
+        prefix = f"{name}@"
+        step = next(
+            (step for step in steps if step.get("uses", "").startswith(prefix)),
+            {"uses": f"{prefix}{default}"},
+        )
+        return step["uses"].removeprefix(prefix)
 
     def step_checkout_repository(self) -> dict[str, Any]:
         """Build a step that checks out the repository.
 
-        Uses `checkout_action()`, pinned to `checkout_action_sha()`, which
+        Uses `actions/checkout`, pinned to `checkout_action_ref()`, which
         authenticates with the automatic `GITHUB_TOKEN`. Credential
         persistence is disabled since no later step needs the checked-out
         git credentials. The containing job must grant at least
@@ -745,26 +763,21 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.step(
             self.step_checkout_repository,
-            uses=self.checkout_action(),
+            uses=(
+                "actions/checkout",
+                self.checkout_action_ref(),
+            ),
             with_={"persist-credentials": False},
         )
 
-    def setup_uv_action(self) -> str:
-        """Return the pinned `astral-sh/setup-uv` action reference.
-
-        Returns:
-            The `"astral-sh/setup-uv@<sha>"` action reference.
-        """
-        return f"astral-sh/setup-uv@{self.setup_uv_action_sha()}"
-
-    def setup_uv_action_sha(self) -> str:
+    def setup_uv_action_ref(self) -> str:
         """Return the pinned commit SHA for `astral-sh/setup-uv`.
 
         Returns:
             Commit SHA `astral-sh/setup-uv` is pinned to.
         """
         return resource_content(
-            self.setup_uv_action_sha.__name__.upper(),
+            self.setup_uv_action_ref.__name__.upper(),
             resources,
         ).strip()
 
@@ -775,7 +788,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     ) -> dict[str, Any]:
         """Build a step that installs uv and pins the Python version.
 
-        Uses `setup_uv_action()`, pinned to `setup_uv_action_sha()`, to
+        Uses `astral-sh/setup-uv`, pinned to `setup_uv_action_ref()`, to
         install uv on the runner and configure it to use the given Python
         version. All subsequent `uv run` and `uv sync` commands will use
         this version.
@@ -788,7 +801,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.step(
             self.step_setup_package_manager,
-            uses=self.setup_uv_action(),
+            uses=(
+                "astral-sh/setup-uv",
+                self.setup_uv_action_ref(),
+            ),
             with_={"python-version": python_version},
         )
 

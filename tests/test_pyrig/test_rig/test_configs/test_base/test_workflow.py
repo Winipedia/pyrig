@@ -361,7 +361,7 @@ class TestWorkflowConfigFile:
             self.test_step,
             run="echo test",
             if_condition="condition",
-            uses="action/checkout@v2",
+            uses=("action/checkout", "v2"),
             with_={"param": "value"},
             env={"ENV_VAR": "value"},
         )
@@ -430,26 +430,16 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().steps_core_setup()
         assert len(result) > 0
 
-    def test_checkout_action(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        workflow = my_test_workflow()
-        assert workflow.checkout_action() == (
-            f"actions/checkout@{workflow.checkout_action_sha()}"
-        )
-
-    def test_checkout_action_sha(
+    def test_checkout_action_ref(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         workflow = my_test_workflow()
         assert (
-            workflow.checkout_action_sha()
+            workflow.checkout_action_ref()
             == resource_content(
-                "CHECKOUT_ACTION_SHA",
+                "CHECKOUT_ACTION_REF",
                 resources,
             ).strip()
         )
@@ -462,28 +452,18 @@ class TestWorkflowConfigFile:
         workflow = my_test_workflow()
         result = workflow.step_checkout_repository()
         assert "uses" in result, "Expected 'uses' in step"
-        assert result["uses"] == workflow.checkout_action()
+        assert result["uses"] == f"actions/checkout@{workflow.checkout_action_ref()}"
 
-    def test_setup_uv_action(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        workflow = my_test_workflow()
-        assert workflow.setup_uv_action() == (
-            f"astral-sh/setup-uv@{workflow.setup_uv_action_sha()}"
-        )
-
-    def test_setup_uv_action_sha(
+    def test_setup_uv_action_ref(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         workflow = my_test_workflow()
         assert (
-            workflow.setup_uv_action_sha()
+            workflow.setup_uv_action_ref()
             == resource_content(
-                "SETUP_UV_ACTION_SHA",
+                "SETUP_UV_ACTION_REF",
                 resources,
             ).strip()
         )
@@ -496,7 +476,7 @@ class TestWorkflowConfigFile:
         workflow = my_test_workflow()
         result = workflow.step_setup_package_manager(python_version="3.14")
         assert "uses" in result, "Expected 'uses' in step"
-        assert result["uses"] == workflow.setup_uv_action()
+        assert result["uses"] == f"astral-sh/setup-uv@{workflow.setup_uv_action_ref()}"
 
     def test_step_install_dependencies(
         self,
@@ -756,3 +736,41 @@ class TestWorkflowConfigFile:
     def test_version_var(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         assert my_test_workflow().version_var() == "VERSION"
+
+    def test_action_ref(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        assert (
+            workflow.action_ref("actions/checkout", default="default-sha")
+            == "default-sha"
+        )
+
+        workflow.create_file()
+        custom_configs = {
+            "name": "Test",
+            "on": {},
+            "jobs": {
+                "test": {
+                    "runs-on": "ubuntu-latest",
+                    "steps": [
+                        {
+                            "name": "Checkout",
+                            "id": "checkout",
+                            "uses": "actions/checkout@custom-ref-123",
+                        },
+                    ],
+                },
+            },
+        }
+        workflow.dump(custom_configs)
+        assert (
+            workflow.action_ref("actions/checkout", default="default-sha")
+            == "custom-ref-123"
+        )
+        assert (
+            workflow.action_ref("astral-sh/setup-uv", default="default-uv")
+            == "default-uv"
+        )

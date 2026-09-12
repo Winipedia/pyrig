@@ -71,37 +71,25 @@ class TestDeployWorkflowConfigFile:
         result = DeployWorkflowConfigFile.I.step_build_documentation()
         assert "run" in result, f"Expected 'run' in step, got {result}"
 
-    def test_configure_pages_action(self) -> None:
+    def test_configure_pages_action_ref(self) -> None:
         """Test method."""
-        workflow = DeployWorkflowConfigFile.I
-        assert workflow.configure_pages_action() == (
-            f"actions/configure-pages@{workflow.configure_pages_action_sha()}"
-        )
-
-    def test_configure_pages_action_sha(self) -> None:
-        """Test method."""
-        assert DeployWorkflowConfigFile.I.configure_pages_action_sha() == (
-            resource_content("CONFIGURE_PAGES_ACTION_SHA", resources).strip()
+        assert DeployWorkflowConfigFile.I.configure_pages_action_ref() == (
+            resource_content("CONFIGURE_PAGES_ACTION_REF", resources).strip()
         )
 
     def test_step_configure_pages(self) -> None:
         """Test method."""
         result = DeployWorkflowConfigFile.I.step_configure_pages()
         assert "uses" in result, f"Expected 'uses' in step, got {result}"
-        assert result["uses"] == DeployWorkflowConfigFile.I.configure_pages_action()
-
-    def test_upload_pages_artifact_action(self) -> None:
-        """Test method."""
-        workflow = DeployWorkflowConfigFile.I
-        assert workflow.upload_pages_artifact_action() == (
-            "actions/upload-pages-artifact@"
-            f"{workflow.upload_pages_artifact_action_sha()}"
+        assert result["uses"] == (
+            "actions/configure-pages@"
+            f"{DeployWorkflowConfigFile.I.configure_pages_action_ref()}"
         )
 
-    def test_upload_pages_artifact_action_sha(self) -> None:
+    def test_upload_pages_artifact_action_ref(self) -> None:
         """Test method."""
-        assert DeployWorkflowConfigFile.I.upload_pages_artifact_action_sha() == (
-            resource_content("UPLOAD_PAGES_ARTIFACT_ACTION_SHA", resources).strip()
+        assert DeployWorkflowConfigFile.I.upload_pages_artifact_action_ref() == (
+            resource_content("UPLOAD_PAGES_ARTIFACT_ACTION_REF", resources).strip()
         )
 
     def test_step_upload_documentation(self) -> None:
@@ -109,27 +97,24 @@ class TestDeployWorkflowConfigFile:
         result = DeployWorkflowConfigFile.I.step_upload_documentation()
         assert "uses" in result, f"Expected 'uses' in step, got {result}"
         assert result["uses"] == (
-            DeployWorkflowConfigFile.I.upload_pages_artifact_action()
+            "actions/upload-pages-artifact@"
+            f"{DeployWorkflowConfigFile.I.upload_pages_artifact_action_ref()}"
         )
 
-    def test_deploy_pages_action(self) -> None:
+    def test_deploy_pages_action_ref(self) -> None:
         """Test method."""
-        workflow = DeployWorkflowConfigFile.I
-        assert workflow.deploy_pages_action() == (
-            f"actions/deploy-pages@{workflow.deploy_pages_action_sha()}"
-        )
-
-    def test_deploy_pages_action_sha(self) -> None:
-        """Test method."""
-        assert DeployWorkflowConfigFile.I.deploy_pages_action_sha() == (
-            resource_content("DEPLOY_PAGES_ACTION_SHA", resources).strip()
+        assert DeployWorkflowConfigFile.I.deploy_pages_action_ref() == (
+            resource_content("DEPLOY_PAGES_ACTION_REF", resources).strip()
         )
 
     def test_step_deploy_documentation(self) -> None:
         """Test method."""
         result = DeployWorkflowConfigFile.I.step_deploy_documentation()
         assert "uses" in result, f"Expected 'uses' in step, got {result}"
-        assert result["uses"] == DeployWorkflowConfigFile.I.deploy_pages_action()
+        assert result["uses"] == (
+            "actions/deploy-pages@"
+            f"{DeployWorkflowConfigFile.I.deploy_pages_action_ref()}"
+        )
 
     def test_concurrency_cancel_in_progress(self) -> None:
         """Test method."""

@@ -34,6 +34,14 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
     """
 
     @abstractmethod
+    def empty_configs(self) -> ConfigT:
+        """Return an empty configuration structure for this config file type.
+
+        Returns:
+            An empty configuration data structure, such as an empty dict or list.
+        """
+
+    @abstractmethod
     def _configs(self) -> ConfigT:
         """Return the minimum required configuration structure.
 
@@ -148,6 +156,15 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             Minimum required configuration as a dict or list.
         """
         return cls()._configs()  # noqa: SLF001
+
+    def safe_load(self) -> ConfigT:
+        """Load the file contents if the file exists, or an empty configuration.
+
+        Returns:
+            Parsed file contents from `load()`, or the result of `empty_configs()`
+            if the file does not exist on disk.
+        """
+        return self.load() if self.path().exists() else self.empty_configs()
 
     @classmethod
     @cache
@@ -351,6 +368,14 @@ class ListConfigFile(ConfigFile[list[str]]):
     with a concretely typed list instead of the generic base type.
     """
 
+    def empty_configs(self) -> list[str]:
+        """Return an empty list.
+
+        Returns:
+            An empty list of strings.
+        """
+        return []
+
 
 class DictConfigFile(ConfigFile[dict[str, Any]]):
     """Abstract base for config files whose content is a dict.
@@ -358,6 +383,14 @@ class DictConfigFile(ConfigFile[dict[str, Any]]):
     Binds the `ConfigT` type parameter to `dict[str, Any]`, so subclasses
     work with a concretely typed dict instead of the generic base type.
     """
+
+    def empty_configs(self) -> dict[str, Any]:
+        """Return an empty dictionary.
+
+        Returns:
+            An empty dictionary.
+        """
+        return {}
 
 
 class Priority:
