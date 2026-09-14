@@ -123,8 +123,12 @@ class TestMirrorTestConfigFile:
         """Test method."""
         with chdir(tmp_path):
             config = my_test_mirror_test_config_file()
+            assert not config.path().exists()
+            assert config.validate() is False
+            assert config.path().exists()
 
-            config.validate()
+            assert config.validate() is True
+
             assert (
                 my_test_mirror_test_config_file().module().__name__
                 == TESTS_MIRROR_MODULE_NAME
