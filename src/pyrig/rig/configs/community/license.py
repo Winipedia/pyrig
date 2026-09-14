@@ -69,7 +69,7 @@ class LicenseConfigFile(StringConfigFile):
                 re.compile(r"Copyright \(c\) (\d{4})"),
                 self.read_content(),
             ),
-            exceptions=(FileNotFoundError, LookupError),
+            exceptions=(LookupError,),
             default=str(datetime.now(tz=UTC).astimezone().year),
         )
         return (

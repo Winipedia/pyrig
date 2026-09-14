@@ -98,7 +98,7 @@ class TestLicenseConfigFile:
         # it on the very first `validate()` call -> also falls back to the
         # current year rather than failing to find a year to read
         with chdir(tmp_path):
-            LicenseConfigFile.I.path().touch()
+            assert not LicenseConfigFile.I.path().exists()
             LicenseConfigFile.load.cache_clear()
             mit_license = LicenseConfigFile.I.license()
             LicenseConfigFile.load.cache_clear()
