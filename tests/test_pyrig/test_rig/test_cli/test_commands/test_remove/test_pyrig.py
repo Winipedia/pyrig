@@ -36,7 +36,9 @@ def test_remove_pyrig_hooks(tmp_path: Path, mocker: MockerFixture) -> None:
         VersionControlHookManager.install_args.__name__,
     )
     with chdir(tmp_path):
-        VersionControlHookManagerConfigFile.I.validate()
+        VersionControlHookManagerConfigFile.I.dump(
+            VersionControlHookManagerConfigFile.I.configs(),
+        )
         file_content = VersionControlHookManagerConfigFile.I.path().read_text()
         assert "pyrig sync" in file_content
 
