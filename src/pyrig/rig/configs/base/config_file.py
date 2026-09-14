@@ -196,9 +196,11 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             RuntimeError: If the file is still not correct after merging in
                 the required configuration.
         """
-        config_files = validate_config_files(self.leaf_dependencies())
-        if self.exists_correct():
-            return not config_files
+        if (
+            not validate_config_files(self.leaf_dependencies())
+            and self.exists_correct()
+        ):
+            return True
 
         self.dump(self.merge_configs())
 
