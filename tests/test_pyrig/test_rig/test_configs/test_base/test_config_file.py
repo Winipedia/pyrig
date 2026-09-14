@@ -10,6 +10,7 @@ from pyrig_env.rig.configs.env import EnvConfigFile
 from pytest_mock import MockerFixture
 
 from pyrig.rig import configs
+from pyrig.rig.configs.base import config_file
 from pyrig.rig.configs.base.config_file import (
     ConfigFile,
     DictConfigFile,
@@ -254,6 +255,30 @@ class TestConfigFile:
             match=r"failed to validate .*",
         ):
             my_test_config_file().validate()
+
+    def test_validate_reflects_dependency_changes(
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+        mocker: MockerFixture,
+    ) -> None:
+        """Test method."""
+        # the file itself is already correct, so only whether a dependency
+        # needed validation should decide validate()'s return value
+        my_test_config_file().dump(my_test_config_file().configs())
+        assert my_test_config_file().exists_correct()
+
+        validate_deps_mock = mocker.patch.object(
+            config_file,
+            validate_config_files.__name__,
+            return_value=(),
+        )
+        assert my_test_config_file().validate() is True
+        validate_deps_mock.assert_called_once()
+
+        validate_deps_mock.return_value = (my_test_config_file,)
+        assert my_test_config_file().validate() is False
+
+        assert validate_deps_mock.call_count == 2  # noqa: PLR2004
 
     def test_path(
         self,

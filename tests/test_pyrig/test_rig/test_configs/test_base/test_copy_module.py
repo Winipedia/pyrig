@@ -15,8 +15,6 @@ from pyrig.rig.configs.base.copy_module import (
     CopyModuleDocstringConfigFile,
 )
 from pyrig.rig.configs.base.python import PythonPackageConfigFile
-from pyrig.rig.configs.community.license import LicenseConfigFile
-from pyrig.rig.tools.version_control.controller import VersionController
 
 
 @pytest.fixture
@@ -215,9 +213,6 @@ class TestCopyModuleDocstringConfigFile:
         tmp_path: Path,
     ) -> None:
         """Test method."""
-        assert VersionController.I.repo_owner()
-        assert VersionController.I.has_commits()
         with chdir(tmp_path):
-            LicenseConfigFile.I.validate()
             my_test_copy_module_only_docstring_config_file().validate()
             assert my_test_copy_module_only_docstring_config_file().is_correct()
