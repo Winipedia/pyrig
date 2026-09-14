@@ -92,7 +92,7 @@ class TestTool:
     def test_subclasses_dev_dependencies(self) -> None:
         """Test method."""
         deps = Tool.subclasses_dev_dependencies()
-        toml_deps = PyprojectConfigFile.I.dev_dependencies()
+        toml_deps = PyprojectConfigFile.I.project_dev_dependencies()
         toml_deps_no_versions = tuple(dep.split(">=")[0] for dep in toml_deps)
 
         assert set(deps).issubset(set(toml_deps_no_versions))

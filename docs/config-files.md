@@ -111,9 +111,9 @@ discovered and validated automatically by `pyrig sync` — no registration neede
 
 ### Optional Overrides
 
-- **`priority()`** — Validation order. Higher values run first. Use
-  `Priority.increase()` / `Priority.decrease()` relative to another file's
-  priority, or return any `int` or `float`.
+- **`dependencies()`** — Declare config files that must be validated
+  before this one. Return the direct dependencies; each dependency validates
+  its own requirements first.
 - **`version_control_ignored()`** — Set to `True` for files that should not be
   committed (e.g. `.scratch.py`). These are also validated by `pyrig sync`.
 - **`removable()`** — Set to `False` for files that must survive `pyrig init`'s

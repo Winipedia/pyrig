@@ -759,7 +759,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         `contents: read` through `permission_contents()`.
 
         Returns:
-            Step using `actions/checkout@<sha>`.
+            Step using `actions/checkout@<ref>`.
         """
         return self.step(
             self.step_checkout_repository,
@@ -797,7 +797,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             python_version: Python version string to pin, e.g. `"3.13"`.
 
         Returns:
-            Step using `astral-sh/setup-uv@<sha>`.
+            Step using `astral-sh/setup-uv@<ref>`.
         """
         return self.step(
             self.step_setup_package_manager,

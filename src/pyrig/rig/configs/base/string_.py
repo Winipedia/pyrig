@@ -80,7 +80,7 @@ class StringConfigFile(ListConfigFile):
 
     def read_content(self) -> str:
         """Return the current file content as a single joined string."""
-        return self.join_lines(self.load())
+        return self.join_lines(self.safe_load())
 
     def write_content(self, content: str) -> None:
         """Write the given content string to the file, replacing existing content."""

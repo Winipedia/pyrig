@@ -9,15 +9,10 @@ import requests
 from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.community.license import LicenseConfigFile
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
 class TestLicenseConfigFile:
     """Test class."""
-
-    def test_priority(self) -> None:
-        """Test method."""
-        assert LicenseConfigFile.I.priority() > PyprojectConfigFile.I.priority()
 
     def test_spdx_identifier(self, mocker: MockerFixture) -> None:
         """Test method."""

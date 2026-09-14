@@ -20,9 +20,7 @@ from pyrig.core.strings import (
     make_linked_badge_markdown,
 )
 from pyrig.rig import resources
-from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.string_ import StringConfigFile
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote.controller import (
@@ -59,15 +57,6 @@ class LicenseConfigFile(StringConfigFile):
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
         return Path()
-
-    def priority(self) -> float:
-        """Return a priority one step above `PyprojectConfigFile`'s.
-
-        Ensures this file is validated before `PyprojectConfigFile`
-        as it relies on `spdx_identifier()`, which reads the content
-        of the LICENSE file on disk.
-        """
-        return Priority.increase(PyprojectConfigFile.I.priority())
 
     def stem(self) -> str:
         """Return `'LICENSE'`."""

@@ -3,7 +3,7 @@
 import os
 import re
 import shutil
-from contextlib import chdir, suppress
+from contextlib import chdir
 from pathlib import Path
 
 import pytest
@@ -14,6 +14,9 @@ from pytest_mock import MockerFixture
 from pyrig.rig.cli.commands.init_project import init_project
 from pyrig.rig.cli.subcommands import init
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.configs.version_control.ignore import (
+    VersionControllerIgnoreConfigFile,
+)
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.testing.project import ProjectTester
@@ -30,7 +33,7 @@ def test_init_project_calls_pyrigger(mocker: MockerFixture) -> None:
     pyrigger_init_project_mock.assert_called_once()
 
 
-def test_init_project(  # noqa: PLR0915
+def test_init_project(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -48,16 +51,18 @@ def test_init_project(  # noqa: PLR0915
     # copy the pyrig package to tmp_path/pyrig with shutil
     project_name = "src-project"
 
+    ignore_patterns = [
+        line.strip().strip("/")
+        for line in VersionControllerIgnoreConfigFile.I.load()
+        if line.strip() and not line.startswith("#")
+    ]
     pyrig_tmp_path = tmp_path / PackageManager.I.project_name()
     shutil.copytree(
         Path(),
         pyrig_tmp_path,
+        ignore=shutil.ignore_patterns(*ignore_patterns, ".git"),
     )
     with chdir(pyrig_tmp_path):
-        # remove a potential dist dir from a previous build
-        dist_dir = pyrig_tmp_path / "dist"
-        with suppress(FileNotFoundError):
-            shutil.rmtree(dist_dir)
         # build the package
         args = PackageManager.I.build_args()
         args.run()
@@ -96,8 +101,7 @@ def test_init_project(  # noqa: PLR0915
         ).run()
         VersionController.I.config_args("--local", "user.name", "Test User").run()
 
-        args = PackageManager.I.args("init", "--python", python_version)
-        args.run()
+        PackageManager.I.args("init", "--python", python_version).run()
 
         # add plugins
         PackageManager.I.add_group_dev_args(wheel_path).run()

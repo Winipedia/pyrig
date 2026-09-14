@@ -2,7 +2,6 @@
 
 import pyrig
 from pyrig.rig.configs.package_init import PackageInitConfigFile
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
 class TestPackageInitConfigFile:
@@ -17,7 +16,3 @@ class TestPackageInitConfigFile:
         # it is generic and not pyrig specific
         docstring = module.__doc__
         assert docstring == """The top-level package for the project."""
-
-    def test_priority(self) -> None:
-        """Test method."""
-        assert PackageInitConfigFile.I.priority() > PyprojectConfigFile.I.priority()

@@ -14,8 +14,10 @@ from pyrig.rig.configs.base.config_file import (
     ConfigFile,
     DictConfigFile,
     ListConfigFile,
-    Priority,
+    validate_config_files,
 )
+from pyrig.rig.configs.community.license import LicenseConfigFile
+from pyrig.rig.configs.package_init import PackageInitConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.readme import ReadmeConfigFile
 from pyrig.rig.configs.scratch import ScratchConfigFile
@@ -108,14 +110,6 @@ class TestConfigFile:
             EnvConfigFile,
         }
 
-    def test_sort_key(
-        self,
-        my_test_config_file: type[ConfigFile[dict[str, Any]]],
-    ) -> None:
-        """Test method."""
-        result = my_test_config_file.sort_key()
-        assert isinstance(result, (float, int))
-
     def test_configs(
         self,
         my_test_config_file: type[ConfigFile[dict[str, Any]]],
@@ -167,27 +161,6 @@ class TestConfigFile:
         # dump and assert cache is cleared
         my_test_config_file().dump({"key": "new_value"})
         assert my_test_config_file().load()["key"] == "new_value"
-
-    def test_priority(
-        self,
-        my_test_config_file: type[ConfigFile[dict[str, Any]]],
-    ) -> None:
-        """Test method."""
-        assert my_test_config_file().priority() == 0
-
-    def test_validate_subclasses(
-        self,
-        mocker: MockerFixture,
-        my_test_config_file: type[ConfigFile[dict[str, Any]]],
-    ) -> None:
-        """Test method."""
-        mock = mocker.patch.object(
-            my_test_config_file,
-            my_test_config_file.validate.__name__,
-            return_value=None,
-        )
-        my_test_config_file.validate_subclasses([my_test_config_file])
-        mock.assert_called_once()
 
     def test_extension_separator(
         self,
@@ -304,6 +277,7 @@ class TestConfigFile:
     ) -> None:
         """Test method."""
         # same test as in init test
+        my_test_config_file().create_file()
         expected: dict[str, Any] = {
             "key0": "value0",
             "key1": "value1",
@@ -365,17 +339,34 @@ class TestConfigFile:
         cf.dump(cf.configs())
         assert cf.safe_load() == cf.configs()
 
-
-class TestPriority:
-    """Test class."""
-
-    def test_increase(self) -> None:
+    def test_leaf_dependencies(self) -> None:
         """Test method."""
-        assert Priority.increase(Priority.DEFAULT) == Priority.DEFAULT + Priority.STEP
+        dependencies = tuple(PyprojectConfigFile.I.dependencies())
+        assert tuple(PyprojectConfigFile.I.leaf_dependencies()) == tuple(
+            dependency.L for dependency in dependencies
+        )
+        assert len(dependencies) > 0
+        assert tuple(LicenseConfigFile.I.leaf_dependencies()) == ()
 
-    def test_decrease(self) -> None:
+    def test_dependencies(self) -> None:
         """Test method."""
-        assert Priority.decrease(Priority.DEFAULT) == Priority.DEFAULT - Priority.STEP
+        assert tuple(PyprojectConfigFile.I.dependencies()) == (
+            ReadmeConfigFile,
+            LicenseConfigFile,
+            PackageInitConfigFile,
+        )
+        assert LicenseConfigFile.I.dependencies() == ()
+
+    def test_exists_correct(
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test method."""
+        config = my_test_config_file()
+        assert not config.exists_correct()
+
+        config.dump(config.configs())
+        assert config.exists_correct()
 
 
 class TestListConfigFile:
@@ -432,3 +423,12 @@ class TestDictConfigFile:
                 return {}
 
         assert MyDictConfigFile().empty_configs() == {}
+
+
+def test_validate_config_files(
+    my_test_config_file: type[ConfigFile[dict[str, Any]]],
+) -> None:
+    """Test function."""
+    changed = validate_config_files((my_test_config_file,))
+    assert changed == (my_test_config_file,)
+    assert my_test_config_file().exists_correct()

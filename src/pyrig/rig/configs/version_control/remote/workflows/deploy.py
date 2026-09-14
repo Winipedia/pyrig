@@ -220,7 +220,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         permissions.
 
         Returns:
-            Step using `actions/deploy-pages@<sha>`.
+            Step using `actions/deploy-pages@<ref>`.
         """
         return self.step(
             self.step_deploy_documentation,
@@ -245,7 +245,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """Build a step that uploads the `site/` directory as a Pages artifact.
 
         Returns:
-            Step using `actions/upload-pages-artifact@<sha>`.
+            Step using `actions/upload-pages-artifact@<ref>`.
         """
         return self.step(
             self.step_upload_documentation,

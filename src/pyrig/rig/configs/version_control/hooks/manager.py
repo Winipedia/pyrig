@@ -5,10 +5,13 @@ at various git stages.
 """
 
 from collections import defaultdict
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
+from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.toml import TOMLConfigFile
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.base.hooks import VersionControlHookTool
 from pyrig.rig.tools.version_control.hooks.manager import (
     VersionControlHookManager,
@@ -22,6 +25,18 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
     under (`"local"` by default), each holding the hooks assigned to it, so
     that together they cover the full code-quality pipeline.
     """
+
+    def dependencies(self) -> Iterable[type[ConfigFile[Any]]]:
+        """Return `(PyprojectConfigFile,)`.
+
+        `prek` must already be installed by the time `_dump` runs `prek
+        install`, which only happens once `PyprojectConfigFile` has added and
+        installed every tool's dev dependencies.
+
+        Returns:
+            Direct `ConfigFile` dependencies for this file.
+        """
+        return (*super().dependencies(), PyprojectConfigFile)
 
     def _dump(self, configs: dict[str, Any]) -> None:
         """Dump the `prek.toml` structure to disk and install the hooks."""

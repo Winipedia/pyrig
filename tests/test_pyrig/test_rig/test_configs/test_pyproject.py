@@ -15,7 +15,7 @@ from pyrig_runtime.core.dependencies.distribution import (
 from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.community.license import LicenseConfigFile
-from pyrig.rig.configs.docs.builder import DocsBuilderConfigFile
+from pyrig.rig.configs.package_init import PackageInitConfigFile
 from pyrig.rig.configs.pyproject import (
     PyprojectConfigFile,
 )
@@ -72,12 +72,6 @@ class TestPyprojectConfigFile:
         """Test method."""
         assert PyprojectConfigFile.I.stem() == "pyproject"
 
-    def test_priority(self) -> None:
-        """Test method."""
-        assert PyprojectConfigFile.I.priority() < LicenseConfigFile.I.priority()
-        assert PyprojectConfigFile.I.priority() < ReadmeConfigFile.I.priority()
-        assert PyprojectConfigFile.I.priority() > DocsBuilderConfigFile.I.priority()
-
     def test_requires_python(self) -> None:
         """Test method."""
         requires_python = PyprojectConfigFile.I.requires_python()
@@ -120,13 +114,13 @@ class TestPyprojectConfigFile:
         assert "classifiers" not in configs["project"]
         assert "keywords" not in configs["project"]
 
-    def test_dependencies(self) -> None:
+    def test_project_dependencies(self) -> None:
         """Test method."""
         # dependencies may raise if dependencies key doesn't exist
         # This is expected behavior for the test config
         deps = [
             distribution_requirement_as_module_name(dep)
-            for dep in PyprojectConfigFile.I.dependencies()
+            for dep in PyprojectConfigFile.I.project_dependencies()
         ]
         assert deps == [
             "inquirerpy",
@@ -139,9 +133,9 @@ class TestPyprojectConfigFile:
             "typer",
         ]
 
-    def test_dev_dependencies(self) -> None:
+    def test_project_dev_dependencies(self) -> None:
         """Test method."""
-        dev_deps = PyprojectConfigFile.I.dev_dependencies()
+        dev_deps = PyprojectConfigFile.I.project_dev_dependencies()
         assert isinstance(dev_deps, list)
 
     def test_latest_possible_python_version(
@@ -376,10 +370,10 @@ class TestPyprojectConfigFile:
         # cache was cleared and the config re-dumped; since add_args/
         # add_group_dev_args are mocked (no real `uv add`), the file content
         # itself is unchanged and still reflects what was there before
-        assert my_test_pyproject_config_file().dependencies() == [
+        assert my_test_pyproject_config_file().project_dependencies() == [
             "existing-runtime-dep",
         ]
-        assert my_test_pyproject_config_file().dev_dependencies() == [
+        assert my_test_pyproject_config_file().project_dev_dependencies() == [
             "existing-dev-dep",
         ]
 
@@ -468,3 +462,11 @@ class TestPyprojectConfigFile:
         """Test method."""
         content = PyprojectConfigFile.I.path().read_text(encoding="utf-8")
         assert "tool.uv" not in content
+
+    def test_dependencies(self) -> None:
+        """Test method."""
+        assert tuple(PyprojectConfigFile.I.dependencies()) == (
+            ReadmeConfigFile,
+            LicenseConfigFile,
+            PackageInitConfigFile,
+        )

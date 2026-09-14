@@ -1,6 +1,7 @@
 """Generation and validation of the project's `pyproject.toml` file."""
 
 import platform
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Literal
 
@@ -16,8 +17,10 @@ from pyrig.core.resources import (
 )
 from pyrig.core.version import VersionConstraint, leveled_version
 from pyrig.rig import resources
-from pyrig.rig.configs.base.config_file import Priority
+from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.toml import TOMLConfigFile
+from pyrig.rig.configs.community.license import LicenseConfigFile
+from pyrig.rig.configs.package_init import PackageInitConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.dependencies.checker import DependencyChecker
 from pyrig.rig.tools.docs.builder import DocsBuilder
@@ -42,7 +45,7 @@ class PyprojectConfigFile(TOMLConfigFile):
     """
 
     def validate(self) -> bool:
-        """Validate the config file, then add any dependencies still missing.
+        """Validate the config file, then add missing project dependencies.
 
         Returns:
             `True` if the file was already correct and no dependency was
@@ -51,6 +54,23 @@ class PyprojectConfigFile(TOMLConfigFile):
         correct = super().validate()
         dependencies = self.add_additional_dependencies()
         return correct and not dependencies
+
+    def dependencies(
+        self,
+    ) -> Iterable[type[ConfigFile[Any]]]:
+        """Return config files required before validating `pyproject.toml`.
+
+        Returns:
+            Direct `ConfigFile` dependencies for this file.
+        """
+        from pyrig.rig.configs.readme import ReadmeConfigFile  # noqa: PLC0415
+
+        return (
+            *super().dependencies(),
+            ReadmeConfigFile,
+            LicenseConfigFile,
+            PackageInitConfigFile,
+        )
 
     def merge_configs(self) -> dict[str, Any]:
         """Merge the required configuration structure.
@@ -82,9 +102,6 @@ class PyprojectConfigFile(TOMLConfigFile):
         # pyproject.toml sometimes has info other config files need and vice versa.
         # to avoid local imports of PyprojectConfigFile spread across the project
         # we centralize local imports of the other config files here.
-        from pyrig.rig.configs.community.license import (  # noqa: PLC0415
-            LicenseConfigFile,
-        )
         from pyrig.rig.configs.readme import (  # noqa: PLC0415
             ReadmeConfigFile,
         )
@@ -185,13 +202,6 @@ class PyprojectConfigFile(TOMLConfigFile):
         """Return the project root directory."""
         return Path()
 
-    def priority(self) -> float:
-        """Return a priority one step above the default.
-
-        Ensures validation before all default-priority config files.
-        """
-        return Priority.increase(super().priority())
-
     def removable(self) -> bool:
         """Return `False` to prevent removal of the `pyproject.toml` file."""
         return False
@@ -201,20 +211,19 @@ class PyprojectConfigFile(TOMLConfigFile):
         return "pyproject"
 
     def add_additional_dependencies(self) -> tuple[str, ...]:
-        """Add whichever required runtime and dev dependencies are missing.
+        """Add missing runtime and development project dependencies.
 
-        Compares the project's dependencies against
-        `Pyrigger.I.runtime_dependencies()`, and its dev dependencies against
-        `Tool.subclasses_dev_dependencies()`. Anything missing is added via
-        the package manager, the environment is synced so the new packages
-        are actually installed, then the file is reloaded and re-dumped so
-        its formatting matches pyrig's conventions again.
+        Compares the project's runtime dependencies against
+        `Pyrigger.I.runtime_dependencies()` and its development dependencies
+        against `Tool.subclasses_dev_dependencies()`. Adds missing entries via
+        the package manager, synchronizes the environment, then reloads and
+        rewrites the file.
 
         Returns:
             The dependencies that were added, empty if none were missing.
         """
         current_dependencies = set(
-            map(distribution_requirement_as_module_name, self.dependencies()),
+            map(distribution_requirement_as_module_name, self.project_dependencies()),
         )
         dependencies = tuple(
             dependency
@@ -224,7 +233,10 @@ class PyprojectConfigFile(TOMLConfigFile):
         )
 
         current_dev_dependencies = set(
-            map(distribution_requirement_as_module_name, self.dev_dependencies()),
+            map(
+                distribution_requirement_as_module_name,
+                self.project_dev_dependencies(),
+            ),
         )
         dev_dependencies = tuple(
             dependency
@@ -243,23 +255,23 @@ class PyprojectConfigFile(TOMLConfigFile):
 
         return (*dependencies, *dev_dependencies)
 
-    def dependencies(self) -> list[str]:
-        """Read runtime dependencies from `pyproject.toml`.
+    def project_dependencies(self) -> list[str]:
+        """Read the project's runtime dependencies from `pyproject.toml`.
 
         Returns:
             List of dependency strings from `pyproject.toml`, or an empty list
             if absent.
         """
-        return self.load().get("project", {}).get("dependencies", [])
+        return self.safe_load().get("project", {}).get("dependencies", [])
 
-    def dev_dependencies(self) -> list[str]:
-        """Read development dependencies from `pyproject.toml`.
+    def project_dev_dependencies(self) -> list[str]:
+        """Read the project's development dependencies from `pyproject.toml`.
 
         Returns:
             List of dependency strings from `dependency-groups.dev`, or an empty
             list if that section is absent.
         """
-        return self.load().get("dependency-groups", {}).get("dev", [])
+        return self.safe_load().get("dependency-groups", {}).get("dev", [])
 
     def tool_section(self) -> dict[str, Any]:
         """Read the `tool` section from `pyproject.toml`.
@@ -268,7 +280,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             Dict of tool configurations from `pyproject.toml`, or an empty dict
             if that section is absent.
         """
-        return self.load().get("tool", {})
+        return self.safe_load().get("tool", {})
 
     def first_supported_python_version(self) -> Version:
         """Return the minimum Python version required by the project.
@@ -357,7 +369,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             PEP 440 version specifier string (e.g., `">=3.13"`).
         """
         return (
-            self.load()
+            self.safe_load()
             .get("project", {})
             .get(
                 "requires-python",
@@ -378,7 +390,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             scaffold value, `"Add your description here"`, if absent.
         """
         return (
-            self.load()
+            self.safe_load()
             .get("project", {})
             .get("description", "Add your description here")
         )
@@ -390,7 +402,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             Version string from `pyproject.toml`, or `"0.1.0"` if absent
             (matching uv's initial scaffold value).
         """
-        return self.load().get("project", {}).get("version", "0.1.0")
+        return self.safe_load().get("project", {}).get("version", "0.1.0")
 
     def maintainer_email(self) -> str:
         """Read the author's email from `pyproject.toml`.
@@ -400,5 +412,5 @@ class PyprojectConfigFile(TOMLConfigFile):
             email if absent.
         """
         return (
-            self.load().get("project", {}).get("authors", [{}])[0].get("email")
+            self.safe_load().get("project", {}).get("authors", [{}])[0].get("email")
         ) or VersionController.I.email()

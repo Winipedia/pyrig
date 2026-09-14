@@ -3,11 +3,12 @@
 from collections.abc import Iterable
 from importlib import import_module
 from pathlib import Path
+from typing import Any
 
 import typer
 
 from pyrig.core.introspection.paths import path_as_module_name
-from pyrig.rig.configs.base.config_file import ConfigFile
+from pyrig.rig.configs.base.config_file import ConfigFile, validate_config_files
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
 
@@ -27,13 +28,15 @@ def synchronize_project(files: Iterable[Path] | None) -> None:
         typer.Exit: With code 1 if any file was created or updated during
             the run.
     """
-    changed_configs = validate_config_files(files)
-    changed_tests = validate_test_files(files)
+    changed_configs = synchronize_config_files(files)
+    changed_tests = synchronize_test_files(files)
     if changed_configs or changed_tests:
         raise typer.Exit(code=1)
 
 
-def validate_config_files(files: Iterable[Path] | None) -> tuple[type[ConfigFile], ...]:
+def synchronize_config_files(
+    files: Iterable[Path] | None,
+) -> tuple[type[ConfigFile[Any]], ...]:
     """Validate pyrig-managed configuration files for the project.
 
     Args:
@@ -49,10 +52,10 @@ def validate_config_files(files: Iterable[Path] | None) -> tuple[type[ConfigFile
     if files is not None:
         files = set(files)
         subclasses = (cls for cls in subclasses if cls().path() in files)
-    return ConfigFile.validate_subclasses(subclasses)
+    return validate_config_files(subclasses)
 
 
-def validate_test_files(
+def synchronize_test_files(
     files: Iterable[Path] | None,
 ) -> tuple[type[MirrorTestConfigFile], ...]:
     """Validate mirror test files for the project.
@@ -87,4 +90,4 @@ def validate_test_files(
     subclasses = (
         MirrorTestConfigFile.L.generate_subclass(module) for module in modules
     )
-    return MirrorTestConfigFile.L.validate_subclasses(subclasses)
+    return validate_config_files(subclasses)

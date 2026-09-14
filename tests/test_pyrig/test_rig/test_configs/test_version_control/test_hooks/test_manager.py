@@ -5,6 +5,7 @@ from pathlib import Path
 
 from pytest_mock import MockerFixture
 
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.version_control.hooks.manager import (
     VersionControlHookManagerConfigFile,
 )
@@ -13,6 +14,12 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 
 class TestVersionControlHookManagerConfigFile:
     """Test class."""
+
+    def test_dependencies(self) -> None:
+        """Test method."""
+        assert tuple(VersionControlHookManagerConfigFile.I.dependencies()) == (
+            PyprojectConfigFile,
+        )
 
     def test_hook_types(self) -> None:
         """Test method."""
@@ -87,12 +94,19 @@ class TestVersionControlHookManagerConfigFile:
                 return_value=mocker.Mock(run=lambda: True),
             )
             VersionControlHookManagerConfigFile.I._dump({})  # noqa: SLF001
+
             mock_hook_install.assert_called_once()
 
+            mock_pyproject_validate = mocker.patch.object(
+                PyprojectConfigFile,
+                PyprojectConfigFile.validate.__name__,
+            )
             VersionControlHookManagerConfigFile.I.validate()
+            mock_pyproject_validate.assert_called_once()
             assert mock_hook_install.call_count == 2  # noqa: PLR2004
 
             VersionControlHookManagerConfigFile.I.validate()
+            assert mock_pyproject_validate.call_count == 2  # noqa: PLR2004
             assert mock_hook_install.call_count == 2  # noqa: PLR2004
 
     def test_repositories(self) -> None:

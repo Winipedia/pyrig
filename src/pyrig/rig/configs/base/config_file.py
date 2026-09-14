@@ -1,8 +1,4 @@
-"""Declarative load, merge, validate, and dump lifecycle for configuration files.
-
-Also defines the relative-priority system that controls the order in which
-config files are validated.
-"""
+"""Declarative load, merge, validate, and dump lifecycle for configuration files."""
 
 from abc import abstractmethod
 from collections.abc import Hashable, Iterable, Iterator
@@ -28,6 +24,8 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
     files across a project. Subclasses declare the required structure and the
     system ensures that structure is present on disk, merging missing or
     mismatched values while preserving any extra keys or items the user has added.
+    A config file can declare other config files that must be validated before
+    it; those dependencies are validated recursively.
 
     The type parameter `ConfigT` is the configuration data type, either
     `dict[str, Any]` or `list[Any]`.
@@ -136,16 +134,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         return cls().path()
 
     @classmethod
-    def sort_key(cls) -> float:
-        """Return a sort key that places higher-priority subclasses first.
-
-        Returns:
-            Negative of the subclass priority value, so ascending sort
-            orders higher-priority subclasses first.
-        """
-        return -cls().priority()
-
-    @classmethod
     @cache
     def configs(cls) -> ConfigT:
         """Return the required configuration structure.
@@ -190,33 +178,13 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         """
         return (cf for cf in cls.concrete_leaves() if cf().version_control_ignored())
 
-    @classmethod
-    def validate_subclasses(
-        cls,
-        subclasses: Iterable[type[Self]],
-    ) -> tuple[type[Self], ...]:
-        """Validate a specific collection of `ConfigFile` subclasses.
-
-        Sorts the given subclasses by priority (higher priority first) and
-        validates each one in order.
-
-        Args:
-            subclasses: `ConfigFile` subclasses to validate.
-
-        Returns:
-            Tuple of subclasses that were created or updated.
-            Empty if all were already correct.
-        """
-        return tuple(
-            cf for cf in cls.sorted_subclasses(subclasses) if not cf().validate()
-        )
-
     def validate(self) -> bool:
         """Validate the config file, creating or updating it as needed.
 
-        Creates the file if it is missing, or merges in any required values
-        it is missing, leaving an already-correct file untouched. Idempotent
-        and safe to call repeatedly.
+        Validates this file's declared dependencies first. Creates the file if
+        it is missing, or merges in any required values it is missing, leaving
+        an already-correct file untouched. Idempotent and safe to call
+        repeatedly.
 
         Returns:
             `True` if the file was already correct and required no changes;
@@ -226,22 +194,42 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             RuntimeError: If the file is still not correct after merging in
                 the required configuration.
         """
-        path = self.path()
-        if not path.exists():
-            self.create_file()
-            self.dump(self.configs())
-            return False
-
-        if self.is_correct():
+        validate_config_files(self.leaf_dependencies())
+        if self.exists_correct():
             return True
 
-        config = self.merge_configs()
-        self.dump(config)
+        self.dump(self.merge_configs())
 
-        if not self.is_correct():
+        if not self.exists_correct():
             msg = f"""failed to validate {self}"""
             raise RuntimeError(msg)
         return False
+
+    def leaf_dependencies(
+        self,
+    ) -> Iterator[type["ConfigFile[Any]"]]:
+        """Yield the leaf classes for this file's config dependencies.
+
+        Dependencies are returned in the order declared by `dependencies()`.
+
+        Yields:
+            Leaf `ConfigFile` subclasses that must be validated before this
+            one.
+        """
+        return (cf.L for cf in self.dependencies())
+
+    def dependencies(
+        self,
+    ) -> Iterable[type["ConfigFile[Any]"]]:
+        """Return config file classes that this file directly depends on.
+
+        Each returned class is validated before this file. Dependencies may
+        themselves declare further dependencies.
+
+        Returns:
+            Direct `ConfigFile` dependencies to validate before this one.
+        """
+        return ()
 
     def create_file(self) -> None:
         """Ensure the config file exists, creating any missing parent directories.
@@ -281,9 +269,19 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         Args:
             configs: Configuration data to write.
         """
+        if not self.path().exists():
+            self.create_file()
         self._dump(configs)
         self.load.cache_clear()
         typer.echo(f"Updated {self}")
+
+    def exists_correct(self) -> bool:
+        """Return whether the config file exists and is correct.
+
+        Returns:
+            `True` if the file exists and passes validation; `False` otherwise.
+        """
+        return self.path().exists() and self.is_correct()
 
     def is_correct(self) -> bool:
         """Return whether the config file passes validation.
@@ -314,20 +312,8 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         """
         return merge_structures(
             subset=self.configs(),
-            superset=self.load(),
+            superset=self.safe_load(),
         )
-
-    def priority(self) -> float:
-        """Return the validation priority for this config file.
-
-        Higher values cause the file to be validated earlier relative to others.
-        Defaults to `Priority.DEFAULT`; override in subclasses that must be
-        validated earlier or later than the default.
-
-        Returns:
-            Validation priority as a float.
-        """
-        return Priority.DEFAULT
 
     def version_control_ignored(self) -> bool:
         """Return whether this config file is excluded from version control.
@@ -393,42 +379,19 @@ class DictConfigFile(ConfigFile[dict[str, Any]]):
         return {}
 
 
-class Priority:
-    """Helpers for controlling config file validation order.
+def validate_config_files[T: ConfigFile[Any]](
+    subclasses: Iterable[type[T]],
+) -> tuple[type[T], ...]:
+    """Validate a specific collection of `ConfigFile` subclasses.
 
-    A config file's `priority()` is a float; higher values are validated
-    earlier. `DEFAULT` is the baseline used by most files. Rather than
-    hard-coding absolute values, use `increase()` / `decrease()` to
-    position a config file one `STEP` before or after another file's priority.
+    Validates each supplied subclass in iteration order. Each subclass also
+    validates its own declared dependencies before validating itself.
 
-    Attributes:
-        STEP: Spacing between adjacent priority levels.
-        DEFAULT: Baseline priority used by most config files.
+    Args:
+        subclasses: `ConfigFile` subclasses to validate.
+
+    Returns:
+        Tuple of subclasses that were created or updated.
+        Empty if all were already correct.
     """
-
-    STEP = 10
-    DEFAULT = 0
-
-    @classmethod
-    def decrease(cls, priority: float) -> float:
-        """Return a priority one `STEP` lower, so it is validated later.
-
-        Args:
-            priority: The base priority to lower.
-
-        Returns:
-            `priority` decreased by one `STEP`.
-        """
-        return priority - cls.STEP
-
-    @classmethod
-    def increase(cls, priority: float) -> float:
-        """Return a priority one `STEP` higher, so it is validated earlier.
-
-        Args:
-            priority: The base priority to raise.
-
-        Returns:
-            `priority` increased by one `STEP`.
-        """
-        return priority + cls.STEP
+    return tuple(cf for cf in subclasses if not cf().validate())
