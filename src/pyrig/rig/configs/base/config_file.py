@@ -181,22 +181,24 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
     def validate(self) -> bool:
         """Validate the config file, creating or updating it as needed.
 
-        Validates this file's declared dependencies first. Creates the file if
-        it is missing, or merges in any required values it is missing, leaving
-        an already-correct file untouched. Idempotent and safe to call
-        repeatedly.
+        Validates this file's declared dependencies first.
+        The validation process checks if the file exists and is correct.
+        If it is not it then merges the required configuration into the file.
+        File creation happens only before dumping the configuration to disk
+        and not before the configs are collected.
 
         Returns:
-            `True` if the file was already correct and required no changes;
-            `False` if it was created or updated.
+            `True` if the file was already correct and none of its
+            dependencies needed validation; `False` if it, or one of its
+            dependencies, was created or updated.
 
         Raises:
             RuntimeError: If the file is still not correct after merging in
                 the required configuration.
         """
-        validate_config_files(self.leaf_dependencies())
+        config_files = validate_config_files(self.leaf_dependencies())
         if self.exists_correct():
-            return True
+            return not config_files
 
         self.dump(self.merge_configs())
 
@@ -391,7 +393,7 @@ def validate_config_files[T: ConfigFile[Any]](
         subclasses: `ConfigFile` subclasses to validate.
 
     Returns:
-        Tuple of subclasses that were created or updated.
-        Empty if all were already correct.
+        Tuple of subclasses that were created or updated, or that have a
+        dependency that was. Empty if all were already correct.
     """
     return tuple(cf for cf in subclasses if not cf().validate())

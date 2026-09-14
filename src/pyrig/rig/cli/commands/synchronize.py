@@ -45,8 +45,8 @@ def synchronize_config_files(
             If None, all config files are validated.
 
     Returns:
-        A tuple of ConfigFile subclasses that were created or updated. Empty
-        if all were already correct.
+        A tuple of ConfigFile subclasses that were created or updated, or
+        that have a dependency that was. Empty if all were already correct.
     """
     subclasses = ConfigFile.concrete_leaves()
     if files is not None:
@@ -68,7 +68,8 @@ def synchronize_test_files(
 
     Returns:
         A tuple of MirrorTestConfigFile subclasses that were created or
-        updated. Empty if all were already correct.
+        updated, or that have a dependency that was. Empty if all were
+        already correct.
     """
     package_root = PackageManager.I.package_root()
     if files is None:
