@@ -78,6 +78,21 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         return MirrorTestConfigFile.__name__
 
+    def validate(self) -> bool:
+        """Create the test file if it does not exist before validating.
+
+        As this class works with the test file as a loaded module, the file
+        must exist before validation can proceed. This method ensures the file
+        is created if it does not already exist.
+
+        Returns:
+            `True` if the file was already correct and required no changes;
+            `False` if it was created or updated.
+        """
+        if not self.path().exists():
+            self.create_file()
+        return super().validate()
+
     def create_file(self) -> None:
         """Create the test file with its default module docstring as content.
 
