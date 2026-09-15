@@ -57,7 +57,8 @@
             "strict_required_status_checks_policy": true,
             "required_status_checks": [
               {
-                "context": "Health Check"
+                "context": "Health Check / Health Check",
+                "integration_id": 15368
               }
             ]
           }
