@@ -266,6 +266,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
     def dump(self, configs: ConfigT) -> None:
         """Write configuration to disk and keep the load cache consistent.
 
+        If the file does not exist, it is created first, then dumps the `configs`.
         Clears the `load()` cache afterward, so the new content is read on
         subsequent `load()` calls instead of the stale cached value.
         Echoes the updated file path to stdout.
