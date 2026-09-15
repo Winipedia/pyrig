@@ -31,10 +31,13 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
         signed commits, and blocks branch creation, deletion, and force
         pushes. The tag ruleset targets every tag and blocks deletion and
         retargeting, keeping released versions immutable. Repository admins
-        are exempt from both rulesets.
+        are exempt from both rulesets. The fork PR contributor approval
+        policy requires a maintainer to approve every workflow run
+        triggered by a pull request from an external contributor's fork.
 
         Returns:
-            Dict keyed by `repository_key()` and `rulesets_key()`.
+            Dict keyed by `repository_key()`, `rulesets_key()`, and
+            `fork_pr_contributor_approval_key()`.
         """
         status_check_id = HealthCheckWorkflowConfigFile.I.name_from_id(
             HealthCheckWorkflowConfigFile.I.job_id_from_method(
@@ -105,6 +108,9 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
                     "bypass_actors": self.bypass_actors(),
                 },
             ],
+            self.fork_pr_contributor_approval_key(): {
+                "approval_policy": "all_external_contributors",
+            },
         }
 
     def bypass_actors(self) -> list[dict[str, Any]]:
@@ -144,3 +150,12 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
     def rulesets_key(self) -> str:
         """Return `"rulesets"`, the top-level key for the protection rulesets."""
         return "rulesets"
+
+    def fork_pr_contributor_approval_key(self) -> str:
+        """Return `"fork_pr_contributor_approval"`.
+
+        The top-level key for the fork pull request contributor approval
+        policy, i.e. which external contributors must be approved by a
+        maintainer before their fork PR's workflows run.
+        """
+        return "fork_pr_contributor_approval"

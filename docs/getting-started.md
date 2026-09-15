@@ -87,7 +87,8 @@ You will need a [GitHub](https://github.com) account.
 Fine-grained tokens
 2. Under Repository permissions, set:
    - Administration: Read and write (for applying repository settings,
-     protection rulesets, and private vulnerability reporting in the
+     protection rulesets, private vulnerability reporting, immutable
+     releases, and the fork PR contributor approval policy in the
      deploy workflow)
    - Pages: Read and write (for enabling GitHub Pages in the deploy workflow)
 3. Generate token

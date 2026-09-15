@@ -103,6 +103,9 @@
       ]
     }
   ],
+  "fork_pr_contributor_approval": {
+    "approval_policy": "all_external_contributors"
+  },
   "topics": [
     "automation",
     "boilerplate",

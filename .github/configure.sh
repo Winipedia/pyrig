@@ -3,7 +3,7 @@ set -euo pipefail
 
 repo="Winipedia/pyrig"
 
-settings() {
+repository() {
   jq '.repository' .github/settings.json | gh api "repos/${repo}" --method=PATCH --input=-
 }
 
@@ -20,6 +20,14 @@ rulesets() {
 
 vulnerability_reporting() {
   gh api "repos/${repo}/private-vulnerability-reporting" --method=PUT
+}
+
+release_immutability() {
+  gh api "repos/${repo}/immutable-releases" --method=PUT
+}
+
+fork_pr_contributor_approval() {
+  jq '.fork_pr_contributor_approval' .github/settings.json | gh api "repos/${repo}/actions/permissions/fork-pr-contributor-approval" --method=PUT --input=-
 }
 
 topics() {

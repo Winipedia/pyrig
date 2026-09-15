@@ -18,6 +18,13 @@ class TestRepositorySettingsConfigFile:
         """Test method."""
         assert RepositorySettingsConfigFile.I.rulesets_key() == "rulesets"
 
+    def test_fork_pr_contributor_approval_key(self) -> None:
+        """Test method."""
+        assert (
+            RepositorySettingsConfigFile.I.fork_pr_contributor_approval_key()
+            == "fork_pr_contributor_approval"
+        )
+
     def test_parent_path(self) -> None:
         """Test method."""
         assert RepositorySettingsConfigFile.I.parent_path() == Path(".github")
@@ -33,6 +40,9 @@ class TestRepositorySettingsConfigFile:
         assert RepositorySettingsConfigFile.I.repository_key() in configs
         assert RepositorySettingsConfigFile.I.rulesets_key() in configs
         assert isinstance(configs[RepositorySettingsConfigFile.I.rulesets_key()], list)
+        assert (
+            RepositorySettingsConfigFile.I.fork_pr_contributor_approval_key() in configs
+        )
 
     def test_bypass_actors(self) -> None:
         """Test method."""

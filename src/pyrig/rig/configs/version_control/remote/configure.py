@@ -15,10 +15,10 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     """Configuration file for `.github/configure.sh`.
 
     Defines shell functions that read `.github/settings.json` and apply its
-    contents to the repository via the GitHub CLI, plus a function that
-    enables GitHub's private vulnerability reporting feature. The script is
-    meant to be invoked directly rather than sourced as a library: running
-    it runs every function it defines.
+    contents to the repository via the GitHub CLI, plus functions that
+    enable GitHub's private vulnerability reporting and immutable releases
+    features. The script is meant to be invoked directly rather than
+    sourced as a library: running it runs every function it defines.
 
     Every function calls `gh api` against this repository directly, so only
     a token accepted by `gh` (`GH_TOKEN` or `GITHUB_TOKEN`) needs to already
@@ -29,9 +29,9 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         """Return the required shell script content, below the shared header.
 
         Returns:
-            The shared setup code, the `settings`, `rulesets`, and
-            `vulnerability_reporting` shell function definitions, and
-            the trailing block that runs every function.
+            The shared setup code, every shell function definition
+            returned by `scripts()`, and the trailing block that runs
+            every function.
         """
         return f"""{self.global_content()}
 
@@ -59,13 +59,15 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     def scripts(self) -> tuple[str, ...]:
         """Return the shell function definitions that make up the script."""
         return (
-            self.repository_settings_script(),
+            self.repository_script(),
             self.rulesets_script(),
             self.vulnerability_reporting_script(),
+            self.release_immutability_script(),
+            self.fork_pr_contributor_approval_script(),
         )
 
-    def repository_settings_script(self) -> str:
-        """Return the `settings` shell function as a multi-line string.
+    def repository_script(self) -> str:
+        """Return the `repository` shell function as a multi-line string.
 
         Returns:
             Function definition that pipes the `repository` key of the
@@ -79,13 +81,17 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
             method="PATCH",
             input_="-",
         )
-        return f"""{self.repository_settings_function()}() {{
+        return f"""{self.repository_function()}() {{
   jq '.{repository_key}' {settings_path} | {api_call}
 }}"""
 
-    def repository_settings_function(self) -> str:
-        """Return `"settings"`, the function name."""
-        return "settings"
+    def repository_function(self) -> str:
+        """Return `RepositorySettingsConfigFile.I.repository_key()`, the function name.
+
+        Named identically to the settings file key it reads, so both stay
+        in sync automatically.
+        """
+        return RepositorySettingsConfigFile.I.repository_key()
 
     def rulesets_script(self) -> str:
         """Return the `rulesets` shell function as a multi-line string.
@@ -123,8 +129,12 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
 }}"""
 
     def rulesets_function(self) -> str:
-        """Return `"rulesets"`, the function name."""
-        return "rulesets"
+        """Return `RepositorySettingsConfigFile.I.rulesets_key()`, the function name.
+
+        Named identically to the settings file key it reads, so both stay
+        in sync automatically.
+        """
+        return RepositorySettingsConfigFile.I.rulesets_key()
 
     def vulnerability_reporting_script(self) -> str:
         """Return the `vulnerability_reporting` shell function.
@@ -147,6 +157,57 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     def vulnerability_reporting_function(self) -> str:
         """Return `"vulnerability_reporting"`, the function name."""
         return "vulnerability_reporting"
+
+    def release_immutability_script(self) -> str:
+        """Return the `release_immutability` shell function as a multi-line string.
+
+        Returns:
+            Function definition that `PUT`s the GitHub API endpoint that
+            enables immutable releases for the repository.
+        """
+        endpoint = f'"repos/${{{self.repo_variable()}}}/immutable-releases"'
+        api_call = RemoteVersionController.I.api_method_args(
+            endpoint=endpoint,
+            method="PUT",
+        )
+        return f"""{self.release_immutability_function()}() {{
+  {api_call}
+}}"""
+
+    def release_immutability_function(self) -> str:
+        """Return `"release_immutability"`, the function name."""
+        return "release_immutability"
+
+    def fork_pr_contributor_approval_script(self) -> str:
+        """Return the `fork_pr_contributor_approval` shell function.
+
+        Returns:
+            Function definition that pipes the
+            `fork_pr_contributor_approval` key of the settings file into
+            `gh api` as a `PUT` request.
+        """
+        settings_path = RepositorySettingsConfigFile.I.path().as_posix()
+        key = RepositorySettingsConfigFile.I.fork_pr_contributor_approval_key()
+        endpoint = (
+            f'"repos/${{{self.repo_variable()}}}'
+            '/actions/permissions/fork-pr-contributor-approval"'
+        )
+        api_call = RemoteVersionController.I.api_method_input_args(
+            endpoint=endpoint,
+            method="PUT",
+            input_="-",
+        )
+        return f"""{self.fork_pr_contributor_approval_function()}() {{
+  jq '.{key}' {settings_path} | {api_call}
+}}"""
+
+    def fork_pr_contributor_approval_function(self) -> str:
+        """Return `RepositorySettingsConfigFile.I.fork_pr_contributor_approval_key()`.
+
+        Named identically to the settings file key it reads, so both stay
+        in sync automatically.
+        """
+        return RepositorySettingsConfigFile.I.fork_pr_contributor_approval_key()
 
     def footer_content(self) -> str:
         """Return the block that runs every function the script defines.
