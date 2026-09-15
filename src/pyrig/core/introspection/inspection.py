@@ -18,9 +18,7 @@ type SourceObjectType = (
 )
 
 
-def unwrap_cls(
-    cls: Callable[..., Any],
-) -> type:
+def unwrap_cls(cls: Callable[..., Any]) -> type:
     """Unwrap a class to its original implementation.
 
     Args:
@@ -32,9 +30,7 @@ def unwrap_cls(
     return cast("type", unwrap_obj(cls))
 
 
-def unwrap_func(
-    func: Callable[..., Any],
-) -> FunctionType:
+def unwrap_func(func: Callable[..., Any]) -> FunctionType:
     """Unwrap a function to its original implementation.
 
     Args:
@@ -46,11 +42,7 @@ def unwrap_func(
     return cast("FunctionType", unwrap_obj(func))
 
 
-def def_line_sorted[
-    T: SourceObjectType,
-](
-    objs: Iterable[T],
-) -> list[T]:
+def def_line_sorted[T: SourceObjectType](objs: Iterable[T]) -> list[T]:
     """Sort objects by their source definition line number.
 
     Args:
@@ -68,9 +60,7 @@ def def_line_sorted[
     return sorted(objs, key=def_line)
 
 
-def def_line(
-    obj: SourceObjectType,
-) -> int:
+def def_line(obj: SourceObjectType) -> int:
     """Return the 1-based source line where an object is defined.
 
     Accepts a module, class, function, method, traceback, frame, or code

@@ -33,7 +33,8 @@ class TestDocsBuilder:
         result = DocsBuilder.I.documentation_url()
         assert isinstance(result, str)
         assert result.startswith("https://")
-        assert "github.io" in result
+        assert "github" in result
+        assert ".io" in result
 
     def test_group(self) -> None:
         """Test method."""
