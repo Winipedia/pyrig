@@ -55,6 +55,8 @@
         "name": "Run Version Control Hooks"
         "id": "run-version-control-hooks"
         "run": "uv run prek run --all-files --group=all"
+        "env":
+          "GH_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
   "matrix-health-checks":
     "name": "Matrix Health Checks"
     "permissions":
