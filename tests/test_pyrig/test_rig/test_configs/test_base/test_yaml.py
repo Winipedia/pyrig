@@ -1,15 +1,18 @@
 """module."""
 
+import io
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
 import pytest
+from ruamel.yaml.comments import CommentedMap
 
 from pyrig.rig.configs.base.yaml import (
     YAML_DUMP,
     YAMLConfigFile,
     YMLConfigFile,
+    commented_map,
     represent_str,
 )
 from pyrig.rig.configs.version_control.remote.workflows.health_check import (
@@ -114,3 +117,26 @@ class TestYMLConfigFile:
 
 class TestYMLDictConfigFile:
     """Test class."""
+
+
+def test_commented_map() -> None:
+    """Test function."""
+    result = commented_map(
+        {"contents": "read", "pages": "write"},
+        {"pages": "required"},
+    )
+
+    assert isinstance(result, CommentedMap)
+    assert result == {"contents": "read", "pages": "write"}
+
+    buffer = io.StringIO()
+    YAML_DUMP.dump(result, buffer)
+    dumped = buffer.getvalue()
+    assert '"contents": "read"\n' in dumped
+    assert '"pages": "write"  # required' in dumped
+
+    undocumented = commented_map({"contents": "read"}, {})
+    assert isinstance(undocumented, CommentedMap)
+    buffer_undocumented = io.StringIO()
+    YAML_DUMP.dump(undocumented, buffer_undocumented)
+    assert "#" not in buffer_undocumented.getvalue()

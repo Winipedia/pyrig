@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from ruamel.yaml import YAML
+from ruamel.yaml import YAML, CommentedMap
 from ruamel.yaml.nodes import ScalarNode
 from ruamel.yaml.representer import RoundTripRepresenter
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString, LiteralScalarString
@@ -131,3 +131,32 @@ class YMLDictConfigFile(YMLConfigFile[dict[str, Any]], DictConfigFile):
         ...     def _configs(self) -> dict[str, Any]:
         ...         return {"site_name": "My Project", "theme": {"name": "material"}}
     """
+
+
+def commented_map(dict_: dict[str, Any], comments: dict[str, str]) -> CommentedMap:
+    """Return a `CommentedMap` with inline YAML comments for selected keys.
+
+    This mirrors the pattern used by ruamel when preserving comment placement: we
+    build each annotated entry in a temporary single-item `CommentedMap` and then
+    copy its comment metadata into the final map. That keeps the end-of-line
+    comment aligned consistently even when only some entries are annotated.
+
+    Args:
+        dict_: The dictionary to convert.
+        comments: Mapping of keys to the end-of-line comment text to attach.
+            Any key omitted here is left without a trailing comment.
+
+    Returns:
+        A `CommentedMap` with the same key/value pairs as `dict_`, preserving
+        insertion order and attaching comments only to keys present in
+        `comments`.
+    """
+    commented = CommentedMap()
+    for key, value in dict_.items():
+        commented[key] = value
+        item = CommentedMap({key: value})
+        comment = comments.get(key)
+        if comment is not None:
+            item.yaml_add_eol_comment(comment, key=key)
+            commented.ca.items[key] = item.ca.items[key]
+    return commented

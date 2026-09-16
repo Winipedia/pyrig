@@ -137,6 +137,8 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
     def step_run_version_control_hooks(self) -> dict[str, Any]:
         """Build a step that runs all pre-commit hooks via prek.
 
+        GH_TOKEN is passed to the environment for zizmor's online behavior.
+
         Returns:
             Step that runs the pre-commit hooks.
         """
@@ -147,6 +149,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
                     *VersionControlHookManager.I.run_all_files_all_hooks_args(),
                 ),
             ),
+            env={"GH_TOKEN": self.insert_github_token()},
         )
 
     def job_matrix_health_checks(self) -> dict[str, Any]:

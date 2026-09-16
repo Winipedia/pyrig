@@ -117,6 +117,7 @@ class TestHealthCheckWorkflowConfigFile:
         """Test method."""
         result = my_test_health_check_workflow().step_run_version_control_hooks()
         assert "run" in result
+        assert result["env"] == {"GH_TOKEN": "${{ secrets.GITHUB_TOKEN }}"}
 
     def test_step_aggregate_jobs(
         self,

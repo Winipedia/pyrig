@@ -17,7 +17,7 @@ from pyrig.core.strings import (
 )
 from pyrig.core.subprocesses import Args
 from pyrig.rig import resources
-from pyrig.rig.configs.base.yaml import YMLDictConfigFile
+from pyrig.rig.configs.base.yaml import YMLDictConfigFile, commented_map
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.linting.shell import ShellLinter
 from pyrig.rig.tools.packages.manager import PackageManager
@@ -147,13 +147,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return {name: "write" if write else "read"}
 
     def documented_permissions(self, permissions: dict[str, str]) -> CommentedMap:
-        """Return `permissions` as a `CommentedMap` that documents permissions.
+        """Return `permissions` as a documented `CommentedMap`.
 
         zizmor's `undocumented-permissions` audit requires an explanatory
         comment on any permission entry other than `contents: read`.
-
-        Is assembled via multiple single-entry `CommentedMap` instances to ensure
-        consistent inline comment placement.
 
         Args:
             permissions: Mapping of permission name to `"read"` or `"write"`.
@@ -162,16 +159,14 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Equivalent `CommentedMap`; every entry except `contents: read`
             carries an inline comment.
         """
-        commented = CommentedMap()
-        for name, level in permissions.items():
-            if (name, level) == ("contents", "read"):
-                commented[name] = level
-                continue
-            permission = CommentedMap({name: level})
-            permission.yaml_add_eol_comment(self.permission_comment(), name)
-            commented[name] = level
-            commented.ca.items[name] = permission.ca.items[name]
-        return commented
+        return commented_map(
+            permissions,
+            {
+                k: self.permission_comment()
+                for k in permissions
+                if (k, permissions[k]) != ("contents", "read")
+            },
+        )
 
     def permission_comment(self) -> str:
         """Return the comment attached to every documented permission entry.
