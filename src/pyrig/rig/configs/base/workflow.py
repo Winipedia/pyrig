@@ -3,7 +3,7 @@
 import re
 from abc import abstractmethod
 from pathlib import Path
-from types import MethodType
+from types import MethodType, ModuleType
 from typing import Any
 
 from pyrig_runtime.core.strings import snake_to_kebab_case
@@ -189,7 +189,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             The full action reference in the format `action@ref`.
         """
-        return f"{action}@{self.action_ref(action, default=ref)}"
+        return f"{action}@{self.action(action, default=ref)}"
 
     def concurrency(self) -> dict[str, Any]:
         """Return the workflow's concurrency setting.
@@ -388,7 +388,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         *,
         run: str | None = None,
         if_condition: str | None = None,
-        uses: tuple[str, str] | None = None,
+        uses: tuple[str, str, str] | None = None,
         with_: dict[str, Any] | None = None,
         env: dict[str, Any] | None = None,
     ) -> CommentedMap:
@@ -402,8 +402,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
             run: Shell command to execute.
             if_condition: GitHub Actions conditional expression controlling
                 whether the step runs.
-            uses: GitHub Action tuple of `(action, default_ref)` (e.g.
-                `("actions/checkout", "<ref>")`).
+            uses: GitHub Action tuple of `(action, ref, tag)` (e.g.
+                `("actions/checkout", "<sha>", "v7.0.1")`).
             with_: Input parameters passed to the action.
             env: Step-level environment variables.
 
@@ -427,8 +427,9 @@ class WorkflowConfigFile(YMLDictConfigFile):
         if run is not None:
             step["run"] = run
         if uses is not None:
-            step["uses"] = self.uses(*uses)
-            comments["uses"] = f"{'v1.2.3'}"
+            action, ref, tag = uses
+            step["uses"] = self.uses(action, ref)
+            comments["uses"] = tag
         if with_ is not None:
             step["with"] = with_
         if env is not None:
@@ -735,18 +736,38 @@ class WorkflowConfigFile(YMLDictConfigFile):
             self.step_setup_package_manager(python_version=python_version),
         ]
 
-    def checkout_action_ref(self) -> str:
-        """Return the pinned commit SHA for `actions/checkout`.
+    def checkout_action(self) -> tuple[str, str, str]:
+        """Return action metadata for `actions/checkout`.
 
         Returns:
-            Commit SHA `actions/checkout` is pinned to.
+            Tuple of action name, pinned commit SHA, and release tag.
         """
-        return resource_content(
-            self.checkout_action_ref.__name__.upper(),
-            resources,
-        ).strip()
+        return self.action_from_resource(self.checkout_action, resources)
 
-    def action_ref(self, name: str, *, default: str) -> str:
+    def action_from_resource(
+        self,
+        method: MethodType,
+        package: ModuleType,
+    ) -> tuple[str, str, str]:
+        """Read action name, pinned ref, and release tag from a resource.
+
+        The resource name is derived from the method name, converted to
+        uppercase, and the first three lines provide the action metadata.
+
+        Args:
+            method: Action method whose name identifies the resource.
+            package: Package module containing the resource.
+
+        Returns:
+            Tuple of action name, pinned commit SHA, and release tag.
+        """
+        action, ref, tag, *_ = resource_content(
+            method.__name__.upper(),
+            package,
+        ).splitlines()
+        return action, ref, tag
+
+    def action(self, name: str, *, default: str) -> str:
         """Return the ref for an action, preferring the existing ref in the file.
 
         Looks for an existing step using `name` in the loaded workflow file. If
@@ -774,7 +795,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     def step_checkout_repository(self) -> dict[str, Any]:
         """Build a step that checks out the repository.
 
-        Uses `actions/checkout`, defaulting to `checkout_action_ref()`. It
+        Uses `actions/checkout`, defaulting to `checkout_action()`. It
         authenticates with the automatic `GITHUB_TOKEN`. Credential
         persistence is disabled since no later step needs the checked-out
         git credentials. The containing job must grant at least
@@ -785,23 +806,17 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.step(
             self.step_checkout_repository,
-            uses=(
-                "actions/checkout",
-                self.checkout_action_ref(),
-            ),
+            uses=self.checkout_action(),
             with_={"persist-credentials": False},
         )
 
-    def setup_uv_action_ref(self) -> str:
-        """Return the pinned commit SHA for `astral-sh/setup-uv`.
+    def setup_uv_action(self) -> tuple[str, str, str]:
+        """Return action metadata for `astral-sh/setup-uv`.
 
         Returns:
-            Commit SHA `astral-sh/setup-uv` is pinned to.
+            Tuple of action name, pinned commit SHA, and release tag.
         """
-        return resource_content(
-            self.setup_uv_action_ref.__name__.upper(),
-            resources,
-        ).strip()
+        return self.action_from_resource(self.setup_uv_action, resources)
 
     def step_setup_package_manager(
         self,
@@ -810,7 +825,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     ) -> dict[str, Any]:
         """Build a step that installs uv and pins the Python version.
 
-        Uses `astral-sh/setup-uv`, defaulting to `setup_uv_action_ref()`, to
+        Uses `astral-sh/setup-uv`, defaulting to `setup_uv_action()`, to
         install uv on the runner and configure it to use the given Python
         version. All subsequent `uv run` and `uv sync` commands will use this
         version.
@@ -823,10 +838,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.step(
             self.step_setup_package_manager,
-            uses=(
-                "astral-sh/setup-uv",
-                self.setup_uv_action_ref(),
-            ),
+            uses=self.setup_uv_action(),
             with_={"python-version": python_version},
         )
 

@@ -27,7 +27,7 @@
       -
         "name": "Checkout Repository"
         "id": "checkout-repository"
-        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v1.2.3
+        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1
         "with":
           "persist-credentials": false
       -
@@ -48,13 +48,13 @@
       -
         "name": "Checkout Repository"
         "id": "checkout-repository"
-        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v1.2.3
+        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1
         "with":
           "persist-credentials": false
       -
         "name": "Setup Package Manager"
         "id": "setup-package-manager"
-        "uses": "astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d"  # v1.2.3
+        "uses": "astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4"  # v10.1.0
         "with":
           "python-version": "3.14"
       -
@@ -68,20 +68,20 @@
       -
         "name": "Configure Pages"
         "id": "configure-pages"
-        "uses": "actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d"  # v1.2.3
+        "uses": "actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d"  # v6.0.0
         "with":
           "enablement": "true"
           "token": "${{ secrets.REPO_TOKEN }}"
       -
         "name": "Upload Documentation"
         "id": "upload-documentation"
-        "uses": "actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9"  # v1.2.3
+        "uses": "actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9"  # v5.0.0
         "with":
           "path": "site"
       -
         "name": "Deploy Documentation"
         "id": "deploy-documentation"
-        "uses": "actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346"  # v1.2.3
+        "uses": "actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346"  # v5.0.1
   "package":
     "name": "Package"
     "permissions":
@@ -93,13 +93,13 @@
       -
         "name": "Checkout Repository"
         "id": "checkout-repository"
-        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v1.2.3
+        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1
         "with":
           "persist-credentials": false
       -
         "name": "Setup Package Manager"
         "id": "setup-package-manager"
-        "uses": "astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d"  # v1.2.3
+        "uses": "astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4"  # v10.1.0
         "with":
           "python-version": "3.14"
       -

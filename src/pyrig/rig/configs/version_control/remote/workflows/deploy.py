@@ -3,7 +3,6 @@
 from types import MethodType
 from typing import Any
 
-from pyrig.core.resources import resource_content
 from pyrig.rig import resources
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.version_control.remote.configure import (
@@ -176,50 +175,41 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             run=str(PackageManager.I.run_args(*DocsBuilder.I.build_args())),
         )
 
-    def configure_pages_action_ref(self) -> str:
-        """Return the pinned commit SHA for `actions/configure-pages`.
+    def configure_pages_action(self) -> tuple[str, str, str]:
+        """Return action metadata for `actions/configure-pages`.
 
         Returns:
-            Commit SHA `actions/configure-pages` is pinned to.
+            Tuple of action name, pinned commit SHA, and release tag.
         """
-        return resource_content(
-            self.configure_pages_action_ref.__name__.upper(),
-            resources,
-        ).strip()
+        return self.action_from_resource(self.configure_pages_action, resources)
 
     def step_configure_pages(self) -> dict[str, Any]:
         """Build a step that enables GitHub Pages.
 
         Uses `actions/configure-pages`, defaulting to
-        `configure_pages_action_ref()`.
+        `configure_pages_action()`.
 
         Returns:
             Pages-configuration step using the repository token.
         """
         return self.step(
             self.step_configure_pages,
-            uses=(
-                "actions/configure-pages",
-                self.configure_pages_action_ref(),
-            ),
+            uses=self.configure_pages_action(),
             with_={"enablement": "true", "token": self.insert_repo_token()},
         )
 
-    def deploy_pages_action_ref(self) -> str:
-        """Return the pinned commit SHA for `actions/deploy-pages`.
+    def deploy_pages_action(self) -> tuple[str, str, str]:
+        """Return action metadata for `actions/deploy-pages`.
 
         Returns:
-            Commit SHA `actions/deploy-pages` is pinned to.
+            Tuple of action name, pinned commit SHA, and release tag.
         """
-        return resource_content(
-            self.deploy_pages_action_ref.__name__.upper(),
-            resources,
-        ).strip()
+        return self.action_from_resource(self.deploy_pages_action, resources)
 
     def step_deploy_documentation(self) -> dict[str, Any]:
         """Build a step that deploys the uploaded Pages artifact to GitHub Pages.
 
-        Uses `actions/deploy-pages`, defaulting to `deploy_pages_action_ref()`.
+        Uses `actions/deploy-pages`, defaulting to `deploy_pages_action()`.
 
         Requires the job to have `pages: write` and `id-token: write`
         permissions.
@@ -229,37 +219,28 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.step(
             self.step_deploy_documentation,
-            uses=(
-                "actions/deploy-pages",
-                self.deploy_pages_action_ref(),
-            ),
+            uses=self.deploy_pages_action(),
         )
 
-    def upload_pages_artifact_action_ref(self) -> str:
-        """Return the pinned commit SHA for `actions/upload-pages-artifact`.
+    def upload_pages_artifact_action(self) -> tuple[str, str, str]:
+        """Return action metadata for `actions/upload-pages-artifact`.
 
         Returns:
-            Commit SHA `actions/upload-pages-artifact` is pinned to.
+            Tuple of action name, pinned commit SHA, and release tag.
         """
-        return resource_content(
-            self.upload_pages_artifact_action_ref.__name__.upper(),
-            resources,
-        ).strip()
+        return self.action_from_resource(self.upload_pages_artifact_action, resources)
 
     def step_upload_documentation(self) -> dict[str, Any]:
         """Build a step that uploads the `site/` directory as a Pages artifact.
 
         Uses `actions/upload-pages-artifact`, defaulting to
-        `upload_pages_artifact_action_ref()`.
+        `upload_pages_artifact_action()`.
 
         Returns:
             Step using `actions/upload-pages-artifact@<ref>`.
         """
         return self.step(
             self.step_upload_documentation,
-            uses=(
-                "actions/upload-pages-artifact",
-                self.upload_pages_artifact_action_ref(),
-            ),
+            uses=self.upload_pages_artifact_action(),
             with_={"path": DocsBuilder.I.site_dir().as_posix()},
         )

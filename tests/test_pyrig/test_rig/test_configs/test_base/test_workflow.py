@@ -361,7 +361,7 @@ class TestWorkflowConfigFile:
             self.test_step,
             run="echo test",
             if_condition="condition",
-            uses=("action/checkout", "v2"),
+            uses=("action/checkout", "v2", "v2"),
             with_={"param": "value"},
             env={"ENV_VAR": "value"},
         )
@@ -430,18 +430,17 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().steps_core_setup()
         assert len(result) > 0
 
-    def test_checkout_action_ref(
+    def test_checkout_action(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         workflow = my_test_workflow()
-        assert (
-            workflow.checkout_action_ref()
-            == resource_content(
-                "CHECKOUT_ACTION_REF",
+        assert workflow.checkout_action() == tuple(
+            resource_content(
+                "CHECKOUT_ACTION",
                 resources,
-            ).strip()
+            ).splitlines(),
         )
 
     def test_step_checkout_repository(
@@ -452,20 +451,19 @@ class TestWorkflowConfigFile:
         workflow = my_test_workflow()
         result = workflow.step_checkout_repository()
         assert "uses" in result, "Expected 'uses' in step"
-        assert result["uses"] == f"actions/checkout@{workflow.checkout_action_ref()}"
+        assert result["uses"] == f"actions/checkout@{workflow.checkout_action()[1]}"
 
-    def test_setup_uv_action_ref(
+    def test_setup_uv_action(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         workflow = my_test_workflow()
-        assert (
-            workflow.setup_uv_action_ref()
-            == resource_content(
-                "SETUP_UV_ACTION_REF",
+        assert workflow.setup_uv_action() == tuple(
+            resource_content(
+                "SETUP_UV_ACTION",
                 resources,
-            ).strip()
+            ).splitlines(),
         )
 
     def test_step_setup_package_manager(
@@ -476,7 +474,7 @@ class TestWorkflowConfigFile:
         workflow = my_test_workflow()
         result = workflow.step_setup_package_manager(python_version="3.14")
         assert "uses" in result, "Expected 'uses' in step"
-        assert result["uses"] == f"astral-sh/setup-uv@{workflow.setup_uv_action_ref()}"
+        assert result["uses"] == f"astral-sh/setup-uv@{workflow.setup_uv_action()[1]}"
 
     def test_step_install_dependencies(
         self,
@@ -737,15 +735,14 @@ class TestWorkflowConfigFile:
         """Test method."""
         assert my_test_workflow().version_var() == "VERSION"
 
-    def test_action_ref(
+    def test_action(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         workflow = my_test_workflow()
         assert (
-            workflow.action_ref("actions/checkout", default="default-sha")
-            == "default-sha"
+            workflow.action("actions/checkout", default="default-sha") == "default-sha"
         )
 
         workflow.create_file()
@@ -767,16 +764,28 @@ class TestWorkflowConfigFile:
         }
         workflow.dump(custom_configs)
         assert (
-            workflow.action_ref("actions/checkout", default="default-sha")
+            workflow.action("actions/checkout", default="default-sha")
             == "custom-ref-123"
         )
         assert (
-            workflow.action_ref("astral-sh/setup-uv", default="default-uv")
-            == "default-uv"
+            workflow.action("astral-sh/setup-uv", default="default-uv") == "default-uv"
         )
 
     def test_uses(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         assert (
             my_test_workflow().uses("action-name", "some-ref") == "action-name@some-ref"
+        )
+
+    def test_action_from_resource(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        assert workflow.action_from_resource(
+            workflow.checkout_action,
+            resources,
+        ) == tuple(
+            resource_content("CHECKOUT_ACTION", resources).splitlines(),
         )
