@@ -190,6 +190,9 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
     def step_configure_pages(self) -> dict[str, Any]:
         """Build a step that enables GitHub Pages.
 
+        Uses `actions/configure-pages`, defaulting to
+        `configure_pages_action_ref()`.
+
         Returns:
             Pages-configuration step using the repository token.
         """
@@ -215,6 +218,8 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
 
     def step_deploy_documentation(self) -> dict[str, Any]:
         """Build a step that deploys the uploaded Pages artifact to GitHub Pages.
+
+        Uses `actions/deploy-pages`, defaulting to `deploy_pages_action_ref()`.
 
         Requires the job to have `pages: write` and `id-token: write`
         permissions.
@@ -243,6 +248,9 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
 
     def step_upload_documentation(self) -> dict[str, Any]:
         """Build a step that uploads the `site/` directory as a Pages artifact.
+
+        Uses `actions/upload-pages-artifact`, defaulting to
+        `upload_pages_artifact_action_ref()`.
 
         Returns:
             Step using `actions/upload-pages-artifact@<ref>`.

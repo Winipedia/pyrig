@@ -774,3 +774,9 @@ class TestWorkflowConfigFile:
             workflow.action_ref("astral-sh/setup-uv", default="default-uv")
             == "default-uv"
         )
+
+    def test_uses(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        assert (
+            my_test_workflow().uses("action-name", "some-ref") == "action-name@some-ref"
+        )

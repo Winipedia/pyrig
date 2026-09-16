@@ -40,7 +40,7 @@ class TestYAMLLinter:
         assert hook["priority"] > eof_hook["priority"]
         assert hook["types"] == ["yaml"]
         assert hook["args"] == [
-            "--config-data={extends: default, rules: {line-length: {max: 90}}}",
+            "--config-data={extends: default, rules: {line-length: {max: 100}}}",
             "--fix",
         ]
 

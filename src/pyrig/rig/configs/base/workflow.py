@@ -176,6 +176,21 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return "required"
 
+    def uses(self, action: str, ref: str) -> str:
+        """Return the full reference for a GitHub Actions action.
+
+        If the file already exists and already has a reference for the action,
+        that reference will be used instead of the provided `ref`.
+
+        Args:
+            action: The name of the action (e.g., `actions/checkout`).
+            ref: The git ref for the action (e.g., <sha>).
+
+        Returns:
+            The full action reference in the format `action@ref`.
+        """
+        return f"{action}@{self.action_ref(action, default=ref)}"
+
     def concurrency(self) -> dict[str, Any]:
         """Return the workflow's concurrency setting.
 
@@ -376,8 +391,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
         uses: tuple[str, str] | None = None,
         with_: dict[str, Any] | None = None,
         env: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    ) -> CommentedMap:
         """Build a step configuration dict.
+
+        Adds a comment to a step that uses an action.
 
         Args:
             method: Method representing this step; its name is used to
@@ -392,7 +409,14 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
         Returns:
             Step configuration dict with at least `name` and `id` set.
+
+        Note:
+            The returned dictionary is a `CommentedMap` which preserves comments
+            associated with each key. Mutating the returned `CommentedMap` will
+            preserve these comments.
         """
+        comments: dict[str, str] = {}
+
         id_ = self.step_id_from_method(method)
         step = {
             "name": self.name_from_id(id_),
@@ -403,14 +427,17 @@ class WorkflowConfigFile(YMLDictConfigFile):
         if run is not None:
             step["run"] = run
         if uses is not None:
-            action, ref = uses
-            step["uses"] = f"{action}@{self.action_ref(action, default=ref)}"
+            step["uses"] = self.uses(*uses)
+            comments["uses"] = f"{'v1.2.3'}"
         if with_ is not None:
             step["with"] = with_
         if env is not None:
             step["env"] = env
 
-        return step
+        return commented_map(
+            step,
+            comments,
+        )
 
     def name_from_id(self, id_: str) -> str:
         """Generate a human-readable display name from a kebab-case identifier.
@@ -747,7 +774,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     def step_checkout_repository(self) -> dict[str, Any]:
         """Build a step that checks out the repository.
 
-        Uses `actions/checkout`, pinned to `checkout_action_ref()`, which
+        Uses `actions/checkout`, defaulting to `checkout_action_ref()`. It
         authenticates with the automatic `GITHUB_TOKEN`. Credential
         persistence is disabled since no later step needs the checked-out
         git credentials. The containing job must grant at least
@@ -783,10 +810,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
     ) -> dict[str, Any]:
         """Build a step that installs uv and pins the Python version.
 
-        Uses `astral-sh/setup-uv`, pinned to `setup_uv_action_ref()`, to
+        Uses `astral-sh/setup-uv`, defaulting to `setup_uv_action_ref()`, to
         install uv on the runner and configure it to use the given Python
-        version. All subsequent `uv run` and `uv sync` commands will use
-        this version.
+        version. All subsequent `uv run` and `uv sync` commands will use this
+        version.
 
         Args:
             python_version: Python version string to pin, e.g. `"3.13"`.
