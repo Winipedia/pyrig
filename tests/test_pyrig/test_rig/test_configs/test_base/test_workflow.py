@@ -789,3 +789,10 @@ class TestWorkflowConfigFile:
         ) == tuple(
             resource_content("CHECKOUT_ACTION", resources).splitlines(),
         )
+
+    def test_pull_request_event_key(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().pull_request_event_key() == "pull_request"

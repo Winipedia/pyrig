@@ -537,7 +537,11 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         if types is None:
             types = ["opened", "synchronize", "reopened"]
-        return {"pull_request": {"types": types}}
+        return {self.pull_request_event_key(): {"types": types}}
+
+    def pull_request_event_key(self) -> str:
+        """Return the key used for pull request events."""
+        return "pull_request"
 
     def on_workflow_call(self) -> dict[str, Any]:
         """Create a reusable-workflow trigger.

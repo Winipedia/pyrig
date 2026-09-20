@@ -128,14 +128,25 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
                     HealthCheckWorkflowConfigFile.I.job_health_check,
                 ),
             ),
+            event=HealthCheckWorkflowConfigFile.I.pull_request_event_key(),
         )
 
-    def github_actions_status_check(self, workflow: str, job: str) -> dict[str, Any]:
+    def github_actions_status_check(
+        self,
+        workflow: str,
+        job: str,
+        event: str,
+    ) -> dict[str, Any]:
         """Build a status check restricted to GitHub Actions.
 
         Args:
             workflow: Human-readable workflow name.
             job: Human-readable job name.
+            event: Triggering event name the check must have run under, e.g.
+                `"pull_request"`. GitHub Actions appends this to the check
+                name (`"({event})"`) whenever a workflow's `on:` declares
+                more than one triggering event, to disambiguate runs of the
+                same job under different events.
 
         Returns:
             Status check configuration with the GitHub Actions integration ID.
@@ -144,6 +155,7 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
             workflow=workflow,
             job=job,
             integration_id=15368,
+            event=event,
         )
 
     def status_check(
@@ -151,6 +163,7 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
         workflow: str,
         job: str,
         integration_id: int,
+        event: str,
     ) -> dict[str, Any]:
         """Build a required status check from workflow and job names.
 
@@ -158,12 +171,16 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
             workflow: Human-readable workflow name.
             job: Human-readable job name.
             integration_id: ID of the integration allowed to provide the check.
+            event: Triggering event name appended to the context as
+                `" ({event})"`, matching the suffix GitHub Actions adds to
+                the check name when a workflow can be triggered by more than
+                one event.
 
         Returns:
             Status check configuration using GitHub's workflow/job context.
         """
         return {
-            "context": f"{workflow} / {job}",
+            "context": f"{workflow} / {job} ({event})",
             "integration_id": integration_id,
         }
 
