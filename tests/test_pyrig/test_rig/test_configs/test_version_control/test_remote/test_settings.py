@@ -68,29 +68,25 @@ class TestRepositorySettingsConfigFile:
     def test_status_check_health_check(self) -> None:
         """Test method."""
         assert RepositorySettingsConfigFile.I.status_check_health_check() == {
-            "context": "Health Check / Health Check (pull_request)",
+            "context": "Health Check",
             "integration_id": 15368,
         }
 
     def test_github_actions_status_check(self) -> None:
         """Test method."""
         assert RepositorySettingsConfigFile.I.github_actions_status_check(
-            workflow="Build",
             job="Test",
-            event="pull_request",
         ) == {
-            "context": "Build / Test (pull_request)",
+            "context": "Test",
             "integration_id": 15368,
         }
 
     def test_status_check(self) -> None:
         """Test method."""
         assert RepositorySettingsConfigFile.I.status_check(
-            workflow="Build",
             job="Test",
             integration_id=42,
-            event="some_event",
         ) == {
-            "context": "Build / Test (some_event)",
+            "context": "Test",
             "integration_id": 42,
         }
