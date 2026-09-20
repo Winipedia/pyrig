@@ -59,17 +59,17 @@ class CICDSecurityChecker(CheckHookTool):
 
     def ci_cd_files_pattern(self) -> str:
         """Return the regex to filter for files the tool can check."""
-        ci_cd_dir = RemoteVersionController.I.ci_cd_dir().as_posix() + "/"
-        dep_bot_config = (
+        ci_cd = RemoteVersionController.I.ci_cd_dir().as_posix() + "/"
+        dep_bot = (
             RemoteVersionController.I.dependency_bot_path().with_suffix("").as_posix()
             + "."
         )
-        action_file = (
+        action = (
             RemoteVersionController.I.action_path().with_suffix("").as_posix() + "."
         )
         patterns = (
-            rf"^{re.escape(ci_cd_dir)}",
-            rf"^{re.escape(dep_bot_config)}",
-            rf"/{re.escape(action_file)}",
+            rf"^{re.escape(ci_cd)}",
+            rf"^{re.escape(dep_bot)}",
+            rf"/{re.escape(action)}",
         )
         return "|".join(patterns)
