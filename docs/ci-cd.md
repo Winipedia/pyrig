@@ -93,11 +93,11 @@ Three jobs run in dependency order:
 Two jobs run in this final stage:
 
 - **`repository`** — applies repository settings and protection rulesets,
-  enables GitHub's private vulnerability reporting and immutable releases,
-  and requires maintainer approval for external contributors' fork pull
-  request workflows, all via the GitHub API. Requires `contents: read` at
-  the job level; the configuration step itself authenticates separately
-  via the `REPO_TOKEN` secret.
+  enables GitHub's private vulnerability reporting, Dependabot alerts,
+  automated security fixes, and immutable releases, and requires maintainer
+  approval for external contributors' fork pull request workflows, all via the
+  GitHub API. Requires `contents: read` at the job level; the configuration
+  step itself authenticates separately via the `REPO_TOKEN` secret.
 - **`documentation`** — builds the documentation site and deploys it to
   GitHub Pages. This job requires `contents: read`, `pages: write`, and
   `id-token: write` permissions at the job level.

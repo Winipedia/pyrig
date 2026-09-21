@@ -16,9 +16,10 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
 
     Defines shell functions that read `.github/settings.json` and apply its
     contents to the repository via the GitHub CLI, plus functions that
-    enable GitHub's private vulnerability reporting and immutable releases
-    features. The script is meant to be invoked directly rather than
-    sourced as a library: running it runs every function it defines.
+    enable GitHub's private vulnerability reporting, Dependabot alerts,
+    Dependabot security updates, and immutable releases features. The
+    script is meant to be invoked directly rather than sourced as a
+    library: running it runs every function it defines.
 
     Every function calls `gh api` against this repository directly, so only
     a token accepted by `gh` (`GH_TOKEN` or `GITHUB_TOKEN`) needs to already
@@ -54,16 +55,18 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         Returns:
             The concatenation of every script returned by `scripts()`.
         """
-        return "\n\n".join(self.scripts())
+        return "\n\n".join(sorted(self.scripts()))
 
     def scripts(self) -> tuple[str, ...]:
         """Return the shell function definitions that make up the script."""
         return (
             self.repository_script(),
             self.rulesets_script(),
-            self.vulnerability_reporting_script(),
             self.release_immutability_script(),
             self.fork_pr_contributor_approval_script(),
+            self.vulnerability_reporting_script(),
+            self.dependency_alerts_script(),
+            self.dependency_security_updates_script(),
         )
 
     def repository_script(self) -> str:
@@ -157,6 +160,48 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     def vulnerability_reporting_function(self) -> str:
         """Return `"vulnerability_reporting"`, the function name."""
         return "vulnerability_reporting"
+
+    def dependency_alerts_script(self) -> str:
+        """Return the `dependency_alerts` shell function.
+
+        Returns:
+            Function definition that `PUT`s the GitHub API endpoint that
+            enables Dependabot alerts (and the dependency graph) for the
+            repository.
+        """
+        endpoint = f'"repos/${{{self.repo_variable()}}}/vulnerability-alerts"'
+        api_call = RemoteVersionController.I.api_method_args(
+            endpoint=endpoint,
+            method="PUT",
+        )
+        return f"""{self.dependency_alerts_function()}() {{
+  {api_call}
+}}"""
+
+    def dependency_alerts_function(self) -> str:
+        """Return `"dependency_alerts"`, the function name."""
+        return "dependency_alerts"
+
+    def dependency_security_updates_script(self) -> str:
+        """Return the `dependency_security_updates` shell function.
+
+        Returns:
+            Function definition that `PUT`s the GitHub API endpoint that
+            enables Dependabot security updates (automated security fixes)
+            for the repository.
+        """
+        endpoint = f'"repos/${{{self.repo_variable()}}}/automated-security-fixes"'
+        api_call = RemoteVersionController.I.api_method_args(
+            endpoint=endpoint,
+            method="PUT",
+        )
+        return f"""{self.dependency_security_updates_function()}() {{
+  {api_call}
+}}"""
+
+    def dependency_security_updates_function(self) -> str:
+        """Return `"dependency_security_updates"`, the function name."""
+        return "dependency_security_updates"
 
     def release_immutability_script(self) -> str:
         """Return the `release_immutability` shell function as a multi-line string.

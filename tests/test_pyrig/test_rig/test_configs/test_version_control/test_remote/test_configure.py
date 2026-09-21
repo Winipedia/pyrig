@@ -35,6 +35,20 @@ class TestConfigureRepositoryConfigFile:
             == "release_immutability"
         )
 
+    def test_dependency_alerts_function(self) -> None:
+        """Test method."""
+        assert (
+            ConfigureRepositoryConfigFile.I.dependency_alerts_function()
+            == "dependency_alerts"
+        )
+
+    def test_dependency_security_updates_function(self) -> None:
+        """Test method."""
+        assert (
+            ConfigureRepositoryConfigFile.I.dependency_security_updates_function()
+            == "dependency_security_updates"
+        )
+
     def test_fork_pr_contributor_approval_function(self) -> None:
         """Test method."""
         assert (
@@ -58,6 +72,8 @@ class TestConfigureRepositoryConfigFile:
         assert script.repository_function() in content
         assert script.rulesets_function() in content
         assert script.vulnerability_reporting_function() in content
+        assert script.dependency_alerts_function() in content
+        assert script.dependency_security_updates_function() in content
         assert script.release_immutability_function() in content
         assert script.fork_pr_contributor_approval_function() in content
         assert "gh api" in content
@@ -110,6 +126,28 @@ class TestConfigureRepositoryConfigFile:
         assert "private-vulnerability-reporting" in result
         assert "--method=PUT" in result
 
+    def test_dependency_alerts_script(self) -> None:
+        """Test method."""
+        script = ConfigureRepositoryConfigFile.I
+        result = script.dependency_alerts_script()
+        assert result.startswith(
+            f"{script.dependency_alerts_function()}() {{",
+        )
+        assert "${repo}" in result
+        assert "vulnerability-alerts" in result
+        assert "--method=PUT" in result
+
+    def test_dependency_security_updates_script(self) -> None:
+        """Test method."""
+        script = ConfigureRepositoryConfigFile.I
+        result = script.dependency_security_updates_script()
+        assert result.startswith(
+            f"{script.dependency_security_updates_function()}() {{",
+        )
+        assert "${repo}" in result
+        assert "automated-security-fixes" in result
+        assert "--method=PUT" in result
+
     def test_release_immutability_script(self) -> None:
         """Test method."""
         script = ConfigureRepositoryConfigFile.I
@@ -135,7 +173,7 @@ class TestConfigureRepositoryConfigFile:
     def test_scripts_content(self) -> None:
         """Test method."""
         script = ConfigureRepositoryConfigFile.I
-        assert script.scripts_content() == "\n\n".join(script.scripts())
+        assert script.scripts_content() == "\n\n".join(sorted(script.scripts()))
 
     def test_scripts(self) -> None:
         """Test method."""
@@ -145,6 +183,8 @@ class TestConfigureRepositoryConfigFile:
             script.repository_script(),
             script.rulesets_script(),
             script.vulnerability_reporting_script(),
+            script.dependency_alerts_script(),
+            script.dependency_security_updates_script(),
             script.release_immutability_script(),
             script.fork_pr_contributor_approval_script(),
         ):
