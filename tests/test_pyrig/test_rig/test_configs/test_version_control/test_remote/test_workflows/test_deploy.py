@@ -1,6 +1,7 @@
 """module."""
 
 from pyrig.core.resources import resource_content
+from pyrig.core.strings import read_text_utf8
 from pyrig.rig import resources
 from pyrig.rig.configs.version_control.remote.configure import (
     ConfigureRepositoryConfigFile,
@@ -82,6 +83,11 @@ class TestDeployWorkflowConfigFile:
             )
         )
 
+        action, ref, tag = DeployWorkflowConfigFile.I.configure_pages_action()
+        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
+            DeployWorkflowConfigFile.I.path(),
+        )
+
     def test_step_configure_pages(self) -> None:
         """Test method."""
         result = DeployWorkflowConfigFile.I.step_configure_pages()
@@ -102,6 +108,11 @@ class TestDeployWorkflowConfigFile:
             )
         )
 
+        action, ref, tag = DeployWorkflowConfigFile.I.upload_pages_artifact_action()
+        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
+            DeployWorkflowConfigFile.I.path(),
+        )
+
     def test_step_upload_documentation(self) -> None:
         """Test method."""
         result = DeployWorkflowConfigFile.I.step_upload_documentation()
@@ -115,6 +126,11 @@ class TestDeployWorkflowConfigFile:
         """Test method."""
         assert DeployWorkflowConfigFile.I.deploy_pages_action() == (
             tuple(resource_content("DEPLOY_PAGES_ACTION", resources).splitlines())
+        )
+
+        action, ref, tag = DeployWorkflowConfigFile.I.deploy_pages_action()
+        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
+            DeployWorkflowConfigFile.I.path(),
         )
 
     def test_step_deploy_documentation(self) -> None:

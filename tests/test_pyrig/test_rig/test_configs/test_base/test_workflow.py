@@ -10,6 +10,7 @@ import pytest
 from ruamel.yaml.comments import CommentedMap
 
 from pyrig.core.resources import resource_content
+from pyrig.core.strings import read_text_utf8
 from pyrig.core.subprocesses import Args
 from pyrig.rig import resources
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
@@ -443,6 +444,11 @@ class TestWorkflowConfigFile:
             ).splitlines(),
         )
 
+        action, ref, tag = HealthCheckWorkflowConfigFile.I.checkout_action()
+        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
+            HealthCheckWorkflowConfigFile.I.path(),
+        )
+
     def test_step_checkout_repository(
         self,
         my_test_workflow: type[WorkflowConfigFile],
@@ -464,6 +470,11 @@ class TestWorkflowConfigFile:
                 "SETUP_UV_ACTION",
                 resources,
             ).splitlines(),
+        )
+
+        action, ref, tag = HealthCheckWorkflowConfigFile.I.setup_uv_action()
+        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
+            HealthCheckWorkflowConfigFile.I.path(),
         )
 
     def test_step_setup_package_manager(
@@ -735,14 +746,15 @@ class TestWorkflowConfigFile:
         """Test method."""
         assert my_test_workflow().version_var() == "VERSION"
 
-    def test_action(
+    def test_action_ref(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         workflow = my_test_workflow()
         assert (
-            workflow.action("actions/checkout", default="default-sha") == "default-sha"
+            workflow.action_ref("actions/checkout", default="default-sha")
+            == "default-sha"
         )
 
         workflow.create_file()
@@ -764,11 +776,12 @@ class TestWorkflowConfigFile:
         }
         workflow.dump(custom_configs)
         assert (
-            workflow.action("actions/checkout", default="default-sha")
+            workflow.action_ref("actions/checkout", default="default-sha")
             == "custom-ref-123"
         )
         assert (
-            workflow.action("astral-sh/setup-uv", default="default-uv") == "default-uv"
+            workflow.action_ref("astral-sh/setup-uv", default="default-uv")
+            == "default-uv"
         )
 
     def test_uses(self, my_test_workflow: type[WorkflowConfigFile]) -> None:

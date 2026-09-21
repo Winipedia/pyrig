@@ -189,7 +189,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             The full action reference in the format `action@ref`.
         """
-        return f"{action}@{self.action(action, default=ref)}"
+        return f"{action}@{self.action_ref(action, default=ref)}"
 
     def concurrency(self) -> dict[str, Any]:
         """Return the workflow's concurrency setting.
@@ -771,7 +771,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         ).splitlines()
         return action, ref, tag
 
-    def action(self, name: str, *, default: str) -> str:
+    def action_ref(self, name: str, *, default: str) -> str:
         """Return the ref for an action, preferring the existing ref in the file.
 
         Looks for an existing step using `name` in the loaded workflow file. If
