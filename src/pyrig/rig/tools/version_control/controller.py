@@ -1,4 +1,4 @@
-"""Type-safe construction of version control CLI commands and identity resolution."""
+"""Type-safe construction of version control CLI commands."""
 
 from functools import cache
 
@@ -7,11 +7,10 @@ from pyrig.rig.tools.base.tool import Group, Tool
 
 
 class VersionController(Tool):
-    """Git tool wrapper exposing typed command builders and identity resolution.
+    """Git tool wrapper exposing typed command builders.
 
     Every `*_args` method returns an `Args` command prefixed with `git`, ready
-    to run or to render as a shell string. Other methods resolve the
-    repository owner and the local git user's configured identity.
+    to run or to render as a shell string.
     """
 
     def dev_dependencies(self) -> tuple[str, ...]:
@@ -37,7 +36,7 @@ class VersionController(Tool):
     @classmethod
     @cache
     def repo_owner(cls) -> str:
-        """Return the repository owner.
+        """Return the resolved repository owner, cached for the process lifetime.
 
         Returns:
             The repository owner.
@@ -45,13 +44,23 @@ class VersionController(Tool):
         return cls().resolve_repo_owner()
 
     def resolve_repo_owner(self) -> str:
-        """Return the repository owner, falling back to the local git username.
+        """Return the repository owner.
+
+        Resolves the repository owner using the following fallback order:
+        1. The name already written to `pyproject.toml`'s first maintainer entry.
+        2. The owner parsed from the remote origin URL.
+        3. The local git `user.name` (normalized).
 
         Returns:
-            The owner parsed from the remote origin URL, or the local
-            `user.name` (normalized) if no remote origin is configured.
+            The resolved repository owner.
         """
-        return self.remote_repo_owner() or self.normalized_username()
+        from pyrig.rig.configs.pyproject import PyprojectConfigFile  # noqa: PLC0415
+
+        return (
+            PyprojectConfigFile.I.maintainer_name()
+            or self.remote_repo_owner()
+            or self.normalized_username()
+        )
 
     def default_branch(self) -> str:
         """Return `'main'` as this project's default branch name."""

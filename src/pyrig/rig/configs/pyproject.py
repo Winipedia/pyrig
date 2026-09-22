@@ -405,6 +405,14 @@ class PyprojectConfigFile(TOMLConfigFile):
         """
         return self.safe_load().get("project", {}).get("version", "0.1.0")
 
+    def maintainer_name(self) -> str | None:
+        """Read the first maintainer's name from `pyproject.toml`.
+
+        Returns:
+            Name string from `pyproject.toml`, or `None` if absent.
+        """
+        return self.first_maintainer().get("name")
+
     def maintainer_email(self) -> str:
         """Read the first maintainer's email from `pyproject.toml`.
 

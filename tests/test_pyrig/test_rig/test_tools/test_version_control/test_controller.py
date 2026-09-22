@@ -6,6 +6,7 @@ from pathlib import Path
 from pytest_mock import MockerFixture
 
 from pyrig.core.subprocesses import Args, run_subprocess_cached
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote.controller import RemoteVersionController
 
@@ -44,8 +45,15 @@ class TestVersionController:
 
     def test_resolve_repo_owner(self, mocker: MockerFixture) -> None:
         """Test method."""
+        maintainer_name_mock = mocker.patch.object(
+            PyprojectConfigFile,
+            PyprojectConfigFile.maintainer_name.__name__,
+            return_value=None,
+        )
+
         result = VersionController().resolve_repo_owner()
         assert result == "Winipedia"
+        maintainer_name_mock.assert_called_once()
 
         # mock remote_url to return empty string
         remote_mock = mocker.patch.object(

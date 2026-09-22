@@ -79,7 +79,11 @@ class LicenseConfigFile(StringConfigFile):
                 year,
                 1,
             )
-            .replace(self.fullname_placeholder(), VersionController.I.repo_owner(), 1)
+            .replace(
+                self.fullname_placeholder(),
+                VersionController.I.repo_owner(),
+                1,
+            )
         )
 
     def license_template(self) -> str:

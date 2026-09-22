@@ -476,3 +476,10 @@ class TestPyprojectConfigFile:
         assert isinstance(PyprojectConfigFile.I.first_maintainer(), dict)
         assert "name" in PyprojectConfigFile.I.first_maintainer()
         assert "email" in PyprojectConfigFile.I.first_maintainer()
+
+    def test_maintainer_name(self) -> None:
+        """Test method."""
+        assert (
+            PyprojectConfigFile.I.maintainer_name() == VersionController.I.repo_owner()
+        )
+        assert PyprojectConfigFile.I.maintainer_name() == "Winipedia"

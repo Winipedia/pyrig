@@ -35,14 +35,18 @@ pyrig requires Python 3.12 or higher to run. You can seamlessly manage
 multiple Python versions with uv's built-in python version management.
 
 **Git**:
-Pyrig requires you to have git installed for version control.
-One of pyrig's standards is that your git username should match your GitHub username
-because pyrig uses the values set in your git's username and email to insert them
-into files, like your username and email as the author/maintainer in
-pyproject.toml for example. The git username is only a fallback in case the
-repository's remote URL is not set, so if you have already cloned your
-repository before running `pyrig init`, pyrig will use the GitHub username
-parsed from the remote URL instead of the git username.
+You must have git installed as the version control system.
+Pyrig makes use of your git configuration to extract values like your email or username.
+Those values are used to populate files that need those values.
+For example your email is used to populate the maintainer email in `pyproject.toml`.
+
+The repository owner is determined in the following fallback order:
+
+1. The name already written to `pyproject.toml`'s first maintainer entry (`project.maintainers[0].name`).
+2. The owner parsed from the remote origin URL.
+3. The local git `user.name` (normalized).
+
+Make sure that one of those values is present before running `pyrig init`.
 
 ```bash
 # Verify installation
