@@ -103,9 +103,7 @@ class PyprojectConfigFile(TOMLConfigFile):
         # pyproject.toml sometimes has info other config files need and vice versa.
         # to avoid local imports of PyprojectConfigFile spread across the project
         # we centralize local imports of the other config files here.
-        from pyrig.rig.configs.readme import (  # noqa: PLC0415
-            ReadmeConfigFile,
-        )
+        from pyrig.rig.configs.readme import ReadmeConfigFile  # noqa: PLC0415
 
         return {
             "project": {
