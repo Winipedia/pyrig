@@ -38,7 +38,11 @@ multiple Python versions with uv's built-in python version management.
 You must have git installed as the version control system.
 Pyrig makes use of your git configuration to extract values like your email or username.
 Those values are used to populate files that need those values.
-For example your email is used to populate the maintainer email in `pyproject.toml`.
+
+The repository contact email is determined in the following fallback order:
+
+1. The email already written to `pyproject.toml`'s first maintainer entry (`project.maintainers[0].email`).
+2. The local git `user.email`.
 
 The repository owner is determined in the following fallback order:
 
