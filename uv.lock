@@ -715,7 +715,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "18.85.1"
+version = "18.85.3"
 source = { editable = "." }
 dependencies = [
     { name = "inquirerpy" },
@@ -763,45 +763,45 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "inquirerpy", specifier = ">=0.3.4" },
-    { name = "packaging", specifier = ">=26.2" },
-    { name = "pyrig-runtime", specifier = ">=3.5.2" },
+    { name = "packaging", specifier = ">=26.3" },
+    { name = "pyrig-runtime", specifier = ">=3.23.45" },
     { name = "ruamel-yaml", specifier = ">=0.19.1" },
-    { name = "ruamel-yaml-clib", specifier = ">=0.2.8" },
+    { name = "ruamel-yaml-clib", specifier = ">=0.2.15" },
     { name = "spdx-matcher", specifier = ">=0.1.4" },
     { name = "tomli-w", specifier = ">=1.2.0" },
-    { name = "typer", specifier = ">=0.26.8" },
+    { name = "typer", specifier = ">=0.27.2" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "actionlint-py", specifier = ">=1.7.12.24" },
+    { name = "actionlint-py", specifier = ">=1.7.12.25" },
     { name = "bandit", specifier = ">=1.9.4" },
     { name = "deptry", specifier = ">=0.25.1" },
     { name = "detect-secrets", specifier = ">=1.5.0" },
-    { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0.5" },
+    { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0.6" },
     { name = "pre-commit-hooks", specifier = ">=6.0.0" },
-    { name = "prek", specifier = ">=0.4.11" },
+    { name = "prek", specifier = ">=0.5.3" },
     { name = "pyflakes", specifier = ">=3.4.0" },
-    { name = "pyrig-codecov", specifier = ">=3.2.6" },
-    { name = "pyrig-env", specifier = ">=1.0.0" },
-    { name = "pyrig-fixtures", specifier = ">=2.3.2" },
-    { name = "pyrig-overrides", specifier = ">=4.2.2" },
-    { name = "pyrig-pypi", specifier = ">=3.1.2" },
-    { name = "pyrig-resources", specifier = ">=3.1.2" },
+    { name = "pyrig-codecov", specifier = ">=3.17.31" },
+    { name = "pyrig-env", specifier = ">=1.0.29" },
+    { name = "pyrig-fixtures", specifier = ">=2.24.59" },
+    { name = "pyrig-overrides", specifier = ">=4.20.58" },
+    { name = "pyrig-pypi", specifier = ">=3.20.28" },
+    { name = "pyrig-resources", specifier = ">=3.13.74" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
-    { name = "pytest-randomly", specifier = ">=4.1.0" },
+    { name = "pytest-randomly", specifier = ">=5.0.0" },
     { name = "pytest-xdist", specifier = ">=3.8.0" },
-    { name = "ruff", specifier = ">=0.15.21" },
-    { name = "rumdl", specifier = ">=0.2.30" },
-    { name = "ryl" },
-    { name = "shellcheck-py" },
-    { name = "shfmt-py" },
-    { name = "tombi" },
-    { name = "ty", specifier = ">=0.0.58" },
-    { name = "typos", specifier = ">=1.48.0" },
-    { name = "zensical", specifier = ">=0.0.52" },
-    { name = "zizmor", specifier = ">=1.30.0" },
+    { name = "ruff", specifier = ">=0.16.8" },
+    { name = "rumdl", specifier = ">=0.2.75" },
+    { name = "ryl", specifier = ">=0.22.0" },
+    { name = "shellcheck-py", specifier = ">=0.11.0.1" },
+    { name = "shfmt-py", specifier = ">=4.2.0" },
+    { name = "tombi", specifier = ">=1.5.5" },
+    { name = "ty", specifier = ">=0.0.83" },
+    { name = "typos", specifier = ">=1.50.2" },
+    { name = "zensical", specifier = ">=0.0.64" },
+    { name = "zizmor", specifier = ">=1.30.1" },
 ]
 
 [[package]]
