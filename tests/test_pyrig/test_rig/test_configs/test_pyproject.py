@@ -470,3 +470,9 @@ class TestPyprojectConfigFile:
             LicenseConfigFile,
             PackageInitConfigFile,
         )
+
+    def test_first_maintainer(self) -> None:
+        """Test method."""
+        assert isinstance(PyprojectConfigFile.I.first_maintainer(), dict)
+        assert "name" in PyprojectConfigFile.I.first_maintainer()
+        assert "email" in PyprojectConfigFile.I.first_maintainer()

@@ -406,12 +406,19 @@ class PyprojectConfigFile(TOMLConfigFile):
         return self.safe_load().get("project", {}).get("version", "0.1.0")
 
     def maintainer_email(self) -> str:
-        """Read the author's email from `pyproject.toml`.
+        """Read the first maintainer's email from `pyproject.toml`.
 
         Returns:
             Email string from `pyproject.toml`, or the configured git user
             email if absent.
         """
-        return (
-            self.safe_load().get("project", {}).get("authors", [{}])[0].get("email")
-        ) or VersionController.I.email()
+        return self.first_maintainer().get("email") or VersionController.I.email()
+
+    def first_maintainer(self) -> dict[str, str]:
+        """Read the first maintainer's information from `pyproject.toml`.
+
+        Returns:
+            Dictionary containing the first maintainer's information from
+            `pyproject.toml`, or an empty dictionary if absent.
+        """
+        return self.safe_load().get("project", {}).get("maintainers", [{}])[0]
