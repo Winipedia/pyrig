@@ -25,6 +25,38 @@
   "UV_NO_SYNC": 1
 "run-name": "Health Check"
 "jobs":
+  "analyze":
+    "name": "Analyze"
+    "permissions":
+      "actions": "read"  # required
+      "contents": "read"
+      "security-events": "write"  # required
+    "runs-on": "ubuntu-latest"
+    "strategy":
+      "matrix":
+        "language":
+          - "python"
+          - "actions"
+      "fail-fast": true
+    "steps":
+      -
+        "name": "Checkout Repository"
+        "id": "checkout-repository"
+        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1
+        "with":
+          "persist-credentials": false
+      -
+        "name": "Initialize Codeql"
+        "id": "initialize-codeql"
+        "uses": "github/codeql-action/init@1c5b675653bb5c22dbe9b12b556ec555138e09fd"  # v4.38.1
+        "with":
+          "languages": "${{ matrix.language }}"
+          "build-mode": "none"
+          "queries": "security-and-quality"
+      -
+        "name": "Perform Codeql Analysis"
+        "id": "perform-codeql-analysis"
+        "uses": "github/codeql-action/analyze@1c5b675653bb5c22dbe9b12b556ec555138e09fd"  # v4.38.1
   "health-checks":
     "name": "Health Checks"
     "permissions":
@@ -101,7 +133,7 @@
       -
         "name": "Upload Coverage Report"
         "id": "upload-coverage-report"
-        "uses": "codecov/codecov-action@0b35c9ecc4f0529d0eb674914510c22f85b196b4"  # v7.1.0
+        "uses": "codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5"  # v7.1.1
         "with":
           "files": "coverage.xml"
           "token": "${{ secrets.CODECOV_TOKEN }}"
@@ -110,6 +142,7 @@
   "health-check":
     "name": "Health Check"
     "needs":
+      - "analyze"
       - "health-checks"
       - "matrix-health-checks"
     "runs-on": "ubuntu-latest"

@@ -19,7 +19,9 @@
   "health-check":
     "name": "Health Check"
     "permissions":
+      "actions": "read"  # required
       "contents": "read"
+      "security-events": "write"  # required
     "uses": "$/.github/workflows/health_check.yml"
     "secrets":
       "CODECOV_TOKEN": "${{ secrets.CODECOV_TOKEN }}"

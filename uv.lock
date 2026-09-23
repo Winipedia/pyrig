@@ -715,7 +715,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "18.86.0"
+version = "18.86.2"
 source = { editable = "." }
 dependencies = [
     { name = "inquirerpy" },
@@ -739,6 +739,7 @@ dev = [
     { name = "prek" },
     { name = "pyflakes" },
     { name = "pyrig-codecov" },
+    { name = "pyrig-codeql" },
     { name = "pyrig-env" },
     { name = "pyrig-fixtures" },
     { name = "pyrig-overrides" },
@@ -783,6 +784,7 @@ dev = [
     { name = "prek", specifier = ">=0.5.3" },
     { name = "pyflakes", specifier = ">=3.4.0" },
     { name = "pyrig-codecov", specifier = ">=3.17.31" },
+    { name = "pyrig-codeql", specifier = ">=1.0.0" },
     { name = "pyrig-env", specifier = ">=1.0.29" },
     { name = "pyrig-fixtures", specifier = ">=2.24.59" },
     { name = "pyrig-overrides", specifier = ">=4.20.58" },
@@ -815,6 +817,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/46/77/35345f3bc2e4fa846eb1f863e8d5bbf58811ca735a3994d1dbed9747f6ac/pyrig_codecov-3.17.34.tar.gz", hash = "sha256:0977a05b2f5fbbb81557a0c40a60d6c4f6d6484ad32427a9e92f826600ff4b03", size = 6380, upload-time = "2026-09-23T20:28:17.011Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/08/d9/82ef53d0357ce943da9e502b2d951c34b3c62d8755f1f3d205ddc82d63f9/pyrig_codecov-3.17.34-py3-none-any.whl", hash = "sha256:3dcb46e1ec8dc65aaae6194db77de7aaf53eca04f04383d974e921d3a9788329", size = 10818, upload-time = "2026-09-23T20:28:16.021Z" },
+]
+
+[[package]]
+name = "pyrig-codeql"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyrig" },
+    { name = "pyrig-runtime" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f3/b4/18adde4a855302813abdb691d94c8669cf2f7e51df5bebfcfd94be410bd7/pyrig_codeql-1.0.0.tar.gz", hash = "sha256:4a43e98eac9107d2435f95b176922d059910cc9d306c92be60215d33f758af26", size = 5857, upload-time = "2026-09-23T22:59:11.236Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/51/ee/8b628b5de726f1f4734d063bc5fbd3aa9e094fb06b8a8383822585a90314/pyrig_codeql-1.0.0-py3-none-any.whl", hash = "sha256:080414a13683e3d3510b754196531da7e4b905b3ac6e0f98afb9dac56538a175", size = 9308, upload-time = "2026-09-23T22:59:10.246Z" },
 ]
 
 [[package]]
