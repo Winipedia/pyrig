@@ -69,6 +69,7 @@ def test_uninstall_pyrig(mocker: MockerFixture, tmp_path: Path) -> None:
     assert set(args) == {
         "pyrig",
         "pyrig-codecov",
+        "pyrig-codeql",
         "pyrig-pypi",
         "pyrig-resources",
         "pyrig-fixtures",

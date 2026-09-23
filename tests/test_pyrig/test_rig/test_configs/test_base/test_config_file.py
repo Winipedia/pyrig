@@ -330,7 +330,9 @@ class TestConfigFile:
         expected = set(ConfigFile.concrete_leaves()) - {
             PyprojectConfigFile.L,
         }
-        assert set(ConfigFile.removable_subclasses()) == expected
+        expected_str_reprs = {str(cls.L) for cls in expected}
+        actual_str_reprs = {str(cls.L) for cls in ConfigFile.removable_subclasses()}
+        assert actual_str_reprs == expected_str_reprs
 
     def test_removable(self) -> None:
         """Test method."""

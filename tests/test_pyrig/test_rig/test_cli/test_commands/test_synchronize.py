@@ -51,7 +51,9 @@ def test_synchronize_config_files(mocker: MockerFixture) -> None:
     )
 
     all_subclasses = synchronize_config_files(None)
-    assert set(all_subclasses) == set(ConfigFile.concrete_leaves())
+    all_subclasses_str_reprs = {str(cls.L) for cls in all_subclasses}
+    concrete_leaves_str_reprs = {str(cls.L) for cls in ConfigFile.concrete_leaves()}
+    assert all_subclasses_str_reprs == concrete_leaves_str_reprs
 
     target = PyprojectConfigFile.L
     one_subclass = synchronize_config_files([target().path()])

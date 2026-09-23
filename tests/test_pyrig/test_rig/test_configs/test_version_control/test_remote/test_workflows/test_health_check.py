@@ -131,6 +131,7 @@ class TestHealthCheckWorkflowConfigFile:
     def test_job_health_check_needs(self) -> None:
         """Test method."""
         assert HealthCheckWorkflowConfigFile.I.job_health_check_needs() == (
+            HealthCheckWorkflowConfigFile.I.job_analyze,  # ty: ignore[unresolved-attribute]
             HealthCheckWorkflowConfigFile.I.job_health_checks,
             HealthCheckWorkflowConfigFile.I.job_matrix_health_checks,
         )
