@@ -127,3 +127,10 @@ class TestHealthCheckWorkflowConfigFile:
         result = my_test_health_check_workflow().step_aggregate_jobs()
         assert "name" in result, "Expected 'name' in step"
         assert "run" in result
+
+    def test_job_health_check_needs(self) -> None:
+        """Test method."""
+        assert HealthCheckWorkflowConfigFile.I.job_health_check_needs() == (
+            HealthCheckWorkflowConfigFile.I.job_health_checks,
+            HealthCheckWorkflowConfigFile.I.job_matrix_health_checks,
+        )

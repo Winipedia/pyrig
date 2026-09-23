@@ -109,3 +109,15 @@ class TestReleaseWorkflowConfigFile:
     def test_concurrency_cancel_in_progress(self) -> None:
         """Test method."""
         assert ReleaseWorkflowConfigFile.I.concurrency_cancel_in_progress() is False
+
+    def test_job_publish_needs(self) -> None:
+        """Test method."""
+        assert ReleaseWorkflowConfigFile.I.job_publish_needs() == (
+            ReleaseWorkflowConfigFile.I.job_health_check,
+        )
+
+    def test_job_deploy_needs(self) -> None:
+        """Test method."""
+        assert ReleaseWorkflowConfigFile.I.job_deploy_needs() == (
+            ReleaseWorkflowConfigFile.I.job_publish,
+        )

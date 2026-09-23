@@ -1,5 +1,6 @@
 """GitHub Actions workflow generator for the health check CI stage."""
 
+from types import MethodType
 from typing import Any, Literal
 
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
@@ -76,15 +77,19 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Job configuration with `needs` set to both sibling jobs and a
             single aggregation step.
         """
-        matrix_health_checks_job_id = self.job_id_from_method(
-            self.job_matrix_health_checks,
-        )
-        health_checks_job_id = self.job_id_from_method(self.job_health_checks)
         return self.job(
             self.job_health_check,
-            needs=[health_checks_job_id, matrix_health_checks_job_id],
+            needs=self.job_health_check_needs(),
             steps=self.steps_aggregate_jobs(),
         )
+
+    def job_health_check_needs(self) -> tuple[MethodType, ...]:
+        """Return the upstream jobs required before the aggregate job runs.
+
+        Returns:
+            Tuple containing the quality-check job and the matrix test job.
+        """
+        return (self.job_health_checks, self.job_matrix_health_checks)
 
     def steps_aggregate_jobs(self) -> list[dict[str, Any]]:
         """Return the steps for the fan-in aggregation job.

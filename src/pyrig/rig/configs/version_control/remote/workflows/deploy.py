@@ -1,5 +1,6 @@
 """Deployment workflow configuration."""
 
+from collections.abc import Iterable
 from types import MethodType
 from typing import Any
 
@@ -22,7 +23,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         self,
         method: MethodType,
         *,
-        needs: list[str] | None = None,
+        needs: Iterable[MethodType] | None = None,
         strategy: dict[str, Any] | None = None,
         permissions: dict[str, Any] | None = None,
         if_condition: str | None = None,
@@ -37,7 +38,8 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         Args:
             method: Method representing this job; its name is used to derive
                 the job ID and default environment name.
-            needs: IDs of jobs that must complete before this job starts.
+            needs: Job methods that must complete before this job starts.
+                Each method is converted to a kebab-case job ID.
             strategy: Matrix or other strategy configuration.
             permissions: Job-level permissions override.
             if_condition: GitHub Actions conditional expression controlling

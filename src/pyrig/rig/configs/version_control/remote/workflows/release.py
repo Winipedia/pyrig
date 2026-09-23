@@ -1,5 +1,6 @@
 """Workflow configuration for automated GitHub release creation."""
 
+from types import MethodType
 from typing import Any
 
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
@@ -74,10 +75,18 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.job(
             self.job_publish,
-            needs=[self.job_id_from_method(self.job_health_check)],
+            needs=self.job_publish_needs(),
             permissions=self.permission_contents(write=True),
             steps=self.steps_publish(),
         )
+
+    def job_publish_needs(self) -> tuple[MethodType, ...]:
+        """Return the prerequisite job for publishing a release.
+
+        Returns:
+            Tuple containing the health-check workflow job.
+        """
+        return (self.job_health_check,)
 
     def job_deploy(self) -> dict[str, Any]:
         """Return the deployment job configuration.
@@ -90,10 +99,18 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         return self.job(
             self.job_deploy,
             uses=DeployWorkflowConfigFile.I.workflow_call_reference(),
-            needs=[self.job_id_from_method(self.job_publish)],
+            needs=self.job_deploy_needs(),
             permissions=permissions,
             secrets=secrets,
         )
+
+    def job_deploy_needs(self) -> tuple[MethodType, ...]:
+        """Return the prerequisite job for the deployment workflow call.
+
+        Returns:
+            Tuple containing the publish job.
+        """
+        return (self.job_publish,)
 
     def steps_publish(self) -> list[dict[str, Any]]:
         """Return the ordered steps for the release job.

@@ -2,6 +2,7 @@
 
 import re
 from abc import abstractmethod
+from collections.abc import Iterable
 from pathlib import Path
 from types import MethodType, ModuleType
 from typing import Any
@@ -273,7 +274,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         self,
         method: MethodType,
         *,
-        needs: list[str] | None = None,
+        needs: Iterable[MethodType] | None = None,
         strategy: dict[str, Any] | None = None,
         permissions: dict[str, Any] | None = None,
         if_condition: str | None = None,
@@ -288,7 +289,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Args:
             method: Method representing this job; its name is used to derive
                 the job ID.
-            needs: IDs of jobs that must complete before this job starts.
+            needs: Job methods that must complete before this job starts.
+                Each method is converted to a kebab-case job ID.
             strategy: Matrix or other strategy configuration. Valid together
                 with `uses` (e.g. a matrix-driven reusable-workflow call).
             permissions: Job-level permissions override. When `uses` is set,
@@ -322,7 +324,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         if if_condition is not None:
             job["if"] = if_condition
         if needs is not None:
-            job["needs"] = needs
+            job["needs"] = [self.job_id_from_method(m) for m in needs]
         if uses is not None:
             job["uses"] = uses
             if secrets is not None:
