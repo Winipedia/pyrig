@@ -49,6 +49,7 @@ class TestHealthCheckWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_health_check_workflow().workflow_triggers()
+        assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
         assert "pull_request" in result, "Expected 'pull_request' in triggers"
         assert "schedule" in result, "Expected 'schedule' in triggers"
         assert "workflow_call" in result, "Expected 'workflow_call' in triggers"

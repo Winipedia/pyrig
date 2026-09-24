@@ -33,12 +33,13 @@ running them as jobs in sequence:
               └───────────────────┘
 ```
 
-`Health Check` is also independently triggered by every pull request and a
-nightly schedule, so it doubles as both a PR gate and a reusable job called
-from `release.yml`. `Deploy` only runs via `workflow_call`, invoked by
-`release.yml`'s `deploy` job after `publish` succeeds; since jobs run in
-dependency order (`needs:`), no `if` guard is required — `deploy` never
-executes unless `publish` (and, transitively, `health-check`) succeeded.
+`Health Check` is also independently triggered by manual dispatch, every pull
+request, and a nightly schedule, so it supports on-demand diagnostics while
+doubling as both a PR gate and a reusable job called from `release.yml`.
+`Deploy` only runs via `workflow_call`, invoked by `release.yml`'s `deploy` job
+after `publish` succeeds; since jobs run in dependency order (`needs:`), no
+`if` guard is required — `deploy` never executes unless `publish` (and,
+transitively, `health-check`) succeeded.
 
 Every job in the deploy workflow gets its own GitHub Actions environment,
 named after the job's stable ID automatically.
@@ -49,12 +50,13 @@ named after the job's stable ID automatically.
 
 **File:** `.github/workflows/health_check.yml`
 
-This workflow executes tests and other general health checks. It has three
-triggers: every pull request, a nightly schedule, and `workflow_call` (so
-`release.yml` can run it as a job). As a PR gate it blocks merging until it
+This workflow executes tests and other general health checks. It has four
+triggers: manual dispatch, every pull request, a nightly schedule, and
+`workflow_call` (so `release.yml` can run it as a job). Manual dispatch is
+useful for on-demand diagnostics; as a PR gate it blocks merging until it
 passes; as a nightly job it catches regressions from automatic dependency
-upgrades (see below); as a reusable workflow it acts as the first job in the
-release pipeline, gating `publish`.
+upgrades (see below); and as a reusable workflow it acts as the first job in
+the release pipeline, gating `publish`.
 
 ---
 

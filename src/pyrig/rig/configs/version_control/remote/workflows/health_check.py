@@ -35,12 +35,13 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         return "health_check"
 
     def workflow_triggers(self) -> dict[str, Any]:
-        """Return pull request, scheduled, and reusable-workflow triggers.
+        """Return manual, pull request, scheduled, and reusable-workflow triggers.
 
         Returns:
             Trigger configuration keyed by event name.
         """
         return {
+            **self.on_workflow_dispatch(),
             **self.on_pull_request(),
             **self.on_schedule(cron=" ".join(map(str, self.cron_schedule()))),
             **self.on_workflow_call(),

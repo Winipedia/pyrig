@@ -137,6 +137,15 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().workflow_triggers()
         assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
 
+    def test_on_workflow_dispatch(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().on_workflow_dispatch() == {
+            "workflow_dispatch": {},
+        }
+
     def test_global_env(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().global_env()

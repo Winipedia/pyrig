@@ -541,6 +541,14 @@ class WorkflowConfigFile(YMLDictConfigFile):
             types = ["opened", "synchronize", "reopened"]
         return {self.pull_request_event_key(): {"types": types}}
 
+    def on_workflow_dispatch(self) -> dict[str, Any]:
+        """Create a manual `workflow_dispatch` trigger.
+
+        Returns:
+            Trigger configuration for manually dispatched workflow runs.
+        """
+        return {"workflow_dispatch": {}}
+
     def pull_request_event_key(self) -> str:
         """Return the key used for pull request events."""
         return "pull_request"
