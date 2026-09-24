@@ -145,3 +145,9 @@ class TestLicenseConfigFile:
     def test_fullname_placeholder(self) -> None:
         """Test method."""
         assert LicenseConfigFile.I.fullname_placeholder() == "[fullname]"
+
+    def test_analyze_license_text(self) -> None:
+        """Test method."""
+        licenses, confidence = LicenseConfigFile.I.analyze_license_text()
+        assert isinstance(licenses, dict)
+        assert isinstance(confidence, float)

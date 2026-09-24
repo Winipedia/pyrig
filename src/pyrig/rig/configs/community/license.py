@@ -8,6 +8,7 @@ import re
 from datetime import UTC, datetime
 from functools import cache
 from pathlib import Path
+from typing import Any
 
 from pyrig_runtime.core.strings import regex_find
 from pyrig_runtime.core.wrappers import safe_call
@@ -133,8 +134,18 @@ class LicenseConfigFile(StringConfigFile):
         Raises:
             FileNotFoundError: If the file does not exist.
         """
-        licenses, _ = analyse_license_text(cls().read_content())
+        licenses, _ = cls().analyze_license_text()
         return next(iter(licenses["licenses"]), "LicenseRef-Custom")
+
+    def analyze_license_text(self) -> tuple[dict[str, dict[str, Any]], float]:
+        """Analyze the files text and return the detected licenses and confidence score.
+
+        Returns:
+            A tuple containing:
+            - A dictionary with license information.
+            - A float representing the confidence score.
+        """
+        return analyse_license_text(self.read_content())
 
     def year_placeholder(self) -> str:
         """Return the placeholder for the year in the license text.
