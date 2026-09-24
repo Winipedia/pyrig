@@ -45,7 +45,7 @@ def make_package_dir(path: Path, root: Path, content: str) -> None:
     relative = path.relative_to(root)
     path.mkdir(parents=True, exist_ok=True)
     for p in (relative, *relative.parents):
-        _path, _created = make_init_file(root / p, content=content)
+        make_init_file(root / p, content=content)
 
 
 def make_init_file(path: Path, content: str) -> tuple[Path, bool]:
