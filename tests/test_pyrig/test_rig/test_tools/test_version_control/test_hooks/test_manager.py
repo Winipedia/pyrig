@@ -109,15 +109,6 @@ class TestVersionControlHookManager:
         )
         assert "exclude" not in hook
 
-    def test_transition_stages(self) -> None:
-        """Test method."""
-        assert VersionControlHookManager.I.transition_stages() == [
-            "post-checkout",
-            "post-merge",
-            "post-rewrite",
-            "pre-push",
-        ]
-
     def test_group_all(self) -> None:
         """Test method."""
         assert VersionControlHookManager.I.group_all() == "all"
@@ -161,7 +152,7 @@ class TestVersionControlHookManager:
         hook = {"repo": "my-repo", "stages": ["pre-commit"], "priority": 2, "id": "b"}
         assert VersionControlHookManager.I.hook_sort_key(hook) == (
             "my-repo",
-            ["pre-commit"],
             2,
+            ["pre-commit"],
             "b",
         )

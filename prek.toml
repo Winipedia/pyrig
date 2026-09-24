@@ -15,9 +15,6 @@ name = "update dependencies"
 language = "system"
 entry = "uv lock --upgrade"
 stages = [
-  "post-checkout",
-  "post-merge",
-  "post-rewrite",
   "pre-push",
 ]
 groups = [

@@ -1,6 +1,7 @@
 """Command and hook-metadata construction for the prek pre-commit pipeline."""
 
 from collections.abc import Callable, Iterable
+from operator import itemgetter
 from types import MethodType
 from typing import Any, cast
 
@@ -117,8 +118,12 @@ class VersionControlHookManager(Tool):
         return self.args("run", *args)
 
     def hook_sort_key(self, hook: dict[str, Any]) -> tuple[Any, ...]:
-        """Return a sort key ordering a hook by its repo, stages, priority, then id."""
-        return (hook["repo"], hook["stages"], hook["priority"], hook["id"])
+        """Return a sort key ordering a hook by its repo, priority, stages, then id.
+
+        `priority` leads `stages`, matching prek's own scheduler, which
+        orders hooks by `priority` alone regardless of `stages`.
+        """
+        return itemgetter("repo", "priority", "stages", "id")(hook)
 
     def hook(  # noqa: PLR0913
         self,
@@ -200,16 +205,6 @@ class VersionControlHookManager(Tool):
         if pass_filenames is not None:
             hook["pass_filenames"] = pass_filenames
         return hook
-
-    def transition_stages(self) -> list[str]:
-        """Return the git stages a project's dependency state transitions on.
-
-        Returns:
-            `["post-checkout", "post-merge", "post-rewrite", "pre-push"]`,
-            the events after which the lockfile, installed dependencies, or
-            their audit may need to run again.
-        """
-        return ["post-checkout", "post-merge", "post-rewrite", "pre-push"]
 
     def group_all(self) -> str:
         """Return the prek hook group every hook is tagged with.

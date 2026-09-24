@@ -287,9 +287,8 @@ class PackageManager(VersionControlHookTool):
     def update_dependencies_hook(self) -> dict[str, Any]:
         """Return the hook metadata for upgrading locked dependency versions.
 
-        Runs first among the transition-stage hooks, since every other step
-        that touches dependencies depends on the lock file already being
-        current.
+        Only runs on `pre-push`, since upgrading the lockfile is a mutating,
+        network-dependent operation.
 
         Returns:
             Hook metadata dict for `uv lock --upgrade`.
@@ -297,7 +296,7 @@ class PackageManager(VersionControlHookTool):
         return VersionControlHookManager.I.hook(
             self.update_dependencies,
             priority=0,
-            stages=VersionControlHookManager.I.transition_stages(),
+            stages=["pre-push"],
             pass_filenames=False,
             always_run=True,
         )
@@ -313,8 +312,8 @@ class PackageManager(VersionControlHookTool):
     def install_dependencies_hook(self) -> dict[str, Any]:
         """Return the hook metadata for installing dependencies.
 
-        Runs after `update_dependencies_hook`, since installing requires the
-        lock file it refreshes.
+        Runs after `update_dependencies_hook`, since installing on `pre-push`
+        should reflect the lock file it just refreshed.
 
         Returns:
             Hook metadata dict for `uv sync`.
@@ -324,7 +323,7 @@ class PackageManager(VersionControlHookTool):
             priority=VersionControlHookManager.I.increase_priority(
                 self.update_dependencies_hook(),
             ),
-            stages=VersionControlHookManager.I.transition_stages(),
+            stages=["post-checkout", "post-merge", "post-rewrite", "pre-push"],
             pass_filenames=False,
             always_run=True,
         )
@@ -341,7 +340,7 @@ class PackageManager(VersionControlHookTool):
         """Return the hook metadata for auditing installed dependencies.
 
         Runs after `install_dependencies_hook`, since auditing requires the
-        dependencies it installs to already be present.
+        dependencies to already be present.
 
         Returns:
             Hook metadata dict for `uv audit`.
@@ -351,7 +350,7 @@ class PackageManager(VersionControlHookTool):
             priority=VersionControlHookManager.I.increase_priority(
                 self.install_dependencies_hook(),
             ),
-            stages=VersionControlHookManager.I.transition_stages(),
+            stages=["post-checkout", "post-merge", "post-rewrite", "pre-push"],
             pass_filenames=False,
             always_run=True,
         )

@@ -3,7 +3,6 @@
 from pathlib import Path
 
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
 class TestPackageManager:
@@ -138,7 +137,7 @@ class TestPackageManager:
         """Test method."""
         hook = PackageManager.I.update_dependencies_hook()
         assert hook["priority"] == 0
-        assert hook["stages"] == VersionControlHookManager.I.transition_stages()
+        assert hook["stages"] == ["pre-push"]
         assert hook["always_run"] is True
         assert hook["pass_filenames"] is False
 
@@ -155,7 +154,12 @@ class TestPackageManager:
         update_hook = PackageManager.I.update_dependencies_hook()
         install_hook = PackageManager.I.install_dependencies_hook()
         assert install_hook["priority"] > update_hook["priority"]
-        assert install_hook["stages"] == VersionControlHookManager.I.transition_stages()
+        assert install_hook["stages"] == [
+            "post-checkout",
+            "post-merge",
+            "post-rewrite",
+            "pre-push",
+        ]
 
     def test_install_dependencies(self) -> None:
         """Test method."""
@@ -190,7 +194,12 @@ class TestPackageManager:
         assert (
             hook["priority"] > PackageManager.I.install_dependencies_hook()["priority"]
         )
-        assert hook["stages"] == VersionControlHookManager.I.transition_stages()
+        assert hook["stages"] == [
+            "post-checkout",
+            "post-merge",
+            "post-rewrite",
+            "pre-push",
+        ]
         assert hook["always_run"] is True
         assert hook["pass_filenames"] is False
 
