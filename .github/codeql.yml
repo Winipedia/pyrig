@@ -1,0 +1,7 @@
+---
+"paths-ignore":
+  - "tests/**"
+"queries":
+  -
+    "uses": "security-and-quality"
+...

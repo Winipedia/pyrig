@@ -51,11 +51,10 @@
         "uses": "github/codeql-action/init@1c5b675653bb5c22dbe9b12b556ec555138e09fd"  # v4.38.1
         "with":
           "languages": "${{ matrix.language }}"
-          "build-mode": "none"
-          "queries": "security-and-quality"
+          "config-file": ".github/codeql.yml"
       -
-        "name": "Perform Codeql Analysis"
-        "id": "perform-codeql-analysis"
+        "name": "Analyze Code"
+        "id": "analyze-code"
         "uses": "github/codeql-action/analyze@1c5b675653bb5c22dbe9b12b556ec555138e09fd"  # v4.38.1
   "health-checks":
     "name": "Health Checks"
