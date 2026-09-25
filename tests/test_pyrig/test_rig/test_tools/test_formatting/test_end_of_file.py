@@ -44,7 +44,7 @@ class TestEndOfFileFormatter:
 
     def test_format_hook(self) -> None:
         """Test method."""
-        # the end-of-file fix runs last in the sequential text-fixing chain
+        # the end-of-file fix runs last in the general text-fixing chain
         hook = EndOfFileFormatter.I.format_hook()
         whitespace_hook = TrailingWhitespaceFormatter.I.format_hook()
         assert hook["priority"] > whitespace_hook["priority"]

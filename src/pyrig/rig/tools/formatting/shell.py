@@ -5,9 +5,8 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
 from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
-from pyrig.rig.tools.linting.shell import ShellLinter
 from pyrig.rig.tools.packages.manager import PackageManager
+from pyrig.rig.tools.security.secrets import SecretsChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -53,8 +52,8 @@ class ShellFormatter(FormatHookTool):
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting shell scripts.
 
-        Runs after the sequential text-fixing chain, alongside the other
-        file-type-specific fixers. Passes `--write` so changes are written
+        Runs after the general read-only checks, alongside the other
+        file-specific formatters. Passes `--write` so changes are written
         back to each file rather than only printed to stdout. Uses 2-space
         indentation and puts a wrapped pipeline's `|`, `&&`, or `||` at the
         start of the continuation line rather than the end of the previous
@@ -71,15 +70,15 @@ class ShellFormatter(FormatHookTool):
         """
         return VersionControlHookManager.I.local_hook(
             self.format_shell,
-            priority=VersionControlHookManager.I.increase_priority(
-                EndOfFileFormatter.I.format_hook(),
+            priority=VersionControlHookManager.I.deprioritize(
+                SecretsChecker.I.check_hook(),
             ),
             types=["shell"],
             args=Args(
                 "--binary-next-line",
                 "--case-indent",
                 "--indent=2",
-                f"--language-dialect={ShellLinter.I.dialect()}",
+                f"--language-dialect={self.dialect()}",
                 "--simplify",
                 "--write",
             ),
@@ -92,3 +91,7 @@ class ShellFormatter(FormatHookTool):
             Args for `uv run shfmt`.
         """
         return PackageManager.I.run_args(*self.format_args())
+
+    def dialect(self) -> str:
+        """Return the shell dialect this formatter standardizes on."""
+        return "bash"

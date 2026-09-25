@@ -5,7 +5,7 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
 from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.typing.checker import TypeChecker
+from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -53,16 +53,15 @@ class LargeFileChecker(CheckHookTool):
         Left without a `types` restriction so it matches every file,
         binary included, since a large binary is exactly what this check
         exists to catch.
-        Ties its priority to `TypeChecker.check_hook` so it runs alongside the rest
-        of the checks tier rather than after it.
+        Runs after the general text-fixing chain.
 
         Returns:
             Hook metadata dict for `check-added-large-files --enforce-all`.
         """
         return VersionControlHookManager.I.builtin_hook(
             self.check_added_large_files,
-            priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_hook(),
+            priority=VersionControlHookManager.I.deprioritize(
+                EndOfFileFormatter.I.format_hook(),
             ),
         )
 

@@ -3,7 +3,7 @@
 from abc import abstractmethod
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
-from pyrig.rig.tools.linting.shell import ShellLinter
+from pyrig.rig.tools.formatting.shell import ShellFormatter
 
 
 class ShellConfigFile(StringConfigFile):
@@ -63,7 +63,7 @@ class ShellConfigFile(StringConfigFile):
 
     def shebang_line(self) -> str:
         """Return the shebang pinning the interpreter to the shell dialect."""
-        return f"#!/usr/bin/env {ShellLinter.I.dialect()}"
+        return f"#!/usr/bin/env {ShellFormatter.I.dialect()}"
 
     def strict_mode_line(self) -> str:
         """Return `"set -euo pipefail"`."""

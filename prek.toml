@@ -93,6 +93,42 @@ groups = [
 priority = 5
 
 [[repos.hooks]]
+id = "check-secrets"
+name = "check secrets"
+language = "system"
+entry = "uv run detect-secrets-hook"
+types = [
+  "text",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 9
+
+[[repos.hooks]]
+id = "check-test-naming"
+name = "check test naming"
+language = "system"
+entry = "uv run name-tests-test"
+args = [
+  "--pytest-test-first",
+]
+types = [
+  "python",
+]
+files = "^tests/"
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 9
+
+[[repos.hooks]]
 id = "format-markdown"
 name = "format markdown"
 language = "system"
@@ -109,7 +145,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10
 
 [[repos.hooks]]
 id = "format-shell"
@@ -133,7 +169,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10
 
 [[repos.hooks]]
 id = "format-toml"
@@ -150,7 +186,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10
 
 [[repos.hooks]]
 id = "lint-python"
@@ -169,7 +205,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
+priority = 10
 
 [[repos.hooks]]
 id = "lint-yaml"
@@ -182,22 +218,6 @@ args = [
 ]
 types = [
   "yaml",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 9
-
-[[repos.hooks]]
-id = "format-python"
-name = "format python"
-language = "system"
-entry = "uv run ruff format"
-types = [
-  "python",
 ]
 stages = [
   "pre-commit",
@@ -230,127 +250,13 @@ groups = [
 priority = 11
 
 [[repos.hooks]]
-id = "check-dependencies"
-name = "check dependencies"
+id = "format-python"
+name = "format python"
 language = "system"
-entry = "uv run deptry"
+entry = "uv run ruff format"
 types_or = [
-  "pyproject",
-  "python",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-pass_filenames = false
-priority = 11
-
-[[repos.hooks]]
-id = "check-secrets"
-name = "check secrets"
-language = "system"
-entry = "uv run detect-secrets-hook"
-types = [
-  "text",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 11
-
-[[repos.hooks]]
-id = "check-security"
-name = "check security"
-language = "system"
-entry = "uv run bandit"
-args = [
-  "--exclude=tests",
-]
-types = [
-  "python",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 11
-
-[[repos.hooks]]
-id = "check-test-naming"
-name = "check test naming"
-language = "system"
-entry = "uv run name-tests-test"
-args = [
-  "--pytest-test-first",
-]
-types = [
-  "python",
-]
-files = "^tests/"
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 11
-
-[[repos.hooks]]
-id = "check-types"
-name = "check types"
-language = "system"
-entry = "uv run ty check"
-types = [
-  "python",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-pass_filenames = false
-priority = 11
-
-[[repos.hooks]]
-id = "lint-ci-cd"
-name = "lint ci cd"
-language = "system"
-entry = "uv run actionlint"
-args = [
-  "--ignore=reusable workflow call \"\\$/.*\" at \"uses\" is not following the format",
-  "--pyflakes=pyflakes",
-  "--shellcheck=uv run shellcheck --check-sourced --enable=all --external-sources --norc --shell=bash",
-]
-types = [
-  "yaml",
-]
-files = "^\\.github/workflows/"
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 11
-
-[[repos.hooks]]
-id = "lint-markdown"
-name = "lint markdown"
-language = "system"
-entry = "uv run rumdl check"
-args = [
-  "--deny-config-warnings",
-]
-types = [
   "markdown",
+  "python",
 ]
 stages = [
   "pre-commit",
@@ -403,6 +309,101 @@ groups = [
 ]
 priority = 11
 
+[[repos.hooks]]
+id = "check-dependencies"
+name = "check dependencies"
+language = "system"
+entry = "uv run deptry"
+types_or = [
+  "pyproject",
+  "python",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+pass_filenames = false
+priority = 12
+
+[[repos.hooks]]
+id = "check-security"
+name = "check security"
+language = "system"
+entry = "uv run bandit"
+args = [
+  "--exclude=tests",
+]
+types = [
+  "python",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 12
+
+[[repos.hooks]]
+id = "check-types"
+name = "check types"
+language = "system"
+entry = "uv run ty check"
+types = [
+  "python",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+pass_filenames = false
+priority = 12
+
+[[repos.hooks]]
+id = "lint-ci-cd"
+name = "lint ci cd"
+language = "system"
+entry = "uv run actionlint"
+args = [
+  "--ignore=reusable workflow call \"\\$/.*\" at \"uses\" is not following the format",
+  "--pyflakes=pyflakes",
+  "--shellcheck=uv run shellcheck --check-sourced --enable=all --external-sources --norc --shell=bash",
+]
+types = [
+  "yaml",
+]
+files = "^\\.github/workflows/"
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 12
+
+[[repos.hooks]]
+id = "lint-markdown"
+name = "lint markdown"
+language = "system"
+entry = "uv run rumdl check"
+args = [
+  "--deny-config-warnings",
+]
+types = [
+  "markdown",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 12
+
 [[repos]]
 repo = "builtin"
 
@@ -450,6 +451,42 @@ groups = [
 priority = 8
 
 [[repos.hooks]]
+id = "check-added-large-files"
+args = [
+  "--enforce-all",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 9
+
+[[repos.hooks]]
+id = "check-case-conflict"
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 9
+
+[[repos.hooks]]
+id = "check-merge-conflict"
+args = [
+  "--assume-in-merge",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 9
+
+[[repos.hooks]]
 id = "pretty-format-json"
 args = [
   "--autofix",
@@ -462,46 +499,10 @@ stages = [
 groups = [
   "all",
 ]
-priority = 9
-
-[[repos.hooks]]
-id = "check-added-large-files"
-args = [
-  "--enforce-all",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 11
-
-[[repos.hooks]]
-id = "check-case-conflict"
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 11
+priority = 10
 
 [[repos.hooks]]
 id = "check-json"
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 11
-
-[[repos.hooks]]
-id = "check-merge-conflict"
-args = [
-  "--assume-in-merge",
-]
 stages = [
   "pre-commit",
 ]

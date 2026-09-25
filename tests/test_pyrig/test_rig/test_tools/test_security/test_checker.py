@@ -1,8 +1,8 @@
 """module."""
 
+from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.security.checker import SecurityChecker
-from pyrig.rig.tools.typing.checker import TypeChecker
 
 
 class TestSecurityChecker:
@@ -37,10 +37,10 @@ class TestSecurityChecker:
 
     def test_check_hook(self) -> None:
         """Test method."""
-        # ties into the checks tier rather than running after it
+        # Bandit runs after Ruff's Python fixer
         hook = SecurityChecker.I.check_hook()
-        types_hook = TypeChecker.I.check_hook()
-        assert hook["priority"] == types_hook["priority"]
+        check_hook = PythonLinter.I.check_hook()
+        assert hook["priority"] > check_hook["priority"]
         assert hook["types"] == ["python"]
 
     def test_check_security(self) -> None:

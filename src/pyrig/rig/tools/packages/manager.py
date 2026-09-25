@@ -320,7 +320,7 @@ class PackageManager(VersionControlHookTool):
         """
         return VersionControlHookManager.I.local_hook(
             self.install_dependencies,
-            priority=VersionControlHookManager.I.increase_priority(
+            priority=VersionControlHookManager.I.deprioritize(
                 self.update_dependencies_hook(),
             ),
             stages=["post-checkout", "post-merge", "post-rewrite", "pre-push"],
@@ -347,7 +347,7 @@ class PackageManager(VersionControlHookTool):
         """
         return VersionControlHookManager.I.local_hook(
             self.audit_dependencies,
-            priority=VersionControlHookManager.I.increase_priority(
+            priority=VersionControlHookManager.I.deprioritize(
                 self.install_dependencies_hook(),
             ),
             stages=["post-checkout", "post-merge", "post-rewrite", "pre-push"],

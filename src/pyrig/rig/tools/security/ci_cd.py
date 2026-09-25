@@ -6,8 +6,8 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
 from pyrig.rig.tools.base.tool import Group
+from pyrig.rig.tools.linting.yaml import YAMLLinter
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 from pyrig.rig.tools.version_control.remote.controller import RemoteVersionController
 
@@ -45,8 +45,8 @@ class CICDSecurityChecker(CheckHookTool):
         """Return the configuration for the CI/CD security checker hook."""
         return VersionControlHookManager.I.local_hook(
             self.check_ci_cd,
-            priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_hook(),
+            priority=VersionControlHookManager.I.deprioritize(
+                YAMLLinter.I.check_hook(),
             ),
             types=["yaml"],
             files=self.ci_cd_files_pattern(),

@@ -1,9 +1,9 @@
 """module."""
 
+from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.testing.naming import ModuleTestNamingChecker
 from pyrig.rig.tools.testing.project import ProjectTester
-from pyrig.rig.tools.typing.checker import TypeChecker
 
 
 class TestModuleTestNamingChecker:
@@ -46,10 +46,10 @@ class TestModuleTestNamingChecker:
 
     def test_check_hook(self) -> None:
         """Test method."""
-        # ties into the checks tier rather than running after it
+        # test naming runs after the general text-fixing chain
         hook = ModuleTestNamingChecker.I.check_hook()
-        types_hook = TypeChecker.I.check_hook()
-        assert hook["priority"] == types_hook["priority"]
+        eof_hook = EndOfFileFormatter.I.format_hook()
+        assert hook["priority"] > eof_hook["priority"]
         assert hook["types"] == ["python"]
         assert hook["files"] == f"^{ProjectTester.I.package_root().as_posix()}/"
         assert hook["args"] == ["--pytest-test-first"]

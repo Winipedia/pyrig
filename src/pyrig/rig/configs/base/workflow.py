@@ -20,7 +20,7 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig import resources
 from pyrig.rig.configs.base.yaml import YMLDictConfigFile, commented_map
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.tools.linting.shell import ShellLinter
+from pyrig.rig.tools.formatting.shell import ShellFormatter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig.rig.tools.version_control.controller import VersionController
@@ -230,7 +230,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             Dict of default settings.
         """
-        return {"run": {"shell": ShellLinter.I.dialect()}}
+        return {"run": {"shell": ShellFormatter.I.dialect()}}
 
     def global_env(self) -> dict[str, Any]:
         """Return environment variables applied to every job in the workflow.

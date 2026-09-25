@@ -141,7 +141,7 @@ class Pyrigger(VersionControlHookTool):
         """Return the hook metadata for the `pyrig sync` hook."""
         return VersionControlHookManager.I.local_hook(
             self.synchronize_project,
-            priority=VersionControlHookManager.I.increase_priority(
+            priority=VersionControlHookManager.I.deprioritize(
                 PackageManager.I.audit_dependencies_hook(),
             ),
         )

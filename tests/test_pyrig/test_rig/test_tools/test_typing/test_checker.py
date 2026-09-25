@@ -53,10 +53,10 @@ class TestTypeChecker:
 
     def test_check_hook(self) -> None:
         """Test method."""
-        # type checking runs after Python formatting, anchoring the checks tier
+        # type checking runs after Ruff's Python fixer
         hook = TypeChecker.I.check_hook()
-        format_hook = PythonLinter.I.format_hook()
-        assert hook["priority"] > format_hook["priority"]
+        check_hook = PythonLinter.I.check_hook()
+        assert hook["priority"] > check_hook["priority"]
         assert hook["types"] == ["python"]
         assert hook["pass_filenames"] is False
 

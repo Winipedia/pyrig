@@ -1,9 +1,8 @@
 """module."""
 
-from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.linting.toml import TOMLLinter
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.typing.checker import TypeChecker
+from pyrig.rig.tools.security.secrets import SecretsChecker
 
 
 class TestTOMLLinter:
@@ -43,10 +42,10 @@ class TestTOMLLinter:
 
     def test_check_hook(self) -> None:
         """Test method."""
-        # ties into the checks tier rather than running after it
+        # TOML linting runs after TOML formatting
         hook = TOMLLinter.I.check_hook()
-        types_hook = TypeChecker.I.check_hook()
-        assert hook["priority"] == types_hook["priority"]
+        format_hook = TOMLLinter.I.format_hook()
+        assert hook["priority"] > format_hook["priority"]
         assert hook["types"] == ["toml"]
         assert hook["exclude"] == TOMLLinter.I.lock_file_exclude_pattern()
         assert hook["args"] == ["--error-on-warnings"]
@@ -58,10 +57,10 @@ class TestTOMLLinter:
 
     def test_format_hook(self) -> None:
         """Test method."""
-        # TOML formatting runs after the sequential text-fixing chain
+        # TOML formatting runs after the general read-only checks
         hook = TOMLLinter.I.format_hook()
-        eof_hook = EndOfFileFormatter.I.format_hook()
-        assert hook["priority"] > eof_hook["priority"]
+        secrets_hook = SecretsChecker.I.check_hook()
+        assert hook["priority"] > secrets_hook["priority"]
         assert hook["types"] == ["toml"]
         assert hook["exclude"] == TOMLLinter.I.lock_file_exclude_pattern()
 

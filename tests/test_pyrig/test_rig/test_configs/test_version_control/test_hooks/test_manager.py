@@ -42,14 +42,21 @@ class TestVersionControlHookManagerConfigFile:
             assert isinstance(hook_id, str)
             assert hook_id
         by_id = {hook["id"]: hook for hook in hooks}
-        # Each pre-commit stage runs strictly after the previous one, so
-        # that later stages always see the fully-fixed, fully-generated
-        # project.
+        # The pre-commit pipeline advances from generation, through general
+        # fixers and checks, to file-specific formatters and checks.
         assert (
             by_id["synchronize-project"]["priority"]
             < by_id["fix-spelling"]["priority"]
-            < by_id["lint-python"]["priority"]
             < by_id["check-secrets"]["priority"]
+            < by_id["lint-python"]["priority"]
+            < by_id["format-python"]["priority"]
+            < by_id["check-dependencies"]["priority"]
+        )
+        assert by_id["format-python"]["priority"] < by_id["lint-markdown"]["priority"]
+        assert (
+            by_id["check-secrets"]["priority"]
+            < by_id["format-markdown"]["priority"]
+            < by_id["format-python"]["priority"]
         )
         # The push/checkout/merge/rewrite hooks are a separate stage pool
         # from the pre-commit ones, so they restart from their own base

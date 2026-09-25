@@ -5,9 +5,9 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckFormatHookTool
 from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
+from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.typing.checker import TypeChecker
+from pyrig.rig.tools.security.secrets import SecretsChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -63,16 +63,17 @@ class MarkdownLinter(CheckFormatHookTool):
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting Markdown files.
 
-        Ties its priority to `TypeChecker.check_hook` so it runs
-        alongside the rest of the checks tier rather than after it.
+        Runs after Markdown formatting so it checks the final Markdown
+        contents.
 
         Returns:
             Hook metadata dict for `rumdl check --deny-config-warnings`.
         """
         return VersionControlHookManager.I.local_hook(
             self.lint_markdown,
-            priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_hook(),
+            priority=VersionControlHookManager.I.deprioritize(
+                self.format_hook(),
+                PythonLinter.I.format_hook(),
             ),
             types=["markdown"],
             args=self.hook_args(),
@@ -89,16 +90,16 @@ class MarkdownLinter(CheckFormatHookTool):
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting Markdown files.
 
-        Runs after the sequential text-fixing chain, alongside the other
-        file-type-specific fixers.
+        Runs after the general read-only checks and before Ruff formats
+        Python blocks in Markdown.
 
         Returns:
             Hook metadata dict for `rumdl fmt --deny-config-warnings`.
         """
         return VersionControlHookManager.I.local_hook(
             self.format_markdown,
-            priority=VersionControlHookManager.I.increase_priority(
-                EndOfFileFormatter.I.format_hook(),
+            priority=VersionControlHookManager.I.deprioritize(
+                SecretsChecker.I.check_hook(),
             ),
             types=["markdown"],
             args=self.hook_args(),

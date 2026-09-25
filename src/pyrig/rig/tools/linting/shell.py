@@ -5,8 +5,8 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
 from pyrig.rig.tools.base.tool import Group
+from pyrig.rig.tools.formatting.shell import ShellFormatter
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -33,16 +33,6 @@ class ShellLinter(CheckHookTool):
         """Return `('shellcheck-py',)`, the PyPI package providing `shellcheck`."""
         return ("shellcheck-py",)
 
-    def dialect(self) -> str:
-        """Return `"bash"`, the shell dialect this project standardizes on.
-
-        The single source of truth for the dialect.
-
-        Returns:
-            The shell dialect name.
-        """
-        return "bash"
-
     def check_args(self, *args: str) -> Args:
         """Construct ShellCheck check arguments.
 
@@ -68,8 +58,8 @@ class ShellLinter(CheckHookTool):
         """
         return VersionControlHookManager.I.local_hook(
             self.lint_shell,
-            priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_hook(),
+            priority=VersionControlHookManager.I.deprioritize(
+                ShellFormatter.I.format_hook(),
             ),
             types=["shell"],
             args=Args(
@@ -77,7 +67,7 @@ class ShellLinter(CheckHookTool):
                 "--enable=all",
                 "--external-sources",
                 "--norc",
-                f"--shell={self.dialect()}",
+                f"--shell={ShellFormatter.I.dialect()}",
             ),
         )
 

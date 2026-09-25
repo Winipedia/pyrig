@@ -6,9 +6,8 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckFormatHookTool
 from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.typing.checker import TypeChecker
+from pyrig.rig.tools.security.secrets import SecretsChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -57,8 +56,7 @@ class TOMLLinter(CheckFormatHookTool):
         """Return the hook metadata for linting TOML files.
 
         tombi's lint has no auto-fix mode, so it never mutates a file on
-        its own; it belongs with the pure-validation checks tier rather
-        than the file-type-specific fixers. Its diagnostics also default
+        its own. It runs after TOML formatting. Its diagnostics also default
         to warn-level, which alone would never fail the hook, so
         `--error-on-warnings` is passed to make any warning fail it.
 
@@ -66,17 +64,14 @@ class TOMLLinter(CheckFormatHookTool):
         the package manager writes or reformats it, so tombi shouldn't
         weigh in on it.
 
-        Ties its priority to `TypeChecker.check_hook` so it runs
-        alongside the rest of the checks tier rather than after it.
+        Runs after TOML formatting so it checks the final TOML contents.
 
         Returns:
             Hook metadata dict for `tombi lint --error-on-warnings`.
         """
         return VersionControlHookManager.I.local_hook(
             self.lint_toml,
-            priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_hook(),
-            ),
+            priority=VersionControlHookManager.I.deprioritize(self.format_hook()),
             types=["toml"],
             exclude=self.lock_file_exclude_pattern(),
             args=Args("--error-on-warnings"),
@@ -97,8 +92,8 @@ class TOMLLinter(CheckFormatHookTool):
         to run after; this can sit with the other file-type-specific
         fixers instead of being chained after `check_hook`.
 
-        Runs after the sequential text-fixing chain, alongside the other
-        file-type-specific fixers.
+        Runs after the general read-only checks, alongside the other
+        file-specific formatters.
 
         Excludes the package manager's lock file: it's TOML too, but
         tombi's formatting style doesn't match the package manager's own,
@@ -110,8 +105,8 @@ class TOMLLinter(CheckFormatHookTool):
         """
         return VersionControlHookManager.I.local_hook(
             self.format_toml,
-            priority=VersionControlHookManager.I.increase_priority(
-                EndOfFileFormatter.I.format_hook(),
+            priority=VersionControlHookManager.I.deprioritize(
+                SecretsChecker.I.check_hook(),
             ),
             types=["toml"],
             exclude=self.lock_file_exclude_pattern(),

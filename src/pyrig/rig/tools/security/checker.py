@@ -5,9 +5,9 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
 from pyrig.rig.tools.base.tool import Group
+from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.testing.project import ProjectTester
-from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -59,8 +59,8 @@ class SecurityChecker(CheckHookTool):
         """
         return VersionControlHookManager.I.local_hook(
             self.check_security,
-            priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_hook(),
+            priority=VersionControlHookManager.I.deprioritize(
+                PythonLinter.I.format_hook(),
             ),
             types=["python"],
             args=Args(

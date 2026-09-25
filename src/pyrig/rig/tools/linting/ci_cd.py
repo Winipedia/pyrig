@@ -8,7 +8,7 @@ from pyrig.rig.tools.base.hooks import CheckHookTool
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.linting.shell import ShellLinter
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.typing.checker import TypeChecker
+from pyrig.rig.tools.security.ci_cd import CICDSecurityChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 from pyrig.rig.tools.version_control.remote.controller import RemoteVersionController
 
@@ -47,8 +47,8 @@ class CICDLinter(CheckHookTool):
         shell_linter_args: list[str] = shell_linter_hook["args"]
         return VersionControlHookManager.I.local_hook(
             self.lint_ci_cd,
-            priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_hook(),
+            priority=VersionControlHookManager.I.deprioritize(
+                CICDSecurityChecker.I.check_hook(),
             ),
             types=["yaml"],
             files=self.ci_cd_files_pattern(),

@@ -55,7 +55,7 @@ class SpellChecker(CheckHookTool):
         """
         return VersionControlHookManager.I.local_hook(
             self.fix_spelling,
-            priority=VersionControlHookManager.I.increase_priority(
+            priority=VersionControlHookManager.I.deprioritize(
                 ByteOrderMarkerFormatter.I.format_hook(),
             ),
             types=["text"],

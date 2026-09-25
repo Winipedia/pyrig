@@ -146,8 +146,9 @@ class VersionControlHookManager(Tool):
             method: Bound, zero-argument method that returns the `Args` to
                 run as the hook's entry. Also supplies the hook's `id` and
                 `name`, derived from `method.__name__`.
-            priority: This hook's position among hooks sharing its `stages`,
-                lowest first. Ties break by `id`.
+            priority: Numeric priority compared across all hooks in this
+                config, regardless of repo or stages; lower values run first.
+                Hooks with equal priority may run concurrently.
             stages: Git stages that trigger this hook. Defaults to
                 `["pre-commit"]`.
             groups: Extra prek hook groups beyond `group_all()` to tag this
@@ -300,18 +301,16 @@ class VersionControlHookManager(Tool):
         """
         return reformat_name(id_, split_on="-", join_on=" ")
 
-    def increase_priority(self, hook: dict[str, Any]) -> int:
-        """Return the priority one step after another hook's.
-
-        Used to chain a hook after one it depends on having already run.
+    def deprioritize(self, *hooks: dict[str, Any]) -> int:
+        """Return the priority one step after the highest priority of the given hooks.
 
         Args:
-            hook: The hook metadata dictionary to run after.
+            *hooks: The hook metadata dictionaries to run after.
 
         Returns:
-            `hook`'s priority plus one.
+            The highest priority among `hooks` plus one.
         """
-        return self.hook_priority(hook) + 1
+        return max(self.hook_priority(hook) for hook in hooks) + 1
 
     def hook_priority(self, hook: dict[str, Any]) -> int:
         """Return another hook's priority, for hooks that should run alongside it.

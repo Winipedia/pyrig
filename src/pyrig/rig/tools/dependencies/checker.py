@@ -5,8 +5,9 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
 from pyrig.rig.tools.base.tool import Group
+from pyrig.rig.tools.linting.python import PythonLinter
+from pyrig.rig.tools.linting.toml import TOMLLinter
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -47,16 +48,18 @@ class DependencyChecker(CheckHookTool):
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for checking the project's dependencies.
 
-        Ties its priority to `TypeChecker.check_hook` so it runs
-        alongside the rest of the checks tier rather than after it.
+        Runs after Ruff's Python formatting and lint autofixes plus TOML
+        formatting, so it checks the final dependency declarations and
+        Python imports.
 
         Returns:
             Hook metadata dict for `deptry`.
         """
         return VersionControlHookManager.I.local_hook(
             self.check_dependencies,
-            priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_hook(),
+            priority=VersionControlHookManager.I.deprioritize(
+                PythonLinter.I.format_hook(),
+                TOMLLinter.I.format_hook(),
             ),
             types_or=["python", "pyproject"],
             pass_filenames=False,

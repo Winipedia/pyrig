@@ -1,7 +1,7 @@
 """module."""
 
+from pyrig.rig.tools.formatting.json import JSONFormatter
 from pyrig.rig.tools.linting.json import JSONLinter
-from pyrig.rig.tools.typing.checker import TypeChecker
 
 
 class TestJSONLinter:
@@ -43,10 +43,10 @@ class TestJSONLinter:
 
     def test_check_hook(self) -> None:
         """Test method."""
-        # ties into the checks tier rather than running after it
+        # JSON syntax checking runs after JSON formatting
         hook = JSONLinter.I.check_hook()
-        types_hook = TypeChecker.I.check_hook()
-        assert hook["priority"] == types_hook["priority"]
+        format_hook = JSONFormatter.I.format_hook()
+        assert hook["priority"] > format_hook["priority"]
 
     def test_check_json(self) -> None:
         """Test method."""

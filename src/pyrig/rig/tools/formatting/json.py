@@ -5,7 +5,7 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
 from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
+from pyrig.rig.tools.security.secrets import SecretsChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -51,8 +51,8 @@ class JSONFormatter(FormatHookTool):
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting JSON files.
 
-        Runs after the sequential text-fixing chain, alongside the other
-        file-type-specific fixers. Passes `--autofix` so changes are
+        Runs after the general read-only checks, alongside the other
+        file-specific formatters. Passes `--autofix` so changes are
         written back rather than only reported as a diff. Disables
         ASCII-escaping and key sorting, matching `JSONConfigFile`'s own
         `json.dump` call (`ensure_ascii=False`) so this formatter never
@@ -68,8 +68,8 @@ class JSONFormatter(FormatHookTool):
         """
         return VersionControlHookManager.I.builtin_hook(
             self.pretty_format_json,
-            priority=VersionControlHookManager.I.increase_priority(
-                EndOfFileFormatter.I.format_hook(),
+            priority=VersionControlHookManager.I.deprioritize(
+                SecretsChecker.I.check_hook(),
             ),
         )
 

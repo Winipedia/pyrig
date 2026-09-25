@@ -56,7 +56,7 @@ class TrailingWhitespaceFormatter(FormatHookTool):
         """
         return VersionControlHookManager.I.builtin_hook(
             self.trailing_whitespace,
-            priority=VersionControlHookManager.I.increase_priority(
+            priority=VersionControlHookManager.I.deprioritize(
                 EndOfLineFormatter.I.format_hook(),
             ),
         )

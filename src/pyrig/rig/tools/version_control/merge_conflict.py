@@ -5,7 +5,7 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
 from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.typing.checker import TypeChecker
+from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -52,16 +52,15 @@ class MergeConflictChecker(CheckHookTool):
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for checking for merge conflict markers.
 
-        Ties its priority to `TypeChecker.check_hook` so it runs
-        alongside the rest of the checks tier rather than after it.
+        Runs after the general text-fixing chain.
 
         Returns:
             Hook metadata dict for `check-merge-conflict --assume-in-merge`.
         """
         return VersionControlHookManager.I.builtin_hook(
             self.check_merge_conflict,
-            priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_hook(),
+            priority=VersionControlHookManager.I.deprioritize(
+                EndOfFileFormatter.I.format_hook(),
             ),
         )
 

@@ -1,7 +1,7 @@
 """module."""
 
+from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.language.case_conflict import CaseConflictChecker
-from pyrig.rig.tools.typing.checker import TypeChecker
 
 
 class TestCaseConflictChecker:
@@ -44,10 +44,10 @@ class TestCaseConflictChecker:
 
     def test_check_hook(self) -> None:
         """Test method."""
-        # ties into the checks tier rather than running after it
+        # filename checking runs after the general text-fixing chain
         hook = CaseConflictChecker.I.check_hook()
-        types_hook = TypeChecker.I.check_hook()
-        assert hook["priority"] == types_hook["priority"]
+        eof_hook = EndOfFileFormatter.I.format_hook()
+        assert hook["priority"] > eof_hook["priority"]
         assert "types" not in hook
 
     def test_check_case_conflict(self) -> None:

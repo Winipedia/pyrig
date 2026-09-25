@@ -2,8 +2,9 @@
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.dependencies.checker import DependencyChecker
+from pyrig.rig.tools.linting.python import PythonLinter
+from pyrig.rig.tools.linting.toml import TOMLLinter
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.typing.checker import TypeChecker
 
 
 class TestDependencyChecker:
@@ -34,10 +35,15 @@ class TestDependencyChecker:
 
     def test_check_hook(self) -> None:
         """Test method."""
-        # ties into the checks tier rather than running after it
+        # dependency checking runs after Python formatting and linting,
+        # and TOML formatting
         hook = DependencyChecker.I.check_hook()
-        types_hook = TypeChecker.I.check_hook()
-        assert hook["priority"] == types_hook["priority"]
+        format_hook = PythonLinter.I.format_hook()
+        python_hook = PythonLinter.I.check_hook()
+        toml_hook = TOMLLinter.I.format_hook()
+        assert hook["priority"] > format_hook["priority"]
+        assert hook["priority"] > python_hook["priority"]
+        assert hook["priority"] > toml_hook["priority"]
         assert hook["types_or"] == ["pyproject", "python"]
         assert hook["pass_filenames"] is False
 

@@ -62,7 +62,7 @@ class ByteOrderMarkerFormatter(FormatHookTool):
         """
         return VersionControlHookManager.I.builtin_hook(
             self.fix_byte_order_marker,
-            priority=VersionControlHookManager.I.increase_priority(
+            priority=VersionControlHookManager.I.deprioritize(
                 Pyrigger.I.synchronize_project_hook(),
             ),
         )

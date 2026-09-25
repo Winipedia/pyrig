@@ -48,7 +48,7 @@ class TypeChecker(CheckHookTool):
         """
         return VersionControlHookManager.I.local_hook(
             self.check_types,
-            priority=VersionControlHookManager.I.increase_priority(
+            priority=VersionControlHookManager.I.deprioritize(
                 PythonLinter.I.format_hook(),
             ),
             types=["python"],

@@ -1,8 +1,8 @@
 """module."""
 
-from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.formatting.shell import ShellFormatter
 from pyrig.rig.tools.packages.manager import PackageManager
+from pyrig.rig.tools.security.secrets import SecretsChecker
 
 
 class TestShellFormatter:
@@ -42,13 +42,17 @@ class TestShellFormatter:
 
     def test_format_hook(self) -> None:
         """Test method."""
-        # shell formatting runs after the sequential text-fixing chain
+        # shell formatting runs after the general read-only checks
         hook = ShellFormatter.I.format_hook()
-        eof_hook = EndOfFileFormatter.I.format_hook()
-        assert hook["priority"] > eof_hook["priority"]
+        secrets_hook = SecretsChecker.I.check_hook()
+        assert hook["priority"] > secrets_hook["priority"]
         assert hook["types"] == ["shell"]
 
     def test_format_shell(self) -> None:
         """Test method."""
         base_args = ShellFormatter.I.format_args()
         assert ShellFormatter.I.format_shell() == PackageManager.I.run_args(*base_args)
+
+    def test_dialect(self) -> None:
+        """Test method."""
+        assert ShellFormatter.I.dialect() == "bash"

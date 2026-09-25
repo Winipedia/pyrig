@@ -1,8 +1,8 @@
 """module."""
 
+from pyrig.rig.tools.formatting.shell import ShellFormatter
 from pyrig.rig.tools.linting.shell import ShellLinter
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.typing.checker import TypeChecker
 
 
 class TestShellLinter:
@@ -42,10 +42,10 @@ class TestShellLinter:
 
     def test_check_hook(self) -> None:
         """Test method."""
-        # ties into the checks tier rather than running after it
+        # ShellCheck runs after shfmt
         hook = ShellLinter.I.check_hook()
-        types_hook = TypeChecker.I.check_hook()
-        assert hook["priority"] == types_hook["priority"]
+        format_hook = ShellFormatter.I.format_hook()
+        assert hook["priority"] > format_hook["priority"]
         assert hook["types"] == ["shell"]
         assert hook["args"] == [
             "--check-sourced",
@@ -59,7 +59,3 @@ class TestShellLinter:
         """Test method."""
         base_args = ShellLinter.I.check_args()
         assert ShellLinter.I.lint_shell() == PackageManager.I.run_args(*base_args)
-
-    def test_dialect(self) -> None:
-        """Test method."""
-        assert ShellLinter.I.dialect() == "bash"

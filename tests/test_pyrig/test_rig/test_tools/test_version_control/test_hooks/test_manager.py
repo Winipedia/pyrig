@@ -130,11 +130,11 @@ class TestVersionControlHookManager:
             == "run args"
         )
 
-    def test_increase_priority(self) -> None:
+    def test_deprioritize(self) -> None:
         """Test method."""
         priority = 5
         assert (
-            VersionControlHookManager.I.increase_priority({"priority": priority})
+            VersionControlHookManager.I.deprioritize({"priority": priority})
             == priority + 1
         )
 

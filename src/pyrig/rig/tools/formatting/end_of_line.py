@@ -63,7 +63,7 @@ class EndOfLineFormatter(FormatHookTool):
         """
         return VersionControlHookManager.I.builtin_hook(
             self.mixed_line_ending,
-            priority=VersionControlHookManager.I.increase_priority(
+            priority=VersionControlHookManager.I.deprioritize(
                 SpellChecker.I.check_hook(),
             ),
         )

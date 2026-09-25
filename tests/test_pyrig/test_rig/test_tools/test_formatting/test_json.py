@@ -1,7 +1,7 @@
 """module."""
 
-from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.formatting.json import JSONFormatter
+from pyrig.rig.tools.security.secrets import SecretsChecker
 
 
 class TestJSONFormatter:
@@ -44,10 +44,10 @@ class TestJSONFormatter:
 
     def test_format_hook(self) -> None:
         """Test method."""
-        # JSON formatting runs after the sequential text-fixing chain
+        # JSON formatting runs after the general read-only checks
         hook = JSONFormatter.I.format_hook()
-        eof_hook = EndOfFileFormatter.I.format_hook()
-        assert hook["priority"] > eof_hook["priority"]
+        secrets_hook = SecretsChecker.I.check_hook()
+        assert hook["priority"] > secrets_hook["priority"]
         assert hook["args"] == ["--autofix", "--no-ensure-ascii", "--no-sort-keys"]
 
     def test_pretty_format_json(self) -> None:

@@ -5,7 +5,7 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
 from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.typing.checker import TypeChecker
+from pyrig.rig.tools.formatting.json import JSONFormatter
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -55,16 +55,15 @@ class JSONLinter(CheckHookTool):
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for validating JSON syntax.
 
-        Ties its priority to `TypeChecker.check_hook` so it runs
-        alongside the rest of the checks tier rather than after it.
+        Runs after JSON formatting so it checks the final JSON contents.
 
         Returns:
             Hook metadata dict for `check-json`.
         """
         return VersionControlHookManager.I.builtin_hook(
             self.check_json,
-            priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_hook(),
+            priority=VersionControlHookManager.I.deprioritize(
+                JSONFormatter.I.format_hook(),
             ),
         )
 

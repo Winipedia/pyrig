@@ -5,8 +5,8 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
 from pyrig.rig.tools.base.tool import Group
+from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -48,16 +48,16 @@ class SecretsChecker(CheckHookTool):
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for scanning for committed secrets.
 
-        Ties its priority to `TypeChecker.check_hook` so it runs
-        alongside the rest of the checks tier rather than after it.
+        Runs after the general text-fixing chain, before file-specific
+        formatters modify the normalized contents.
 
         Returns:
             Hook metadata dict for `detect-secrets-hook`.
         """
         return VersionControlHookManager.I.local_hook(
             self.check_secrets,
-            priority=VersionControlHookManager.I.hook_priority(
-                TypeChecker.I.check_hook(),
+            priority=VersionControlHookManager.I.deprioritize(
+                EndOfFileFormatter.I.format_hook(),
             ),
             types=["text"],
         )

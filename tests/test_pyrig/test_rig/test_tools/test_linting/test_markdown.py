@@ -1,10 +1,10 @@
 """module."""
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.linting.markdown import MarkdownLinter
+from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.typing.checker import TypeChecker
+from pyrig.rig.tools.security.secrets import SecretsChecker
 
 
 class TestMarkdownLinter:
@@ -44,8 +44,9 @@ class TestMarkdownLinter:
     def test_check_hook(self) -> None:
         """Test method."""
         hook = MarkdownLinter.I.check_hook()
-        type_check_hook = TypeChecker.I.check_hook()
-        assert hook["priority"] == type_check_hook["priority"]
+        format_hook = MarkdownLinter.I.format_hook()
+        assert hook["priority"] > format_hook["priority"]
+        assert hook["priority"] > PythonLinter.I.format_hook()["priority"]
         assert hook["types"] == ["markdown"]
         assert hook["args"] == ["--deny-config-warnings"]
 
@@ -61,10 +62,13 @@ class TestMarkdownLinter:
 
     def test_format_hook(self) -> None:
         """Test method."""
-        # Markdown formatting runs after the sequential text-fixing chain
+        # Markdown formatting runs after the general read-only checks and
+        # before Ruff formats Python blocks in Markdown.
         hook = MarkdownLinter.I.format_hook()
-        eof_hook = EndOfFileFormatter.I.format_hook()
-        assert hook["priority"] > eof_hook["priority"]
+        secrets_hook = SecretsChecker.I.check_hook()
+        python_hook = PythonLinter.I.format_hook()
+        assert hook["priority"] > secrets_hook["priority"]
+        assert hook["priority"] < python_hook["priority"]
         assert hook["types"] == ["markdown"]
         assert hook["args"] == ["--deny-config-warnings"]
 

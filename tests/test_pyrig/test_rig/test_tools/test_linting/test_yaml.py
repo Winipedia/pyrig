@@ -1,8 +1,8 @@
 """module."""
 
-from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.linting.yaml import YAMLLinter
 from pyrig.rig.tools.packages.manager import PackageManager
+from pyrig.rig.tools.security.secrets import SecretsChecker
 
 
 class TestYAMLLinter:
@@ -34,10 +34,10 @@ class TestYAMLLinter:
 
     def test_check_hook(self) -> None:
         """Test method."""
-        # YAML linting runs after the sequential text-fixing chain
+        # YAML fixing runs after the general read-only checks
         hook = YAMLLinter.I.check_hook()
-        eof_hook = EndOfFileFormatter.I.format_hook()
-        assert hook["priority"] > eof_hook["priority"]
+        secrets_hook = SecretsChecker.I.check_hook()
+        assert hook["priority"] > secrets_hook["priority"]
         assert hook["types"] == ["yaml"]
         assert hook["args"] == [
             "--config-data={extends: default, rules: {line-length: {max: 100}}}",

@@ -57,7 +57,7 @@ class EndOfFileFormatter(FormatHookTool):
         """
         return VersionControlHookManager.I.builtin_hook(
             self.end_of_file_fixer,
-            priority=VersionControlHookManager.I.increase_priority(
+            priority=VersionControlHookManager.I.deprioritize(
                 TrailingWhitespaceFormatter.I.format_hook(),
             ),
         )

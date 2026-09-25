@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.rig.tools.typing.checker import TypeChecker
+from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.version_control.merge_conflict import MergeConflictChecker
 
 
@@ -44,10 +44,10 @@ class TestMergeConflictChecker:
 
     def test_check_hook(self) -> None:
         """Test method."""
-        # ties into the checks tier rather than running after it
+        # conflict checking runs after the general text-fixing chain
         hook = MergeConflictChecker.I.check_hook()
-        types_hook = TypeChecker.I.check_hook()
-        assert hook["priority"] == types_hook["priority"]
+        eof_hook = EndOfFileFormatter.I.format_hook()
+        assert hook["priority"] > eof_hook["priority"]
         assert hook["args"] == ["--assume-in-merge"]
 
     def test_check_merge_conflict(self) -> None:

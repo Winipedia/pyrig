@@ -5,8 +5,8 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckFormatHookTool
 from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.packages.manager import PackageManager
+from pyrig.rig.tools.security.secrets import SecretsChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -67,8 +67,8 @@ class PythonLinter(CheckFormatHookTool):
         """
         return VersionControlHookManager.I.local_hook(
             self.lint_python,
-            priority=VersionControlHookManager.I.increase_priority(
-                EndOfFileFormatter.I.format_hook(),
+            priority=VersionControlHookManager.I.deprioritize(
+                SecretsChecker.I.check_hook(),
             ),
             types=["python"],
             args=Args("--fix"),
@@ -83,17 +83,24 @@ class PythonLinter(CheckFormatHookTool):
         return PackageManager.I.run_args(*self.check_args())
 
     def format_hook(self) -> dict[str, Any]:
-        """Return hook metadata for formatting Python source.
+        """Return hook metadata for formatting Python source and Markdown blocks.
+
+        As recommended by astral-sh, ruff's formatter should run after
+        the linter.
 
         Returns:
             Hook metadata dict for `ruff format`.
         """
+        from pyrig.rig.tools.linting.markdown import MarkdownLinter  # noqa: PLC0415
+
         return VersionControlHookManager.I.local_hook(
             self.format_python,
-            priority=VersionControlHookManager.I.increase_priority(
+            priority=VersionControlHookManager.I.deprioritize(
+                SecretsChecker.I.check_hook(),
                 self.check_hook(),
+                MarkdownLinter.I.format_hook(),
             ),
-            types=["python"],
+            types_or=["python", "markdown"],
         )
 
     def format_python(self) -> Args:
