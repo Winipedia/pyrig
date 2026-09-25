@@ -6,7 +6,6 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
-from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -30,8 +29,8 @@ class JSONFormatter(FormatHookTool):
         return "pretty-format-json"
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Return the package providing `pretty-format-json`."""
-        return ("pre-commit-hooks",)
+        """Return no package dependency; prek provides this built-in hook."""
+        return ()
 
     def format_args(self, *args: str) -> Args:
         """Construct pretty-format-json arguments.
@@ -47,7 +46,7 @@ class JSONFormatter(FormatHookTool):
         Returns:
             Args for `pretty-format-json`.
         """
-        return self.args(*args)
+        return Args("--autofix", "--no-ensure-ascii", "--no-sort-keys", *args)
 
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting JSON files.
@@ -67,19 +66,17 @@ class JSONFormatter(FormatHookTool):
             Hook metadata dict for `pretty-format-json` with
             `--autofix --no-ensure-ascii --no-sort-keys`.
         """
-        return VersionControlHookManager.I.hook(
-            self.format_json,
+        return VersionControlHookManager.I.builtin_hook(
+            self.pretty_format_json,
             priority=VersionControlHookManager.I.increase_priority(
                 EndOfFileFormatter.I.format_hook(),
             ),
-            types=["json"],
-            args=Args("--autofix", "--no-ensure-ascii", "--no-sort-keys"),
         )
 
-    def format_json(self) -> Args:
-        """Return the `Args` this hook's entry runs.
+    def pretty_format_json(self) -> Args:
+        """Return arguments for the built-in hook.
 
         Returns:
-            Args for `uv run pretty-format-json`.
+            Arguments passed to `pretty-format-json`.
         """
-        return PackageManager.I.run_args(*self.format_args())
+        return self.format_args()

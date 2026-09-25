@@ -57,7 +57,7 @@ class SecurityChecker(CheckHookTool):
         Returns:
             Hook metadata dict for `bandit`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.check_security,
             priority=VersionControlHookManager.I.hook_priority(
                 TypeChecker.I.check_hook(),

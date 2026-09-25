@@ -1,6 +1,5 @@
 """module."""
 
-from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.large_files import LargeFileChecker
 
@@ -36,12 +35,12 @@ class TestLargeFileChecker:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = LargeFileChecker.I.dev_dependencies()
-        assert result == ("pre-commit-hooks",)
+        assert result == ()
 
     def test_check_args(self) -> None:
         """Test method."""
         result = LargeFileChecker.I.check_args()
-        assert result == ("check-added-large-files",)
+        assert result == ("--enforce-all",)
 
     def test_check_hook(self) -> None:
         """Test method."""
@@ -52,9 +51,6 @@ class TestLargeFileChecker:
         assert "types" not in hook
         assert hook["args"] == ["--enforce-all"]
 
-    def test_check_large_files(self) -> None:
+    def test_check_added_large_files(self) -> None:
         """Test method."""
-        base_args = LargeFileChecker.I.check_args()
-        assert LargeFileChecker.I.check_large_files() == PackageManager.I.run_args(
-            *base_args,
-        )
+        assert LargeFileChecker.I.check_added_large_files() == ("--enforce-all",)

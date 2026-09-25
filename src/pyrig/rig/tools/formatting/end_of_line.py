@@ -6,13 +6,12 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.language.spelling import SpellChecker
-from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
 class EndOfLineFormatter(FormatHookTool):
-    """Type-safe wrapper for the pre-commit-hooks mixed line ending fixer."""
+    """Type-safe wrapper for prek's pre-commit-hooks-compatible line-ending fixer."""
 
     def group(self) -> str:
         """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
@@ -31,8 +30,8 @@ class EndOfLineFormatter(FormatHookTool):
         return "mixed-line-ending"
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Return the package providing `mixed-line-ending`."""
-        return ("pre-commit-hooks",)
+        """Return no package dependency; prek provides this built-in hook."""
+        return ()
 
     def format_args(self, *args: str) -> Args:
         """Construct mixed-line-ending arguments.
@@ -47,7 +46,7 @@ class EndOfLineFormatter(FormatHookTool):
         Returns:
             Args for `mixed-line-ending`.
         """
-        return self.args(*args)
+        return Args(f"--fix={VersionController.I.end_of_line()}", *args)
 
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for normalizing mixed line endings.
@@ -62,19 +61,17 @@ class EndOfLineFormatter(FormatHookTool):
         Returns:
             Hook metadata dict for `mixed-line-ending --fix=lf`.
         """
-        return VersionControlHookManager.I.hook(
-            self.fix_end_of_line,
+        return VersionControlHookManager.I.builtin_hook(
+            self.mixed_line_ending,
             priority=VersionControlHookManager.I.increase_priority(
                 SpellChecker.I.check_hook(),
             ),
-            types=["text"],
-            args=Args(f"--fix={VersionController.I.end_of_line()}"),
         )
 
-    def fix_end_of_line(self) -> Args:
-        """Return the `Args` this hook's entry runs.
+    def mixed_line_ending(self) -> Args:
+        """Return arguments for the built-in hook.
 
         Returns:
-            Args for `uv run mixed-line-ending`.
+            Arguments passed to `mixed-line-ending`.
         """
-        return PackageManager.I.run_args(*self.format_args())
+        return self.format_args()

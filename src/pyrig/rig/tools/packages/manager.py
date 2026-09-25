@@ -293,7 +293,7 @@ class PackageManager(VersionControlHookTool):
         Returns:
             Hook metadata dict for `uv lock --upgrade`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.update_dependencies,
             priority=0,
             stages=["pre-push"],
@@ -318,7 +318,7 @@ class PackageManager(VersionControlHookTool):
         Returns:
             Hook metadata dict for `uv sync`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.install_dependencies,
             priority=VersionControlHookManager.I.increase_priority(
                 self.update_dependencies_hook(),
@@ -345,7 +345,7 @@ class PackageManager(VersionControlHookTool):
         Returns:
             Hook metadata dict for `uv audit`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.audit_dependencies,
             priority=VersionControlHookManager.I.increase_priority(
                 self.install_dependencies_hook(),

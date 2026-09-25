@@ -1,6 +1,5 @@
 """module."""
 
-from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.merge_conflict import MergeConflictChecker
 
@@ -36,12 +35,12 @@ class TestMergeConflictChecker:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = MergeConflictChecker.I.dev_dependencies()
-        assert result == ("pre-commit-hooks",)
+        assert result == ()
 
     def test_check_args(self) -> None:
         """Test method."""
         result = MergeConflictChecker.I.check_args()
-        assert result == ("check-merge-conflict",)
+        assert result == ("--assume-in-merge",)
 
     def test_check_hook(self) -> None:
         """Test method."""
@@ -49,13 +48,8 @@ class TestMergeConflictChecker:
         hook = MergeConflictChecker.I.check_hook()
         types_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == types_hook["priority"]
-        assert hook["types"] == ["text"]
         assert hook["args"] == ["--assume-in-merge"]
 
     def test_check_merge_conflict(self) -> None:
         """Test method."""
-        base_args = MergeConflictChecker.I.check_args()
-        assert (
-            MergeConflictChecker.I.check_merge_conflict()
-            == PackageManager.I.run_args(*base_args)
-        )
+        assert MergeConflictChecker.I.check_merge_conflict() == ("--assume-in-merge",)

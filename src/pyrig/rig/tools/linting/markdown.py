@@ -69,7 +69,7 @@ class MarkdownLinter(CheckFormatHookTool):
         Returns:
             Hook metadata dict for `rumdl check --deny-config-warnings`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.lint_markdown,
             priority=VersionControlHookManager.I.hook_priority(
                 TypeChecker.I.check_hook(),
@@ -95,7 +95,7 @@ class MarkdownLinter(CheckFormatHookTool):
         Returns:
             Hook metadata dict for `rumdl fmt --deny-config-warnings`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.format_markdown,
             priority=VersionControlHookManager.I.increase_priority(
                 EndOfFileFormatter.I.format_hook(),

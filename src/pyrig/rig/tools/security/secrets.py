@@ -54,7 +54,7 @@ class SecretsChecker(CheckHookTool):
         Returns:
             Hook metadata dict for `detect-secrets-hook`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.check_secrets,
             priority=VersionControlHookManager.I.hook_priority(
                 TypeChecker.I.check_hook(),

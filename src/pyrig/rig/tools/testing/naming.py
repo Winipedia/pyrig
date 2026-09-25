@@ -62,7 +62,7 @@ class ModuleTestNamingChecker(CheckHookTool):
         Returns:
             Hook metadata dict for `name-tests-test --pytest-test-first`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.check_test_naming,
             priority=VersionControlHookManager.I.hook_priority(
                 TypeChecker.I.check_hook(),

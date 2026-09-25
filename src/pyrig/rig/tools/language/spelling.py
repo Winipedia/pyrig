@@ -53,7 +53,7 @@ class SpellChecker(CheckHookTool):
         Returns:
             Hook metadata dict for `typos --write-changes`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.fix_spelling,
             priority=VersionControlHookManager.I.increase_priority(
                 ByteOrderMarkerFormatter.I.format_hook(),

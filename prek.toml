@@ -20,9 +20,9 @@ stages = [
 groups = [
   "all",
 ]
-priority = 0
 always_run = true
 pass_filenames = false
+priority = 0
 
 [[repos.hooks]]
 id = "install-dependencies"
@@ -38,9 +38,9 @@ stages = [
 groups = [
   "all",
 ]
-priority = 1
 always_run = true
 pass_filenames = false
+priority = 1
 
 [[repos.hooks]]
 id = "audit-dependencies"
@@ -56,9 +56,9 @@ stages = [
 groups = [
   "all",
 ]
-priority = 2
 always_run = true
 pass_filenames = false
+priority = 2
 
 [[repos.hooks]]
 id = "synchronize-project"
@@ -72,22 +72,6 @@ groups = [
   "all",
 ]
 priority = 3
-
-[[repos.hooks]]
-id = "fix-byte-order-marker"
-name = "fix byte order marker"
-language = "system"
-entry = "uv run fix-byte-order-marker"
-types = [
-  "text",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 4
 
 [[repos.hooks]]
 id = "fix-spelling"
@@ -107,78 +91,6 @@ groups = [
   "all",
 ]
 priority = 5
-
-[[repos.hooks]]
-id = "fix-end-of-line"
-name = "fix end of line"
-language = "system"
-entry = "uv run mixed-line-ending"
-args = [
-  "--fix=lf",
-]
-types = [
-  "text",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 6
-
-[[repos.hooks]]
-id = "fix-trailing-whitespace"
-name = "fix trailing whitespace"
-language = "system"
-entry = "uv run trailing-whitespace-fixer"
-types = [
-  "text",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 7
-
-[[repos.hooks]]
-id = "fix-end-of-file"
-name = "fix end of file"
-language = "system"
-entry = "uv run end-of-file-fixer"
-types = [
-  "text",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 8
-
-[[repos.hooks]]
-id = "format-json"
-name = "format json"
-language = "system"
-entry = "uv run pretty-format-json"
-args = [
-  "--autofix",
-  "--no-ensure-ascii",
-  "--no-sort-keys",
-]
-types = [
-  "json",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 9
 
 [[repos.hooks]]
 id = "format-markdown"
@@ -296,19 +208,6 @@ groups = [
 priority = 10
 
 [[repos.hooks]]
-id = "check-case-conflict"
-name = "check case conflict"
-language = "system"
-entry = "uv run check-case-conflict"
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 11
-
-[[repos.hooks]]
 id = "check-ci-cd"
 name = "check ci cd"
 language = "system"
@@ -345,42 +244,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 11
 pass_filenames = false
-
-[[repos.hooks]]
-id = "check-large-files"
-name = "check large files"
-language = "system"
-entry = "uv run check-added-large-files"
-args = [
-  "--enforce-all",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 11
-
-[[repos.hooks]]
-id = "check-merge-conflict"
-name = "check merge conflict"
-language = "system"
-entry = "uv run check-merge-conflict"
-args = [
-  "--assume-in-merge",
-]
-types = [
-  "text",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
 priority = 11
 
 [[repos.hooks]]
@@ -452,8 +316,8 @@ stages = [
 groups = [
   "all",
 ]
-priority = 11
 pass_filenames = false
+priority = 11
 
 [[repos.hooks]]
 id = "lint-ci-cd"
@@ -469,22 +333,6 @@ types = [
   "yaml",
 ]
 files = "^\\.github/workflows/"
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 11
-
-[[repos.hooks]]
-id = "lint-json"
-name = "lint json"
-language = "system"
-entry = "uv run check-json"
-types = [
-  "json",
-]
 stages = [
   "pre-commit",
 ]
@@ -547,6 +395,113 @@ types = [
   "toml",
 ]
 exclude = "^uv\\.lock$"
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 11
+
+[[repos]]
+repo = "builtin"
+
+[[repos.hooks]]
+id = "fix-byte-order-marker"
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 4
+
+[[repos.hooks]]
+id = "mixed-line-ending"
+args = [
+  "--fix=lf",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 6
+
+[[repos.hooks]]
+id = "trailing-whitespace"
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 7
+
+[[repos.hooks]]
+id = "end-of-file-fixer"
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 8
+
+[[repos.hooks]]
+id = "pretty-format-json"
+args = [
+  "--autofix",
+  "--no-ensure-ascii",
+  "--no-sort-keys",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 9
+
+[[repos.hooks]]
+id = "check-added-large-files"
+args = [
+  "--enforce-all",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 11
+
+[[repos.hooks]]
+id = "check-case-conflict"
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 11
+
+[[repos.hooks]]
+id = "check-json"
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 11
+
+[[repos.hooks]]
+id = "check-merge-conflict"
+args = [
+  "--assume-in-merge",
+]
 stages = [
   "pre-commit",
 ]

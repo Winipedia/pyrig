@@ -118,22 +118,20 @@ class VersionControlHookManager(Tool):
         return self.args("run", *args)
 
     def hook_sort_key(self, hook: dict[str, Any]) -> tuple[Any, ...]:
-        """Return a sort key ordering a hook by its repo, priority, stages, then id.
+        """Return a sort key ordering a hook by priority, stages, then id.
 
         `priority` leads `stages`, matching prek's own scheduler, which
         orders hooks by `priority` alone regardless of `stages`.
         """
-        return itemgetter("repo", "priority", "stages", "id")(hook)
+        return itemgetter("priority", "stages", "id")(hook)
 
-    def hook(  # noqa: PLR0913
+    def local_hook(  # noqa: PLR0913
         self,
         method: Callable[[], Args],
         *,
         priority: int,
-        repository: str = "local",
-        stages: Iterable[str] | None = None,
-        language: str = "system",
-        groups: Iterable[str] | None = None,
+        stages: Iterable[str] = ("pre-commit",),
+        groups: Iterable[str] = (),
         types: Iterable[str] | None = None,
         types_or: Iterable[str] | None = None,
         files: str | None = None,
@@ -150,14 +148,8 @@ class VersionControlHookManager(Tool):
                 `name`, derived from `method.__name__`.
             priority: This hook's position among hooks sharing its `stages`,
                 lowest first. Ties break by `id`.
-            repository: The prek `repo` this hook is grouped under. Defaults
-                to `"local"`, prek's convention for a hook whose entry runs
-                directly rather than being fetched from an external repo.
             stages: Git stages that trigger this hook. Defaults to
                 `["pre-commit"]`.
-            language: The hook's `language` value. Defaults to `"system"`,
-                since every hook here wraps a tool already installed on the
-                host rather than one prek should fetch itself.
             groups: Extra prek hook groups beyond `group_all()` to tag this
                 hook with.
             types: File types this hook is restricted to.
@@ -178,14 +170,20 @@ class VersionControlHookManager(Tool):
         Returns:
             Hook metadata dictionary in prek's expected schema.
         """
-        entry = method()
-        method = cast("MethodType", method)
-        hook: dict[str, Any] = {
-            "repo": repository,
-            "id": self.id_from_method(method),
-            "name": self.name_from_method(method),
-            "language": language,
-            "entry": str(entry),
+        base_hook = self.hook(
+            method,
+            priority=priority,
+            stages=stages,
+            groups=groups,
+        )
+
+        id_ = base_hook["id"]
+        hook = {
+            "repo": "local",
+            "id": id_,
+            "name": self.name_from_id(id_),
+            "language": "system",
+            "entry": str(method()),
         }
         if args is not None:
             hook["args"] = sorted(args)
@@ -197,14 +195,79 @@ class VersionControlHookManager(Tool):
             hook["files"] = files
         if exclude is not None:
             hook["exclude"] = exclude
-        hook["stages"] = sorted(stages or ["pre-commit"])
-        hook["groups"] = sorted([self.group_all(), *(groups or [])])
-        hook["priority"] = priority
+        hook["stages"] = base_hook["stages"]
+        hook["groups"] = base_hook["groups"]
         if always_run is not None:
             hook["always_run"] = always_run
         if pass_filenames is not None:
             hook["pass_filenames"] = pass_filenames
+        hook["priority"] = base_hook["priority"]
         return hook
+
+    def builtin_hook(
+        self,
+        method: Callable[[], Args],
+        *,
+        priority: int,
+        stages: Iterable[str] = ("pre-commit",),
+        groups: Iterable[str] = (),
+    ) -> dict[str, Any]:
+        """Build metadata for a builtin hook provided by prek itself.
+
+        Args:
+            method: Bound, zero-argument method whose name identifies the
+                built-in hook and whose return value supplies its arguments.
+            priority: This hook's position in the prek pipeline.
+            stages: Git stages that trigger this hook. Defaults to
+                `["pre-commit"]`.
+            groups: Extra prek hook groups beyond `group_all()` to tag this
+                hook with.
+
+        Returns:
+            Hook metadata dictionary in prek's built-in hook schema.
+        """
+        base_hook = self.hook(
+            method,
+            priority=priority,
+            stages=stages,
+            groups=groups,
+        )
+        hook = {
+            "repo": "builtin",
+            "id": base_hook["id"],
+        }
+        if args := method():
+            hook["args"] = sorted(args)
+        hook["stages"] = base_hook["stages"]
+        hook["groups"] = base_hook["groups"]
+        hook["priority"] = base_hook["priority"]
+        return hook
+
+    def hook(
+        self,
+        method: Callable[[], Args],
+        priority: int,
+        stages: Iterable[str] = ("pre-commit",),
+        groups: Iterable[str] = (),
+    ) -> dict[str, Any]:
+        """Build metadata shared by local and builtin hook declarations.
+
+        Args:
+            method: Bound, zero-argument method whose name supplies the hook
+                id and whose return value supplies its entry arguments.
+            priority: The hook's position in the prek pipeline.
+            stages: Git stages that trigger this hook.
+            groups: Extra prek hook groups beyond `group_all()`.
+
+        Returns:
+            Common id, priority, stages, and groups metadata.
+        """
+        return {
+            "id": self.id_from_method(cast("MethodType", method)),
+            "priority": priority,
+            "stages": sorted(stages),
+            "groups": sorted((self.group_all(), *groups)),
+        }
 
     def group_all(self) -> str:
         """Return the prek hook group every hook is tagged with.
@@ -226,16 +289,16 @@ class VersionControlHookManager(Tool):
         """
         return snake_to_kebab_case(method.__name__)
 
-    def name_from_method(self, method: MethodType) -> str:
-        """Derive a hook's display `name` from its entry method's name.
+    def name_from_id(self, id_: str) -> str:
+        """Derive a hook's display `name` from its id.
 
         Args:
-            method: The hook's bound entry method.
+            id_: The hook's kebab-case id.
 
         Returns:
-            `method.__name__` with underscores replaced by spaces.
+            The id with hyphens replaced by spaces.
         """
-        return reformat_name(method.__name__, split_on="_", join_on=" ")
+        return reformat_name(id_, split_on="-", join_on=" ")
 
     def increase_priority(self, hook: dict[str, Any]) -> int:
         """Return the priority one step after another hook's.

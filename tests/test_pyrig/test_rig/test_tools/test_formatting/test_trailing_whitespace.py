@@ -2,7 +2,6 @@
 
 from pyrig.rig.tools.formatting.trailing_whitespace import TrailingWhitespaceFormatter
 from pyrig.rig.tools.language.spelling import SpellChecker
-from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class TestTrailingWhitespaceFormatter:
@@ -36,12 +35,12 @@ class TestTrailingWhitespaceFormatter:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = TrailingWhitespaceFormatter.I.dev_dependencies()
-        assert result == ("pre-commit-hooks",)
+        assert result == ()
 
     def test_format_args(self) -> None:
         """Test method."""
         result = TrailingWhitespaceFormatter.I.format_args()
-        assert result == ("trailing-whitespace-fixer",)
+        assert result == ()
 
     def test_format_hook(self) -> None:
         """Test method."""
@@ -50,12 +49,7 @@ class TestTrailingWhitespaceFormatter:
         hook = TrailingWhitespaceFormatter.I.format_hook()
         spelling_hook = SpellChecker.I.check_hook()
         assert hook["priority"] > spelling_hook["priority"]
-        assert hook["types"] == ["text"]
 
-    def test_fix_trailing_whitespace(self) -> None:
+    def test_trailing_whitespace(self) -> None:
         """Test method."""
-        base_args = TrailingWhitespaceFormatter.I.format_args()
-        assert (
-            TrailingWhitespaceFormatter.I.fix_trailing_whitespace()
-            == PackageManager.I.run_args(*base_args)
-        )
+        assert TrailingWhitespaceFormatter.I.trailing_whitespace() == ()

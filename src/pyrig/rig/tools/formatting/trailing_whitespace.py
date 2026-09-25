@@ -6,12 +6,11 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.formatting.end_of_line import EndOfLineFormatter
-from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
 class TrailingWhitespaceFormatter(FormatHookTool):
-    """Type-safe wrapper for the pre-commit-hooks trailing whitespace fixer."""
+    """Type-safe wrapper for prek's pre-commit-hooks-compatible whitespace fixer."""
 
     def group(self) -> str:
         """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
@@ -30,8 +29,8 @@ class TrailingWhitespaceFormatter(FormatHookTool):
         return "trailing-whitespace-fixer"
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Return the package providing `trailing-whitespace-fixer`."""
-        return ("pre-commit-hooks",)
+        """Return no package dependency; prek provides this built-in hook."""
+        return ()
 
     def format_args(self, *args: str) -> Args:
         """Construct trailing-whitespace-fixer arguments.
@@ -47,7 +46,7 @@ class TrailingWhitespaceFormatter(FormatHookTool):
         Returns:
             Args for `trailing-whitespace-fixer`.
         """
-        return self.args(*args)
+        return Args(*args)
 
     def format_hook(self) -> dict[str, Any]:
         """Return hook metadata for fixing trailing whitespace.
@@ -55,18 +54,17 @@ class TrailingWhitespaceFormatter(FormatHookTool):
         Returns:
             Hook metadata dict for `trailing-whitespace-fixer`.
         """
-        return VersionControlHookManager.I.hook(
-            self.fix_trailing_whitespace,
+        return VersionControlHookManager.I.builtin_hook(
+            self.trailing_whitespace,
             priority=VersionControlHookManager.I.increase_priority(
                 EndOfLineFormatter.I.format_hook(),
             ),
-            types=["text"],
         )
 
-    def fix_trailing_whitespace(self) -> Args:
-        """Return the `Args` this hook's entry runs.
+    def trailing_whitespace(self) -> Args:
+        """Return arguments for the built-in hook.
 
         Returns:
-            Args for `uv run trailing-whitespace-fixer`.
+            Arguments passed to `trailing-whitespace-fixer`.
         """
-        return PackageManager.I.run_args(*self.format_args())
+        return self.format_args()

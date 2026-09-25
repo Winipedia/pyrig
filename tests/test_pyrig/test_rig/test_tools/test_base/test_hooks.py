@@ -36,8 +36,8 @@ class TestVersionControlHookTool:
             {"repo": "c", "stages": ["pre-commit"], "priority": 1, "id": "a"},
         ]
         sorted_hooks = VersionControlHookTool.sorted_hooks(hooks)
-        assert [hook["id"] for hook in sorted_hooks] == ["a", "b", "a", "a"]
-        assert [hook["repo"] for hook in sorted_hooks] == ["a", "a", "b", "c"]
+        assert [hook["id"] for hook in sorted_hooks] == ["a", "a", "a", "b"]
+        assert [hook["repo"] for hook in sorted_hooks] == ["b", "a", "c", "a"]
 
 
 class TestCheckHookTool:
@@ -47,7 +47,7 @@ class TestCheckHookTool:
         """Test method."""
         # CheckHookTool is abstract, test through concrete implementation
         result = MergeConflictChecker.I.check_args()
-        assert result == ("check-merge-conflict",)
+        assert result == ("--assume-in-merge",)
 
     def test_check_hook(self) -> None:
         """Test method."""
@@ -67,13 +67,13 @@ class TestFormatHookTool:
         """Test method."""
         # FormatHookTool is abstract, test through concrete implementation
         result = EndOfFileFormatter.I.format_args()
-        assert result == ("end-of-file-fixer",)
+        assert result == ()
 
     def test_format_hook(self) -> None:
         """Test method."""
         hook = EndOfFileFormatter.I.format_hook()
         assert isinstance(hook, dict)
-        assert hook["id"] == "fix-end-of-file"
+        assert hook["id"] == "end-of-file-fixer"
 
     def test_hooks(self) -> None:
         """Test method."""

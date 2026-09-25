@@ -1,7 +1,6 @@
 """Test module."""
 
 from pyrig.rig.tools.formatting.byte_order_marker import ByteOrderMarkerFormatter
-from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 
 
@@ -36,12 +35,12 @@ class TestByteOrderMarkerFormatter:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = ByteOrderMarkerFormatter.I.dev_dependencies()
-        assert result == ("pre-commit-hooks",)
+        assert result == ()
 
     def test_format_args(self) -> None:
         """Test method."""
         result = ByteOrderMarkerFormatter.I.format_args()
-        assert result == ("fix-byte-order-marker",)
+        assert result == ()
 
     def test_format_hook(self) -> None:
         """Test method."""
@@ -49,11 +48,7 @@ class TestByteOrderMarkerFormatter:
         hook = ByteOrderMarkerFormatter.I.format_hook()
         sync_hook = Pyrigger.I.synchronize_project_hook()
         assert hook["priority"] > sync_hook["priority"]
-        assert hook["types"] == ["text"]
 
     def test_fix_byte_order_marker(self) -> None:
         """Test method."""
-        assert (
-            ByteOrderMarkerFormatter.I.fix_byte_order_marker()
-            == PackageManager.I.run_args(*ByteOrderMarkerFormatter.I.format_args())
-        )
+        assert ByteOrderMarkerFormatter.I.fix_byte_order_marker() == ()

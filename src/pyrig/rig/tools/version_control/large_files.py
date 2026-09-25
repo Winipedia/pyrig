@@ -5,13 +5,12 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
 from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
 class LargeFileChecker(CheckHookTool):
-    """Type-safe wrapper for the pre-commit-hooks large file checker."""
+    """Type-safe wrapper for prek's pre-commit-hooks-compatible large file check."""
 
     def group(self) -> str:
         """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
@@ -30,8 +29,8 @@ class LargeFileChecker(CheckHookTool):
         return "check-added-large-files"
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Return the package providing `check-added-large-files`."""
-        return ("pre-commit-hooks",)
+        """Return no package dependency; prek provides this built-in hook."""
+        return ()
 
     def check_args(self, *args: str) -> Args:
         """Construct check-added-large-files arguments.
@@ -46,7 +45,7 @@ class LargeFileChecker(CheckHookTool):
         Returns:
             Args for `check-added-large-files`.
         """
-        return self.args(*args)
+        return Args("--enforce-all", *args)
 
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for checking for accidentally added large files.
@@ -60,18 +59,17 @@ class LargeFileChecker(CheckHookTool):
         Returns:
             Hook metadata dict for `check-added-large-files --enforce-all`.
         """
-        return VersionControlHookManager.I.hook(
-            self.check_large_files,
+        return VersionControlHookManager.I.builtin_hook(
+            self.check_added_large_files,
             priority=VersionControlHookManager.I.hook_priority(
                 TypeChecker.I.check_hook(),
             ),
-            args=Args("--enforce-all"),
         )
 
-    def check_large_files(self) -> Args:
-        """Return the `Args` this hook's entry runs.
+    def check_added_large_files(self) -> Args:
+        """Return arguments for the built-in hook.
 
         Returns:
-            Args for `uv run check-added-large-files`.
+            Arguments passed to `check-added-large-files`.
         """
-        return PackageManager.I.run_args(*self.check_args())
+        return self.check_args()

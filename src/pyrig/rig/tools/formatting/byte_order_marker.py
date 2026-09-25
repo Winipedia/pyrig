@@ -5,13 +5,12 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
 from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
 class ByteOrderMarkerFormatter(FormatHookTool):
-    """Type-safe wrapper for the pre-commit-hooks byte-order-marker fixer."""
+    """Type-safe wrapper for prek's pre-commit-hooks-compatible BOM fixer."""
 
     def group(self) -> str:
         """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
@@ -30,8 +29,8 @@ class ByteOrderMarkerFormatter(FormatHookTool):
         return "fix-byte-order-marker"
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Return the package providing `fix-byte-order-marker`."""
-        return ("pre-commit-hooks",)
+        """Return no package dependency; prek provides this built-in hook."""
+        return ()
 
     def format_args(self, *args: str) -> Args:
         """Construct fix-byte-order-marker arguments.
@@ -47,7 +46,7 @@ class ByteOrderMarkerFormatter(FormatHookTool):
         Returns:
             Args for `fix-byte-order-marker`.
         """
-        return self.args(*args)
+        return Args(*args)
 
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for stripping a leading byte-order mark.
@@ -61,18 +60,17 @@ class ByteOrderMarkerFormatter(FormatHookTool):
         Returns:
             Hook metadata dict for `fix-byte-order-marker`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.builtin_hook(
             self.fix_byte_order_marker,
             priority=VersionControlHookManager.I.increase_priority(
                 Pyrigger.I.synchronize_project_hook(),
             ),
-            types=["text"],
         )
 
     def fix_byte_order_marker(self) -> Args:
-        """Return the `Args` this hook's entry runs.
+        """Return arguments for the built-in hook.
 
         Returns:
-            Args for `uv run fix-byte-order-marker`.
+            Arguments passed to `fix-byte-order-marker`.
         """
-        return PackageManager.I.run_args(*self.format_args())
+        return self.format_args()

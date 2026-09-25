@@ -45,7 +45,7 @@ class CICDLinter(CheckHookTool):
         shell_linter_hook = ShellLinter.I.check_hook()
         shell_linter_entry: str = shell_linter_hook["entry"]
         shell_linter_args: list[str] = shell_linter_hook["args"]
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.lint_ci_cd,
             priority=VersionControlHookManager.I.hook_priority(
                 TypeChecker.I.check_hook(),

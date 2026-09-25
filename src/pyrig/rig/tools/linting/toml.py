@@ -72,7 +72,7 @@ class TOMLLinter(CheckFormatHookTool):
         Returns:
             Hook metadata dict for `tombi lint --error-on-warnings`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.lint_toml,
             priority=VersionControlHookManager.I.hook_priority(
                 TypeChecker.I.check_hook(),
@@ -108,7 +108,7 @@ class TOMLLinter(CheckFormatHookTool):
         Returns:
             Hook metadata dict for `tombi format`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.format_toml,
             priority=VersionControlHookManager.I.increase_priority(
                 EndOfFileFormatter.I.format_hook(),

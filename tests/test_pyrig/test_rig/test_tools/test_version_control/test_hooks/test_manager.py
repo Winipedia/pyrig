@@ -66,19 +66,18 @@ class TestVersionControlHookManager:
         result = VersionControlHookManager.I.run_all_files_args()
         assert result == ("prek", "run", "--all-files")
 
-    def test_hook(self) -> None:
+    def test_local_hook(self) -> None:
         """Test method."""
         priority = 2
-        hook = VersionControlHookManager.I.hook(
+        hook = VersionControlHookManager.I.local_hook(
             VersionControlHookManager.I.run_args,
-            repository="some-repo",
             priority=priority,
             types=["python"],
             files="^tests/",
             exclude="^tests/fixtures/",
             args=Args("--fix"),
         )
-        assert hook["repo"] == "some-repo"
+        assert hook["repo"] == "local"
         assert hook["id"] == "run-args"
         assert hook["name"] == "run args"
         assert hook["language"] == "system"
@@ -95,7 +94,7 @@ class TestVersionControlHookManager:
 
     def test_hook_without_files(self) -> None:
         """Test method."""
-        hook = VersionControlHookManager.I.hook(
+        hook = VersionControlHookManager.I.local_hook(
             VersionControlHookManager.I.run_args,
             priority=1,
         )
@@ -103,7 +102,7 @@ class TestVersionControlHookManager:
 
     def test_hook_without_exclude(self) -> None:
         """Test method."""
-        hook = VersionControlHookManager.I.hook(
+        hook = VersionControlHookManager.I.local_hook(
             VersionControlHookManager.I.run_args,
             priority=1,
         )
@@ -122,11 +121,11 @@ class TestVersionControlHookManager:
             == "run-args"
         )
 
-    def test_name_from_method(self) -> None:
+    def test_name_from_id(self) -> None:
         """Test method."""
         assert (
-            VersionControlHookManager.I.name_from_method(
-                VersionControlHookManager.I.run_args,
+            VersionControlHookManager.I.name_from_id(
+                "run-args",
             )
             == "run args"
         )
@@ -151,8 +150,38 @@ class TestVersionControlHookManager:
         """Test method."""
         hook = {"repo": "my-repo", "stages": ["pre-commit"], "priority": 2, "id": "b"}
         assert VersionControlHookManager.I.hook_sort_key(hook) == (
-            "my-repo",
             2,
             ["pre-commit"],
             "b",
         )
+
+    def test_builtin_hook(self) -> None:
+        """Test method."""
+        hook = VersionControlHookManager.I.builtin_hook(
+            VersionControlHookManager.I.run_args,
+            priority=2,
+            stages=["pre-push", "pre-commit"],
+            groups=["checks"],
+        )
+        assert hook == {
+            "repo": "builtin",
+            "id": "run-args",
+            "args": ["prek", "run"],
+            "stages": ["pre-commit", "pre-push"],
+            "groups": ["all", "checks"],
+            "priority": 2,
+        }
+
+    def test_hook(self) -> None:
+        """Test method."""
+        assert VersionControlHookManager.I.hook(
+            VersionControlHookManager.I.run_args,
+            priority=2,
+            stages=["pre-push", "pre-commit"],
+            groups=["checks"],
+        ) == {
+            "id": "run-args",
+            "priority": 2,
+            "stages": ["pre-commit", "pre-push"],
+            "groups": ["all", "checks"],
+        }

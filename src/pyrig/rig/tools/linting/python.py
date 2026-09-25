@@ -65,7 +65,7 @@ class PythonLinter(CheckFormatHookTool):
         Returns:
             Hook metadata dict for `ruff check --fix`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.lint_python,
             priority=VersionControlHookManager.I.increase_priority(
                 EndOfFileFormatter.I.format_hook(),
@@ -88,7 +88,7 @@ class PythonLinter(CheckFormatHookTool):
         Returns:
             Hook metadata dict for `ruff format`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.format_python,
             priority=VersionControlHookManager.I.increase_priority(
                 self.check_hook(),

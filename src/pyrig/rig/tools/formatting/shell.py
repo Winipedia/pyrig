@@ -69,7 +69,7 @@ class ShellFormatter(FormatHookTool):
             Hook metadata dict for `shfmt` with `--indent=2 --case-indent
             --language-dialect=bash --simplify --binary-next-line --write`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.format_shell,
             priority=VersionControlHookManager.I.increase_priority(
                 EndOfFileFormatter.I.format_hook(),

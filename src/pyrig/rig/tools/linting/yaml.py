@@ -63,7 +63,7 @@ class YAMLLinter(CheckHookTool):
         Returns:
             Hook metadata dict for `ryl check --config-data=... --fix`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.lint_yaml,
             priority=VersionControlHookManager.I.increase_priority(
                 EndOfFileFormatter.I.format_hook(),

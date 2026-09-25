@@ -139,7 +139,7 @@ class Pyrigger(VersionControlHookTool):
 
     def synchronize_project_hook(self) -> dict[str, Any]:
         """Return the hook metadata for the `pyrig sync` hook."""
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.synchronize_project,
             priority=VersionControlHookManager.I.increase_priority(
                 PackageManager.I.audit_dependencies_hook(),

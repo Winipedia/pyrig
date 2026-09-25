@@ -6,12 +6,11 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.formatting.trailing_whitespace import TrailingWhitespaceFormatter
-from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
 class EndOfFileFormatter(FormatHookTool):
-    """Type-safe wrapper for the pre-commit-hooks end-of-file fixer."""
+    """Type-safe wrapper for prek's pre-commit-hooks-compatible EOF fixer."""
 
     def group(self) -> str:
         """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
@@ -30,8 +29,8 @@ class EndOfFileFormatter(FormatHookTool):
         return "end-of-file-fixer"
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Return the package providing `end-of-file-fixer`."""
-        return ("pre-commit-hooks",)
+        """Return no package dependency; prek provides this built-in hook."""
+        return ()
 
     def format_args(self, *args: str) -> Args:
         """Construct end-of-file-fixer arguments.
@@ -48,7 +47,7 @@ class EndOfFileFormatter(FormatHookTool):
         Returns:
             Args for `end-of-file-fixer`.
         """
-        return self.args(*args)
+        return Args(*args)
 
     def format_hook(self) -> dict[str, Any]:
         """Return hook metadata for fixing a file's trailing newline.
@@ -56,18 +55,17 @@ class EndOfFileFormatter(FormatHookTool):
         Returns:
             Hook metadata dict for `end-of-file-fixer`.
         """
-        return VersionControlHookManager.I.hook(
-            self.fix_end_of_file,
+        return VersionControlHookManager.I.builtin_hook(
+            self.end_of_file_fixer,
             priority=VersionControlHookManager.I.increase_priority(
                 TrailingWhitespaceFormatter.I.format_hook(),
             ),
-            types=["text"],
         )
 
-    def fix_end_of_file(self) -> Args:
-        """Return the `Args` this hook's entry runs.
+    def end_of_file_fixer(self) -> Args:
+        """Return arguments for the built-in hook.
 
         Returns:
-            Args for `uv run end-of-file-fixer`.
+            Arguments passed to `end-of-file-fixer`.
         """
-        return PackageManager.I.run_args(*self.format_args())
+        return self.format_args()

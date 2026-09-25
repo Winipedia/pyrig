@@ -5,13 +5,12 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
 from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
 class MergeConflictChecker(CheckHookTool):
-    """Type-safe wrapper for the pre-commit-hooks merge conflict marker checker."""
+    """Type-safe wrapper for prek's pre-commit-hooks-compatible conflict check."""
 
     def group(self) -> str:
         """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
@@ -30,15 +29,16 @@ class MergeConflictChecker(CheckHookTool):
         return "check-merge-conflict"
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Return the package providing `check-merge-conflict`."""
-        return ("pre-commit-hooks",)
+        """Return no package dependency; prek provides this built-in hook."""
+        return ()
 
     def check_args(self, *args: str) -> Args:
         """Construct check-merge-conflict arguments.
 
-        Unlike `SpellChecker`, this tool has no autofix mode: a leftover
-        conflict marker means the merge itself was never actually resolved,
-        so there's no safe automatic fix, only a report.
+        This checker only reports conflict markers; it has no autofix mode
+        because removing a marker could discard unresolved content. The
+        `--assume-in-merge` option makes the check run even when Git does not
+        report an active merge.
 
         Args:
             *args: Additional arguments forwarded to `check-merge-conflict`,
@@ -47,7 +47,7 @@ class MergeConflictChecker(CheckHookTool):
         Returns:
             Args for `check-merge-conflict`.
         """
-        return self.args(*args)
+        return Args("--assume-in-merge", *args)
 
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for checking for merge conflict markers.
@@ -58,19 +58,17 @@ class MergeConflictChecker(CheckHookTool):
         Returns:
             Hook metadata dict for `check-merge-conflict --assume-in-merge`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.builtin_hook(
             self.check_merge_conflict,
             priority=VersionControlHookManager.I.hook_priority(
                 TypeChecker.I.check_hook(),
             ),
-            types=["text"],
-            args=Args("--assume-in-merge"),
         )
 
     def check_merge_conflict(self) -> Args:
-        """Return the `Args` this hook's entry runs.
+        """Return arguments for the built-in hook.
 
         Returns:
-            Args for `uv run check-merge-conflict`.
+            Arguments passed to `check-merge-conflict`.
         """
-        return PackageManager.I.run_args(*self.check_args())
+        return self.check_args()

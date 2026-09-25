@@ -46,7 +46,7 @@ class TypeChecker(CheckHookTool):
         Returns:
             Hook metadata dict for `ty check`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.check_types,
             priority=VersionControlHookManager.I.increase_priority(
                 PythonLinter.I.format_hook(),

@@ -2,7 +2,6 @@
 
 from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.formatting.trailing_whitespace import TrailingWhitespaceFormatter
-from pyrig.rig.tools.packages.manager import PackageManager
 
 
 class TestEndOfFileFormatter:
@@ -36,12 +35,12 @@ class TestEndOfFileFormatter:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = EndOfFileFormatter.I.dev_dependencies()
-        assert result == ("pre-commit-hooks",)
+        assert result == ()
 
     def test_format_args(self) -> None:
         """Test method."""
         result = EndOfFileFormatter.I.format_args()
-        assert result == ("end-of-file-fixer",)
+        assert result == ()
 
     def test_format_hook(self) -> None:
         """Test method."""
@@ -49,10 +48,7 @@ class TestEndOfFileFormatter:
         hook = EndOfFileFormatter.I.format_hook()
         whitespace_hook = TrailingWhitespaceFormatter.I.format_hook()
         assert hook["priority"] > whitespace_hook["priority"]
-        assert hook["types"] == ["text"]
 
-    def test_fix_end_of_file(self) -> None:
+    def test_end_of_file_fixer(self) -> None:
         """Test method."""
-        assert EndOfFileFormatter.I.fix_end_of_file() == PackageManager.I.run_args(
-            *EndOfFileFormatter.I.format_args(),
-        )
+        assert EndOfFileFormatter.I.end_of_file_fixer() == ()

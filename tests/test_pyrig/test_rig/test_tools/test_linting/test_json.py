@@ -1,7 +1,6 @@
 """module."""
 
 from pyrig.rig.tools.linting.json import JSONLinter
-from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.typing.checker import TypeChecker
 
 
@@ -35,7 +34,7 @@ class TestJSONLinter:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = JSONLinter.I.dev_dependencies()
-        assert result == ("pre-commit-hooks",)
+        assert result == ()
 
     def test_check_args(self) -> None:
         """Test method."""
@@ -48,10 +47,7 @@ class TestJSONLinter:
         hook = JSONLinter.I.check_hook()
         types_hook = TypeChecker.I.check_hook()
         assert hook["priority"] == types_hook["priority"]
-        assert hook["types"] == ["json"]
 
-    def test_lint_json(self) -> None:
+    def test_check_json(self) -> None:
         """Test method."""
-        assert JSONLinter.I.lint_json() == PackageManager.I.run_args(
-            *JSONLinter.I.check_args(),
-        )
+        assert JSONLinter.I.check_json() == ()

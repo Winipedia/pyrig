@@ -66,7 +66,7 @@ class ShellLinter(CheckHookTool):
             Hook metadata dict for `shellcheck --enable=all
             --check-sourced --external-sources --norc --shell=bash`.
         """
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.lint_shell,
             priority=VersionControlHookManager.I.hook_priority(
                 TypeChecker.I.check_hook(),

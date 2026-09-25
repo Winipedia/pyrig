@@ -25,7 +25,7 @@ my-project/
 ├── CODE_OF_CONDUCT.md                      # Contributor Covenant code of conduct
 ├── CONTRIBUTING.md                         # Contribution guidelines
 ├── LICENSE                                 # MIT license
-├── prek.toml                               # Pre-commit hook definitions
+├── prek.toml                               # Version control hook definitions
 ├── pyproject.toml                          # Package metadata and tool configuration
 ├── README.md                               # Project README with badges
 ├── SECURITY.md                             # Security policy

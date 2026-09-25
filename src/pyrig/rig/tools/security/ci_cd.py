@@ -43,7 +43,7 @@ class CICDSecurityChecker(CheckHookTool):
 
     def check_hook(self) -> dict[str, Any]:
         """Return the configuration for the CI/CD security checker hook."""
-        return VersionControlHookManager.I.hook(
+        return VersionControlHookManager.I.local_hook(
             self.check_ci_cd,
             priority=VersionControlHookManager.I.hook_priority(
                 TypeChecker.I.check_hook(),
