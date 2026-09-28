@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "18.91.9"
+version = "18.91.12"
 description = "A tool that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -18,14 +18,22 @@ keywords = [
   "automation",
   "boilerplate",
   "ci-cd",
+  "code-generation",
   "code-quality",
   "configuration",
+  "convention-over-configuration",
   "developer-tools",
   "devops",
+  "github-actions",
+  "project-generator",
+  "project-maintenance",
+  "project-scaffolding",
   "project-setup",
-  "project-template",
   "pyrig",
-  "scaffolding",
+  "pyrig-runtime",
+  "python-project",
+  "test-generation",
+  "test-scaffolding",
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
