@@ -96,7 +96,6 @@ class PythonLinter(CheckFormatHookTool):
         return VersionControlHookManager.I.local_hook(
             self.format_python,
             priority=VersionControlHookManager.I.deprioritize(
-                SecretsChecker.I.check_hook(),
                 self.check_hook(),
                 MarkdownLinter.I.format_hook(),
             ),
