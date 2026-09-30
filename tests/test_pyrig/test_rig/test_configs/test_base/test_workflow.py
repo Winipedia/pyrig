@@ -146,13 +146,6 @@ class TestWorkflowConfigFile:
             "workflow_dispatch": {},
         }
 
-    def test_global_env(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().global_env()
-        assert "PYTHONDONTWRITEBYTECODE" in result, (
-            "Expected 'PYTHONDONTWRITEBYTECODE' in global env"
-        )
-
     def test_defaults(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().defaults()

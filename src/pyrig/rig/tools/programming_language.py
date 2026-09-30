@@ -83,10 +83,6 @@ class ProgrammingLanguage(Tool):
                 continue
             yield p
 
-    def no_bytecode_env_var(self) -> str:
-        """Return the name of the env var that disables `.pyc` bytecode writing."""
-        return "PYTHONDONTWRITEBYTECODE"
-
     def remove_pycache(self) -> None:
         """Remove all `__pycache__` directories in the project.
 

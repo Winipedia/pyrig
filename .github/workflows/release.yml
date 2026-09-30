@@ -11,8 +11,6 @@
 "defaults":
   "run":
     "shell": "bash"
-"env":
-  "PYTHONDONTWRITEBYTECODE": 1
 "run-name": "Release"
 "jobs":
   "health-check":

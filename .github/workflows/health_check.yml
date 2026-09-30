@@ -21,8 +21,6 @@
 "defaults":
   "run":
     "shell": "bash"
-"env":
-  "PYTHONDONTWRITEBYTECODE": 1
 "run-name": "Health Check"
 "jobs":
   "analyze":

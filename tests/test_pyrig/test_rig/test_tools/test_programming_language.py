@@ -96,10 +96,6 @@ class TestProgrammingLanguage:
         """Test method."""
         assert isinstance(ProgrammingLanguage().standard_init_content(), str)
 
-    def test_no_bytecode_env_var(self) -> None:
-        """Test method."""
-        assert ProgrammingLanguage().no_bytecode_env_var() == "PYTHONDONTWRITEBYTECODE"
-
     def test_dev_dependencies(self) -> None:
         """Test method."""
         assert ProgrammingLanguage().dev_dependencies() == ()

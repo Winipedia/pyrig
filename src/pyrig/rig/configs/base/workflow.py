@@ -22,7 +22,6 @@ from pyrig.rig.configs.base.yaml import YMLDictConfigFile, commented_map
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.formatting.shell import ShellFormatter
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,
@@ -75,7 +74,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             "permissions": self.permissions(),
             "concurrency": self.concurrency(),
             "defaults": self.defaults(),
-            "env": self.global_env(),
             "run-name": self.run_name(),
             "jobs": self.jobs(),
         }
@@ -231,20 +229,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Dict of default settings.
         """
         return {"run": {"shell": ShellFormatter.I.dialect()}}
-
-    def global_env(self) -> dict[str, Any]:
-        """Return environment variables applied to every job in the workflow.
-
-        Override to add custom variables. By default sets a variable that
-        prevents Python from writing `.pyc` bytecode files and a variable
-        that prevents `uv` from auto-syncing the environment before commands.
-
-        Returns:
-            Dict of environment variable names to their values.
-        """
-        return {
-            ProgrammingLanguage.I.no_bytecode_env_var(): 1,
-        }
 
     def workflow_name(self) -> str:
         """Derive a human-readable name from the class name.
