@@ -104,6 +104,12 @@ Two jobs run in this final stage:
   GitHub Pages. This job requires `contents: read`, `pages: write`, and
   `id-token: write` permissions at the job level.
 
+!!! warning "Important"
+    If your repository is private, the published docs site is still publicly accessible.
+    Please check how to [change the visibility of your GitHub Pages site](https://docs.github.com/en/enterprise-cloud@latest/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site)
+    in the repository settings. Pyrig does not do this for you as it is not
+    free for private repositories.
+
 ---
 
 ## Automatic Dependency Updates Checks
