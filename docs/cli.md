@@ -14,7 +14,7 @@ in `pyproject.toml` and a `version` command inherited from pyrig-runtime:
 
 ```bash
 uv run my-project --help
-uv run my-project version   # prints: my-project 1.0.0
+uv run my-project version   # prints: 0.1.0
 ```
 
 ---

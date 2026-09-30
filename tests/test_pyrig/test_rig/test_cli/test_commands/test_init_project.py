@@ -151,7 +151,7 @@ def test_init_project(
         args = PackageManager.I.run_args(project_name, version.__name__)
         res = args.run()
         stdout = res.stdout
-        expected = f"{project_name} 0.1.0"
+        expected = "0.1.0"
         assert expected in stdout
 
         package_dir = src_project_dir / "src" / kebab_to_snake_case(project_name)
