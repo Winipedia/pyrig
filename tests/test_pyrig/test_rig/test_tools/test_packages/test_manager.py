@@ -88,11 +88,6 @@ class TestPackageManager:
         result = PackageManager.I.build_backend()
         assert result == "uv_build"
 
-    def test_no_auto_install_env_var(self) -> None:
-        """Test method."""
-        result = PackageManager.I.no_auto_install_env_var()
-        assert result == "UV_NO_SYNC"
-
     def test_name(self) -> None:
         """Test method."""
         result = PackageManager.I.name()

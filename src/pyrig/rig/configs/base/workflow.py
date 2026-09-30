@@ -244,7 +244,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return {
             ProgrammingLanguage.I.no_bytecode_env_var(): 1,
-            PackageManager.I.no_auto_install_env_var(): 1,
         }
 
     def workflow_name(self) -> str:

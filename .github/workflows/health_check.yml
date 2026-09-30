@@ -23,7 +23,6 @@
     "shell": "bash"
 "env":
   "PYTHONDONTWRITEBYTECODE": 1
-  "UV_NO_SYNC": 1
 "run-name": "Health Check"
 "jobs":
   "analyze":

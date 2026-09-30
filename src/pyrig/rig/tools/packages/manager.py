@@ -95,10 +95,6 @@ class PackageManager(VersionControlHookTool):
         """Return `Path("uv.lock")`, relative to the project root."""
         return Path("uv.lock")
 
-    def no_auto_install_env_var(self) -> str:
-        """Return the name of the env var that disables uv's implicit auto-sync."""
-        return "UV_NO_SYNC"
-
     def dist_dir(self) -> Path:
         """Return the relative directory where distribution artifacts are stored."""
         return Path("dist")
