@@ -24,6 +24,9 @@ be correct as well.
 
 ## Some Useful Plugins
 
+- **[pyrig-public](https://Winipedia.github.io/pyrig-public)** — Enables additional functionality
+  that is only available for public repositories.
+- **[pyrig-private](https://Winipedia.github.io/pyrig-private)** — Plugin for private repository functionality.
 - **[pyrig-pypi](https://Winipedia.github.io/pyrig-pypi)** — Publishes your
   package to PyPI automatically from your CI/CD pipeline.
 - **[pyrig-codecov](https://Winipedia.github.io/pyrig-codecov)** — Uploads your

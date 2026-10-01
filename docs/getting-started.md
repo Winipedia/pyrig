@@ -155,15 +155,16 @@ description = "My awesome project description."
 uv add pyrig --dev
 ```
 
-If you are writing a pyrig plugin, you must add pyrig as a regular dependency
-to your plugin project so that it can be discovered and the later you then add
-your plugin as a dev dependency to the project you are scaffolding with pyrig.
-See the [plugin example](plugins.md#example) for a full walkthrough of
-writing one.
+!!! tip
+    We recommend using either the `pyrig-public` or `pyrig-private` plugin
+    depending on whether your repository is public or private, but plugins are
+    optional.
 
 ```bash
-# Add pyrig to plugin project
-uv add pyrig
+# Either:
+uv add pyrig-public --dev
+# Or:
+uv add pyrig-private --dev
 ```
 
 ### 6. Add Any Plugins You Want (optional)

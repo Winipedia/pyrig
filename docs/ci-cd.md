@@ -108,6 +108,11 @@ Two jobs run in this final stage:
     in the repository settings. Pyrig does not do this for you as it is not
     free for private repositories.
 
+!!! tip
+    Keep your documentation public for users and only document user facing
+    relevant information. Install the `pyrig-private` plugin to remove the
+    `docs/api.md` file so no internal API documentation is exposed publicly.
+
 ---
 
 ## Automatic Dependency Updates Checks
