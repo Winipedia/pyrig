@@ -21,13 +21,6 @@ class TestConfigureRepositoryConfigFile:
         """Test method."""
         assert ConfigureRepositoryConfigFile.I.rulesets_function() == "rulesets"
 
-    def test_vulnerability_reporting_function(self) -> None:
-        """Test method."""
-        assert (
-            ConfigureRepositoryConfigFile.I.vulnerability_reporting_function()
-            == "vulnerability_reporting"
-        )
-
     def test_release_immutability_function(self) -> None:
         """Test method."""
         assert (
@@ -49,13 +42,6 @@ class TestConfigureRepositoryConfigFile:
             == "dependency_security_updates"
         )
 
-    def test_fork_pr_contributor_approval_function(self) -> None:
-        """Test method."""
-        assert (
-            ConfigureRepositoryConfigFile.I.fork_pr_contributor_approval_function()
-            == "fork_pr_contributor_approval"
-        )
-
     def test_parent_path(self) -> None:
         """Test method."""
         assert ConfigureRepositoryConfigFile.I.parent_path() == Path(".github")
@@ -71,11 +57,9 @@ class TestConfigureRepositoryConfigFile:
         assert script.repo_variable() in content
         assert script.repository_function() in content
         assert script.rulesets_function() in content
-        assert script.vulnerability_reporting_function() in content
         assert script.dependency_alerts_function() in content
         assert script.dependency_security_updates_function() in content
         assert script.release_immutability_function() in content
-        assert script.fork_pr_contributor_approval_function() in content
         assert "gh api" in content
         # the footer must come last so the functions are defined before it runs
         assert content.rstrip("\n").endswith(script.footer_content())
@@ -115,17 +99,6 @@ class TestConfigureRepositoryConfigFile:
         assert 'gh api "${url}"' in result
         assert "[[ -z" in result
 
-    def test_vulnerability_reporting_script(self) -> None:
-        """Test method."""
-        script = ConfigureRepositoryConfigFile.I
-        result = script.vulnerability_reporting_script()
-        assert result.startswith(
-            f"{script.vulnerability_reporting_function()}() {{",
-        )
-        assert "${repo}" in result
-        assert "private-vulnerability-reporting" in result
-        assert "--method=PUT" in result
-
     def test_dependency_alerts_script(self) -> None:
         """Test method."""
         script = ConfigureRepositoryConfigFile.I
@@ -159,17 +132,6 @@ class TestConfigureRepositoryConfigFile:
         assert "immutable-releases" in result
         assert "--method=PUT" in result
 
-    def test_fork_pr_contributor_approval_script(self) -> None:
-        """Test method."""
-        script = ConfigureRepositoryConfigFile.I
-        result = script.fork_pr_contributor_approval_script()
-        assert result.startswith(
-            f"{script.fork_pr_contributor_approval_function()}() {{",
-        )
-        assert "${repo}" in result
-        assert "fork-pr-contributor-approval" in result
-        assert "--method=PUT" in result
-
     def test_scripts_content(self) -> None:
         """Test method."""
         script = ConfigureRepositoryConfigFile.I
@@ -182,10 +144,8 @@ class TestConfigureRepositoryConfigFile:
         for s in (
             script.repository_script(),
             script.rulesets_script(),
-            script.vulnerability_reporting_script(),
             script.dependency_alerts_script(),
             script.dependency_security_updates_script(),
             script.release_immutability_script(),
-            script.fork_pr_contributor_approval_script(),
         ):
             assert s in script.scripts()

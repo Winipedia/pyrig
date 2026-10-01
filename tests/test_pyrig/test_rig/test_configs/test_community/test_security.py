@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from pyrig.rig.configs.community.security import SecurityConfigFile
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
 class TestSecurityConfigFile:
@@ -37,11 +38,10 @@ class TestSecurityConfigFile:
         """Test method."""
         result = SecurityConfigFile.I.reporting_section()
         assert result.startswith("## Reporting a Vulnerability")
-        assert "https://github.com/Winipedia/pyrig/security/advisories/new" in result
         assert "report to that project directly" in result
         assert "special configuration" in result
         assert "Full paths of any source files" in result
-        assert "@" not in result
+        assert "private vulnerability reporting" not in result
 
     def test_expectations_section(self) -> None:
         """Test method."""
@@ -57,3 +57,14 @@ class TestSecurityConfigFile:
         """Test method."""
         result = SecurityConfigFile.I.safe_harbor_section()
         assert result.startswith("## Safe Harbor")
+
+    def test_reporting_method(self) -> None:
+        """Test method."""
+        assert (
+            SecurityConfigFile.I.reporting_method()
+            in SecurityConfigFile.I.reporting_section()
+        )
+        assert (
+            SecurityConfigFile.I.reporting_method()
+            == f"<{PyprojectConfigFile.I.maintainer_email()}>"
+        )

@@ -6,9 +6,7 @@ Manages SECURITY.md, the project's vulnerability-reporting policy.
 from pathlib import Path
 
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
-from pyrig.rig.tools.version_control.remote.controller import (
-    RemoteVersionController,
-)
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
 class SecurityConfigFile(MarkdownConfigFile):
@@ -16,11 +14,11 @@ class SecurityConfigFile(MarkdownConfigFile):
 
     Generates SECURITY.md from a general-purpose coordinated-disclosure
     template covering: which versions are supported, how to report a
-    vulnerability (through GitHub's private vulnerability reporting), what
-    information to include, a minimal acknowledgment expectation, and a
-    safe-harbor statement for good-faith security research. The reporting
-    URL is derived from project configuration, so nothing is left for
-    downstream users to fill in by hand.
+    vulnerability (by emailing the configured maintainer), what information
+    to include, a minimal acknowledgment expectation, and a safe-harbor
+    statement for good-faith security research. The reporting address is
+    derived from project configuration, so downstream users do not need to
+    fill it in by hand.
     """
 
     def content(self) -> str:
@@ -67,23 +65,22 @@ before reporting, or mention your version if you can't."""
     def reporting_section(self) -> str:
         """Return the section describing where and how to report a vulnerability.
 
-        Requires GitHub's private vulnerability reporting, with no
-        fallback channel. The "please include" list asks for more than
-        the bare minimum, since it only guides the reporter and commits
-        the maintainer to nothing. Also clarifies scope, since a
-        vulnerability in a dependency isn't this project's to fix.
+        Uses the configured maintainer email as the reporting channel. The
+        "please include" list asks for more than the bare minimum, since it
+        only guides the reporter and commits the maintainer to nothing. Also
+        clarifies scope, since a vulnerability in a dependency isn't this
+        project's to fix.
 
         Returns:
             The `## Reporting a Vulnerability` section.
         """
-        security_advisory_url = RemoteVersionController.I.security_advisory_url()
         return f"""## Reporting a Vulnerability
 
 **Please do not report security vulnerabilities through public GitHub
 issues, discussions, or pull requests.**
 
-Instead, [report a vulnerability]({security_advisory_url})
-using GitHub's private vulnerability reporting.
+Instead, report a vulnerability to:
+{self.reporting_method()}
 
 Please include:
 
@@ -96,6 +93,14 @@ Please include:
 
 This covers vulnerabilities in this project's own code. For a dependency,
 please report to that project directly."""
+
+    def reporting_method(self) -> str:
+        """Return the method used for reporting a vulnerability.
+
+        Returns:
+            The reporting method as a string.
+        """
+        return f"<{PyprojectConfigFile.I.maintainer_email()}>"
 
     def expectations_section(self) -> str:
         """Return the section describing what happens after a report is filed.
