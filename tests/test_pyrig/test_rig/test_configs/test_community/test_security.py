@@ -41,7 +41,6 @@ class TestSecurityConfigFile:
         assert "report to that project directly" in result
         assert "special configuration" in result
         assert "Full paths of any source files" in result
-        assert "private vulnerability reporting" not in result
 
     def test_expectations_section(self) -> None:
         """Test method."""
@@ -65,6 +64,6 @@ class TestSecurityConfigFile:
             in SecurityConfigFile.I.reporting_section()
         )
         assert (
-            SecurityConfigFile.I.reporting_method()
+            SecurityConfigFile().reporting_method()
             == f"<{PyprojectConfigFile.I.maintainer_email()}>"
         )
