@@ -128,6 +128,14 @@ class Pyrigger(VersionControlHookTool):
         """Return `"pyrig-runtime"`, the package name of pyrig's runtime dependency."""
         return snake_to_kebab_case(pyrig_runtime.__name__)
 
+    def dev_dependencies(self) -> tuple[str, ...]:
+        """Return no dev dependencies; projects add pyrig manually.
+
+        Pyrig would only be able to add itself as a dev dependency
+        if it is already installed so this is unnecessary.
+        """
+        return ()
+
     def hooks(self) -> tuple[dict[str, Any], ...]:
         """Return the project-synchronization hook.
 

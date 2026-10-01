@@ -3,7 +3,6 @@
 from contextlib import chdir
 from pathlib import Path
 
-from pyrig_overrides.rig.tools.pyrigger import Pyrigger as OverridePyrigger
 from pytest_mock import MockerFixture
 
 from pyrig.rig.cli.commands.make.subclass import choose_subclass, make_subclass
@@ -18,7 +17,7 @@ def test_make_subclass(tmp_path: Path, mocker: MockerFixture) -> None:
     with chdir(project_dir):
         choose_subclass_mock = mocker.patch(
             choose_subclass.__module__ + "." + choose_subclass.__name__,
-            return_value=OverridePyrigger,
+            return_value=Pyrigger,
         )
 
         make_subclass(None)
@@ -31,12 +30,11 @@ def test_make_subclass(tmp_path: Path, mocker: MockerFixture) -> None:
         content = path.read_text()
         assert "class Pyrigger(BasePyrigger):" in content
         assert (
-            "from pyrig_overrides.rig.tools.pyrigger import Pyrigger as BasePyrigger"
-            in content
+            "from pyrig.rig.tools.pyrigger import Pyrigger as BasePyrigger" in content
         )
         assert content.endswith("\n")
         assert (
-            '"""\n\nfrom pyrig_overrides.rig.tools.pyrigger import Pyrigger as BasePyrigger'  # noqa: E501
+            '"""\n\nfrom pyrig.rig.tools.pyrigger import Pyrigger as BasePyrigger'
             in content
         )
         assert "Pyrigger as BasePyrigger\n\n\nclass Pyrigger(BasePyrigger):" in content

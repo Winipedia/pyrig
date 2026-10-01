@@ -118,6 +118,10 @@ class TestPyrigger:
         """Test method."""
         assert Pyrigger.I.runtime_dependencies() == [Pyrigger.I.runtime_dependency()]
 
+    def test_dev_dependencies(self) -> None:
+        """Test that pyrig is added to projects manually."""
+        assert Pyrigger.I.dev_dependencies() == ()
+
     def test_setup_commit_msg(self) -> None:
         """Test method."""
         assert Pyrigger.I.setup_commit_msg() == "pyrig: Initialized project"
