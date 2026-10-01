@@ -2,6 +2,7 @@
 
 import copy
 from collections.abc import Callable
+from contextlib import chdir
 from pathlib import Path
 from typing import Any, ClassVar
 
@@ -394,6 +395,27 @@ class TestConfigFile:
 
         config.dump(config.configs())
         assert config.exists_correct()
+
+    def test_remove(
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+        tmp_path: Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Test method."""
+        config = my_test_config_file()
+        with chdir(tmp_path):
+            assert not config.validate()
+            assert config.validate()
+            capsys.readouterr()
+
+            assert config.remove() is True
+
+            assert not config.path().exists()
+            assert capsys.readouterr().out == f"Removed {config}\n"
+
+            assert config.remove() is False
+            assert capsys.readouterr().out == ""
 
 
 class TestListConfigFile:

@@ -77,9 +77,8 @@ class Pyrigger(VersionControlHookTool):
         Config files whose `removable()` returns `False`, such as
         `pyproject.toml`, are left untouched.
         """
-        for config_file in (cf().path() for cf in ConfigFile.removable_subclasses()):
-            if config_file.exists():
-                config_file.unlink()
+        for config_file in ConfigFile.removable_subclasses():
+            config_file().remove()
 
     def setup_steps(self) -> tuple[tuple[Args, dict[str, Any]], ...]:
         """Return the ordered setup steps for project initialization.

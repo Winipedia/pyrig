@@ -331,6 +331,24 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         """
         return False
 
+    def remove(self) -> bool:
+        """Remove the config file from the filesystem.
+
+        1. Deletes the file if it exists
+        2. Clears the cached loaded configuration.
+        3. Echoes the removed file path.
+
+        Returns:
+            `True` if the file was removed; `False` otherwise.
+        """
+        path = self.path()
+        if path.exists():
+            path.unlink()
+            self.load.cache_clear()
+            typer.echo(f"Removed {self}")
+            return True
+        return False
+
     @classmethod
     def removable_subclasses(cls) -> Iterator[type[Self]]:
         """Yield config file classes whose files can be safely removed.
