@@ -715,7 +715,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "18.95.1"
+version = "18.95.2"
 source = { editable = "." }
 dependencies = [
     { name = "inquirerpy" },
@@ -738,12 +738,9 @@ dev = [
     { name = "pre-commit-hooks" },
     { name = "prek" },
     { name = "pyflakes" },
-    { name = "pyrig-codecov" },
-    { name = "pyrig-codeql" },
     { name = "pyrig-env" },
-    { name = "pyrig-fixtures" },
+    { name = "pyrig-opensource" },
     { name = "pyrig-overrides" },
-    { name = "pyrig-public" },
     { name = "pyrig-pypi" },
     { name = "pyrig-resources" },
     { name = "pytest" },
@@ -784,12 +781,9 @@ dev = [
     { name = "pre-commit-hooks", specifier = ">=6.0.0" },
     { name = "prek", specifier = ">=0.5.3" },
     { name = "pyflakes", specifier = ">=3.4.0" },
-    { name = "pyrig-codecov", specifier = ">=3.17.31" },
-    { name = "pyrig-codeql", specifier = ">=1.0.0" },
     { name = "pyrig-env", specifier = ">=1.0.29" },
-    { name = "pyrig-fixtures", specifier = ">=2.24.59" },
+    { name = "pyrig-opensource", specifier = ">=1.0.0" },
     { name = "pyrig-overrides", specifier = ">=4.20.58" },
-    { name = "pyrig-public", specifier = ">=1.0.1" },
     { name = "pyrig-pypi", specifier = ">=3.20.28" },
     { name = "pyrig-resources", specifier = ">=3.13.74" },
     { name = "pytest", specifier = ">=9.1.1" },
@@ -864,6 +858,24 @@ wheels = [
 ]
 
 [[package]]
+name = "pyrig-opensource"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyrig" },
+    { name = "pyrig-codecov" },
+    { name = "pyrig-codeql" },
+    { name = "pyrig-fixtures" },
+    { name = "pyrig-public" },
+    { name = "pyrig-runtime" },
+    { name = "typer" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ce/42/88d31b8f2e4adc4ed66b502e5e44beb51422a69b977863eccfd5f82fa638/pyrig_opensource-1.0.0.tar.gz", hash = "sha256:47a3bd8c432b5dcbd769222ff3513e7640481fb3ffb083a1b155f36ef5ab5e9b", size = 5346, upload-time = "2026-10-01T22:25:06.52Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/70/9f/45105214db07c85b28a7eeea47641c4e21d22f2ead039c39e8b6bd1e44f0/pyrig_opensource-1.0.0-py3-none-any.whl", hash = "sha256:e0b0f7c5482a36d3a2c605e01a15052b77d2b4b405b36c6cf38b5e96d8c9dab4", size = 7483, upload-time = "2026-10-01T22:25:05.153Z" },
+]
+
+[[package]]
 name = "pyrig-overrides"
 version = "4.23.5"
 source = { registry = "https://pypi.org/simple" }
@@ -879,15 +891,15 @@ wheels = [
 
 [[package]]
 name = "pyrig-public"
-version = "1.1.0"
+version = "1.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
     { name = "pyrig-runtime" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/94/12/3a3b18c54115df3b2e5129bc606ea87b3495066e30c31b4747dfe7337d06/pyrig_public-1.1.0.tar.gz", hash = "sha256:cf33b787654584ed3ca810078534b2debf0d381d3cbfacd8e02fac387ce1edc2", size = 6737, upload-time = "2026-10-01T19:12:05.208Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e9/93/25b630cd2ab081affe1da1a38c4fa6f1fc6283b881b123c62ae02de5604e/pyrig_public-1.1.1.tar.gz", hash = "sha256:94b03f0174b4aea8915b2d768f06b6df9cfaff8d78b2f991bc31f256a56a73b0", size = 6781, upload-time = "2026-10-01T19:35:25.322Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1e/95/bd21fa2eeed5f2a756be95c88d379425dcf8c0dde9f5d111ca983133f551/pyrig_public-1.1.0-py3-none-any.whl", hash = "sha256:23aa25ac78babd3b763d58bad89a3944590a92ef4d73b4565d9e36f12b0ee153", size = 12085, upload-time = "2026-10-01T19:12:04.086Z" },
+    { url = "https://files.pythonhosted.org/packages/52/1b/c2b34ca98307edfd4c00ceb295bdb4697b7a494368d11b243f4fdc1b18a9/pyrig_public-1.1.1-py3-none-any.whl", hash = "sha256:c57752eff1f8529abb49a5a39f140d3c8b023b37f5c1b73b2353c40721b3ebd3", size = 12188, upload-time = "2026-10-01T19:35:24.49Z" },
 ]
 
 [[package]]
