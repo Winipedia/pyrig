@@ -46,7 +46,6 @@ my-project/
 │       └── deploy.yml                      # CD: repo settings/rulesets, documentation deployment
 │
 ├── docs/
-│   ├── api.md                              # API reference page (mkdocstrings)
 │   └── index.md                            # Documentation home page
 │
 └── src/

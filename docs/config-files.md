@@ -77,7 +77,7 @@ Say a fictional `ExampleConfigFile` declares this as `_configs()`:
   `"stable"` is required and wasn't already present, so it gets added.
 
 In short: anything you add on top of the required structure is permanent,
-pyrig never removes it. The required structure itself is enforced — if you
+`pyrig sync` never removes it. The required structure itself is enforced — if you
 change one of the values pyrig declares as required, `pyrig sync` puts it
 back on the next run. To change a value pyrig manages, override the
 `ConfigFile` subclass instead of hand-editing the file (see below).

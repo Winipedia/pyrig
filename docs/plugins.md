@@ -157,7 +157,7 @@ class TypeChecker(BaseTypeChecker):
         return self.args(*args)
 
     def version_control_ignore_patterns(self) -> tuple[str, ...]:
-        """Return the path of `mypy`'s cache directory."""
+        """Return the paths of `mypy`'s cache directory."""
         return (".mypy_cache/",)
 ```
 

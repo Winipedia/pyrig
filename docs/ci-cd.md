@@ -110,8 +110,7 @@ Two jobs run in this final stage:
 
 !!! tip
     Keep your documentation public for users and only document user facing
-    relevant information. Install the `pyrig-private` plugin to remove the
-    `docs/api.md` file so no internal API documentation is exposed publicly.
+    relevant information and avoid exposing internal implementation details.
 
 ---
 
