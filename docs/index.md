@@ -43,7 +43,7 @@
 <!-- rumdl-disable MD013 -->
 ---
 
-> A tool that standardizes and automates Python project setup, configuration, development, and maintenance.
+> A Python project setup and management tool built on infrastructure as code and convention over configuration.
 
 ---
 

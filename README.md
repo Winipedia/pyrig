@@ -43,7 +43,7 @@
 <!-- rumdl-disable MD013 -->
 ---
 
-> A tool that standardizes and automates Python project setup, configuration, development, and maintenance.
+> A Python project setup and management tool built on infrastructure as code and convention over configuration.
 
 ---
 
@@ -51,7 +51,8 @@
 
 ## What is pyrig?
 
-pyrig is a package and tool that **rigs up** Python projects with Convention-over-Configuration.
+pyrig is a package and tool that **rigs up** Python projects with
+Convention-over-Configuration via Infrastructure as Code.
 It scaffolds a complete, fully configured, installed and working Python project
 with everything a modern Python project **should** have and makes the process of
 developing and maintaining it more seamless and efficient by automating things
@@ -92,7 +93,7 @@ frameworks, git hooks, etc.)
 
 ### [File & Configuration Management](https://Winipedia.github.io/pyrig/config-files)
 
-pyrig manages project setup as code: each managed file is represented by a class
+pyrig manages the project as code: each managed file is represented by a class
 that declares its desired state, and `pyrig sync` validates or updates the file.
 Files are treated as data structures (dict or list), so user additions can be
 preserved while required content is kept in sync. Subclass these classes to

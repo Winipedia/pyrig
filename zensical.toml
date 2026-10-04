@@ -1,6 +1,6 @@
 [project]
 site_name = "pyrig"
-site_description = "A tool that standardizes and automates Python project setup, configuration, development, and maintenance."
+site_description = "A Python project setup and management tool built on infrastructure as code and convention over configuration."
 site_url = "https://Winipedia.github.io/pyrig"
 repo_url = "https://github.com/Winipedia/pyrig"
 edit_uri = "edit/main/docs"
