@@ -92,11 +92,12 @@ frameworks, git hooks, etc.)
 
 ### [File & Configuration Management](https://Winipedia.github.io/pyrig/config-files)
 
-pyrig manages and validates project files via classes, where every file is treated
-as a data structure (dict or list), the content is loaded and validated against
-the declared state in the class. This makes it possible to override and adjust
-any and all behavior of pyrig via subclassing said classes. pyrig will automatically
-discover and use your custom classes without any additional configuration.
+pyrig manages project setup as code: each managed file is represented by a class
+that declares its desired state, and `pyrig sync` validates or updates the file.
+Files are treated as data structures (dict or list), so user additions can be
+preserved while required content is kept in sync. Subclass these classes to
+override and adjust pyrig's behavior; pyrig will automatically discover and use
+your custom classes without any additional configuration.
 Run `pyrig mk subcls` to generate a subclass for any pyrig class.
 Run `pyrig sync` to create or update all config files at once.
 
@@ -126,9 +127,9 @@ Create your own plugins this way to extend pyrig's functionality.
 ### [CI/CD & Repository Protection](https://Winipedia.github.io/pyrig/ci-cd)
 
 Pyrig generates GitHub Actions workflows for CI/CD which automatically test
-and release your code. They also configure and apply repository protection
-settings and protection rulesets. Push your code to GitHub after initialization
-and see it in action.
+and release your code, and configure and apply repository protection settings
+and protection rulesets. Push your code to GitHub after initialization and see
+it in action.
 
 ## [Commands](https://Winipedia.github.io/pyrig/cli/#pyrigs-own-commands)
 

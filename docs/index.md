@@ -53,6 +53,8 @@ In principle, pyrig is a Convention-Over-Configuration tool for Python projects
 regarding the project itself. Just like frameworks such as Django or Flask that
 implement the "convention over configuration" principle for web development,
 pyrig does the same for Python project setup and management.
+Pyrig uses an Infrastructure-as-Code approach to manage the project and to be able
+to synchronize it with the defined conventions and configurations.
 
 ## Philosophy
 

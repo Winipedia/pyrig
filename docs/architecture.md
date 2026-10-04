@@ -60,7 +60,9 @@ pyrig class.
 ## Config Files — `ConfigFile`
 
 `ConfigFile` is the abstraction for **declarative, idempotent file management**.
-A subclass declares what a file should contain; `validate()` enforces it:
+A subclass declares what a file should contain; `validate()` enforces it. This
+is pyrig's Infrastructure-as-Code approach to project management: the desired state
+is declared in code and reconciled against the files in the project:
 
 ```text
 file missing?      → create with required content

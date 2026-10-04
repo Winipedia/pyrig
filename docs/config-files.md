@@ -1,5 +1,8 @@
 # Config Files
 
+Config Files are the backbone of a pyrig project management and are the base of
+pyrig's Infrastructure-as-Code approach.
+
 Every managed file in a pyrig project is backed by a `ConfigFile` subclass that
 declares what the file must contain. `pyrig sync` validates all of them —
 creating missing files, merging in absent required content, and leaving

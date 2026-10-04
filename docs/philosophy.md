@@ -4,6 +4,8 @@ pyrig provides **as modern as possible**, **as best practice as possible**,
 **as strict as possible**, **as complete as possible**, and **as simple as possible**,
 defaults and automations for everything any Python project **should** have.
 
+This philosophy is what guides pyrig's Convention-over-Configuration approach.
+
 This includes but is not limited to:
 
 - Standardized project structure and file layout
