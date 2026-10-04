@@ -25,6 +25,7 @@ from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.dependencies.checker import DependencyChecker
 from pyrig.rig.tools.docs.builder import DocsBuilder
 from pyrig.rig.tools.linting.python import PythonLinter
+from pyrig.rig.tools.linting.yaml import YAMLLinter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.testing.project import ProjectTester
@@ -193,6 +194,11 @@ class PyprojectConfigFile(TOMLConfigFile):
                 },
                 "format": {
                     "docstring-code-format": True,
+                },
+            },
+            YAMLLinter.I.config_name(): {
+                "rules": {
+                    "ALL": "enable",
                 },
             },
         }

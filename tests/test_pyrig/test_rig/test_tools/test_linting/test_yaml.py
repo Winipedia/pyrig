@@ -40,7 +40,6 @@ class TestYAMLLinter:
         assert hook["priority"] > secrets_hook["priority"]
         assert hook["types"] == ["yaml"]
         assert hook["args"] == [
-            "--config-data={extends: default, rules: {line-length: {max: 100}}}",
             "--fix",
         ]
 
@@ -48,3 +47,20 @@ class TestYAMLLinter:
         """Test method."""
         base_args = YAMLLinter.I.check_args()
         assert YAMLLinter.I.lint_yaml() == PackageManager.I.run_args(*base_args)
+
+    def test_disable_line_line_length(self) -> None:
+        """Test method."""
+        assert (
+            YAMLLinter.I.disable_line_line_length()
+            == "# ryl disable-line rule:line-length"
+        )
+
+    def test_disable_line(self) -> None:
+        """Test method."""
+        directive = YAMLLinter.I.disable_line("some-rule")
+        assert directive == "# ryl disable-line rule:some-rule"
+
+    def test_directive(self) -> None:
+        """Test method."""
+        directive = YAMLLinter.I.directive("some_directive")
+        assert directive == "# ryl some_directive"

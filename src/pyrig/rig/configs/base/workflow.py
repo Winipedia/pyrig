@@ -21,6 +21,7 @@ from pyrig.rig import resources
 from pyrig.rig.configs.base.yaml import YMLDictConfigFile, commented_map
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.formatting.shell import ShellFormatter
+from pyrig.rig.tools.linting.yaml import YAMLLinter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote.controller import (
@@ -379,7 +380,9 @@ class WorkflowConfigFile(YMLDictConfigFile):
     ) -> CommentedMap:
         """Build a step configuration dict.
 
-        Adds a comment to a step that uses an action.
+        Adds a comment to a step that uses an action: the action's version
+        tag followed by a YAML linter directive that disables the
+        `line-length` rule.
 
         Args:
             method: Method representing this step; its name is used to
@@ -414,7 +417,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         if uses is not None:
             action, ref, tag = uses
             step["uses"] = self.uses(action, ref)
-            comments["uses"] = tag
+            comments["uses"] = f"{tag}  {YAMLLinter.I.disable_line_line_length()}"
         if with_ is not None:
             step["with"] = with_
         if env is not None:

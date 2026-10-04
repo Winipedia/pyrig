@@ -80,3 +80,11 @@ class TestRepositorySettingsConfigFile:
             "context": "Test",
             "integration_id": 42,
         }
+
+    def test_settings(self) -> None:
+        """Test method."""
+        settings = RepositorySettingsConfigFile.I.settings()
+        assert isinstance(settings, dict)
+        assert RepositorySettingsConfigFile.I.repository_key() in settings
+        assert RepositorySettingsConfigFile.I.rulesets_key() in settings
+        assert isinstance(settings[RepositorySettingsConfigFile.I.rulesets_key()], list)

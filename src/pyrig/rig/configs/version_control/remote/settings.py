@@ -3,6 +3,7 @@
 from pathlib import Path
 from typing import Any
 
+from pyrig.core.iterate import sorted_dict
 from pyrig.rig.configs.base.json import JSONDictConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.version_control.remote.workflows.health_check import (
@@ -24,6 +25,14 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
     """
 
     def _configs(self) -> dict[str, Any]:
+        """Return the repository settings with keys sorted alphabetically.
+
+        Returns:
+            The settings from `settings()`, sorted by top-level key.
+        """
+        return sorted_dict(self.settings())
+
+    def settings(self) -> dict[str, Any]:
         """Build the required repository settings and protection rulesets.
 
         The branch ruleset targets the default branch, requires pull request
