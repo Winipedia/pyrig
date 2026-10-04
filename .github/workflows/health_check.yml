@@ -40,20 +40,20 @@
       -
         "name": "Checkout Repository"
         "id": "checkout-repository"
-        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1
+        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1  # ryl disable-line rule:line-length
         "with":
           "persist-credentials": false
       -
         "name": "Initialize Codeql"
         "id": "initialize-codeql"
-        "uses": "github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2"  # v4.38.2
+        "uses": "github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2"  # v4.38.2  # ryl disable-line rule:line-length
         "with":
           "languages": "${{ matrix.language }}"
           "config-file": ".github/codeql.yml"
       -
         "name": "Analyze Code"
         "id": "analyze-code"
-        "uses": "github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2"  # v4.38.2
+        "uses": "github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2"  # v4.38.2  # ryl disable-line rule:line-length
   "health-checks":
     "name": "Health Checks"
     "permissions":
@@ -63,13 +63,13 @@
       -
         "name": "Checkout Repository"
         "id": "checkout-repository"
-        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1
+        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1  # ryl disable-line rule:line-length
         "with":
           "persist-credentials": false
       -
         "name": "Setup Package Manager"
         "id": "setup-package-manager"
-        "uses": "astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7"  # v10.2.0
+        "uses": "astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7"  # v10.2.0  # ryl disable-line rule:line-length
         "with":
           "python-version": "3.14"
       -
@@ -106,13 +106,13 @@
       -
         "name": "Checkout Repository"
         "id": "checkout-repository"
-        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1
+        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1  # ryl disable-line rule:line-length
         "with":
           "persist-credentials": false
       -
         "name": "Setup Package Manager"
         "id": "setup-package-manager"
-        "uses": "astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7"  # v10.2.0
+        "uses": "astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7"  # v10.2.0  # ryl disable-line rule:line-length
         "with":
           "python-version": "${{ matrix.python-version }}"
       -
@@ -130,7 +130,7 @@
       -
         "name": "Upload Coverage Report"
         "id": "upload-coverage-report"
-        "uses": "codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5"  # v7.1.1
+        "uses": "codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5"  # v7.1.1  # ryl disable-line rule:line-length
         "with":
           "files": "coverage.xml"
           "token": "${{ secrets.CODECOV_TOKEN }}"

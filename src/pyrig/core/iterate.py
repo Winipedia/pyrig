@@ -264,6 +264,18 @@ def deep_sorted_dict(value: Any) -> Any:
     return value
 
 
+def sorted_dict[K, V](dict_: dict[K, V]) -> dict[K, V]:
+    """Sort a dictionary by its keys.
+
+    Args:
+        dict_: The dictionary to sort.
+
+    Returns:
+        A new dictionary with the same items as `dict_`, sorted by key.
+    """
+    return dict(sorted(dict_.items()))
+
+
 def both_dicts(a: object, b: object) -> bool:
     """Return whether `a` and `b` are both dicts."""
     return isinstance(a, dict) and isinstance(b, dict)

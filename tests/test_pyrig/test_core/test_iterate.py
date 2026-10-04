@@ -11,6 +11,7 @@ from pyrig.core.iterate import (
     iterator_has_items,
     match_list_items,
     merge_structures,
+    sorted_dict,
     structure_is_subset,
     traverse_structure,
 )
@@ -180,3 +181,12 @@ def test_traverse_structure() -> None:
     """Test function."""
     result = list(traverse_structure({"a": [1, {"b": 2}], "c": 3}))
     assert result == [1, 2, 3]
+
+
+def test_sorted_dict() -> None:
+    """Test function."""
+    unsorted = {"b": 2, "a": 1, "c": 3}
+    sorted_ = sorted_dict(unsorted)
+    assert list(sorted_.keys()) == ["a", "b", "c"]
+    assert sorted_ == unsorted  # values are unchanged
+    assert sorted_ is not unsorted  # a new dict is returned

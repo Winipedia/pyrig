@@ -14,7 +14,7 @@ class YAMLLinter(CheckHookTool):
     """Type-safe wrapper for the ryl YAML linter.
 
     Constructs ryl command-line arguments for linting and auto-fixing YAML
-    files.
+    files, and builds ryl inline directive comments.
     """
 
     def group(self) -> str:
@@ -36,11 +36,6 @@ class YAMLLinter(CheckHookTool):
     def check_args(self, *args: str) -> Args:
         """Construct ryl lint arguments.
 
-        No custom rule configuration or target path is baked in here; the
-        hook's own `args=` supplies `--config-data`, and callers are
-        otherwise expected to supply the specific files to check, since ryl
-        errors on a file it doesn't recognize (e.g. a non-YAML file).
-
         Args:
             *args: Additional arguments forwarded to `ryl check`, typically
                 the file paths to check.
@@ -53,15 +48,8 @@ class YAMLLinter(CheckHookTool):
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting and auto-fixing YAML files.
 
-        Runs after the general read-only checks as the YAML formatting and
-        autofix phase.
-
-        The default `line-length` max of 80 is raised to 100, since
-        hash-pinned `uses:` references (40-character SHA plus the action
-        name and inline comment) usually exceed 80 characters.
-
         Returns:
-            Hook metadata dict for `ryl check --config-data=... --fix`.
+            Hook metadata dict for `ryl check --fix`.
         """
         return VersionControlHookManager.I.local_hook(
             self.lint_yaml,
@@ -71,7 +59,6 @@ class YAMLLinter(CheckHookTool):
             types=["yaml"],
             args=Args(
                 "--fix",
-                "--config-data={extends: default, rules: {line-length: {max: 100}}}",
             ),
         )
 
@@ -82,3 +69,29 @@ class YAMLLinter(CheckHookTool):
             Args for `uv run ryl check`.
         """
         return PackageManager.I.run_args(*self.check_args())
+
+    def disable_line_line_length(self) -> str:
+        """Return a comment string to disable the `line-length` rule for this line."""
+        return self.disable_line("line-length")
+
+    def disable_line(self, rule: str) -> str:
+        """Return a comment string to disable a specific rule for this line.
+
+        Args:
+            rule: Name of the ryl rule to disable (e.g. `"line-length"`).
+
+        Returns:
+            The `disable-line` directive comment for `rule`.
+        """
+        return self.directive(f"disable-line rule:{rule}")
+
+    def directive(self, directive: str) -> str:
+        """Return an inline directive comment for this tool.
+
+        Args:
+            directive: Directive text (e.g. `"disable-line rule:colons"`).
+
+        Returns:
+            The comment `# ryl <directive>`.
+        """
+        return f"# {self.name()} {directive}"
