@@ -116,12 +116,12 @@
     "developer-tools",
     "devops",
     "github-actions",
+    "infrastructure-as-code",
     "project-generator",
     "project-maintenance",
     "project-scaffolding",
     "project-setup",
     "pyrig",
-    "pyrig-runtime",
     "python-project",
     "test-generation",
     "test-scaffolding"
