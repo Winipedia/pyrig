@@ -1,4 +1,7 @@
 {
+  "fork_pr_contributor_approval": {
+    "approval_policy": "all_external_contributors"
+  },
   "repository": {
     "name": "pyrig",
     "description": "A Python project setup and management tool built on infrastructure as code and convention over configuration.",
@@ -105,9 +108,6 @@
       ]
     }
   ],
-  "fork_pr_contributor_approval": {
-    "approval_policy": "all_external_contributors"
-  },
   "topics": [
     "automation",
     "boilerplate",
