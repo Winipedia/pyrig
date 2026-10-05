@@ -123,7 +123,8 @@ def test_commented_map() -> None:
     """Test function."""
     result = commented_map(
         {"contents": "read", "pages": "write"},
-        {"pages": "required"},
+        comments={"pages": "required"},
+        comments_before={"pages": "ryl disable-line rule:line-length"},
     )
 
     assert isinstance(result, CommentedMap)
@@ -133,9 +134,10 @@ def test_commented_map() -> None:
     YAML_DUMP.dump(result, buffer)
     dumped = buffer.getvalue()
     assert '"contents": "read"\n' in dumped
+    assert '# ryl disable-line rule:line-length\n"pages":' in dumped
     assert '"pages": "write"  # required' in dumped
 
-    undocumented = commented_map({"contents": "read"}, {})
+    undocumented = commented_map({"contents": "read"}, comments={})
     assert isinstance(undocumented, CommentedMap)
     buffer_undocumented = io.StringIO()
     YAML_DUMP.dump(undocumented, buffer_undocumented)
