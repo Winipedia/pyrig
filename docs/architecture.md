@@ -28,11 +28,15 @@ itself, and every project scaffolded or managed with pyrig, depends on.
   project's own CLI, and can be removed at the cost of that CLI — every
   other part of the project is otherwise completely independent of
   pyrig-runtime.
-- **pyrig itself** is a development tool and is therefore only ever added to
-  a project as a development dependency, never as a runtime dependency. You
-  add it yourself with `uv add pyrig --dev` before running `pyrig init` to
-  scaffold the initial project. `pyrig rm pyrig` removes it and its footprint
-  entirely — it does not remove pyrig-runtime, which isn't a dev dependency —
+- **pyrig itself** is normally a development tool, added to an application
+  project as a development dependency with `uv add pyrig --dev` before running
+  `pyrig init`. A package that provides pyrig plugins is the exception: it
+  must declare pyrig as a runtime dependency so pyrig's cross-package
+  discovery can find it. The
+  [pyrig-plugin](https://Winipedia.github.io/pyrig-plugin) plugin automates
+  adding this dependency and configuring `deptry` to allow it. For ordinary
+  projects, `pyrig rm pyrig` removes pyrig and its development-plugin
+  footprint — it does not remove pyrig-runtime, which isn't a dev dependency —
   and everything pyrig already generated keeps working standalone afterward.
 
 This split is also why pyrig can't be installed once, globally, the way a

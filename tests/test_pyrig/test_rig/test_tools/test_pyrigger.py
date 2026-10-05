@@ -116,7 +116,7 @@ class TestPyrigger:
 
     def test_runtime_dependencies(self) -> None:
         """Test method."""
-        assert Pyrigger.I.runtime_dependencies() == [Pyrigger.I.runtime_dependency()]
+        assert Pyrigger.I.runtime_dependencies() == (Pyrigger.I.runtime_dependency(),)
 
     def test_dev_dependencies(self) -> None:
         """Test that pyrig is added to projects manually."""

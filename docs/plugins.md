@@ -7,7 +7,7 @@ tools, config files, and workflow steps to be picked up by `pyrig init` and
 
 ```bash
 # Add a plugin to your project
-uv add pyrig-plugin-name --dev
+uv add some-pyrig-plugin --dev
 # apply the plugin to your project
 uv run pyrig sync
 ```
@@ -40,6 +40,9 @@ be correct as well.
 - **[pyrig-env](https://Winipedia.github.io/pyrig-env)** — Adds a
   version-control-ignored `.env` file for local environment variables and
   secrets.
+- **[pyrig-plugin](https://Winipedia.github.io/pyrig-plugin)** — Helps create
+  pyrig plugins by adding pyrig as a runtime dependency and configuring
+  `deptry` to allow it.
 
 !!! note
     Inspecting these plugins to see how to create your own plugin can be very helpful.
@@ -57,27 +60,19 @@ Here are the steps to create the `pyrig-mypy` plugin:
 ```bash
 uv init pyrig-mypy --python 3.12
 cd pyrig-mypy
-uv add pyrig --dev
+uv add pyrig-plugin --dev
 uv run pyrig init
 ```
 
-2. Add pyrig as a runtime dependency
+2. Let pyrig-plugin add pyrig as a runtime dependency
 
 When creating a plugin, `pyrig` must also be a runtime dependency because the
 plugin itself will later be installed as a development dependency, making
-`pyrig` a runtime dependency of the plugin package.
-For the initial setup, add `pyrig` as a development dependency instead. Otherwise,
-`pyrig init` can fail while making its first commit: the pre-commit hook that runs
-`deptry` sees `pyrig` as an installed runtime dependency that the plugin does not
-use yet.
-
-So after the initial setup, you need to remove pyrig as a development dependency
-and add it as a runtime dependency:
-
-```bash
-uv remove pyrig --dev
-uv add pyrig
-```
+`pyrig` a runtime dependency of the plugin package. Install `pyrig-plugin` as a
+development dependency before running `pyrig init`. Its `Pyrigger` override
+ensures that `pyrig sync` adds `pyrig` to the plugin project's runtime
+dependencies and configures `deptry` to allow it, so no manual dependency
+move is needed.
 
 3. Override behavior as needed for your plugin
 

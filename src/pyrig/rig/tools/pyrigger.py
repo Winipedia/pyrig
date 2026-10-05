@@ -116,13 +116,13 @@ class Pyrigger(VersionControlHookTool):
         """
         return self.args(snake_to_kebab_case(cmd.__name__), *args)
 
-    def runtime_dependencies(self) -> list[str]:
+    def runtime_dependencies(self) -> tuple[str, ...]:
         """Return the runtime dependencies the target project must declare.
 
         Returns:
-            List of runtime dependencies, including `"pyrig-runtime"`.
+            Tuple of runtime dependencies, including `"pyrig-runtime"`.
         """
-        return [self.runtime_dependency()]
+        return (self.runtime_dependency(),)
 
     def runtime_dependency(self) -> str:
         """Return `"pyrig-runtime"`, the package name of pyrig's runtime dependency."""

@@ -175,7 +175,9 @@ class PyprojectConfigFile(TOMLConfigFile):
             **self.tool_section(),
             DependencyChecker.I.config_name(): {
                 "root": PackageManager.I.source_root().as_posix(),
-                "per_rule_ignores": {"DEP002": [Pyrigger.I.runtime_dependency()]},
+                "per_rule_ignores": {
+                    "DEP002": sorted(Pyrigger.I.runtime_dependencies()),
+                },
             },
             ProjectTester.I.config_name(): {
                 "testpaths": [ProjectTester.I.package_root().as_posix()],
