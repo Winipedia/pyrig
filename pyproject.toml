@@ -159,3 +159,4 @@ convention = "google"
 
 [tool.ryl.rules]
 ALL = "enable"
+key-ordering = "disable"
