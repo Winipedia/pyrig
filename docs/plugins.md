@@ -64,8 +64,7 @@ uv add pyrig-plugin --dev
 uv run pyrig init
 ```
 
-2. Let pyrig-plugin add pyrig as a runtime dependency
-
+Let `pyrig-plugin` add pyrig as a runtime dependency
 When creating a plugin, `pyrig` must also be a runtime dependency because the
 plugin itself will later be installed as a development dependency, making
 `pyrig` a runtime dependency of the plugin package. Install `pyrig-plugin` as a
@@ -74,7 +73,7 @@ ensures that `pyrig sync` adds `pyrig` to the plugin project's runtime
 dependencies and configures `deptry` to allow it, so no manual dependency
 move is needed.
 
-3. Override behavior as needed for your plugin
+2. Override behavior as needed for your plugin
 
 We will need to create subclasses of all `Tool` and `ConfigFile` classes that
 have functionality we want to adjust. In this case we want to replace the
@@ -112,7 +111,7 @@ class TypeChecker(BaseTypeChecker):
     """You can override methods from the base class to customize behavior."""
 ```
 
-4. Implement the overrides
+3. Implement the overrides
 
 Fill in the skeleton with `mypy`'s own identity and commands.
 With the help of any basic IDE it is very simple to
@@ -238,7 +237,7 @@ ever changes, and to keep the code as dynamic and DRY as possible in general.
     what you can and should override. This is very simple with any standard IDE
     like PyCharm or VSCode, or just by looking at the source code.
 
-5. Synchronize the project
+4. Synchronize the project
 
 Now that we have overridden the necessary functionality, we run pyrig's
 synchronization command.
