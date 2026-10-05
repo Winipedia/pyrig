@@ -199,6 +199,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             YAMLLinter.I.config_name(): {
                 "rules": {
                     "ALL": "enable",
+                    "key-ordering": "disable",
                 },
             },
         }
