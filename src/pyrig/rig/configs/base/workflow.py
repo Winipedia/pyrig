@@ -404,9 +404,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             preserve these comments.
         """
         comments: dict[str, str] = {}
-        # comments before a key is a temp workaround as long as zizmor
-        # does not support stacked comments, once it does it will be removed
-        # here and also in the `commented_map` function.
         comments_before: dict[str, str] = {}
 
         id_ = self.step_id_from_method(method)
@@ -434,7 +431,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             step,
             comments=comments,
             comments_before=comments_before,
-            before_indent=8,
         )
 
     def name_from_id(self, id_: str) -> str:

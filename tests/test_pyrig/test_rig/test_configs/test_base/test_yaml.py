@@ -142,3 +142,25 @@ def test_commented_map() -> None:
     buffer_undocumented = io.StringIO()
     YAML_DUMP.dump(undocumented, buffer_undocumented)
     assert "#" not in buffer_undocumented.getvalue()
+
+
+class TestEmitter:
+    """Test class."""
+
+    def test_write_comment(self) -> None:
+        """Test method."""
+        result = commented_map(
+            {
+                "steps": [
+                    commented_map(
+                        {"a": 1, "b": 2},
+                        comments={},
+                        comments_before={"b": "note"},
+                    ),
+                ],
+            },
+            comments={},
+        )
+        buffer = io.StringIO()
+        YAML_DUMP.dump(result, buffer)
+        assert '    # note\n    "b": 2' in buffer.getvalue()

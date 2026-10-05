@@ -3,9 +3,11 @@
 from typing import Any
 
 from ruamel.yaml import YAML, CommentedMap
+from ruamel.yaml.emitter import Emitter as BaseEmitter
 from ruamel.yaml.nodes import ScalarNode
 from ruamel.yaml.representer import RoundTripRepresenter
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString, LiteralScalarString
+from ruamel.yaml.tokens import CommentToken
 
 from pyrig.core.strings import is_multiline, open_path_with_utf8, read_text_utf8
 from pyrig.rig.configs.base.config_file import ConfigFile, DictConfigFile
@@ -34,7 +36,31 @@ def represent_str(representer: RoundTripRepresenter, data: str) -> ScalarNode:
     )
 
 
+NO_COLUMN = -1
+
+
+class Emitter(BaseEmitter):
+    """Round-trip emitter with pyrig-specific output customizations."""
+
+    def write_comment(self, comment: CommentToken, pre: bool = False) -> None:  # noqa: FBT001, FBT002
+        """Write a comment, resolving `NO_COLUMN` to the current indentation.
+
+        Comments whose column is `NO_COLUMN` are written at the emitter's
+        current indentation, i.e. aligned with the node they precede, instead
+        of at an absolute column. All other comments are written unchanged.
+
+        Args:
+            comment: The comment token to write.
+            pre: Whether the comment is written before a node rather than as
+                an end-of-line comment.
+        """
+        if comment.start_mark.column == NO_COLUMN:
+            comment.start_mark.column = self.indent or 0
+        super().write_comment(comment, pre)
+
+
 YAML_DUMP = YAML()
+YAML_DUMP.Emitter = Emitter
 YAML_DUMP.indent(mapping=2, sequence=4, offset=2)
 YAML_DUMP.explicit_start = True
 YAML_DUMP.explicit_end = True
@@ -138,7 +164,6 @@ def commented_map(
     *,
     comments: dict[str, str],
     comments_before: dict[str, str] | None = None,
-    before_indent: int = 0,
 ) -> CommentedMap:
     """Return a `CommentedMap` with YAML comments attached to selected keys.
 
@@ -153,8 +178,8 @@ def commented_map(
             Any key omitted here is left without a trailing comment.
         comments_before: Mapping of keys to standalone comment text to place
             immediately before those keys. Comment text must not include `#`.
-        before_indent: Number of spaces to indent comments in `comments_before`.
-            This is an absolute indentation column, not a relative offset.
+            Comments are indented to match their key when dumped with
+            `YAML_DUMP`.
 
     Returns:
         A `CommentedMap` with the same key/value pairs as `dict_`, preserving
@@ -177,7 +202,7 @@ def commented_map(
             item.yaml_set_comment_before_after_key(
                 key,
                 before=comment_before,
-                indent=before_indent,
+                indent=NO_COLUMN,
             )
             commented.ca.items[key] = item.ca.items[key]
     return commented
