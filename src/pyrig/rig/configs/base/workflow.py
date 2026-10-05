@@ -161,7 +161,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return commented_map(
             permissions,
-            {
+            comments={
                 k: self.permission_comment()
                 for k in permissions
                 if (k, permissions[k]) != ("contents", "read")
@@ -380,9 +380,9 @@ class WorkflowConfigFile(YMLDictConfigFile):
     ) -> CommentedMap:
         """Build a step configuration dict.
 
-        Adds a comment to a step that uses an action: the action's version
-        tag followed by a YAML linter directive that disables the
-        `line-length` rule.
+        Adds the action's version tag as an end-of-line comment and places a
+        standalone YAML linter directive before `uses` to disable the
+        `line-length` rule for that line.
 
         Args:
             method: Method representing this step; its name is used to
@@ -404,6 +404,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
             preserve these comments.
         """
         comments: dict[str, str] = {}
+        # comments before a key is a temp workaround as long as zizmor
+        # does not support stacked comments, once it does it will be removed
+        # here and also in the `commented_map` function.
+        comments_before: dict[str, str] = {}
 
         id_ = self.step_id_from_method(method)
         step = {
@@ -417,7 +421,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
         if uses is not None:
             action, ref, tag = uses
             step["uses"] = self.uses(action, ref)
-            comments["uses"] = f"{tag}  {YAMLLinter.I.disable_line_line_length()}"
+            comments["uses"] = tag
+            comments_before["uses"] = (
+                YAMLLinter.I.disable_line_line_length().removeprefix("# ")
+            )
         if with_ is not None:
             step["with"] = with_
         if env is not None:
@@ -425,7 +432,9 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
         return commented_map(
             step,
-            comments,
+            comments=comments,
+            comments_before=comments_before,
+            before_indent=8,
         )
 
     def name_from_id(self, id_: str) -> str:
