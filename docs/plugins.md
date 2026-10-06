@@ -260,7 +260,11 @@ hook works as intended and our code meets the new type checking requirements.
 
 We recommend you implement the tests and then use the `pyrig-pypi`
 plugin to publish your plugin package to PyPI via the CI/CD pipeline pyrig
-generates for you. But for the sake of simplicity in this example, let's
+generates for you. If you used the `pyrig-plugin` plugin as shown above, the
+`pyrig-pypi` is already bundled with it and installed, so your workflows should
+already contain a job that publishes your plugin to PyPI.
+
+But for the sake of simplicity in this example, let's
 publish this package directly with uv instead:
 
 ```bash
