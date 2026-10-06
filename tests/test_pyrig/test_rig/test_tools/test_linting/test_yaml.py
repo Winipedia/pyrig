@@ -41,6 +41,7 @@ class TestYAMLLinter:
         assert hook["types"] == ["yaml"]
         assert hook["args"] == [
             "--fix",
+            "--strict",
         ]
 
     def test_lint_yaml(self) -> None:
