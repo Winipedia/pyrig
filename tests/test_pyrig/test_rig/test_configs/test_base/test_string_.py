@@ -49,21 +49,6 @@ class TestStringConfigFile:
         read_content = my_test_string_config_file().read_content()
         assert read_content == content
 
-    def test_all_lines_in_content(
-        self,
-        my_test_string_config_file: type[StringConfigFile],
-    ) -> None:
-        """Test method."""
-        lines = ["Line 1", "Line 2"]
-        content = "This is Line 1 and this is Line 2."
-        assert my_test_string_config_file().all_lines_in_content(lines, content)
-
-        content_missing_line = "This is Line 1."
-        assert not my_test_string_config_file().all_lines_in_content(
-            lines,
-            content_missing_line,
-        )
-
     def test_split_lines(
         self,
         my_test_string_config_file: type[StringConfigFile],
@@ -120,14 +105,15 @@ class TestStringConfigFile:
         # empty line is added to the end of the file
         assert configs == ["Test content."]
 
-    def test_is_correct(
+    def test_is_correct_rejects_substring_only_match(
         self,
         my_test_string_config_file: type[StringConfigFile],
     ) -> None:
-        """Test method."""
-        my_test_string_config_file().validate()
-        is_correct = my_test_string_config_file().is_correct()
-        assert is_correct, "Expected config to be correct after validation"
+        """Test that required text must be present as an exact list item."""
+        config_file = my_test_string_config_file()
+        config_file.write_content("Prefix Test content. suffix")
+
+        assert not config_file.is_correct()
 
     def test_read_content(
         self,

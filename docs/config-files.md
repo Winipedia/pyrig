@@ -33,7 +33,9 @@ The merge itself follows a few rules:
 - **Lists** — items are matched by content, not position, so reordering an
   existing list doesn't cause spurious changes. A required item without a
   match is inserted; everything else already in the list — duplicates and
-  items pyrig doesn't require included — is left as is.
+  items pyrig doesn't require included — is left as is. For text files, each
+  required line is a list item and must match a complete line; matching a
+  substring within a different line is not sufficient.
 - **Everything else** (strings, numbers, …) — compared with plain equality.
 
 At its simplest, for a plain list of lines: if a file's current content is

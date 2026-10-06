@@ -80,8 +80,9 @@ class BadgesConfigFile(MarkdownConfigFile):
         """
         updated_content = self.replace_description(self.read_content())
         updated_content = self.replace_badges(updated_content)
-        if self.all_lines_in_content(lines=self.configs(), content=updated_content):
-            return self.split_lines(updated_content)
+        updated_lines = self.split_lines(updated_content)
+        if self.configs_is_subset(updated_lines):
+            return updated_lines
 
         return super().merge_configs()
 

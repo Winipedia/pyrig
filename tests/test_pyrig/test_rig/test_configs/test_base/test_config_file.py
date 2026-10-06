@@ -417,6 +417,19 @@ class TestConfigFile:
             assert config.remove() is False
             assert capsys.readouterr().out == ""
 
+    def test_configs_is_subset(
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test whether required configs match within a larger structure."""
+        config_file = my_test_config_file()
+        superset = copy.deepcopy(config_file.configs())
+        superset["extra_key"] = "extra_value"
+        assert config_file.configs_is_subset(superset)
+
+        superset["key1"] = "different_value"
+        assert not config_file.configs_is_subset(superset)
+
 
 class TestListConfigFile:
     """Test class."""

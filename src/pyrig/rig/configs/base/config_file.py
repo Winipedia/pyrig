@@ -297,7 +297,19 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         Returns:
             `True` if all required configuration is present in the file.
         """
-        return structure_is_subset(self.configs(), self.load())
+        return self.configs_is_subset(self.load())
+
+    def configs_is_subset(self, superset: ConfigT) -> bool:
+        """Return whether the current configs are a subset of the given superset.
+
+        Args:
+            superset: The configuration to compare against.
+
+        Returns:
+            `True` if all required configuration in `configs()` is present in the
+            superset.
+        """
+        return structure_is_subset(self.configs(), superset)
 
     def merge_configs(self) -> ConfigT:
         """Merge the current file contents into the required configuration.

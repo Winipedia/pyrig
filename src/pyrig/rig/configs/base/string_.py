@@ -11,8 +11,8 @@ class StringConfigFile(ListConfigFile):
     """Abstract base class for text files with required content validation.
 
     Manages text configuration files by validating that required lines are
-    present via substring matching, while preserving any content the user
-    has added beyond what is required.
+    present as exact list items, while preserving any content the user has
+    added beyond what is required.
     """
 
     @abstractmethod
@@ -48,35 +48,6 @@ class StringConfigFile(ListConfigFile):
     def _load(self) -> list[str]:
         """Read the file as UTF-8 text and split it into lines."""
         return self.split_lines(read_text_utf8(self.path()))
-
-    def is_correct(self) -> bool:
-        """Check whether the file already contains all required content.
-
-        A required line need not be an exact line of the file; it only has
-        to occur somewhere within the file's text.
-
-        Returns:
-            `True` if every required line is present in the file.
-        """
-        return self.all_lines_in_content(
-            lines=self.configs(),
-            content=self.read_content(),
-        )
-
-    def all_lines_in_content(self, lines: Iterable[str], content: str) -> bool:
-        """Check whether every line is present in the content string.
-
-        Uses substring matching: a line is considered present if it appears
-        anywhere within `content`, not necessarily as a standalone line.
-
-        Args:
-            lines: Lines to search for.
-            content: Full text to search within.
-
-        Returns:
-            `True` if every line in `lines` is a substring of `content`.
-        """
-        return all(line in content for line in lines)
 
     def read_content(self) -> str:
         """Return the current file content as a single joined string."""
