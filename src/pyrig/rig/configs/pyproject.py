@@ -24,6 +24,7 @@ from pyrig.rig.configs.package_init import PackageInitConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.dependencies.checker import DependencyChecker
 from pyrig.rig.tools.docs.builder import DocsBuilder
+from pyrig.rig.tools.linting.dead_code import DeadCodeChecker
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.linting.yaml import YAMLLinter
 from pyrig.rig.tools.packages.manager import PackageManager
@@ -179,6 +180,9 @@ class PyprojectConfigFile(TOMLConfigFile):
                 "per_rule_ignores": {
                     "DEP002": sorted(Pyrigger.I.runtime_dependencies()),
                 },
+            },
+            DeadCodeChecker.I.config_name(): {
+                "paths": [PackageManager.I.source_root().as_posix()],
             },
             ProjectTester.I.config_name(): {
                 "testpaths": [ProjectTester.I.package_root().as_posix()],
