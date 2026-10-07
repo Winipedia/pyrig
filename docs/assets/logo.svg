@@ -1,6 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 463 463" role="img" aria-labelledby="title">
   <title id="title">pyrig onshore oil pumpjack</title>
-  <g>
+  <defs>
+    <clipPath id="left"><rect x="0" y="0" width="231.5" height="463"/></clipPath>
+    <clipPath id="right"><rect x="231.5" y="0" width="231.5" height="463"/></clipPath>
+    <g id="pumpjack">
 	<path d="M455.5,427.718H439v-40.5c0-4.142-3.357-7.5-7.5-7.5H423v-90.234c9.29-3.138,16-11.93,16-22.266s-6.71-19.128-16-22.266
 		v-81.705l10.035-4.157c3.06-1.268,4.926-4.392,4.592-7.687l-8.441-83.094c-0.116-1.141-0.492-2.24-1.099-3.212l-25.76-41.285
 		c-1.941-3.11-5.845-4.363-9.233-2.959l-44.347,18.369c-3.387,1.403-5.264,5.049-4.437,8.621l5.885,25.416l-102.841,42.598
@@ -25,5 +28,8 @@
 		c0-4.142-3.357-7.5-7.5-7.5H55V246.405z M23,386.718h49v41H23V386.718z M407,427.718v-33h17v33H407z"/>
 	<path d="M231.5,157.385c5.606,0,10.167-4.561,10.167-10.167s-4.561-10.167-10.167-10.167s-10.167,4.561-10.167,10.167
 		S225.894,157.385,231.5,157.385z"/>
-</g>
+    </g>
+  </defs>
+  <use href="#pumpjack" fill="#3776AB" clip-path="url(#left)"/>
+  <use href="#pumpjack" fill="#FFD43B" clip-path="url(#right)"/>
 </svg>
