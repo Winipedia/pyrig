@@ -13,7 +13,7 @@ class TestVersionControlHookManager:
         """Test method."""
         assert (
             VersionControlHookManager.I.image_url()
-            == "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json"
+            == "https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge.svg"
         )
 
     def test_link_url(self) -> None:

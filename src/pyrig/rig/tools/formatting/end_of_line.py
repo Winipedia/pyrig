@@ -22,8 +22,8 @@ class EndOfLineFormatter(FormatHookTool):
         return f"https://img.shields.io/badge/EOL-{self.shield_name()}-orange"
 
     def link_url(self) -> str:
-        """Return the URL of the pre-commit-hooks project page."""
-        return "https://github.com/pre-commit/pre-commit-hooks"
+        """Return the URL of the prek project page."""
+        return "https://github.com/j178/prek"
 
     def name(self) -> str:
         """Return `"mixed-line-ending"`, this tool's CLI command name."""
@@ -35,9 +35,6 @@ class EndOfLineFormatter(FormatHookTool):
 
     def format_args(self, *args: str) -> Args:
         """Construct mixed-line-ending arguments.
-
-        Unlike `trailing-whitespace-fixer`, this tool takes a `--fix` flag
-        rather than always applying one fixed behavior.
 
         Args:
             *args: Additional arguments forwarded to `mixed-line-ending`,
@@ -52,7 +49,7 @@ class EndOfLineFormatter(FormatHookTool):
         """Return the hook metadata for normalizing mixed line endings.
 
         Runs right after spelling is fixed and before the other formatting
-        fixers, so `trailing-whitespace-fixer` and `end-of-file-fixer`
+        fixers, so the `trailing-whitespace` and `end-of-file-fixer` hooks
         always operate on a file with one consistent line ending rather
         than a mix of LF and CRLF. Forces `--fix=lf` rather than this
         tool's own `auto` (majority-wins) default, matching the LF policy

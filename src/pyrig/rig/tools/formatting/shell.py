@@ -36,10 +36,6 @@ class ShellFormatter(FormatHookTool):
     def format_args(self, *args: str) -> Args:
         """Construct shfmt arguments.
 
-        Unlike `trailing-whitespace-fixer`, `shfmt` needs an explicit
-        `--write` flag to write changes back instead of printing the
-        formatted result to stdout.
-
         Args:
             *args: Additional arguments forwarded to `shfmt`, typically the
                 file paths to format.

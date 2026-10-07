@@ -43,7 +43,9 @@ class VersionControlHookManager(Tool):
         Returns:
             The URL of the badge image as a string.
         """
-        return "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json"
+        return (
+            "https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge.svg"
+        )
 
     def link_url(self) -> str:
         """Return the link URL for prek.

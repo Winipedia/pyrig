@@ -22,10 +22,7 @@ class TestEndOfFileFormatter:
 
     def test_link_url(self) -> None:
         """Test method."""
-        assert (
-            EndOfFileFormatter.I.link_url()
-            == "https://github.com/pre-commit/pre-commit-hooks"
-        )
+        assert EndOfFileFormatter.I.link_url() == "https://github.com/j178/prek"
 
     def test_name(self) -> None:
         """Test method."""

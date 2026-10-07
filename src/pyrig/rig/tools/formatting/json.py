@@ -21,8 +21,8 @@ class JSONFormatter(FormatHookTool):
         return f"https://img.shields.io/badge/JSON-{self.shield_name()}-orange"
 
     def link_url(self) -> str:
-        """Return the URL of the pre-commit-hooks project page."""
-        return "https://github.com/pre-commit/pre-commit-hooks"
+        """Return the URL of the prek project page."""
+        return "https://github.com/j178/prek"
 
     def name(self) -> str:
         """Return `"pretty-format-json"`, this tool's CLI command name."""
@@ -34,10 +34,6 @@ class JSONFormatter(FormatHookTool):
 
     def format_args(self, *args: str) -> Args:
         """Construct pretty-format-json arguments.
-
-        Unlike `trailing-whitespace-fixer`, `pretty-format-json` needs an
-        explicit `--autofix` flag to write changes back instead of only
-        reporting a diff.
 
         Args:
             *args: Additional arguments forwarded to `pretty-format-json`,
