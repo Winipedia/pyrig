@@ -310,6 +310,23 @@ groups = [
 priority = 11
 
 [[repos.hooks]]
+id = "check-dead-code"
+name = "check dead code"
+language = "system"
+entry = "uv run vulture"
+types = [
+  "python",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+pass_filenames = false
+priority = 12
+
+[[repos.hooks]]
 id = "check-dependencies"
 name = "check dependencies"
 language = "system"
