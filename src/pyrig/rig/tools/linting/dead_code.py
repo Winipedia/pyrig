@@ -11,7 +11,7 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 
 
 class DeadCodeChecker(CheckHookTool):
-    """Wrapper for the `vulture` dead code checker."""
+    """Wrapper for the dead code checker `vulture`."""
 
     def group(self) -> str:
         """Return `Group.CODE_QUALITY`."""
@@ -19,7 +19,7 @@ class DeadCodeChecker(CheckHookTool):
 
     def image_url(self) -> str:
         """Return the Shields.io badge URL advertising `vulture`."""
-        return f"https://img.shields.io/badge/dead_code-{self.shield_name()}-blue"
+        return f"https://img.shields.io/badge/dead--code-{self.shield_name()}-blue"
 
     def link_url(self) -> str:
         """Return the URL of the `vulture` project page."""

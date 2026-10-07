@@ -20,6 +20,7 @@ from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.toml import TOMLConfigFile
 from pyrig.rig.configs.community.license import LicenseConfigFile
+from pyrig.rig.configs.dead_code import DeadCodeCheckerConfigFile
 from pyrig.rig.configs.package_init import PackageInitConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.dependencies.checker import DependencyChecker
@@ -182,7 +183,12 @@ class PyprojectConfigFile(TOMLConfigFile):
                 },
             },
             DeadCodeChecker.I.config_name(): {
-                "paths": [PackageManager.I.source_root().as_posix()],
+                "paths": sorted(
+                    (
+                        PackageManager.I.source_root().as_posix(),
+                        DeadCodeCheckerConfigFile.I.path().as_posix(),
+                    ),
+                ),
             },
             ProjectTester.I.config_name(): {
                 "testpaths": [ProjectTester.I.package_root().as_posix()],
