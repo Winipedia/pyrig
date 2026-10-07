@@ -28,8 +28,14 @@ class Pyrigger(VersionControlHookTool):
         return Group.TOOLING
 
     def image_url(self) -> str:
-        """Return the badge image URL for pyrig."""
-        return f"https://img.shields.io/badge/built%20with-{self.shield_name()}-3776AB?logo=buildkite&logoColor=black"
+        """Return the badge image URL for pyrig.
+
+        pyrig is showcasing an oil rig in its badge.
+        pyrig means "Python rig" or "rig up a Python projects" and
+        the naming collision with an actual oil rig is purely coincidental.
+        I just thought it was pretty cool.
+        """
+        return "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Winipedia/pyrig/main/docs/assets/badge.json"
 
     def link_url(self) -> str:
         """Return the badge link URL for pyrig."""

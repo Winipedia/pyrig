@@ -26,7 +26,7 @@ class TestPyrigger:
         """Test method."""
         assert (
             Pyrigger.I.image_url()
-            == "https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=buildkite&logoColor=black"
+            == "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Winipedia/pyrig/main/docs/assets/badge.json"
         )
 
     def test_link_url(self) -> None:

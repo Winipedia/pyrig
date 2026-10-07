@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-labelledby="title">
+  <title id="title">pyrig offshore rig</title>
+  <g fill="none" stroke="#F4B942" stroke-width="2.5" stroke-linejoin="round">
+    <path d="m11 17 4-14h2l4 14Zm2-7 6 5m0-5-6 5"/>
+  </g>
+  <path fill="#F4B942" d="M3 17h26v4H3Zm3 4h3v5H6Zm17 0h3v5h-3ZM4 12h6v5H4Z"/>
+  <path fill="none" stroke="#56D6E7" stroke-width="2.5" stroke-linecap="round" d="M2 28q3-3 7 0t7 0t7 0t7 0"/>
+</svg>
