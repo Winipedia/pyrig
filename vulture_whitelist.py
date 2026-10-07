@@ -44,41 +44,32 @@ from pyrig.rig.tools.version_control.large_files import LargeFileChecker
 from pyrig.rig.tools.version_control.merge_conflict import MergeConflictChecker
 from pyrig.rig.tools.version_control.remote.controller import RemoteVersionController
 
-_COMMANDS = (
-    inits,
-    subcls,
-    pyc,
-    scratch,
-)
 _COMMAND_GROUPS = (
     mk,
     rm,
 )
+_COMMANDS = (
+    inits,
+    pyc,
+    scratch,
+    subcls,
+)
 _CONFIG_FILES = (
+    BugReportConfigFile,
     CodeOfConductConfigFile,
+    CodeownersConfigFile,
+    ConfigConfigFile,
     ContributingConfigFile,
-    SecurityConfigFile,
+    DependencyBotConfigFile,
     DocsBuilderConfigFile,
+    FeatureRequestConfigFile,
     IndexConfigFile,
-    PyTypedConfigFile,
+    PullRequestTemplateConfigFile,
     PythonVersionConfigFile,
+    PyTypedConfigFile,
+    SecurityConfigFile,
     VersionControllerAttributesConfigFile,
     VersionControllerIgnoreConfigFile,
-    CodeownersConfigFile,
-    DependencyBotConfigFile,
-    BugReportConfigFile,
-    ConfigConfigFile,
-    FeatureRequestConfigFile,
-    PullRequestTemplateConfigFile,
-)
-_TOOLS = (
-    CaseConflictChecker,
-    CICDLinter,
-    JSONLinter,
-    SecurityChecker,
-    TypeChecker,
-    LargeFileChecker,
-    MergeConflictChecker,
 )
 _DEPENDENCY_SUBCLASS_OVERRIDES = (
     ConfigFile.discovery_module,
@@ -86,15 +77,24 @@ _DEPENDENCY_SUBCLASS_OVERRIDES = (
     Tool.sort_key,
 )
 _LIBRARY_USAGES = (
-    # https://github.com/Winipedia/pyrig-executables/blob/main/src/pyrig_executables/rig/configs/version_control/remote/workflows/release.py
-    WorkflowConfigFile.strategy_matrix_os,
-    # https://github.com/Winipedia/pyrig-fixtures/blob/main/src/pyrig_fixtures/rig/tests/fixtures/environment.py
-    RemoteVersionController.running_in_ci,
     # https://github.com/Winipedia/pyrig-containers/blob/main/src/pyrig_containers/rig/configs/container_file.py
     PackageManager.install_dependencies_no_dev_args,
+    # https://github.com/Winipedia/pyrig-fixtures/blob/main/src/pyrig_fixtures/rig/tests/fixtures/environment.py
+    RemoteVersionController.running_in_ci,
+    # https://github.com/Winipedia/pyrig-executables/blob/main/src/pyrig_executables/rig/configs/version_control/remote/workflows/release.py
+    WorkflowConfigFile.strategy_matrix_os,
+)
+_TOOLS = (
+    CaseConflictChecker,
+    CICDLinter,
+    JSONLinter,
+    LargeFileChecker,
+    MergeConflictChecker,
+    SecurityChecker,
+    TypeChecker,
 )
 _YAML_USAGES = (
-    YAML_DUMP.explicit_start,
-    YAML_DUMP.explicit_end,
     YAML_DUMP.compact_seq_map,
+    YAML_DUMP.explicit_end,
+    YAML_DUMP.explicit_start,
 )
