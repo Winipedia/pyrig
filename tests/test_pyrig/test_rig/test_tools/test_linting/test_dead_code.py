@@ -18,7 +18,7 @@ class TestDeadCodeChecker:
         """Test method."""
         assert (
             DeadCodeChecker.I.image_url()
-            == "https://img.shields.io/badge/dead_code-vulture-blue"
+            == "https://img.shields.io/badge/dead--code-vulture-blue"
         )
 
     def test_link_url(self) -> None:
