@@ -21,8 +21,8 @@ class EndOfFileFormatter(FormatHookTool):
         return f"https://img.shields.io/badge/EOF-{self.shield_name()}-orange"
 
     def link_url(self) -> str:
-        """Return the URL of the pre-commit-hooks project page."""
-        return "https://github.com/pre-commit/pre-commit-hooks"
+        """Return the URL of the prek project page."""
+        return "https://github.com/j178/prek"
 
     def name(self) -> str:
         """Return `"end-of-file-fixer"`, this tool's CLI command name."""
@@ -34,11 +34,6 @@ class EndOfFileFormatter(FormatHookTool):
 
     def format_args(self, *args: str) -> Args:
         """Construct end-of-file-fixer arguments.
-
-        Like `trailing-whitespace-fixer`, this tool has no separate
-        autofix flag: it always rewrites a file to end with exactly one
-        trailing newline and reports via its exit code whether anything
-        changed.
 
         Args:
             *args: Additional arguments forwarded to `end-of-file-fixer`,

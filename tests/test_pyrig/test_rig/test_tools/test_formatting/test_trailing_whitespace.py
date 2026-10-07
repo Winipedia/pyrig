@@ -17,20 +17,19 @@ class TestTrailingWhitespaceFormatter:
         """Test method."""
         assert (
             TrailingWhitespaceFormatter.I.image_url()
-            == "https://img.shields.io/badge/whitespace-trailing--whitespace--fixer-orange"
+            == "https://img.shields.io/badge/whitespace-trailing--whitespace-orange"
         )
 
     def test_link_url(self) -> None:
         """Test method."""
         assert (
-            TrailingWhitespaceFormatter.I.link_url()
-            == "https://github.com/pre-commit/pre-commit-hooks"
+            TrailingWhitespaceFormatter.I.link_url() == "https://github.com/j178/prek"
         )
 
     def test_name(self) -> None:
         """Test method."""
         result = TrailingWhitespaceFormatter.I.name()
-        assert result == "trailing-whitespace-fixer"
+        assert result == "trailing-whitespace"
 
     def test_dev_dependencies(self) -> None:
         """Test method."""

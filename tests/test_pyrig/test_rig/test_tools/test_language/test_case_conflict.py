@@ -22,10 +22,7 @@ class TestCaseConflictChecker:
 
     def test_link_url(self) -> None:
         """Test method."""
-        assert (
-            CaseConflictChecker.I.link_url()
-            == "https://github.com/pre-commit/pre-commit-hooks"
-        )
+        assert CaseConflictChecker.I.link_url() == "https://github.com/j178/prek"
 
     def test_name(self) -> None:
         """Test method."""

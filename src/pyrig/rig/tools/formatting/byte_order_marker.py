@@ -21,8 +21,8 @@ class ByteOrderMarkerFormatter(FormatHookTool):
         return f"https://img.shields.io/badge/BOM-{self.shield_name()}-orange"
 
     def link_url(self) -> str:
-        """Return the URL of the pre-commit-hooks project page."""
-        return "https://github.com/pre-commit/pre-commit-hooks"
+        """Return the URL of the prek project page."""
+        return "https://github.com/j178/prek"
 
     def name(self) -> str:
         """Return `"fix-byte-order-marker"`, this tool's CLI command name."""
@@ -34,10 +34,6 @@ class ByteOrderMarkerFormatter(FormatHookTool):
 
     def format_args(self, *args: str) -> Args:
         """Construct fix-byte-order-marker arguments.
-
-        Like `trailing-whitespace-fixer`, this tool has no separate autofix
-        flag: it always strips a leading byte-order mark in place and
-        reports via its exit code whether anything changed.
 
         Args:
             *args: Additional arguments forwarded to `fix-byte-order-marker`,

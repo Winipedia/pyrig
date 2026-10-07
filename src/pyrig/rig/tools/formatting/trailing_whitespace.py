@@ -1,4 +1,4 @@
-"""Wrapper around the trailing-whitespace-fixer tool."""
+"""Wrapper around prek's `trailing-whitespace` built-in hook."""
 
 from typing import Any
 
@@ -17,23 +17,23 @@ class TrailingWhitespaceFormatter(FormatHookTool):
         return Group.CODE_QUALITY
 
     def image_url(self) -> str:
-        """Return the badge image URL for trailing-whitespace-fixer."""
+        """Return the badge image URL for the `trailing-whitespace` hook."""
         return f"https://img.shields.io/badge/whitespace-{self.shield_name()}-orange"
 
     def link_url(self) -> str:
-        """Return the URL of the pre-commit-hooks project page."""
-        return "https://github.com/pre-commit/pre-commit-hooks"
+        """Return the URL of the prek project page."""
+        return "https://github.com/j178/prek"
 
     def name(self) -> str:
-        """Return `"trailing-whitespace-fixer"`, this tool's CLI command name."""
-        return "trailing-whitespace-fixer"
+        """Return `"trailing-whitespace"`, this tool's hook ID."""
+        return "trailing-whitespace"
 
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return no package dependency; prek provides this built-in hook."""
         return ()
 
     def format_args(self, *args: str) -> Args:
-        """Construct trailing-whitespace-fixer arguments.
+        """Construct arguments for the `trailing-whitespace` hook.
 
         Unlike `pretty-format-json`, this tool has no separate autofix
         flag: it always rewrites a file's trailing whitespace in place and
@@ -41,10 +41,11 @@ class TrailingWhitespaceFormatter(FormatHookTool):
 
         Args:
             *args: Additional arguments forwarded to
-                `trailing-whitespace-fixer`, typically the file paths to fix.
+                the `trailing-whitespace` hook, typically the file paths to
+                fix.
 
         Returns:
-            Args for `trailing-whitespace-fixer`.
+            Arguments for the `trailing-whitespace` hook.
         """
         return Args(*args)
 
@@ -52,7 +53,7 @@ class TrailingWhitespaceFormatter(FormatHookTool):
         """Return hook metadata for fixing trailing whitespace.
 
         Returns:
-            Hook metadata dict for `trailing-whitespace-fixer`.
+            Hook metadata dict for the `trailing-whitespace` hook.
         """
         return VersionControlHookManager.I.builtin_hook(
             self.trailing_whitespace,
@@ -65,6 +66,6 @@ class TrailingWhitespaceFormatter(FormatHookTool):
         """Return arguments for the built-in hook.
 
         Returns:
-            Arguments passed to `trailing-whitespace-fixer`.
+            Arguments passed to the `trailing-whitespace` hook.
         """
         return self.format_args()

@@ -21,8 +21,8 @@ class MergeConflictChecker(CheckHookTool):
         return f"https://img.shields.io/badge/merge--conflict-{self.shield_name()}-blue"
 
     def link_url(self) -> str:
-        """Return the URL of the pre-commit-hooks project page."""
-        return "https://github.com/pre-commit/pre-commit-hooks"
+        """Return the URL of the prek project page."""
+        return "https://github.com/j178/prek"
 
     def name(self) -> str:
         """Return `"check-merge-conflict"`, this tool's CLI command name."""

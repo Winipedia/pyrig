@@ -22,10 +22,7 @@ class TestByteOrderMarkerFormatter:
 
     def test_link_url(self) -> None:
         """Test method."""
-        assert (
-            ByteOrderMarkerFormatter.I.link_url()
-            == "https://github.com/pre-commit/pre-commit-hooks"
-        )
+        assert ByteOrderMarkerFormatter.I.link_url() == "https://github.com/j178/prek"
 
     def test_name(self) -> None:
         """Test method."""
