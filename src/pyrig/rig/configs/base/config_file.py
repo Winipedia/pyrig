@@ -188,19 +188,17 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         and not before the configs are collected.
 
         Returns:
-            `True` if the file was already correct and none of its
-            dependencies needed validation; `False` if it, or one of its
-            dependencies, was created or updated.
+            `True` if this file and its dependencies were already correct;
+            `False` if this file or one of its dependencies was created or
+            updated.
 
         Raises:
             RuntimeError: If the file is still not correct after merging in
                 the required configuration.
         """
-        if (
-            not validate_config_files(self.leaf_dependencies())
-            and self.exists_correct()
-        ):
-            return True
+        config_files = validate_config_files(self.leaf_dependencies())
+        if self.exists_correct():
+            return not config_files
 
         self.dump(self.merge_configs())
 

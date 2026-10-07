@@ -12,8 +12,9 @@ everything else untouched.
 
 ## How Merging Works
 
-`validate()` decides what to do with three checks:
+`validate()` decides what to do with these checks:
 
+- **Validate Dependencies** — validates all dependent config files first.
 - **Missing file** — created and dumped with `_configs()` verbatim.
 - **`is_correct()`** — `True` if every key/item declared by `_configs()` is
   already present in the file on disk, recursively. Extra keys, extra list

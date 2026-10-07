@@ -49,9 +49,10 @@ class PyprojectConfigFile(TOMLConfigFile):
         """Validate the config file, then add missing project dependencies.
 
         Returns:
-            `True` if the file, its config file dependencies, and its
-            project dependencies were all already correct; `False` if any
-            of them needed to be created, updated, or added.
+            `True` if this file and its config file dependencies were already
+            correct and no project dependencies needed to be added; `False`
+            if this file or one of its config file dependencies was updated,
+            or project dependencies were added.
         """
         correct = super().validate()
         dependencies = self.add_additional_dependencies()

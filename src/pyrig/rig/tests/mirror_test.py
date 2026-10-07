@@ -86,9 +86,8 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         is created if it does not already exist.
 
         Returns:
-            `True` if the file was already correct and none of its
-            dependencies needed validation; `False` if it, or one of its
-            dependencies, was created or updated.
+            `True` if this test file was already correct; `False` if it was
+            created or updated.
         """
         if not self.path().exists():
             self.create_file()
