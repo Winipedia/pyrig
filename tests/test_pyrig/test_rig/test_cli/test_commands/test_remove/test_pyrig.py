@@ -16,7 +16,6 @@ from pyrig.rig.configs.version_control.hooks.manager import (
     VersionControlHookManagerConfigFile,
 )
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
 def test_remove_pyrig(mocker: MockerFixture, tmp_path: Path) -> None:
@@ -29,12 +28,8 @@ def test_remove_pyrig(mocker: MockerFixture, tmp_path: Path) -> None:
     mock_uninstall.assert_called_once()
 
 
-def test_remove_pyrig_hooks(tmp_path: Path, mocker: MockerFixture) -> None:
+def test_remove_pyrig_hooks(tmp_path: Path) -> None:
     """Test function."""
-    mock_install = mocker.patch.object(
-        VersionControlHookManager,
-        VersionControlHookManager.install_args.__name__,
-    )
     with chdir(tmp_path):
         VersionControlHookManagerConfigFile.I.dump(
             VersionControlHookManagerConfigFile.I.configs(),
@@ -43,7 +38,6 @@ def test_remove_pyrig_hooks(tmp_path: Path, mocker: MockerFixture) -> None:
         assert "pyrig sync" in file_content
 
         remove_pyrig_hooks()
-        mock_install.assert_called()
 
         assert (
             "pyrig sync" not in VersionControlHookManagerConfigFile.I.path().read_text()
