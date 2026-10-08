@@ -145,3 +145,10 @@ class TestBadgesConfigFile:
         assert issubclass(ReadmeConfigFile, BadgesConfigFile)
         badges = ReadmeConfigFile().badges()
         assert isinstance(badges, dict)
+
+    def test_badges_content(self) -> None:
+        """Test method."""
+        content = ReadmeConfigFile().badges_content()
+        assert isinstance(content, str)
+        assert "<!--" in content
+        assert "-->" in content

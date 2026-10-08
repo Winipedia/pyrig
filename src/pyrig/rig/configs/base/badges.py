@@ -50,22 +50,24 @@ class BadgesConfigFile(MarkdownConfigFile):
         Returns:
             Markdown content forming the project header section.
         """
-        badges_block = self.join_lines(
+        return f"""# {self.heading()}
+
+{self.badges_content()}
+
+---
+
+> {PyprojectConfigFile.I.project_description()}
+
+---
+"""
+
+    def badges_content(self) -> str:
+        """Return the Markdown content for all badge groups."""
+        return self.join_lines(
             line
             for category, badge_list in self.badges().items()
             for line in (f"<!-- {category} -->", *badge_list)
         )
-        description = PyprojectConfigFile.I.project_description()
-        return f"""# {self.heading()}
-
-{badges_block}
-
----
-
-> {description}
-
----
-"""
 
     def merge_configs(self) -> list[Any]:
         """Return merged file content with current badge URLs and project description.
