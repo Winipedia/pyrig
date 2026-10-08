@@ -766,7 +766,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "18.103.19"
+version = "18.103.20"
 source = { editable = "." }
 dependencies = [
     { name = "inquirerpy" },
@@ -861,14 +861,15 @@ dev = [
 
 [[package]]
 name = "pyrig-badge"
-version = "0.1.2"
+version = "0.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
+    { name = "xmltodict" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/56/bb/39965922f351f0fe110aa7a927f3517a7d6d282f2ae9b48099c862036360/pyrig_badge-0.1.2.tar.gz", hash = "sha256:2b37f114a6d389debfcbc43c0d08688df9b5bd75bfcb1e3e362653b35f337569", size = 5895, upload-time = "2026-10-08T18:12:23.133Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/54/9b/68a5e2e857649b5f70b71b72ea622173b302694c335755869b704b7dd8df/pyrig_badge-0.2.0.tar.gz", hash = "sha256:5bce204ff94533b387f470d8f2a5afaec51028d13e08bf76da743deea866e5e0", size = 6457, upload-time = "2026-10-08T21:57:59.661Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/45/11/2c870d956e18234326881ee0c94d8eeea59ac3fa7ee353a1cb7d3d07987c/pyrig_badge-0.1.2-py3-none-any.whl", hash = "sha256:08d481d0f217fc2fb1114c95dd1dc9c105fdaa968fd27efba2c5b647b7d158cb", size = 9237, upload-time = "2026-10-08T18:12:21.908Z" },
+    { url = "https://files.pythonhosted.org/packages/69/56/0eaec9501584e9493c911fa229d6399f7729d1d312fd2746d683fd81da7d/pyrig_badge-0.2.0-py3-none-any.whl", hash = "sha256:4f7534d6d43530801a2103261f5983b495dd60c13ecb769df0ff512e5972fdd7", size = 10475, upload-time = "2026-10-08T21:57:58.661Z" },
 ]
 
 [[package]]
@@ -1584,6 +1585,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/63/80/6a03356d8ee38261e3a78cf89ee03d8e7f12c572d969237be00869e2dc73/wcwidth-0.9.2-cp315-cp315t-win_amd64.whl", hash = "sha256:33df042f96c61ed3cd5fb3742fba427553a635bc578799857a48aa79f774a0b9", size = 605441, upload-time = "2026-10-05T00:24:04.052Z" },
     { url = "https://files.pythonhosted.org/packages/0c/48/1a308a86a833fd12ff7a08d0d2491ff4a72c8a92d12f5ead8317630f771e/wcwidth-0.9.2-cp315-cp315t-win_arm64.whl", hash = "sha256:48719a9bc76c2f84238693fe5013571fa5beffa3621cf228f1f3a9e30dae84b8", size = 605885, upload-time = "2026-10-05T00:23:54.274Z" },
     { url = "https://files.pythonhosted.org/packages/9c/b4/0bfa065af506540d9d558e3e5548cff00bc1f9b24e6e2a8512498e8628de/wcwidth-0.9.2-py3-none-any.whl", hash = "sha256:89ca642c5bf0101157a09366be69fad0379db1f700ae39a920e103234573670e", size = 301667, upload-time = "2026-10-05T00:23:21.097Z" },
+]
+
+[[package]]
+name = "xmltodict"
+version = "1.0.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/19/70/80f3b7c10d2630aa66414bf23d210386700aa390547278c789afa994fd7e/xmltodict-1.0.4.tar.gz", hash = "sha256:6d94c9f834dd9e44514162799d344d815a3a4faec913717a9ecbfa5be1bb8e61", size = 26124, upload-time = "2026-02-22T02:21:22.074Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/38/34/98a2f52245f4d47be93b580dae5f9861ef58977d73a79eb47c58f1ad1f3a/xmltodict-1.0.4-py3-none-any.whl", hash = "sha256:a4a00d300b0e1c59fc2bfccb53d7b2e88c32f200df138a0dd2229f842497026a", size = 13580, upload-time = "2026-02-22T02:21:21.039Z" },
 ]
 
 [[package]]
