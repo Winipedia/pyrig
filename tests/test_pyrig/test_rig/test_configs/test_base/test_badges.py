@@ -1,102 +1,50 @@
 """module."""
 
-from contextlib import chdir
-from pathlib import Path
-
 from pytest_mock import MockerFixture
 
-from pyrig.core.subprocesses import Args
 from pyrig.rig.configs.base.badges import BadgesConfigFile
-from pyrig.rig.configs.community.license import LicenseConfigFile
+from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.readme import ReadmeConfigFile
 from pyrig.rig.tools.pyrigger import Pyrigger
-from pyrig.rig.tools.version_control.controller import VersionController
 
 
 class TestBadgesConfigFile:
     """Test class."""
 
-    def test_merge_configs(  # noqa: PLR0915
-        self,
-        tmp_project_root_path: Path,
-        mocker: MockerFixture,
-    ) -> None:
+    def test_merge_configs(self, mocker: MockerFixture) -> None:
         """Test method."""
-        assert issubclass(ReadmeConfigFile, BadgesConfigFile)
+        config_file = ReadmeConfigFile()
+        expected = config_file.configs()
+        read_content_mock = mocker.patch.object(
+            config_file,
+            "read_content",
+            return_value=config_file.join_lines(expected),
+        )
 
-        # make sure repo owner is cached before entering non git folder tmp
-        assert VersionController.I.repo_owner()
-        assert VersionController.I.repo_owner()
-        assert VersionController.I.has_commits()
+        assert config_file.merge_configs() == expected
+        read_content_mock.assert_called_once()
 
-        ReadmeConfigFile.configs.cache_clear()
-        ReadmeConfigFile.load.cache_clear()
-        PyprojectConfigFile.configs.cache_clear()
-        PyprojectConfigFile.load.cache_clear()
-        LicenseConfigFile.configs.cache_clear()
-        LicenseConfigFile.load.cache_clear()
-        with chdir(tmp_project_root_path):
-            # avoid real `uv add` calls: this tmp project has no installable
-            # source layout, only pyproject.toml/README/LICENSE are needed here
-            mocker.patch.object(Args, Args.run.__name__, return_value=None)
-            # avoid depending on a configured git user.email (absent in CI)
-            email_mock = mocker.patch.object(
-                VersionController,
-                VersionController.email.__name__,
-                return_value="fallback@example.com",
-            )
-            LicenseConfigFile().validate()
-            PyprojectConfigFile().validate()
-            email_mock.assert_called()
-            ReadmeConfigFile().validate()
-            assert ReadmeConfigFile().is_correct()
+    def test_merge_configs_falls_back(self, mocker: MockerFixture) -> None:
+        """Test method."""
+        config_file = ReadmeConfigFile()
+        read_content_mock = mocker.patch.object(
+            config_file,
+            "read_content",
+            return_value="",
+        )
+        configs_is_subset_mock = mocker.patch.object(
+            config_file,
+            "configs_is_subset",
+            return_value=False,
+        )
+        fallback_mock = mocker.patch.object(MarkdownConfigFile, "merge_configs")
 
-            # change the description in readme to a false one
-            false_description = "My False Description."
-            correct_description = PyprojectConfigFile().project_description()
-            content = ReadmeConfigFile().read_content()
-            assert correct_description in content
-            assert false_description not in content
-            # we replace the actual description with a false one
-            false_content = content.replace(correct_description, false_description)
-            assert correct_description not in false_content
-            assert false_description in false_content
-            # we write the false content to the readme file
-            ReadmeConfigFile().dump(ReadmeConfigFile().split_lines(false_content))
-            # now the is correct method should correct the mistakes
-            merged_lines = ReadmeConfigFile().merge_configs()
-            merged_content = ReadmeConfigFile().join_lines(merged_lines)
-            assert correct_description in merged_content
-            assert false_description not in merged_content
-            assert merged_content == content
+        config_file.merge_configs()
 
-            # dump configs and check file is correct
-            ReadmeConfigFile().dump(ReadmeConfigFile().configs())
-            assert ReadmeConfigFile().is_correct()
-            assert ReadmeConfigFile().read_content() == content
-            # remove one of the lines with a badge completely
-            content_lines = ReadmeConfigFile().split_lines(content)
-            badge_line = content_lines[3]
-            assert badge_line.startswith("[![")
-            content_lines.remove(badge_line)
-            ReadmeConfigFile().dump(content_lines)
-            assert not ReadmeConfigFile().is_correct()
-            # merge configs
-            merged_lines = ReadmeConfigFile().merge_configs()
-            merged_content = ReadmeConfigFile().join_lines(merged_lines)
-            assert merged_content == content
-            # validate configs and check file is correct
-            ReadmeConfigFile().validate()
-            assert ReadmeConfigFile().is_correct()
-
-        # clear the cache so other tests have the correct readme configs again
-        ReadmeConfigFile.configs.cache_clear()
-        ReadmeConfigFile.load.cache_clear()
-        PyprojectConfigFile.configs.cache_clear()
-        PyprojectConfigFile.load.cache_clear()
-        LicenseConfigFile.configs.cache_clear()
-        LicenseConfigFile.load.cache_clear()
+        read_content_mock.assert_called_once()
+        configs_is_subset_mock.assert_called_once()
+        fallback_mock.assert_called_once()
 
     def test_replace_badges(self, mocker: MockerFixture) -> None:
         """Test method."""

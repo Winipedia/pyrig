@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "18.103.12"
+version = "18.103.13"
 description = "A Python project setup and management tool built on infrastructure as code and convention over configuration."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -83,6 +83,7 @@ dev = [
   "pre-commit-hooks>=6.0.0",
   "prek>=0.5.3",
   "pyflakes>=3.4.0",
+  "pyrig-badge>=0.1.0",
   "pyrig-env>=1.0.29",
   "pyrig-opensource>=1.0.0",
   "pyrig-overrides>=4.20.58",

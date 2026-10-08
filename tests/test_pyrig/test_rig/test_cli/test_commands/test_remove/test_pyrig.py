@@ -78,4 +78,5 @@ def test_uninstall_pyrig(mocker: MockerFixture, tmp_path: Path) -> None:
         "pyrig-public",
         "pyrig-opensource",
         "pyrig-openssf",
+        "pyrig-badge",
     }
