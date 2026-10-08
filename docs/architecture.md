@@ -71,7 +71,7 @@ is declared in code and reconciled against the files in the project:
 ```text
 file missing?      → create with required content
 file incorrect?    → merge in missing content, preserve user additions
-file correct?      → no-op
+file correct?      → no file changes
 ```
 
 Format-specific bases handle serialization:

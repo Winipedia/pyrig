@@ -92,30 +92,6 @@ class TestVersionControlHookManagerConfigFile:
         assert isinstance(repo["hooks"], list), "Expected 'hooks' to be a list"
         assert len(repo["hooks"]) > 0, "Expected at least one hook in repo"
 
-    def test__dump(self, mocker: MockerFixture, tmp_path: Path) -> None:
-        """Test method."""
-        with chdir(tmp_path):
-            mock_hook_install = mocker.patch.object(
-                VersionControlHookManager,
-                VersionControlHookManager.install_args.__name__,
-                return_value=mocker.Mock(run=lambda: True),
-            )
-            VersionControlHookManagerConfigFile.I._dump({})  # noqa: SLF001
-
-            mock_hook_install.assert_called_once()
-
-            mock_pyproject_validate = mocker.patch.object(
-                PyprojectConfigFile,
-                PyprojectConfigFile.validate.__name__,
-            )
-            VersionControlHookManagerConfigFile.I.validate()
-            mock_pyproject_validate.assert_called_once()
-            assert mock_hook_install.call_count == 2  # noqa: PLR2004
-
-            VersionControlHookManagerConfigFile.I.validate()
-            assert mock_pyproject_validate.call_count == 2  # noqa: PLR2004
-            assert mock_hook_install.call_count == 2  # noqa: PLR2004
-
     def test_repositories(self) -> None:
         """Test method."""
         hooks = [
@@ -142,3 +118,23 @@ class TestVersionControlHookManagerConfigFile:
         assert by_repo["other"] == [{"id": "b"}]
         # the "repo" key is consumed, not left behind on each hook
         assert "repo" not in hooks[0]
+
+    def test_validate(self, mocker: MockerFixture) -> None:
+        """Test method."""
+        mock_install_run = mocker.Mock()
+        mock_update_run = mocker.Mock()
+        mock_install_args = mocker.patch.object(
+            VersionControlHookManager,
+            VersionControlHookManager.install_args.__name__,
+            return_value=mocker.Mock(run=mock_install_run),
+        )
+        mock_update_args = mocker.patch.object(
+            VersionControlHookManager,
+            VersionControlHookManager.update_args.__name__,
+            return_value=mocker.Mock(run=mock_update_run),
+        )
+        assert VersionControlHookManagerConfigFile.I.validate() is True
+        mock_install_args.assert_called_once()
+        mock_update_args.assert_called_once()
+        mock_install_run.assert_called_once()
+        mock_update_run.assert_called_once()

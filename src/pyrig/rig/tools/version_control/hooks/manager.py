@@ -16,11 +16,11 @@ class VersionControlHookManager(Tool):
     """Wrapper for the prek pre-commit hook manager.
 
     Builds `Args` for prek's own CLI: installing hooks into the local git
-    repository and running them against files. Also provides the shared
-    hook-metadata API every other `Tool` subclass uses to declare its own
-    hooks in the pipeline, deriving each hook's `id` and `name` from its
-    entry method, matching or chaining hook priorities, and sorting hooks
-    into a deterministic run order.
+    repository, updating hook repositories, and running hooks against files.
+    Also provides the shared hook-metadata API every other `Tool` subclass
+    uses to declare its own hooks in the pipeline, deriving each hook's `id`
+    and `name` from its entry method, matching or chaining hook priorities,
+    and sorting hooks into a deterministic run order.
     """
 
     def group(self) -> str:
@@ -73,6 +73,17 @@ class VersionControlHookManager(Tool):
             Args for `prek install [args]`.
         """
         return self.args("install", *args)
+
+    def update_args(self, *args: str) -> Args:
+        """Build arguments for `prek update`.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for `prek update [args]`.
+        """
+        return self.args("update", *args)
 
     def run_all_files_all_hooks_args(self, *args: str) -> Args:
         """Build arguments to run all hooks against every file.

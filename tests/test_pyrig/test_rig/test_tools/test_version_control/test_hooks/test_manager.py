@@ -185,3 +185,11 @@ class TestVersionControlHookManager:
             "stages": ["pre-commit", "pre-push"],
             "groups": ["all", "checks"],
         }
+
+    def test_update_args(self) -> None:
+        """Test method."""
+        assert VersionControlHookManager.I.update_args("some-arg") == (
+            "prek",
+            "update",
+            "some-arg",
+        )

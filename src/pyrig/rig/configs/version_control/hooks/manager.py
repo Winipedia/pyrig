@@ -24,24 +24,32 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
     Declares one repository entry per distinct `repo` a hook is registered
     under (`"local"` by default), each holding the hooks assigned to it, so
     that together they cover the full code-quality pipeline.
+    Hook installation and updates are integrated into the validation process.
     """
+
+    def validate(self) -> bool:
+        """Validate `prek.toml`.
+
+        Automatically installs and updates hooks after the validation process.
+
+        Returns:
+            Whether this config file and its dependencies were already correct.
+        """
+        correct = super().validate()
+        VersionControlHookManager.I.install_args().run()
+        VersionControlHookManager.I.update_args().run()
+        return correct
 
     def dependencies(self) -> Iterable[type[ConfigFile[Any]]]:
         """Return `(PyprojectConfigFile,)`.
 
-        `prek` must already be installed by the time `_dump` runs `prek
-        install`, which only happens once `PyprojectConfigFile` has added and
-        installed every tool's dev dependencies.
+        Validating `PyprojectConfigFile` ensures that `prek` and is installed before
+        `validate()` invokes `prek`.
 
         Returns:
             Direct `ConfigFile` dependencies for this file.
         """
         return (*super().dependencies(), PyprojectConfigFile)
-
-    def _dump(self, configs: dict[str, Any]) -> None:
-        """Dump the `prek.toml` structure to disk and install the hooks."""
-        super()._dump(configs)
-        VersionControlHookManager.I.install_args().run()
 
     def _configs(self) -> dict[str, Any]:
         """Build the required `prek.toml` structure.
