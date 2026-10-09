@@ -50,7 +50,7 @@ class TestProjectTester:
         """Test method."""
         assert (
             ProjectTester().image_url()
-            == "https://img.shields.io/badge/coverage->=90%25-hsl(108,80%25,45%25)?logo=codecov&logoColor=white"
+            == "https://img.shields.io/badge/coverage-%3E%3D90%25-hsl(108,80%25,45%25)?logo=codecov&logoColor=white"
         )
 
     def test_link_url(self) -> None:

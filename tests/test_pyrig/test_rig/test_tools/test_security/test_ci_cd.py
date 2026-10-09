@@ -14,7 +14,7 @@ class TestCICDSecurityChecker:
         """Test method."""
         assert (
             CICDSecurityChecker.I.image_url()
-            == "https://img.shields.io/badge/CI/CD-zizmor-yellow"
+            == "https://img.shields.io/badge/%F0%9F%8C%88-zizmor-white?labelColor=white"
         )
 
     def test_link_url(self) -> None:

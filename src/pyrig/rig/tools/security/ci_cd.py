@@ -25,7 +25,7 @@ class CICDSecurityChecker(CheckHookTool):
 
     def image_url(self) -> str:
         """Return the URL of the shield image."""
-        return f"https://img.shields.io/badge/CI/CD-{self.shield_name()}-yellow"
+        return "https://img.shields.io/badge/%F0%9F%8C%88-zizmor-white?labelColor=white"
 
     def link_url(self) -> str:
         """Return the URL of the tool's homepage or repository."""
