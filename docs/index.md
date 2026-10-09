@@ -1,6 +1,6 @@
 # Home
 
-[![pyrig](assets/logo.svg)](assets/logo.svg)
+[![pyrig](assets/banner.svg)](assets/banner.svg)
 
 <!-- project-status -->
 [![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/health_check.yml?label=CI&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/health_check.yml)
