@@ -22,7 +22,10 @@ class TestEndOfFileFormatter:
 
     def test_link_url(self) -> None:
         """Test method."""
-        assert EndOfFileFormatter.I.link_url() == "https://github.com/j178/prek"
+        assert (
+            EndOfFileFormatter.I.link_url()
+            == "https://prek.j178.dev/reference/built-in-hooks/#end-of-file-fixer"
+        )
 
     def test_name(self) -> None:
         """Test method."""

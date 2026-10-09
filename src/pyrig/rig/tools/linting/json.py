@@ -26,8 +26,8 @@ class JSONLinter(CheckHookTool):
         return f"https://img.shields.io/badge/JSON-{self.shield_name()}-blue"
 
     def link_url(self) -> str:
-        """Return the URL of the prek project page."""
-        return "https://github.com/j178/prek"
+        """Return the documentation URL for this prek built-in hook."""
+        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
 
     def name(self) -> str:
         """Return `'check-json'`, the executable name for this tool's CLI command."""

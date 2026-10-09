@@ -22,7 +22,10 @@ class TestMergeConflictChecker:
 
     def test_link_url(self) -> None:
         """Test method."""
-        assert MergeConflictChecker.I.link_url() == "https://github.com/j178/prek"
+        assert (
+            MergeConflictChecker.I.link_url()
+            == "https://prek.j178.dev/reference/built-in-hooks/#check-merge-conflict"
+        )
 
     def test_name(self) -> None:
         """Test method."""

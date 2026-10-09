@@ -23,8 +23,8 @@ class ModuleTestNamingChecker(CheckHookTool):
         return f"https://img.shields.io/badge/test--naming-{self.shield_name()}-blue"
 
     def link_url(self) -> str:
-        """Return the URL of the pre-commit-hooks project page."""
-        return "https://github.com/pre-commit/pre-commit-hooks"
+        """Return the documentation URL for the pre-commit-hooks naming checker."""
+        return f"https://github.com/pre-commit/pre-commit-hooks#{self.name()}"
 
     def name(self) -> str:
         """Return `"name-tests-test"`, this tool's CLI command name."""

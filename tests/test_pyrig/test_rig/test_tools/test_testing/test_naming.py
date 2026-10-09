@@ -26,7 +26,7 @@ class TestModuleTestNamingChecker:
         """Test method."""
         assert (
             ModuleTestNamingChecker.I.link_url()
-            == "https://github.com/pre-commit/pre-commit-hooks"
+            == "https://github.com/pre-commit/pre-commit-hooks#name-tests-test"
         )
 
     def test_name(self) -> None:

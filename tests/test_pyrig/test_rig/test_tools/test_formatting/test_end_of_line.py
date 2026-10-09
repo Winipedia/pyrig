@@ -22,7 +22,10 @@ class TestEndOfLineFormatter:
 
     def test_link_url(self) -> None:
         """Test method."""
-        assert EndOfLineFormatter.I.link_url() == "https://github.com/j178/prek"
+        assert (
+            EndOfLineFormatter.I.link_url()
+            == "https://prek.j178.dev/reference/built-in-hooks/#mixed-line-ending"
+        )
 
     def test_name(self) -> None:
         """Test method."""

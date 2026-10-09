@@ -22,7 +22,10 @@ class TestLargeFileChecker:
 
     def test_link_url(self) -> None:
         """Test method."""
-        assert LargeFileChecker.I.link_url() == "https://github.com/j178/prek"
+        assert (
+            LargeFileChecker.I.link_url()
+            == "https://prek.j178.dev/reference/built-in-hooks/#check-added-large-files"
+        )
 
     def test_name(self) -> None:
         """Test method."""

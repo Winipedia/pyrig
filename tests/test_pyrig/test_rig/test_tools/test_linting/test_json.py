@@ -22,7 +22,10 @@ class TestJSONLinter:
 
     def test_link_url(self) -> None:
         """Test method."""
-        assert JSONLinter.I.link_url() == "https://github.com/j178/prek"
+        assert (
+            JSONLinter.I.link_url()
+            == "https://prek.j178.dev/reference/built-in-hooks/#check-json"
+        )
 
     def test_name(self) -> None:
         """Test method."""

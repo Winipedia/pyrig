@@ -23,7 +23,8 @@ class TestTrailingWhitespaceFormatter:
     def test_link_url(self) -> None:
         """Test method."""
         assert (
-            TrailingWhitespaceFormatter.I.link_url() == "https://github.com/j178/prek"
+            TrailingWhitespaceFormatter.I.link_url()
+            == "https://prek.j178.dev/reference/built-in-hooks/#trailing-whitespace"
         )
 
     def test_name(self) -> None:

@@ -47,11 +47,27 @@ class Tool(DependencySubclass):
 
     @abstractmethod
     def image_url(self) -> str:
-        """Return the URL of this tool's badge image."""
+        """Return the URL of this tool's badge image.
+
+        Images are selected in the order of the following criteria:
+            1. Custom badge provided by the tool itself
+            2. Defacto default badge of some kind exists
+            3. Default shields.io badge using the topic for left side and the tool name
+                for the right side
+        """
 
     @abstractmethod
     def link_url(self) -> str:
-        """Return the URL this tool's badge should link to."""
+        """Return the URL this tool's badge should link to.
+
+        Links are selected in the order of the following criteria:
+            1. Most useful link, e.g.:
+                - docs building tool points to the projects own docs rather than the
+                    tool's repository
+                - smth useful can be shown like number of downloads, number of stars or
+                    coverage percentage.
+            2. Official project page or repository.
+        """
 
     @abstractmethod
     def name(self) -> str:
