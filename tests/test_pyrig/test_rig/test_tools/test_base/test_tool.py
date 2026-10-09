@@ -1,5 +1,10 @@
 """Tests module."""
 
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
+
+import requests
+from pyrig_runtime.core.introspection.classes import filter_concrete_classes
 from pytest_mock import MockerFixture
 
 from pyrig.rig import tools
@@ -34,14 +39,27 @@ class TestTool:
 
     def test_image_url(self) -> None:
         """Test method."""
-        assert (
-            PackageManager.I.image_url()
-            == "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json"
-        )
+        all_tools = filter_concrete_classes(Tool.subclasses())
+        all_image_urls = [tool().image_url() for tool in all_tools]
+        with ThreadPoolExecutor() as executor:
+            responses = executor.map(
+                partial(requests.get, timeout=10),
+                all_image_urls,
+            )
+            for response in responses:
+                assert response.status_code == 200  # noqa: PLR2004
 
     def test_link_url(self) -> None:
         """Test method."""
-        assert PackageManager.I.link_url() == "https://github.com/astral-sh/uv"
+        all_tools = filter_concrete_classes(Tool.subclasses())
+        all_link_urls = [tool().link_url() for tool in all_tools]
+        with ThreadPoolExecutor() as executor:
+            responses = executor.map(
+                partial(requests.get, timeout=10),
+                all_link_urls,
+            )
+            for response in responses:
+                assert response.status_code == 200  # noqa: PLR2004
 
     def test_version_control_ignore_patterns(self) -> None:
         """Test method."""
