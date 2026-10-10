@@ -37,6 +37,7 @@ from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.language.case_conflict import CaseConflictChecker
 from pyrig.rig.tools.linting.ci_cd import CICDLinter
 from pyrig.rig.tools.linting.json import JSONLinter
+from pyrig.rig.tools.linting.xml import XMLLinter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.security.checker import SecurityChecker
 from pyrig.rig.tools.typing.checker import TypeChecker
@@ -70,6 +71,7 @@ _CONFIG_FILES = (
     SecurityConfigFile,
     VersionControllerAttributesConfigFile,
     VersionControllerIgnoreConfigFile,
+    XMLLinter,
 )
 _DEPENDENCY_SUBCLASS_OVERRIDES = (
     ConfigFile.discovery_module,

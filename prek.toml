@@ -504,6 +504,16 @@ groups = [
 priority = 9
 
 [[repos.hooks]]
+id = "check-xml"
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 9
+
+[[repos.hooks]]
 id = "pretty-format-json"
 args = [
   "--autofix",
