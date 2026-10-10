@@ -55,11 +55,13 @@ class TestTool:
         all_link_urls = [tool().link_url() for tool in all_tools]
         with ThreadPoolExecutor() as executor:
             responses = executor.map(
-                partial(requests.get, timeout=10),
+                partial(requests.get, timeout=20),
                 all_link_urls,
             )
             for response in responses:
-                assert response.status_code == 200  # noqa: PLR2004
+                assert response.status_code == 200, (  # noqa: PLR2004
+                    f"Failed: {response.url}, Status Code: {response.status_code}"
+                )
 
     def test_version_control_ignore_patterns(self) -> None:
         """Test method."""
