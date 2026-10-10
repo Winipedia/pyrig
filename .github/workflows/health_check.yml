@@ -76,7 +76,7 @@
         # ryl disable-line rule:line-length
         "uses": "astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7"  # v10.2.0
         "with":
-          "python-version": "3.14"
+          "python-version": "3.15"
       -
         "name": "Update Dependencies"
         "id": "update-dependencies"
@@ -106,6 +106,7 @@
           - "3.12"
           - "3.13"
           - "3.14"
+          - "3.15"
       "fail-fast": true
     "steps":
       -
