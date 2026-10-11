@@ -41,7 +41,7 @@ class TestTool:
         """Test method."""
         all_tools = filter_concrete_classes(Tool.subclasses())
         all_image_urls = [tool().image_url() for tool in all_tools]
-        with ThreadPoolExecutor() as executor:
+        with ThreadPoolExecutor(max_workers=5) as executor:
             responses = executor.map(
                 partial(requests.get, timeout=10),
                 all_image_urls,
@@ -53,7 +53,7 @@ class TestTool:
         """Test method."""
         all_tools = filter_concrete_classes(Tool.subclasses())
         all_link_urls = [tool().link_url() for tool in all_tools]
-        with ThreadPoolExecutor() as executor:
+        with ThreadPoolExecutor(max_workers=5) as executor:
             responses = executor.map(
                 partial(requests.get, timeout=20),
                 all_link_urls,
