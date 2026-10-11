@@ -43,7 +43,7 @@ class TestTool:
         all_image_urls = [tool().image_url() for tool in all_tools]
         with ThreadPoolExecutor(max_workers=3) as executor:
             responses = executor.map(
-                partial(requests.get, timeout=20),
+                partial(requests.get, timeout=60),
                 all_image_urls,
             )
             for response in responses:
@@ -57,7 +57,7 @@ class TestTool:
         all_link_urls = [tool().link_url() for tool in all_tools]
         with ThreadPoolExecutor(max_workers=3) as executor:
             responses = executor.map(
-                partial(requests.get, timeout=20),
+                partial(requests.get, timeout=60),
                 all_link_urls,
             )
             for response in responses:
