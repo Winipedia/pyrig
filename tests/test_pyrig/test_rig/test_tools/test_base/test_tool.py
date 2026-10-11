@@ -47,7 +47,9 @@ class TestTool:
                 all_image_urls,
             )
             for response in responses:
-                assert response.status_code == 200  # noqa: PLR2004
+                assert response.status_code == 200, (  # noqa: PLR2004
+                    f"Failed: {response.url}, Status Code: {response.status_code}"
+                )
 
     def test_link_url(self) -> None:
         """Test method."""
