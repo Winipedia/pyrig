@@ -2,6 +2,7 @@
 
 import re
 from abc import abstractmethod
+from collections import defaultdict
 from typing import Any
 
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
@@ -138,33 +139,89 @@ class BadgesConfigFile(MarkdownConfigFile):
     def badges(self) -> dict[str, list[str]]:
         """Return all project badges grouped by category.
 
-        The result includes badges for each registered tool, a license badge in
-        the `"project-info"` group, and CI/CD workflow status badges for the
-        health check and release workflows in the `"project-status"` group.
+        The result includes badges for each registered tool and the badges
+        defined by `additional_badges()`. By default, the license badge is
+        appended to `"project-info"`, and the health check and release workflow
+        badges are inserted first in `"project-status"`, in that order.
 
         Returns:
             Category name to list of badge Markdown strings. The
-            `"project-info"` and `"project-status"` keys are always present;
+            `"project-info"` and `"project-status"` keys are present by default;
             other keys appear only when a registered tool belongs to that
             `Group` category.
         """
         badge_groups = Tool.grouped_badges()
-
-        badge_groups[Group.PROJECT_INFO] = [
-            *badge_groups[Group.PROJECT_INFO],
-            LicenseConfigFile.I.license_badge(),
-        ]
-
-        badge_groups[Group.PROJECT_STATUS] = [
-            RemoteVersionController.I.cicd_badge(
-                HealthCheckWorkflowConfigFile.I.stem(),
-                "CI",
-            ),
-            RemoteVersionController.I.cicd_badge(
-                ReleaseWorkflowConfigFile.I.stem(),
-                "CD",
-            ),
-            *badge_groups[Group.PROJECT_STATUS],
-        ]
-
+        self.add_additional_badges(badge_groups)
         return badge_groups
+
+    def add_additional_badges(
+        self,
+        grouped_badges: defaultdict[str, list[str]],
+    ) -> None:
+        """Add the badges defined by `additional_badges()` in tuple order.
+
+        Args:
+            grouped_badges: Badge groups to modify in place.
+        """
+        for badge, group, index in self.additional_badges():
+            self.add_badge(
+                grouped_badges,
+                badge=badge,
+                group=group,
+                index=index,
+            )
+
+    def add_badge(
+        self,
+        grouped_badges: defaultdict[str, list[str]],
+        *,
+        badge: str,
+        group: str,
+        index: int | None = None,
+    ) -> None:
+        """Append or insert a badge into a group, creating the group if absent.
+
+        Args:
+            grouped_badges: Badge groups to modify in place.
+            badge: Markdown badge string to add.
+            group: Category name receiving the badge.
+            index: Insertion position using `list.insert()` semantics, or
+                `None` to append after the group's existing badges.
+        """
+        if index is None:
+            grouped_badges[group].append(badge)
+        else:
+            grouped_badges[group].insert(index, badge)
+
+    def additional_badges(self) -> tuple[tuple[str, str, int | None], ...]:
+        """Return the non-tool badges and their insertion positions.
+
+        Returns:
+            Tuples in `(badge, group, index)` order. Defaults to the license
+            badge appended to `"project-info"`, followed by the health check
+            and release workflow badges at indices 0 and 1 in `"project-status"`.
+            An index of `None` appends the badge.
+        """
+        return (
+            (
+                LicenseConfigFile.I.license_badge(),
+                Group.PROJECT_INFO,
+                None,
+            ),
+            (
+                RemoteVersionController.I.cicd_badge(
+                    HealthCheckWorkflowConfigFile.I.stem(),
+                    "CI",
+                ),
+                Group.PROJECT_STATUS,
+                0,
+            ),
+            (
+                RemoteVersionController.I.cicd_badge(
+                    ReleaseWorkflowConfigFile.I.stem(),
+                    "CD",
+                ),
+                Group.PROJECT_STATUS,
+                1,
+            ),
+        )
