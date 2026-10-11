@@ -37,8 +37,14 @@ class TestTool:
         assert set(groups) == set(all_groups)
         assert len(groups) > 1
 
-    def test_image_url(self) -> None:
+    def test_image_url(
+        self,
+        *,
+        on_linux_and_latest_python_version_or_not_in_ci: bool,
+    ) -> None:
         """Test method."""
+        if not on_linux_and_latest_python_version_or_not_in_ci:
+            return
         all_tools = filter_concrete_classes(Tool.subclasses())
         all_image_urls = [tool().image_url() for tool in all_tools]
         with ThreadPoolExecutor(max_workers=3) as executor:
@@ -51,8 +57,14 @@ class TestTool:
                     f"Failed: {response.url}, Status Code: {response.status_code}"
                 )
 
-    def test_link_url(self) -> None:
+    def test_link_url(
+        self,
+        *,
+        on_linux_and_latest_python_version_or_not_in_ci: bool,
+    ) -> None:
         """Test method."""
+        if not on_linux_and_latest_python_version_or_not_in_ci:
+            return
         all_tools = filter_concrete_classes(Tool.subclasses())
         all_link_urls = [tool().link_url() for tool in all_tools]
         with ThreadPoolExecutor(max_workers=3) as executor:
