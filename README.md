@@ -110,8 +110,8 @@ Run `pyrig sync` to create or update all config files at once.
 
 `pyrig init` sets up a CLI for your project that works immediately.
 Generate and add new commands by running `pyrig mk cmd <name>`.
-An automatic version command is included that shows the version of your project.
-Run `my-project version` to see it in action.
+An automatic `--version` flag is included that shows the version of your project.
+Run `my-project --version` to see it in action.
 
 ### [Mirror Test Structure](https://Winipedia.github.io/pyrig/mirror-tests)
 

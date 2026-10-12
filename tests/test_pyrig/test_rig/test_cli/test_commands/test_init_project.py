@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 from pyrig_runtime.core.strings import kebab_to_snake_case
-from pyrig_runtime.rig.cli.shared_subcommands import version
 from pytest_mock import MockerFixture
 
 from pyrig.rig.cli.commands.init_project import init_project
@@ -147,8 +146,8 @@ def test_init_project(
         expected = project_name
         assert expected in stdout.lower()
 
-        # assert calling version works
-        args = PackageManager.I.run_args(project_name, version.__name__)
+        # assert calling --version works
+        args = PackageManager.I.run_args(project_name, "--version")
         res = args.run()
         stdout = res.stdout
         expected = "0.1.0"

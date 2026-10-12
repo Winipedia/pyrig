@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "18.108.0"
+version = "18.108.3"
 description = "A Python project setup and management tool built on infrastructure as code and convention over configuration."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -56,12 +56,12 @@ classifiers = [
 dependencies = [
   "inquirerpy>=0.3.4",
   "packaging>=26.3",
-  "pyrig-runtime>=3.23.45",
+  "pyrig-runtime>=3.25.0",
   "ruamel-yaml>=0.19.1",
   "ruamel-yaml-clib>=0.2.15",
   "spdx-matcher>=0.1.4",
   "tomli-w>=1.2.0",
-  "typer>=0.27.2",
+  "typer>=0.27.3",
 ]
 
 [project.urls]
@@ -80,31 +80,31 @@ dev = [
   "bandit>=1.9.4",
   "deptry>=0.25.1",
   "detect-secrets>=1.5.0",
-  "mkdocstrings[python]>=1.0.6",
+  "mkdocstrings[python]>=1.0.7",
   "pre-commit-hooks>=6.0.0",
-  "prek>=0.5.3",
-  "pyflakes>=3.4.0",
-  "pyrig-badge>=0.1.0",
-  "pyrig-env>=1.0.29",
-  "pyrig-fixtures>=2.25.3",
-  "pyrig-opensource>=1.0.0",
-  "pyrig-overrides>=4.20.58",
-  "pyrig-pypi>=3.20.28",
-  "pyrig-resources>=3.13.74",
+  "prek>=0.5.5",
+  "pyflakes>=4.0.3",
+  "pyrig-badge>=0.4.5",
+  "pyrig-env>=1.0.72",
+  "pyrig-fixtures>=2.26.1",
+  "pyrig-opensource>=1.2.7",
+  "pyrig-overrides>=4.24.21",
+  "pyrig-pypi>=3.21.14",
+  "pyrig-resources>=3.13.117",
   "pytest>=9.1.1",
   "pytest-cov>=7.1.0",
   "pytest-randomly>=5.0.0",
   "pytest-xdist>=3.8.0",
-  "ruff>=0.16.8",
-  "rumdl>=0.2.75",
-  "ryl>=0.22.0",
+  "ruff>=0.17.0",
+  "rumdl>=0.2.79",
+  "ryl>=0.24.0",
   "shellcheck-py>=0.11.0.1",
   "shfmt-py>=4.2.0",
-  "tombi>=1.5.5",
-  "ty>=0.0.83",
-  "typos>=1.50.2",
+  "tombi>=1.8.4",
+  "ty>=0.0.86",
+  "typos>=1.51.1",
   "vulture>=2.16",
-  "zensical>=0.0.64",
+  "zensical>=0.0.70",
   "zizmor>=1.30.1",
 ]
 

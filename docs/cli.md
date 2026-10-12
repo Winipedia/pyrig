@@ -1,7 +1,7 @@
 # CLI
 
 Every project built with pyrig gets a working CLI out of the box. The underlying
-CLI system — command discovery, the `CLI` class, shared commands, and the entry
+CLI system — command discovery, the `CLI` class, and the entry
 point — is provided by [pyrig-runtime](https://Winipedia.github.io/pyrig-runtime)
 and documented there.
 
@@ -10,11 +10,11 @@ and documented there.
 ## Your Project's CLI
 
 After `pyrig init`, your project already has a working CLI entry point wired up
-in `pyproject.toml` and a `version` command inherited from pyrig-runtime:
+in `pyproject.toml` and a `--version` option provided by pyrig-runtime:
 
 ```bash
 uv run my-project --help
-uv run my-project version   # prints: 0.1.0
+uv run my-project --version   # prints: 0.1.0
 ```
 
 ---
