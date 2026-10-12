@@ -29,20 +29,8 @@ automatically — no registration needed.
 uv run pyrig mk cmd my-command
 ```
 
-To add a **shared command** — one that will be available in every pyrig-runtime-based
-project in the same environment where your package is installed — pass `--shared`:
-
-```bash
-uv run pyrig mk cmd my-command --shared
-```
-
-Shared commands are added to `src/<project_name>/rig/cli/shared_subcommands.py`.
-At runtime, the CLI scans all installed packages that depend on pyrig-runtime
-and registers their shared commands. So a shared command from your package is
-available in every pyrig-runtime-based project in the environment, not just
-projects that explicitly depend on your package. The `version` command is a good
-example of this: it is defined in pyrig-runtime's own `shared_subcommands`
-and is therefore available in every project built on pyrig-runtime.
+At runtime, the CLI scans that module and registers every function defined in
+it as a command of your project's CLI.
 
 ---
 
@@ -59,7 +47,6 @@ pyrig is installed as a dependency:
 | `pyrig rm pyc` | Remove all `__pycache__` directories from the project |
 | `pyrig rm pyrig` | Remove pyrig and its footprint from the project entirely |
 | `pyrig mk cmd <name>` | Scaffold a new CLI command stub |
-| `pyrig mk cmd <name> --shared` | Scaffold a shared CLI command stub |
 | `pyrig mk inits` | Create all missing `__init__.py` files |
 | `pyrig mk subcls` | Interactively scaffold a subclass of any pyrig class |
 | `pyrig mk subcls <module> <class>` | Scaffold a subclass without prompting |

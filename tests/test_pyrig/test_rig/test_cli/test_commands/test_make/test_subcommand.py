@@ -13,7 +13,7 @@ def test_make_subcommand(tmp_path: Path) -> None:
 
     with chdir(project_path):
         # create a new subcommand
-        make_subcommand("my-new-command", shared=False)
+        make_subcommand("my-new-command")
 
         # check if the file was created and contains the expected content
         subcommands_file = (

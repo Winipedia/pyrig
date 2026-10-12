@@ -1,15 +1,15 @@
 """Scaffolding logic for extending CLI subcommand modules with new stubs."""
 
 from pyrig_runtime.core.strings import kebab_to_snake_case
-from pyrig_runtime.rig.cli import shared_subcommands, subcommands
+from pyrig_runtime.rig.cli import subcommands
 
 from pyrig.rig.configs.base.copy_module import (
     CopyModuleDocstringConfigFile,
 )
 
 
-def make_subcommand(name: str, *, shared: bool) -> None:
-    """Append a new subcommand stub to the project or shared subcommands module.
+def make_subcommand(name: str) -> None:
+    """Append a new subcommand stub to the project's subcommands module.
 
     The target module file is created if it does not already exist. The command
     name is normalized from kebab-case to snake_case before writing. The appended
@@ -18,12 +18,9 @@ def make_subcommand(name: str, *, shared: bool) -> None:
 
     Args:
         name: Name of the subcommand to create. Accepts kebab-case or snake_case.
-        shared: If `True`, targets the shared subcommands module accessible to
-            all dependent packages. If `False`, targets the project-specific
-            subcommands module.
     """
     config_file = CopyModuleDocstringConfigFile.generate_subclass(
-        shared_subcommands if shared else subcommands,
+        subcommands,
     )()
     config_file.validate()
     content = config_file.read_content()
