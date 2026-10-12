@@ -766,7 +766,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "18.108.3"
+version = "18.108.6"
 source = { editable = "." }
 dependencies = [
     { name = "inquirerpy" },
@@ -817,7 +817,7 @@ dev = [
 requires-dist = [
     { name = "inquirerpy", specifier = ">=0.3.4" },
     { name = "packaging", specifier = ">=26.3" },
-    { name = "pyrig-runtime", specifier = ">=3.25.0" },
+    { name = "pyrig-runtime", specifier = ">=3.26.0" },
     { name = "ruamel-yaml", specifier = ">=0.19.1" },
     { name = "ruamel-yaml-clib", specifier = ">=0.2.15" },
     { name = "spdx-matcher", specifier = ">=0.1.4" },
@@ -1004,14 +1004,14 @@ wheels = [
 
 [[package]]
 name = "pyrig-runtime"
-version = "3.25.0"
+version = "3.26.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/82/5c/4d4c631bdbfc45a459975f65b3e5ddbb792f744d67600b851c3ff76d7550/pyrig_runtime-3.25.0.tar.gz", hash = "sha256:c1f3dc54b70654965fca074be9f264ac5e6d5a93ef3ebe483cad2f94f73998b3", size = 21459, upload-time = "2026-10-12T21:21:02.906Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d5/f2/c4c8c7ed379350ee7ec935da2083aac60235ac0f446fdd20e77e4cbba1d2/pyrig_runtime-3.26.0.tar.gz", hash = "sha256:b62404c5c2835e84d07b8c18c34e3f41366514598ca2abe4bd8eceaf1efba6ee", size = 21422, upload-time = "2026-10-12T22:47:55.795Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9f/9a/4f131b2d9a0ba3c1858ebb26ad7f143e29bdc71b6f525a9579f779c95efd/pyrig_runtime-3.25.0-py3-none-any.whl", hash = "sha256:6bba05298bb27c34c34d94b3954aabb1300ce995707164e0ec259404f95d2d7d", size = 27752, upload-time = "2026-10-12T21:21:01.279Z" },
+    { url = "https://files.pythonhosted.org/packages/cc/23/e61e88e6377e616a294452bcbea05dd0b5127d770a6c6fedbe77a2cdcd4c/pyrig_runtime-3.26.0-py3-none-any.whl", hash = "sha256:3ae2b9b35eee1f98577082d39fa5f0089a35a83e855a79aadffd6f96fb64d1aa", size = 27728, upload-time = "2026-10-12T22:47:54.568Z" },
 ]
 
 [[package]]

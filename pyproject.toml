@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "18.108.3"
+version = "18.108.6"
 description = "A Python project setup and management tool built on infrastructure as code and convention over configuration."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -56,7 +56,7 @@ classifiers = [
 dependencies = [
   "inquirerpy>=0.3.4",
   "packaging>=26.3",
-  "pyrig-runtime>=3.25.0",
+  "pyrig-runtime>=3.26.0",
   "ruamel-yaml>=0.19.1",
   "ruamel-yaml-clib>=0.2.15",
   "spdx-matcher>=0.1.4",
