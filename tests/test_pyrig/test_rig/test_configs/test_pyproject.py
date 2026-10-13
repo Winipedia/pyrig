@@ -127,7 +127,6 @@ class TestPyprojectConfigFile:
             "packaging",
             pyrig_runtime.__name__,
             "ruamel_yaml",
-            "ruamel_yaml_clib",
             "spdx_matcher",
             "tomli_w",
             "typer",
