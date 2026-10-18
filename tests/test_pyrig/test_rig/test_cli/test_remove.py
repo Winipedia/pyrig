@@ -10,10 +10,10 @@ from pyrig.rig.cli.remove import pyc, pyrig
 
 
 def test_pyc(
-    command_calls_function: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
+    command_calls_func: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
 ) -> None:
     """Test function."""
-    assert command_calls_function(pyc, remove_pycache, [])
+    assert command_calls_func(pyc, remove_pycache, [])
     result = run_subprocess(
         "pyrig",
         "rm",
@@ -25,10 +25,10 @@ def test_pyc(
 
 
 def test_pyrig(
-    command_calls_function: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
+    command_calls_func: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
 ) -> None:
     """Test function."""
-    assert command_calls_function(pyrig, remove_pyrig, [])
+    assert command_calls_func(pyrig, remove_pyrig, [])
 
     result = run_subprocess(
         "pyrig",

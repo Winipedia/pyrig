@@ -2,7 +2,7 @@
 
 import ast
 
-from pyrig.core.introspection.ast import class_defs, func_defs, method_defs
+from pyrig.core.introspection.ast import cls_defs, func_defs, method_defs
 
 
 def test_func_defs() -> None:
@@ -28,22 +28,22 @@ async def second():
     assert list(func_defs(ast.parse(""))) == []
 
 
-def test_class_defs() -> None:
+def test_cls_defs() -> None:
     """Test function."""
     tree = ast.parse("""
 class First:
     class Nested:
         pass
 
-def function():
+def func():
     class Local:
         pass
 
 class Second:
     pass
 """)
-    assert [cls.name for cls in class_defs(tree)] == ["First", "Second"]
-    assert list(class_defs(ast.parse(""))) == []
+    assert [cls.name for cls in cls_defs(tree)] == ["First", "Second"]
+    assert list(cls_defs(ast.parse(""))) == []
 
 
 def test_method_defs() -> None:
@@ -66,7 +66,7 @@ class Example:
 class Empty:
     pass
 """)
-    example, empty = class_defs(tree)
+    example, empty = cls_defs(tree)
     methods = list(method_defs(example))
     assert [method.name for method in methods] == ["first", "second"]
     assert isinstance(methods[0], ast.FunctionDef)

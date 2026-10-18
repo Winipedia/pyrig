@@ -19,7 +19,7 @@ def func_defs(tree: ast.Module) -> Iterator[FuncDefs]:
     return (func for func in tree.body if isinstance(func, FUNC_DEFS))
 
 
-def class_defs(tree: ast.Module) -> Iterator[ast.ClassDef]:
+def cls_defs(tree: ast.Module) -> Iterator[ast.ClassDef]:
     """Yield class definitions declared directly in a module.
 
     Args:

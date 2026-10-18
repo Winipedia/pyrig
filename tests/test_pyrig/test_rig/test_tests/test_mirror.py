@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from pyrig.core.introspection.ast import class_defs
+from pyrig.core.introspection.ast import cls_defs
 from pyrig.rig import tests
 from pyrig.rig.tests.mirror import MirrorTestConfigFile
 from pyrig.rig.tools.linting.python import PythonLinter
@@ -16,10 +16,10 @@ SOURCE_PATH = Path("src/example_module.py")
 TEST_PATH = Path("tests/test_example_module.py")
 SOURCE_CONTENT = '''"""Example module."""
 
-def function() -> None:
+def func() -> None:
     pass
 
-async def async_function() -> None:
+async def async_func() -> None:
     pass
 
 class Example:
@@ -138,10 +138,10 @@ class TestMirrorTestConfigFile:
             config.write_content(
                 '''"""Test module."""
 
-def test_function() -> None:
+def test_func() -> None:
     pass
 
-def test_async_function() -> None:
+def test_async_func() -> None:
     pass
 
 class TestExample:
@@ -168,7 +168,7 @@ class TestExample:
             config.path().parent.mkdir(parents=True)
             existing = '''"""Test module."""
 
-def test_function() -> None:
+def test_func() -> None:
     assert True
 
 class TestExample:
@@ -178,9 +178,9 @@ class TestExample:
             config.write_content(existing)
 
             content = config.content()
-            assert content.count("def test_function") == 1
+            assert content.count("def test_func") == 1
             assert content.count("def test_method") == 1
-            assert "def test_async_function" in content
+            assert "def test_async_func" in content
             assert "def test_async_method" in content
             assert "raise NotImplementedError" in content
 
@@ -255,8 +255,8 @@ class TestExample:
             config.path().parent.mkdir(parents=True)
             config.write_content('"""Test module."""\n')
             content = config.test_file_content_with_skeletons()
-            assert "def test_function" in content
-            assert "def test_async_function" in content
+            assert "def test_func" in content
+            assert "def test_async_func" in content
             assert "class TestExample" in content
             assert "def test_method(self)" in content
             assert "def test_async_method(self)" in content
@@ -272,10 +272,10 @@ class TestExample:
             content = config.test_file_content_with_func_skeletons(
                 '"""Test module."""\n',
                 config.mirror_tree(),
-                ast.parse("def test_function(): pass\n"),
+                ast.parse("def test_func(): pass\n"),
             )
-            assert content.count("def test_function") == 0
-            assert "def test_async_function" in content
+            assert content.count("def test_func") == 0
+            assert "def test_async_func" in content
 
     def test_untested_func_names(
         self,
@@ -288,7 +288,7 @@ class TestExample:
             names = tuple(
                 config.untested_func_names(config.mirror_tree(), ast.parse("")),
             )
-            assert names == ("test_function", "test_async_function")
+            assert names == ("test_func", "test_async_func")
 
     def test_test_func_skeleton(
         self,
@@ -296,8 +296,8 @@ class TestExample:
     ) -> None:
         """Test method."""
         config_cls, _ = mirror_config
-        skeleton = config_cls().test_func_skeleton("test_function")
-        assert "def test_function" in skeleton
+        skeleton = config_cls().test_func_skeleton("test_func")
+        assert "def test_func" in skeleton
         assert "raise NotImplementedError" in skeleton
 
     def test_test_file_content_with_cls_skeletons(
@@ -468,7 +468,7 @@ class TestExample:
     ) -> None:
         """Test method."""
         config_cls, _ = mirror_config
-        cls = next(iter(class_defs(ast.parse("class Example: pass"))))
+        cls = next(iter(cls_defs(ast.parse("class Example: pass"))))
         assert config_cls().test_cls_name(cls) == "TestExample"
 
     def test_test_func_prefix(

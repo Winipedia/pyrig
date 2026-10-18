@@ -13,14 +13,14 @@ from pyrig.rig.cli.make import cmd, inits, subcls
 
 
 def test_cmd(
-    command_calls_function: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
+    command_calls_func: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
 ) -> None:
     """Test function."""
-    assert command_calls_function(cmd, make_subcommand, ["my-command"])
+    assert command_calls_func(cmd, make_subcommand, ["my-command"])
 
 
 def test_subcls(
-    command_calls_function: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
+    command_calls_func: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
 ) -> None:
     """Test function."""
     result = run_subprocess(
@@ -32,11 +32,11 @@ def test_subcls(
     )
     assert result.returncode == 0
 
-    assert command_calls_function(subcls, make_subclass, [])
+    assert command_calls_func(subcls, make_subclass, [])
 
 
 def test_inits(
-    command_calls_function: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
+    command_calls_func: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
 ) -> None:
     """Test function."""
-    assert command_calls_function(inits, make_project_init_files, [])
+    assert command_calls_func(inits, make_project_init_files, [])

@@ -11,7 +11,7 @@ from pathlib import Path
 from types import ModuleType
 from typing import Self
 
-from pyrig_runtime.core.introspection.classes import generate_class
+from pyrig_runtime.core.introspection.classes import generate_cls
 from pyrig_runtime.core.introspection.modules import replace_root_module_name
 
 from pyrig.core.introspection.modules import (
@@ -119,7 +119,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             """Return the source module captured at subclass creation time."""
             return module
 
-        return generate_class(
+        return generate_cls(
             name=cls_name,
             bases=(cls,),
             methods=(copy_module,),

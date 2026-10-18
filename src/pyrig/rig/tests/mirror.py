@@ -10,9 +10,9 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any, Self
 
-from pyrig_runtime.core.introspection.classes import generate_class
+from pyrig_runtime.core.introspection.classes import generate_cls
 
-from pyrig.core.introspection.ast import class_defs, func_defs, method_defs
+from pyrig.core.introspection.ast import cls_defs, func_defs, method_defs
 from pyrig.core.iterate import deduplicate, iterator_has_items
 from pyrig.core.strings import read_text_utf8, reformat_name
 from pyrig.rig import tests
@@ -163,7 +163,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             """Return the source path captured when the subclass was created."""
             return file
 
-        return generate_class(
+        return generate_cls(
             name=test_cls_name,
             bases=(cls,),
             methods=(mirror_file,),
@@ -333,8 +333,8 @@ def {test_func_name}() -> None:
             Consume each tuple's method-name iterator before requesting the
             next tuple.
         """
-        classes = class_defs(mirror_tree)
-        test_classes = class_defs(test_tree)
+        classes = cls_defs(mirror_tree)
+        test_classes = cls_defs(test_tree)
 
         cls_to_methods = (
             (
@@ -432,7 +432,7 @@ class {test_cls_name}:
             func: Source function whose test name to derive.
 
         Returns:
-            Test function name (e.g., `"test_my_function"` for `my_function`).
+            Test function name (e.g., `"test_my_func"` for `my_func`).
         """
         return self.test_func_prefix() + func.name
 
