@@ -12,12 +12,6 @@ from pyrig.rig.configs.package_init import PackageInitConfigFile
 class TestCopyInitConfigFile:
     """Test class."""
 
-    def test_import_path(self) -> None:
-        """Test method."""
-        assert ResourcesInitConfigFile.I.import_path() == Path(
-            "src/pyrig/rig/resources",
-        )
-
     def test_module_path(self) -> None:
         """Test method."""
         # Create a mock module to test

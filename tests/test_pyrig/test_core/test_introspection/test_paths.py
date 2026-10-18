@@ -1,7 +1,5 @@
 """module."""
 
-from collections.abc import Callable
-from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
 
@@ -10,49 +8,25 @@ import pytest
 from pyrig.core.introspection.paths import (
     module_file_path,
     module_name_as_path,
-    package_dir_path,
     package_name_as_path,
-    path_as_module_name,
 )
-from pyrig.rig import tools
-from pyrig.rig.tests import mirror_test
+from pyrig.rig.tests import mirror
 
 
-def test_module_file_path(
-    create_module: Callable[[Path], ModuleType],
-    tmp_path: Path,
-) -> None:
+def test_module_file_path(tmp_path: Path) -> None:
     """Test function."""
-    with chdir(tmp_path):
-        expected_path = Path(test_module_file_path.__name__) / Path(
-            "subpackage/module.py",
-        )
-        module = create_module(expected_path)
-        assert module_file_path(module) == expected_path.resolve()
+    expected_path = tmp_path / "subpackage/module.py"
+    module = ModuleType("subpackage.module")
+    module.__file__ = str(expected_path)
+    assert module_file_path(module) == expected_path
 
-    assert (
-        module_file_path(mirror_test)
-        == Path("src/pyrig/rig/tests/mirror_test.py").resolve()
-    )
+    assert module_file_path(mirror) == Path("src/pyrig/rig/tests/mirror.py").resolve()
 
     # make ModuleType with __file__ attribute as None
     module_no_file = ModuleType("module_no_file")
     module_no_file.__file__ = None
     with pytest.raises(AttributeError, match=r"module .* has no __file__"):
         module_file_path(module_no_file)
-
-
-def test_package_dir_path(
-    create_package: Callable[[Path], ModuleType],
-    tmp_path: Path,
-) -> None:
-    """Test function."""
-    with chdir(tmp_path):
-        expected_dir = Path(test_package_dir_path.__name__) / "subpackage"
-        package = create_package(expected_dir)
-        assert package_dir_path(package) == expected_dir.resolve()
-
-    assert package_dir_path(tools) == Path("src/pyrig/rig/tools").resolve()
 
 
 def test_package_name_as_path() -> None:
@@ -67,14 +41,3 @@ def test_module_name_as_path() -> None:
     name = "package.subpackage.module"
     expected_path = Path("package/subpackage/module.py")
     assert module_name_as_path(name) == expected_path
-
-
-def test_path_as_module_name() -> None:
-    """Test function."""
-    path = Path("package/subpackage/module.py")
-    expected_name = "package.subpackage.module"
-    assert path_as_module_name(path) == expected_name
-
-    # path with no .py suffix
-    path_no_suffix = Path("package/subpackage/module")
-    assert path_as_module_name(path_no_suffix) == expected_name

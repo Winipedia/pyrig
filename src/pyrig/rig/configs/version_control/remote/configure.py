@@ -81,11 +81,11 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
             method="PATCH",
             input_="-",
         )
-        return f"""{self.repository_function()}() {{
+        return f"""{self.repository_func()}() {{
   jq '.{repository_key}' {settings_path} | {api_call}
 }}"""
 
-    def repository_function(self) -> str:
+    def repository_func(self) -> str:
         """Return `RepositorySettingsConfigFile.I.repository_key()`, the function name.
 
         Named identically to the settings file key it reads, so both stay
@@ -117,7 +117,7 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
             method=f'"{method_ref}"',
             input_="-",
         )
-        return rf"""{self.rulesets_function()}() {{
+        return rf"""{self.rulesets_func()}() {{
   local endpoint="repos/{repo_ref}/rulesets"
   jq --compact-output '.{rulesets_key}[]' {settings_path} | while read -r ruleset; do
     id=$({get_ruleset_id_call} \
@@ -128,7 +128,7 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
   done
 }}"""
 
-    def rulesets_function(self) -> str:
+    def rulesets_func(self) -> str:
         """Return `RepositorySettingsConfigFile.I.rulesets_key()`, the function name.
 
         Named identically to the settings file key it reads, so both stay
@@ -149,11 +149,11 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
             endpoint=endpoint,
             method="PUT",
         )
-        return f"""{self.dependency_alerts_function()}() {{
+        return f"""{self.dependency_alerts_func()}() {{
   {api_call}
 }}"""
 
-    def dependency_alerts_function(self) -> str:
+    def dependency_alerts_func(self) -> str:
         """Return `"dependency_alerts"`, the function name."""
         return "dependency_alerts"
 
@@ -170,11 +170,11 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
             endpoint=endpoint,
             method="PUT",
         )
-        return f"""{self.dependency_security_updates_function()}() {{
+        return f"""{self.dependency_security_updates_func()}() {{
   {api_call}
 }}"""
 
-    def dependency_security_updates_function(self) -> str:
+    def dependency_security_updates_func(self) -> str:
         """Return `"dependency_security_updates"`, the function name."""
         return "dependency_security_updates"
 
@@ -190,11 +190,11 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
             endpoint=endpoint,
             method="PUT",
         )
-        return f"""{self.release_immutability_function()}() {{
+        return f"""{self.release_immutability_func()}() {{
   {api_call}
 }}"""
 
-    def release_immutability_function(self) -> str:
+    def release_immutability_func(self) -> str:
         """Return `"release_immutability"`, the function name."""
         return "release_immutability"
 

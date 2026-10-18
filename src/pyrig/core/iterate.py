@@ -1,6 +1,6 @@
 """Utilities for iterables and nested data structures."""
 
-from collections.abc import Iterator
+from collections.abc import Hashable, Iterable, Iterator, KeysView
 from itertools import chain
 from typing import Any, cast, overload
 
@@ -303,3 +303,15 @@ def traverse_structure(structure: object) -> Iterator[Any]:
             yield from traverse_structure(item)
     else:
         yield structure
+
+
+def deduplicate[T: Hashable](iterable: Iterable[T]) -> KeysView[T]:
+    """Yield each distinct item in its first-occurrence order.
+
+    Args:
+        iterable: Items to deduplicate.
+
+    Yields:
+        Each unique item, preserving the order of its first appearance.
+    """
+    return dict.fromkeys(iterable).keys()

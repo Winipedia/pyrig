@@ -30,29 +30,14 @@ def package_name_as_path(name: str) -> Path:
     return Path(*name.split("."))
 
 
-def package_dir_path(package: ModuleType) -> Path:
-    """Return the directory of an imported package.
-
-    Args:
-        package: An imported Python package (a module with an `__init__.py`).
-
-    Returns:
-        Path to the package directory.
-
-    Raises:
-        AttributeError: If the package has no resolvable source file.
-    """
-    return module_file_path(package).parent
-
-
 def module_file_path(module: ModuleType) -> Path:
-    """Return the source file path of an imported module.
+    """Return the path recorded in an imported module's `__file__` attribute.
 
     Args:
         module: An imported Python module.
 
     Returns:
-        Path to the module's source file.
+        The module's file path.
 
     Raises:
         AttributeError: If the module has no `__file__` attribute (e.g., a
@@ -64,19 +49,3 @@ def module_file_path(module: ModuleType) -> Path:
         msg = f"module {module} has no __file__"
         raise AttributeError(msg)
     return Path(file)
-
-
-def path_as_module_name(path: Path) -> str:
-    """Convert a relative file path to a dotted module name.
-
-    The file extension is dropped, so a path with a `.py` suffix and the
-    same path without it produce the same module name.
-
-    Args:
-        path: Relative file path (e.g., `Path("package/subpackage/module.py")`
-            or `Path("package/subpackage/module")`).
-
-    Returns:
-        Dotted Python module name (e.g., `"package.subpackage.module"`).
-    """
-    return ".".join(path.with_suffix("").parts)

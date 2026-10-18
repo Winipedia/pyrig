@@ -51,7 +51,7 @@ For example: pyrig.rig.tools.pyrigger Pyrigger""",
     """Scaffold a subclass of an extensible pyrig class.
 
     Args:
-        reference: A `(module_name, class_name)` pair identifying the class to
+        reference: A `(module_name, cls_name)` pair identifying the class to
             subclass. If omitted, prompts the user to choose one interactively.
 
     Examples:

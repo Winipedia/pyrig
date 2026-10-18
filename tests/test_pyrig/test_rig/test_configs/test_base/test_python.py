@@ -1,16 +1,15 @@
 """module."""
 
+import ast
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
 
 import pytest
 from pyrig_fixtures.rig.configs.conftest import ConftestConfigFile
-from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.base.python import PythonConfigFile, PythonPackageConfigFile
-from pyrig.rig.configs.base.string_ import StringConfigFile
-from pyrig.rig.configs.package_init import PackageInitConfigFile
+from pyrig.rig.configs.scratch import ScratchConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
 
 
@@ -20,27 +19,7 @@ class TestPythonConfigFile:
     def test_source_root(self) -> None:
         """Test method."""
         assert ConftestConfigFile.I.source_root() == Path()
-
-    def test_import_path(self) -> None:
-        """Test method."""
-        assert ConftestConfigFile.I.import_path() == Path("tests/conftest.py")
-
-    def test__dump(self, mocker: MockerFixture) -> None:
-        """Test method."""
-        module_before = ConftestConfigFile.I.module()
-        dump_mock = mocker.patch.object(StringConfigFile, "_dump")
-        ConftestConfigFile.I._dump([])  # noqa: SLF001
-        dump_mock.assert_called_once()
-        module_after = ConftestConfigFile.I.module()
-        assert module_before is not module_after
-        assert module_before.__name__ == module_after.__name__
-        assert module_before.__file__ == module_after.__file__
-
-    def test_module(self) -> None:
-        """Test method."""
-        assert ConftestConfigFile.I.module().__name__ == "tests.conftest"
-
-        assert PackageInitConfigFile.I.module().__name__ == "pyrig"
+        assert ScratchConfigFile.I.source_root() == Path()
 
     def test_extension(self) -> None:
         """Test method."""
@@ -48,6 +27,23 @@ class TestPythonConfigFile:
         assert issubclass(ConftestConfigFile, PythonConfigFile)
         actual = ConftestConfigFile().extension()
         assert actual == expected, f"Expected {expected}, got {actual}"
+
+    def test_tree(
+        self,
+        my_test_python_package_config_file: type[PythonPackageConfigFile],
+        tmp_path: Path,
+    ) -> None:
+        """Test method."""
+        with chdir(tmp_path):
+            config = my_test_python_package_config_file()
+            content = '"""Test module."""\n\nvalue = 1\n'
+            config.write_content(content)
+            tree = config.tree()
+            assert isinstance(tree, ast.Module)
+            assert ast.dump(tree) == ast.dump(ast.parse(content))
+
+            config.write_content("value = 2\n")
+            assert ast.dump(config.tree()) == ast.dump(ast.parse("value = 2\n"))
 
 
 @pytest.fixture
