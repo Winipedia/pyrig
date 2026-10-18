@@ -49,7 +49,7 @@ class YAMLLinter(CheckHookTool):
         """Return the hook metadata for linting and auto-fixing YAML files.
 
         Returns:
-            Hook metadata dict for `ryl check --fix --strict`.
+            Hook metadata dict for `ryl check --fix`.
         """
         return VersionControlHookManager.I.local_hook(
             self.lint_yaml,
@@ -57,17 +57,14 @@ class YAMLLinter(CheckHookTool):
                 SecretsChecker.I.check_hook(),
             ),
             types=["yaml"],
-            args=Args(
-                "--fix",
-                "--strict",
-            ),
+            args=Args("--fix"),
         )
 
     def lint_yaml(self) -> Args:
         """Return the `Args` this hook's entry runs.
 
         Returns:
-            Args for `uv run ryl check --fix --strict`.
+            Args for `uv run ryl check`.
         """
         return PackageManager.I.run_args(*self.check_args())
 

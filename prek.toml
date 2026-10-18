@@ -214,7 +214,6 @@ language = "system"
 entry = "uv run ryl check"
 args = [
   "--fix",
-  "--strict",
 ]
 types = [
   "yaml",

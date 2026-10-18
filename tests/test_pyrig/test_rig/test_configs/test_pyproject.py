@@ -283,6 +283,7 @@ class TestPyprojectConfigFile:
     def test_tool_configs(self) -> None:
         """Test method."""
         assert isinstance(PyprojectConfigFile.I.tool_configs(), dict)
+        assert PyprojectConfigFile.I.tool_configs()["ryl"]["lint"]["strict"] is True
         assert (
             PyprojectConfigFile.I._configs()["tool"]  # noqa: SLF001
             == PyprojectConfigFile.I.tool_configs()

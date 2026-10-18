@@ -39,10 +39,7 @@ class TestYAMLLinter:
         secrets_hook = SecretsChecker.I.check_hook()
         assert hook["priority"] > secrets_hook["priority"]
         assert hook["types"] == ["yaml"]
-        assert hook["args"] == [
-            "--fix",
-            "--strict",
-        ]
+        assert hook["args"] == ["--fix"]
 
     def test_lint_yaml(self) -> None:
         """Test method."""

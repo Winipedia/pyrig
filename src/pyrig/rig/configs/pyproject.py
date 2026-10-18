@@ -211,6 +211,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             },
             YAMLLinter.I.config_name(): {
                 "lint": {
+                    "strict": True,
                     "rules": {
                         "ALL": "enable",
                         "key-ordering": "disable",
