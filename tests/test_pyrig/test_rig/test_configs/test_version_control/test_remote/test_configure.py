@@ -13,32 +13,32 @@ from pyrig.rig.tools.version_control.remote.controller import (
 class TestConfigureRepositoryConfigFile:
     """Test class."""
 
-    def test_repository_function(self) -> None:
+    def test_repository_func(self) -> None:
         """Test method."""
-        assert ConfigureRepositoryConfigFile.I.repository_function() == "repository"
+        assert ConfigureRepositoryConfigFile.I.repository_func() == "repository"
 
-    def test_rulesets_function(self) -> None:
+    def test_rulesets_func(self) -> None:
         """Test method."""
-        assert ConfigureRepositoryConfigFile.I.rulesets_function() == "rulesets"
+        assert ConfigureRepositoryConfigFile.I.rulesets_func() == "rulesets"
 
-    def test_release_immutability_function(self) -> None:
+    def test_release_immutability_func(self) -> None:
         """Test method."""
         assert (
-            ConfigureRepositoryConfigFile.I.release_immutability_function()
+            ConfigureRepositoryConfigFile.I.release_immutability_func()
             == "release_immutability"
         )
 
-    def test_dependency_alerts_function(self) -> None:
+    def test_dependency_alerts_func(self) -> None:
         """Test method."""
         assert (
-            ConfigureRepositoryConfigFile.I.dependency_alerts_function()
+            ConfigureRepositoryConfigFile.I.dependency_alerts_func()
             == "dependency_alerts"
         )
 
-    def test_dependency_security_updates_function(self) -> None:
+    def test_dependency_security_updates_func(self) -> None:
         """Test method."""
         assert (
-            ConfigureRepositoryConfigFile.I.dependency_security_updates_function()
+            ConfigureRepositoryConfigFile.I.dependency_security_updates_func()
             == "dependency_security_updates"
         )
 
@@ -55,11 +55,11 @@ class TestConfigureRepositoryConfigFile:
         script = ConfigureRepositoryConfigFile.I
         content = script.script()
         assert script.repo_variable() in content
-        assert script.repository_function() in content
-        assert script.rulesets_function() in content
-        assert script.dependency_alerts_function() in content
-        assert script.dependency_security_updates_function() in content
-        assert script.release_immutability_function() in content
+        assert script.repository_func() in content
+        assert script.rulesets_func() in content
+        assert script.dependency_alerts_func() in content
+        assert script.dependency_security_updates_func() in content
+        assert script.release_immutability_func() in content
         assert "gh api" in content
         # the footer must come last so the functions are defined before it runs
         assert content.rstrip("\n").endswith(script.footer_content())
@@ -85,14 +85,14 @@ class TestConfigureRepositoryConfigFile:
         """Test method."""
         script = ConfigureRepositoryConfigFile.I
         result = script.repository_script()
-        assert result.startswith(f"{script.repository_function()}() {{")
+        assert result.startswith(f"{script.repository_func()}() {{")
         assert "${repo}" in result
 
     def test_rulesets_script(self) -> None:
         """Test method."""
         script = ConfigureRepositoryConfigFile.I
         result = script.rulesets_script()
-        assert result.startswith(f"{script.rulesets_function()}() {{")
+        assert result.startswith(f"{script.rulesets_func()}() {{")
         assert "${repo}" in result
         assert 'gh api "${endpoint}" \\' in result
         assert 'url="${endpoint}${id:+/${id}}"' in result
@@ -104,7 +104,7 @@ class TestConfigureRepositoryConfigFile:
         script = ConfigureRepositoryConfigFile.I
         result = script.dependency_alerts_script()
         assert result.startswith(
-            f"{script.dependency_alerts_function()}() {{",
+            f"{script.dependency_alerts_func()}() {{",
         )
         assert "${repo}" in result
         assert "vulnerability-alerts" in result
@@ -115,7 +115,7 @@ class TestConfigureRepositoryConfigFile:
         script = ConfigureRepositoryConfigFile.I
         result = script.dependency_security_updates_script()
         assert result.startswith(
-            f"{script.dependency_security_updates_function()}() {{",
+            f"{script.dependency_security_updates_func()}() {{",
         )
         assert "${repo}" in result
         assert "automated-security-fixes" in result
@@ -126,7 +126,7 @@ class TestConfigureRepositoryConfigFile:
         script = ConfigureRepositoryConfigFile.I
         result = script.release_immutability_script()
         assert result.startswith(
-            f"{script.release_immutability_function()}() {{",
+            f"{script.release_immutability_func()}() {{",
         )
         assert "${repo}" in result
         assert "immutable-releases" in result

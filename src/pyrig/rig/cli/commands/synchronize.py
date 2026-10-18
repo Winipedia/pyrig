@@ -1,15 +1,13 @@
 """Reconciliation of a project's managed files with their canonical state."""
 
 from collections.abc import Iterable
-from importlib import import_module
 from pathlib import Path
 from typing import Any
 
 import typer
 
-from pyrig.core.introspection.paths import path_as_module_name
 from pyrig.rig.configs.base.config_file import ConfigFile, validate_config_files
-from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.tests.mirror import MirrorTestConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
 
 
@@ -83,12 +81,6 @@ def synchronize_test_files(
 
     files = (file for file in files if file.name != "__init__.py")
 
-    source_root = PackageManager.I.source_root()
-    module_names = (
-        path_as_module_name(file.relative_to(source_root)) for file in files
+    return validate_config_files(
+        MirrorTestConfigFile.L.generate_subclass(file) for file in files
     )
-    modules = (import_module(name) for name in module_names)
-    subclasses = (
-        MirrorTestConfigFile.L.generate_subclass(module) for module in modules
-    )
-    return validate_config_files(subclasses)

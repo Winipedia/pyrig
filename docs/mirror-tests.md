@@ -1,21 +1,21 @@
 # Mirror Tests
 
-pyrig enforces a 1:1 structural mapping between source code and tests. Every
-source module, class, function, and method must have a corresponding test
-counterpart. This is not a coverage metric — it is a structural guarantee
-enforced by the `pyrig sync` pre-commit hook.
+pyrig enforces a structural mapping between Python source files and tests.
+Source files other than `__init__.py` have a corresponding test module, and
+module-level functions and methods defined directly on module-level classes
+have corresponding test names. This is not a coverage metric — it is a
+structural guarantee enforced by the `pyrig sync` pre-commit hook.
 
 ---
 
 ## The Convention
 
-The test tree mirrors the source tree exactly:
+The test tree mirrors the source tree:
 
 | Source | Expected test counterpart |
 |--------|--------------------------|
 | `src/my_project/utils.py` | `tests/test_my_project/test_utils.py` |
 | `def do_something()` | `def test_do_something()` |
-| `class MyHelper` | `class TestMyHelper` |
 | `def MyHelper.process()` | `def TestMyHelper.test_process()` |
 
 ---
@@ -24,16 +24,15 @@ The test tree mirrors the source tree exactly:
 
 `MirrorTestConfigFile` is a `ConfigFile` subclass. Instead of managing a config
 file like `pyproject.toml`, it manages test files. Its `content()` returns the
-complete expected test module content: existing tests merged with new stubs for
-every source symbol that has no test yet.
+existing test module content with stubs added for any module-level function or
+directly declared class method whose expected test name is missing.
 
-`validate()` (inherited from `ConfigFile`) writes the result when the file is
-missing or stubs are absent — it never removes or modifies existing test
-implementations.
+`validate()` writes the result when the file is missing or stubs are absent —
+it never removes or modifies existing test implementations.
 
 At sync time, `MirrorTestConfigFile` dynamically generates one subclass per
-source module via `generate_subclass()`, so the set of managed test files
-always matches the current source package — no registration or manifest needed.
+source file via `generate_subclass()`, so the set of managed test files
+matches the current source package — no registration or manifest needed.
 
 ### Generated Stubs
 
@@ -63,7 +62,8 @@ than passing silently.
 
 `pyrig sync` is run as a pre-commit hook. If any test stubs are missing it
 creates them, the hook fails, and the developer stages the new files before
-recommitting. This means a commit can never introduce untested code.
+recommitting. The check verifies expected test names, not whether tests exercise
+or adequately cover the corresponding code.
 
 ---
 

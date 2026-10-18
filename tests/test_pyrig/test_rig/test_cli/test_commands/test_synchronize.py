@@ -15,7 +15,6 @@ from pyrig.rig.cli.commands.synchronize import (
 )
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.tests import mirror_test
 
 
 def test_synchronize_project(mocker: MockerFixture) -> None:
@@ -71,13 +70,13 @@ def test_synchronize_test_files(mocker: MockerFixture) -> None:
     )
 
     all_subclasses = synchronize_test_files(None)
-    all_modules = {subclass().mirror_module() for subclass in all_subclasses}
-    assert mirror_test in all_modules
+    all_modules = {subclass().mirror_file() for subclass in all_subclasses}
+    assert Path("src/pyrig/rig/tests/mirror.py") in all_modules
 
-    mirror_test_path = Path("src/pyrig/rig/tests/mirror_test.py")
+    mirror_test_path = Path("src/pyrig/rig/tests/mirror.py")
     one_subclasses = synchronize_test_files([mirror_test_path])
-    one_modules = {subclass().mirror_module() for subclass in one_subclasses}
-    assert one_modules == {mirror_test}
+    one_modules = {subclass().mirror_file() for subclass in one_subclasses}
+    assert one_modules == {mirror_test_path}
 
     init_path = Path("src/pyrig/rig/tests/__init__.py")
     assert synchronize_test_files([init_path]) == ()

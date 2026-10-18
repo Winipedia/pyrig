@@ -18,14 +18,6 @@ class CopyInitConfigFile(CopyModuleConfigFile):
         - `copy_module`: Return the source module whose content will be copied.
     """
 
-    def import_path(self) -> Path:
-        """Return the package directory used to import the managed package.
-
-        Returns:
-            Directory of the package whose `__init__.py` this config manages.
-        """
-        return super().import_path().parent
-
     def module_path(self) -> Path:
         """Return the target path of the generated `__init__.py`.
 

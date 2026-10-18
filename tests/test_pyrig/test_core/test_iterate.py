@@ -6,6 +6,7 @@ from pyrig.core.iterate import (
     both_dicts,
     both_dicts_or_lists,
     both_lists,
+    deduplicate,
     deep_sorted_dict,
     dict_insert,
     iterator_has_items,
@@ -190,3 +191,13 @@ def test_sorted_dict() -> None:
     assert list(sorted_.keys()) == ["a", "b", "c"]
     assert sorted_ == unsorted  # values are unchanged
     assert sorted_ is not unsorted  # a new dict is returned
+
+
+def test_deduplicate() -> None:
+    """Test function."""
+    assert list(deduplicate([3, 1, 3, 2, 1])) == [3, 1, 2]
+    assert list(deduplicate(name for name in ["second", "first", "second"])) == [
+        "second",
+        "first",
+    ]
+    assert list(deduplicate([])) == []

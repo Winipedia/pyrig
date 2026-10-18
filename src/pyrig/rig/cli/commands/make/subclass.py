@@ -22,14 +22,14 @@ def make_subclass(reference: tuple[str, str] | None) -> None:
     skeleton that imports and extends the chosen class.
 
     Args:
-        reference: A `(module_name, class_name)` pair identifying the class to
+        reference: A `(module_name, cls_name)` pair identifying the class to
             subclass, or `None` to choose one interactively.
     """
     if reference is None:
         subclass = choose_subclass()
-        module_name, class_name = subclass.__module__, subclass.__name__
+        module_name, cls_name = subclass.__module__, subclass.__name__
     else:
-        module_name, class_name = reference
+        module_name, cls_name = reference
 
     config_file = CopyModuleDocstringConfigFile.generate_subclass(
         import_module(module_name),
@@ -38,10 +38,10 @@ def make_subclass(reference: tuple[str, str] | None) -> None:
     content = config_file.read_content()
 
     content += f'''
-from {module_name} import {class_name} as Base{class_name}
+from {module_name} import {cls_name} as Base{cls_name}
 
 
-class {class_name}(Base{class_name}):
+class {cls_name}(Base{cls_name}):
     """You can override methods from the base class to customize behavior."""
 '''
 

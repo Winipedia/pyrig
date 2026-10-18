@@ -1,9 +1,7 @@
 """module."""
 
-from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
-from types import ModuleType
 
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.packages.manager import PackageManager
@@ -16,12 +14,12 @@ class TestProgrammingLanguage:
 
     def test_remove_pycache(
         self,
-        tmp_project_root_path: Path,
-        tmp_package_root_path: tuple[Path, ModuleType],
+        tmp_path: Path,
     ) -> None:
         """Test function."""
-        with chdir(tmp_project_root_path):
-            package_root_path, _ = tmp_package_root_path
+        with chdir(tmp_path):
+            package_root_path = PackageManager.I.package_root()
+            package_root_path.mkdir(parents=True)
             pycache_path = package_root_path / "__pycache__"
             module_path = package_root_path / "module.py"
             module_path.touch()
@@ -110,17 +108,18 @@ class TestProgrammingLanguage:
 
     def test_make_init_files(
         self,
-        tmp_project_root_path: Path,
-        tmp_package_root_path: tuple[Path, ModuleType],
+        tmp_path: Path,
     ) -> None:
         """Test function."""
-        with chdir(tmp_project_root_path):
+        with chdir(tmp_path):
             docs = Path("docs")
             docs.mkdir()
-            ProjectTester.I.package_root().mkdir()
-            package_root_path, _ = tmp_package_root_path
+            ProjectTester.I.package_root().mkdir(parents=True)
+            package_root_path = PackageManager.I.package_root()
+            package_root_path.mkdir(parents=True)
             root_init = package_root_path / "__init__.py"
             # assert ends with empty line
+            root_init.touch()
             root_init.unlink()
             assert not root_init.exists()
 
@@ -136,18 +135,21 @@ class TestProgrammingLanguage:
 
     def test_namespace_package_paths(
         self,
-        tmp_project_root_path: Path,
-        tmp_package_root_path: tuple[Path, ModuleType],
-        create_source_package: Callable[[Path], ModuleType],
+        tmp_path: Path,
     ) -> None:
         """Test function."""
-        package_root_path, _ = tmp_package_root_path
-
-        with chdir(tmp_project_root_path):
+        with chdir(tmp_path):
+            package_root_path = PackageManager.I.package_root()
+            package_root_path.mkdir(parents=True)
+            ProjectTester.I.package_root().mkdir(parents=True)
+            (package_root_path / "__init__.py").write_text("")
+            (ProjectTester.I.package_root() / "__init__.py").write_text("")
             Path("docs").mkdir()
             assert list(ProgrammingLanguage.I.namespace_package_paths()) == []
 
-            create_source_package(Path("package"))
+            source_package = PackageManager.I.package_root() / "package"
+            source_package.mkdir()
+            (source_package / "__init__.py").write_text("")
 
             namespace_package = package_root_path / "namespace_package"
             namespace_package.mkdir()
@@ -155,5 +157,5 @@ class TestProgrammingLanguage:
             pycache.mkdir()
             assert pycache.is_dir()
             assert list(ProgrammingLanguage.I.namespace_package_paths()) == [
-                namespace_package.relative_to(Path.cwd()),
+                namespace_package,
             ]

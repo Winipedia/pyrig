@@ -1,6 +1,5 @@
 """module."""
 
-import sys
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
@@ -9,7 +8,6 @@ from typing import Any
 
 import pytest
 
-from pyrig.core.introspection.modules import reimport_module
 from pyrig.rig.configs.base.copy_module import (
     CopyModuleConfigFile,
     CopyModuleDocstringConfigFile,
@@ -137,23 +135,14 @@ def my_test_copy_module_only_docstring_config_file(
         type[CopyModuleDocstringConfigFile],
     ],
     tmp_path: Path,
-    create_module: Callable[[Path], ModuleType],
 ) -> type[CopyModuleDocstringConfigFile]:
     """Create a test copy module only docstring config file class with tmp_path."""
-    path = Path("test_package") / "test_subpackage" / "test_module.py"
-    with chdir(tmp_path):
-        cached_module = sys.modules.pop(
-            "test_package.test_subpackage.test_module",
-            None,
-        )
-        if cached_module is not None:
-            # needed for the debugger for some reason
-            Path(cached_module.__file__).unlink()  # ty:ignore[invalid-argument-type]
-        module = create_module(path)
-
-        path.write_text('"""Test module content."""')
-
-        module = reimport_module(module)
+    path = tmp_path / "test_package" / "test_subpackage" / "test_module.py"
+    path.parent.mkdir(parents=True)
+    path.write_text('"""Test module content."""')
+    module = ModuleType("test_package.test_subpackage.test_module")
+    module.__file__ = str(path)
+    module.__doc__ = "Test module content."
 
     class MyTestCopyModuleDocstringConfigFile(
         config_file_factory(CopyModuleDocstringConfigFile),  # ty: ignore[unsupported-base]

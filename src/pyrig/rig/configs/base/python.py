@@ -1,15 +1,9 @@
 """Base class for managing Python (`.py`) source file configuration."""
 
+import ast
 from pathlib import Path
-from types import ModuleType
-from typing import Any
 
-from pyrig.core.introspection.modules import (
-    import_module_with_file_fallback,
-    reimport_module,
-)
 from pyrig.core.introspection.packages import make_package_dir
-from pyrig.core.introspection.paths import path_as_module_name
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
@@ -40,42 +34,21 @@ class PythonConfigFile(StringConfigFile):
         ...         return "from typing import Any\nimport sys"
     """
 
-    def _dump(self, configs: list[Any]) -> None:
-        """Reimport the module after the config file is written."""
-        super()._dump(configs)
-        reimport_module(self.module())
-
     def extension(self) -> str:
         """Return `"py"`, the fixed extension for Python source files."""
         return "py"
 
-    def module(self) -> ModuleType:
-        """Return the imported module this config file manages.
-
-        Returns:
-            Module imported from this config file's import path.
-        """
-        path = self.import_path()
-        return import_module_with_file_fallback(
-            path,
-            path_as_module_name(path.relative_to(self.source_root())),
-        )
-
-    def import_path(self) -> Path:
-        """Return the path from which this config file's module is imported.
-
-        Returns:
-            The config file's path.
-        """
-        return self.path()
-
     def source_root(self) -> Path:
-        """Return the directory this file's path is relative to for its module name.
+        """Return the directory against which module paths for this file are resolved.
 
         Defaults to the project root; subclasses whose files live under a
         dedicated source directory override it.
         """
         return Path()
+
+    def tree(self) -> ast.Module:
+        """Return the AST of the Python source file represented by this config."""
+        return ast.parse(self.read_content())
 
 
 class PythonPackageConfigFile(PythonConfigFile):

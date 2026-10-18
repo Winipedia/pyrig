@@ -1,40 +1,22 @@
 """module."""
 
-from collections.abc import Callable
-from contextlib import chdir
 from pathlib import Path
-from types import ModuleType
 
 from pyrig.core.resources import resource_content, resource_path
+from pyrig.rig import resources
 
 
-def test_resource_path(
-    tmp_path: Path,
-    create_package: Callable[[Path], ModuleType],
-) -> None:
+def test_resource_path() -> None:
     """Test function."""
-    with chdir(tmp_path):
-        # create a package
-        package_path = Path(test_resource_path.__name__) / "subpackage"
-        package = create_package(package_path)
-        # create a resource
-        path = package_path / "resource.txt"
-        path.write_text("Hello World!")
-
-        assert resource_path("resource.txt", package) == path.resolve()
+    path = resource_path("LATEST_PYTHON_VERSION", resources)
+    assert isinstance(path, Path)
+    assert path.name == "LATEST_PYTHON_VERSION"
+    assert path.exists()
 
 
-def test_resource_content(
-    tmp_path: Path,
-    create_package: Callable[[Path], ModuleType],
-) -> None:
+def test_resource_content() -> None:
     """Test function."""
-    with chdir(tmp_path):
-        # create a package
-        package_path = Path(test_resource_content.__name__) / "subpackage"
-        package = create_package(package_path)
-        # create a resource
-        path = package_path / "resource.txt"
-        path.write_text("Hello World!")
-
-        assert resource_content("resource.txt", package) == "Hello World!"
+    path = resource_path("LATEST_PYTHON_VERSION", resources)
+    content = resource_content("LATEST_PYTHON_VERSION", resources)
+    assert content == path.read_text(encoding="utf-8")
+    assert content.strip()

@@ -17,7 +17,6 @@ from pyrig_runtime.core.introspection.modules import replace_root_module_name
 from pyrig.core.introspection.modules import (
     leaf_module_name,
     module_content,
-    module_has_docstring,
 )
 from pyrig.core.introspection.paths import module_name_as_path
 from pyrig.core.strings import reformat_name
@@ -181,4 +180,9 @@ class CopyModuleDocstringConfigFile(CopyModuleConfigFile):
 
     def is_correct(self) -> bool:
         """Return `True` if the scaffolded module has a docstring, `False` otherwise."""
-        return module_has_docstring(self.module())
+        return (
+            ast.get_docstring(
+                self.tree(),
+            )
+            is not None
+        )

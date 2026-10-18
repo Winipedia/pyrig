@@ -102,12 +102,13 @@ behavior can be overridden downstream without touching pyrig itself.
 ## Mirror Tests — `MirrorTestConfigFile`
 
 `MirrorTestConfigFile` is a `ConfigFile` that treats test files as managed
-configuration. It inspects every source module and ensures a corresponding test
-stub exists for every function and method. `validate()` only appends missing
-stubs — existing test code is never touched.
+configuration. It checks every source module and ensures a corresponding test
+stub exists for every module-level function and every method defined directly
+on a module-level class. `validate()` only appends missing stubs — existing
+test code is never touched.
 
 Conformance is enforced by the `pyrig sync` pre-commit hook, which runs before
-every commit and fails if any test stubs are missing or out of date.
+every commit and fails if any test stubs are missing.
 
 ---
 
