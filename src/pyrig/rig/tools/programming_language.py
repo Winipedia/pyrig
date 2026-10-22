@@ -38,7 +38,7 @@ class ProgrammingLanguage(Tool):
 
     def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return `("__pycache__/",)`."""
-        return ("__pycache__/",)
+        return (*super().version_control_ignore_patterns(), "__pycache__/")
 
     def make_init_files(self) -> tuple[Path, ...]:
         """Create all missing `__init__.py` files in the project.

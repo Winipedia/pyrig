@@ -36,7 +36,7 @@ class MarkdownLinter(CheckFormatHookTool):
 
     def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return `('.rumdl_cache/',)`, rumdl's cache directory."""
-        return (".rumdl_cache/",)
+        return (*super().version_control_ignore_patterns(), ".rumdl_cache/")
 
     def check_args(self, *args: str) -> Args:
         """Construct rumdl check arguments.

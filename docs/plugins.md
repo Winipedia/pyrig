@@ -152,7 +152,10 @@ class TypeChecker(BaseTypeChecker):
 
     def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return the paths of `mypy`'s cache directory."""
-        return (".mypy_cache/",)
+        return (
+            *super().version_control_ignore_patterns(),
+            ".mypy_cache/",
+        )
 ```
 
 mypy is best configured via the `pyproject.toml` file. pyrig's default is to

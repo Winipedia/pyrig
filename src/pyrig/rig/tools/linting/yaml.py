@@ -29,6 +29,10 @@ class YAMLLinter(CheckHookTool):
         """Return the URL of the ryl project page."""
         return "https://github.com/owenlamont/ryl"
 
+    def version_control_ignore_patterns(self) -> tuple[str, ...]:
+        """Return ryl's cache directory as a path to ignore."""
+        return (*super().version_control_ignore_patterns(), ".ryl_cache/")
+
     def name(self) -> str:
         """Return `'ryl'`, the executable name for this tool's CLI command."""
         return "ryl"

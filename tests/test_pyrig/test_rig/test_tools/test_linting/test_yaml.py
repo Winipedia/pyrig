@@ -62,3 +62,7 @@ class TestYAMLLinter:
         """Test method."""
         directive = YAMLLinter.I.directive("some_directive")
         assert directive == "# ryl some_directive"
+
+    def test_version_control_ignore_patterns(self) -> None:
+        """Test method."""
+        assert YAMLLinter.I.version_control_ignore_patterns() == (".ryl_cache/",)

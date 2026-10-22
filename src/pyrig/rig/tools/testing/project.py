@@ -43,7 +43,11 @@ class ProjectTester(Tool):
 
     def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return `('.pytest_cache/', '.coverage')`."""
-        return (".pytest_cache/", ".coverage")
+        return (
+            *super().version_control_ignore_patterns(),
+            ".pytest_cache/",
+            ".coverage",
+        )
 
     def color(self) -> tuple[int, int, int]:
         """Return the badge color derived from the coverage threshold.

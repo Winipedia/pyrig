@@ -221,4 +221,5 @@ __marimo__/
 
 # pyrig stuff
 .rumdl_cache/
+.ryl_cache/
 .scratch.py

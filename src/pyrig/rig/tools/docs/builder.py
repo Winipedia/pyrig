@@ -41,7 +41,11 @@ class DocsBuilder(Tool):
 
     def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return patterns the tool produces and should be version-control-ignored."""
-        return (f"/{self.site_dir().as_posix()}", ".cache")
+        return (
+            *super().version_control_ignore_patterns(),
+            f"/{self.site_dir().as_posix()}",
+            ".cache",
+        )
 
     def build_args(self, *args: str) -> Args:
         """Construct arguments for the `zensical build` command.

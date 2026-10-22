@@ -30,8 +30,8 @@ class PythonLinter(CheckFormatHookTool):
         return "ruff"
 
     def version_control_ignore_patterns(self) -> tuple[str, ...]:
-        """Return `ruff`'s cache directory as the only path to ignore."""
-        return (".ruff_cache/",)
+        """Return `ruff`'s cache directory as a path to ignore."""
+        return (*super().version_control_ignore_patterns(), ".ruff_cache/")
 
     def check_args(self, *args: str) -> Args:
         """Build a `ruff check` command.
