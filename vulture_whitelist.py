@@ -1,9 +1,10 @@
 """Explicit references for reviewed dead code false positives."""
 
+from pyrig_runtime.core.dependencies.subclass import DependencySubclass
+
 from pyrig.rig.cli.make import inits, subcls
 from pyrig.rig.cli.remove import pyc
 from pyrig.rig.cli.subcommands import mk, rm, scratch
-from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.base.yaml import YAML_DUMP
 from pyrig.rig.configs.community.code_of_conduct import CodeOfConductConfigFile
@@ -33,7 +34,6 @@ from pyrig.rig.configs.version_control.remote.issue_templates.feature_request im
 from pyrig.rig.configs.version_control.remote.pull_request_template import (
     PullRequestTemplateConfigFile,
 )
-from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.language.case_conflict import CaseConflictChecker
 from pyrig.rig.tools.linting.ci_cd import CICDLinter
 from pyrig.rig.tools.linting.json import JSONLinter
@@ -74,9 +74,9 @@ _CONFIG_FILES = (
     XMLLinter,
 )
 _DEPENDENCY_SUBCLASS_OVERRIDES = (
-    ConfigFile.discovery_module,
-    ConfigFile.merge_key,
-    Tool.sort_key,
+    DependencySubclass.discovery_module,
+    DependencySubclass.merge_key,
+    DependencySubclass.sort_key,
 )
 _LIBRARY_USAGES = (
     # https://github.com/Winipedia/pyrig-containers/blob/main/src/pyrig_containers/rig/configs/container_file.py
