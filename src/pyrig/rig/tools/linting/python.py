@@ -5,8 +5,8 @@ from typing import Any
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckFormatHookTool
 from pyrig.rig.tools.base.tool import Group
+from pyrig.rig.tools.linting.order import PythonOrderLinter
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.security.secrets import SecretsChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
 
@@ -68,7 +68,7 @@ class PythonLinter(CheckFormatHookTool):
         return VersionControlHookManager.I.local_hook(
             self.lint_python,
             priority=VersionControlHookManager.I.deprioritize(
-                SecretsChecker.I.check_hook(),
+                PythonOrderLinter.I.check_hook(),
             ),
             types=["python"],
             args=Args("--fix"),

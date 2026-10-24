@@ -57,6 +57,34 @@ def my_test_copy_module_config_file(
     return MyTestCopyModuleConfigFile
 
 
+@pytest.fixture
+def my_test_copy_module_only_docstring_config_file(
+    config_file_factory: Callable[
+        [type[CopyModuleDocstringConfigFile]],
+        type[CopyModuleDocstringConfigFile],
+    ],
+    tmp_path: Path,
+) -> type[CopyModuleDocstringConfigFile]:
+    """Create a test copy module only docstring config file class with tmp_path."""
+    path = tmp_path / "test_package" / "test_subpackage" / "test_module.py"
+    path.parent.mkdir(parents=True)
+    path.write_text('"""Test module content."""')
+    module = ModuleType("test_package.test_subpackage.test_module")
+    module.__file__ = str(path)
+    module.__doc__ = "Test module content."
+
+    class MyTestCopyModuleDocstringConfigFile(
+        config_file_factory(CopyModuleDocstringConfigFile),  # ty: ignore[unsupported-base]
+    ):
+        """Test copy module only docstring config file with tmp_path override."""
+
+        def copy_module(self) -> ModuleType:
+            """Get the source module."""
+            return module
+
+    return MyTestCopyModuleDocstringConfigFile
+
+
 class TestCopyModuleConfigFile:
     """Test class."""
 
@@ -126,34 +154,6 @@ class TestCopyModuleConfigFile:
         """Test method."""
         filename = my_test_copy_module_config_file().stem()
         assert filename == "test_module", f"Expected 'test_module', got {filename}"
-
-
-@pytest.fixture
-def my_test_copy_module_only_docstring_config_file(
-    config_file_factory: Callable[
-        [type[CopyModuleDocstringConfigFile]],
-        type[CopyModuleDocstringConfigFile],
-    ],
-    tmp_path: Path,
-) -> type[CopyModuleDocstringConfigFile]:
-    """Create a test copy module only docstring config file class with tmp_path."""
-    path = tmp_path / "test_package" / "test_subpackage" / "test_module.py"
-    path.parent.mkdir(parents=True)
-    path.write_text('"""Test module content."""')
-    module = ModuleType("test_package.test_subpackage.test_module")
-    module.__file__ = str(path)
-    module.__doc__ = "Test module content."
-
-    class MyTestCopyModuleDocstringConfigFile(
-        config_file_factory(CopyModuleDocstringConfigFile),  # ty: ignore[unsupported-base]
-    ):
-        """Test copy module only docstring config file with tmp_path override."""
-
-        def copy_module(self) -> ModuleType:
-            """Get the source module."""
-            return module
-
-    return MyTestCopyModuleDocstringConfigFile
 
 
 class TestCopyModuleDocstringConfigFile:

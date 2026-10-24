@@ -22,16 +22,6 @@ from pyrig.rig.tools.testing.project import ProjectTester
 from pyrig.rig.tools.version_control.controller import VersionController
 
 
-def test_init_project_calls_pyrigger(mocker: MockerFixture) -> None:
-    """This test exists only to get to 100% test coverage."""
-    pyrigger_init_project_mock = mocker.patch.object(
-        Pyrigger,
-        Pyrigger.init_project.__name__,
-    )
-    init_project()
-    pyrigger_init_project_mock.assert_called_once()
-
-
 def test_init_project(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -157,3 +147,13 @@ def test_init_project(
         assert package_dir.exists()
 
         PackageManager.I.run_args(*Pyrigger.I.args("--help")).run()
+
+
+def test_init_project_calls_pyrigger(mocker: MockerFixture) -> None:
+    """This test exists only to get to 100% test coverage."""
+    pyrigger_init_project_mock = mocker.patch.object(
+        Pyrigger,
+        Pyrigger.init_project.__name__,
+    )
+    init_project()
+    pyrigger_init_project_mock.assert_called_once()

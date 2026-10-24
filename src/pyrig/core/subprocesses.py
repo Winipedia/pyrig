@@ -9,6 +9,85 @@ from typing import Any, Self
 logger = logging.getLogger(__name__)
 
 
+@cache
+def run_subprocess_cached(
+    *args: str,
+    check: bool = True,
+) -> subprocess.CompletedProcess[Any]:
+    """Execute a subprocess command and cache the result.
+
+    A repeated call with identical arguments returns the cached result
+    without spawning a new process.
+
+    Args:
+        *args: Command and arguments (e.g., `"git"`, `"status"`).
+        check: Whether to raise an exception on non-zero exit. Defaults to
+            `True`.
+
+    Returns:
+        The completed process result.
+
+    Raises:
+        subprocess.CalledProcessError: If `check` is `True` and the command
+            exits with a non-zero return code.
+
+    Note:
+        A call that raises is not cached, so a failing command re-runs on
+        the next identical call.
+    """
+    return run_subprocess(*args, check=check)
+
+
+def run_subprocess(
+    *args: str,
+    check: bool = True,
+) -> subprocess.CompletedProcess[str]:
+    """Execute a subprocess command.
+
+    The command always runs without a shell in the current working directory,
+    capturing stdout and stderr and decoding them as text.
+
+    Args:
+        *args: Command and arguments (e.g., `"git"`, `"status"`).
+        check: When `True` (the default), raise `subprocess.CalledProcessError`
+            on a non-zero exit.
+
+    Returns:
+        The completed process, with `stdout` and `stderr` as decoded strings.
+
+    Raises:
+        subprocess.CalledProcessError: If the command exits with a non-zero
+            return code and `check` is `True`.
+
+    Note:
+        Logs the command, return code, stdout, and stderr before re-raising
+        on failure.
+    """
+    try:
+        return subprocess.run(  # noqa: S603  # nosec: B603
+            args,
+            check=check,
+            capture_output=True,
+            cwd=Path(),
+            shell=False,
+            text=True,
+        )
+    except subprocess.CalledProcessError as e:
+        logger.exception(
+            """Subprocess command failed: %s
+Return code: %s
+Stdout:
+%s
+Stderr:
+%s""",
+            e.cmd,
+            e.returncode,
+            e.stdout,
+            e.stderr,
+        )
+        raise
+
+
 class Args(tuple[str, ...]):
     r"""Immutable sequence of command-line tokens that can execute itself.
 
@@ -102,82 +181,3 @@ class Args(tuple[str, ...]):
             The individual tokens, so `Args(*tokens)` rebuilds this instance.
         """
         return tuple(self)
-
-
-@cache
-def run_subprocess_cached(
-    *args: str,
-    check: bool = True,
-) -> subprocess.CompletedProcess[Any]:
-    """Execute a subprocess command and cache the result.
-
-    A repeated call with identical arguments returns the cached result
-    without spawning a new process.
-
-    Args:
-        *args: Command and arguments (e.g., `"git"`, `"status"`).
-        check: Whether to raise an exception on non-zero exit. Defaults to
-            `True`.
-
-    Returns:
-        The completed process result.
-
-    Raises:
-        subprocess.CalledProcessError: If `check` is `True` and the command
-            exits with a non-zero return code.
-
-    Note:
-        A call that raises is not cached, so a failing command re-runs on
-        the next identical call.
-    """
-    return run_subprocess(*args, check=check)
-
-
-def run_subprocess(
-    *args: str,
-    check: bool = True,
-) -> subprocess.CompletedProcess[str]:
-    """Execute a subprocess command.
-
-    The command always runs without a shell in the current working directory,
-    capturing stdout and stderr and decoding them as text.
-
-    Args:
-        *args: Command and arguments (e.g., `"git"`, `"status"`).
-        check: When `True` (the default), raise `subprocess.CalledProcessError`
-            on a non-zero exit.
-
-    Returns:
-        The completed process, with `stdout` and `stderr` as decoded strings.
-
-    Raises:
-        subprocess.CalledProcessError: If the command exits with a non-zero
-            return code and `check` is `True`.
-
-    Note:
-        Logs the command, return code, stdout, and stderr before re-raising
-        on failure.
-    """
-    try:
-        return subprocess.run(  # noqa: S603  # nosec: B603
-            args,
-            check=check,
-            capture_output=True,
-            cwd=Path(),
-            shell=False,
-            text=True,
-        )
-    except subprocess.CalledProcessError as e:
-        logger.exception(
-            """Subprocess command failed: %s
-Return code: %s
-Stdout:
-%s
-Stderr:
-%s""",
-            e.cmd,
-            e.returncode,
-            e.stdout,
-            e.stderr,
-        )
-        raise

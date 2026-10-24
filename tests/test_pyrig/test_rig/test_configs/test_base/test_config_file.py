@@ -25,6 +25,15 @@ from pyrig.rig.configs.readme import ReadmeConfigFile
 from pyrig.rig.configs.scratch import ScratchConfigFile
 
 
+def test_validate_config_files(
+    my_test_config_file: type[ConfigFile[dict[str, Any]]],
+) -> None:
+    """Test function."""
+    changed = validate_config_files((my_test_config_file,))
+    assert changed == (my_test_config_file,)
+    assert my_test_config_file().exists_correct()
+
+
 @pytest.fixture
 def my_test_config_file(
     config_file_factory: Callable[
@@ -431,34 +440,6 @@ class TestConfigFile:
         assert not config_file.configs_is_subset(superset)
 
 
-class TestListConfigFile:
-    """Test class."""
-
-    def test_empty_configs(self) -> None:
-        """Test method."""
-
-        class MyListConfigFile(ListConfigFile):
-            def stem(self) -> str:
-                return "test"
-
-            def extension(self) -> str:
-                return "txt"
-
-            def _load(self) -> list[str]:
-                return []
-
-            def _dump(self, configs: list[str]) -> None:
-                pass
-
-            def parent_path(self) -> Path:
-                return Path()
-
-            def _configs(self) -> list[str]:
-                return []
-
-        assert MyListConfigFile().empty_configs() == []
-
-
 class TestDictConfigFile:
     """Test class."""
 
@@ -487,10 +468,29 @@ class TestDictConfigFile:
         assert MyDictConfigFile().empty_configs() == {}
 
 
-def test_validate_config_files(
-    my_test_config_file: type[ConfigFile[dict[str, Any]]],
-) -> None:
-    """Test function."""
-    changed = validate_config_files((my_test_config_file,))
-    assert changed == (my_test_config_file,)
-    assert my_test_config_file().exists_correct()
+class TestListConfigFile:
+    """Test class."""
+
+    def test_empty_configs(self) -> None:
+        """Test method."""
+
+        class MyListConfigFile(ListConfigFile):
+            def stem(self) -> str:
+                return "test"
+
+            def extension(self) -> str:
+                return "txt"
+
+            def _load(self) -> list[str]:
+                return []
+
+            def _dump(self, configs: list[str]) -> None:
+                pass
+
+            def parent_path(self) -> Path:
+                return Path()
+
+            def _configs(self) -> list[str]:
+                return []
+
+        assert MyListConfigFile().empty_configs() == []

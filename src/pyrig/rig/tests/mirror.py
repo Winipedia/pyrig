@@ -12,7 +12,11 @@ from typing import Any, Self
 
 from pyrig_runtime.core.introspection.classes import generate_cls
 
-from pyrig.core.introspection.ast import cls_defs, func_defs, method_defs
+from pyrig.core.introspection.ast import (
+    cls_definitions,
+    func_definitions,
+    method_definitions,
+)
 from pyrig.core.iterate import deduplicate, iterator_has_items
 from pyrig.core.strings import read_text_utf8, reformat_name
 from pyrig.rig import tests
@@ -241,8 +245,8 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         Yields:
             Expected test function names in source definition order.
         """
-        funcs = func_defs(mirror_tree)
-        test_funcs = func_defs(test_tree)
+        funcs = func_definitions(mirror_tree)
+        test_funcs = func_definitions(test_tree)
 
         supposed_test_func_names = deduplicate(self.test_func_name(f) for f in funcs)
         actual_test_func_names = {f.name for f in test_funcs}
@@ -333,20 +337,20 @@ def {test_func_name}() -> None:
             Consume each tuple's method-name iterator before requesting the
             next tuple.
         """
-        classes = cls_defs(mirror_tree)
-        test_classes = cls_defs(test_tree)
+        classes = cls_definitions(mirror_tree)
+        test_classes = cls_definitions(test_tree)
 
         cls_to_methods = (
             (
                 cls,
-                method_defs(cls),
+                method_definitions(cls),
             )
             for cls in classes
         )
         test_cls_to_test_methods = (
             (
                 test_cls,
-                method_defs(test_cls),
+                method_definitions(test_cls),
             )
             for test_cls in test_classes
         )

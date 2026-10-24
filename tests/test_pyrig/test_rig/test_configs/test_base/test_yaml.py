@@ -9,7 +9,6 @@ import pytest
 from ruamel.yaml.comments import CommentedMap
 
 from pyrig.rig.configs.base.yaml import (
-    YAML_DUMP,
     YAMLConfigFile,
     YMLConfigFile,
     commented_map,
@@ -18,6 +17,48 @@ from pyrig.rig.configs.base.yaml import (
 from pyrig.rig.configs.version_control.remote.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
 )
+
+
+def test_commented_map(
+    my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
+) -> None:
+    """Test function."""
+    dumper = my_test_yaml_config_file.dumper()
+    result = commented_map(
+        {"contents": "read", "pages": "write"},
+        comments={"pages": "required"},
+        comments_before={"pages": "ryl disable-line rule:line-length"},
+    )
+
+    assert isinstance(result, CommentedMap)
+    assert result == {"contents": "read", "pages": "write"}
+
+    buffer = io.StringIO()
+    dumper.dump(result, buffer)
+    dumped = buffer.getvalue()
+    assert '"contents": "read"\n' in dumped
+    assert '# ryl disable-line rule:line-length\n"pages":' in dumped
+    assert '"pages": "write"  # required' in dumped
+
+    undocumented = commented_map({"contents": "read"}, comments={})
+    assert isinstance(undocumented, CommentedMap)
+    buffer_undocumented = io.StringIO()
+    dumper.dump(undocumented, buffer_undocumented)
+    assert "#" not in buffer_undocumented.getvalue()
+
+
+def test_represent_str(
+    my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
+) -> None:
+    """Test function."""
+    dumper = my_test_yaml_config_file.dumper()
+    single_line = represent_str(dumper.representer, "value")
+    assert single_line.style == '"', "Expected a double-quoted scalar"
+    assert single_line.value == "value", "Expected the value to be unchanged"
+
+    multi_line = represent_str(dumper.representer, "line1\nline2")
+    assert multi_line.style == "|", "Expected a literal block scalar"
+    assert multi_line.value == "line1\nline2", "Expected the value to be unchanged"
 
 
 @pytest.fixture
@@ -49,6 +90,31 @@ def my_test_yaml_config_file(
             return {"key": "value"}
 
     return MyTestYAMLConfigFile
+
+
+class TestEmitter:
+    """Test class."""
+
+    def test_write_comment(
+        self,
+        my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test method."""
+        result = commented_map(
+            {
+                "steps": [
+                    commented_map(
+                        {"a": 1, "b": 2},
+                        comments={},
+                        comments_before={"b": "note"},
+                    ),
+                ],
+            },
+            comments={},
+        )
+        buffer = io.StringIO()
+        my_test_yaml_config_file.dumper().dump(result, buffer)
+        assert '    # note\n    "b": 2' in buffer.getvalue()
 
 
 class TestYAMLConfigFile:
@@ -93,16 +159,31 @@ class TestYAMLConfigFile:
         """Test method."""
         assert my_test_yaml_config_file().extension() == "yaml", "Expected yaml"
 
+    def test_loader(
+        self,
+        my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test method."""
+        config_file = my_test_yaml_config_file()
+        assert my_test_yaml_config_file.loader() is my_test_yaml_config_file.loader()
+        assert config_file.loader() is my_test_yaml_config_file().loader()
+        assert config_file.loader() is my_test_yaml_config_file.loader()
+        assert config_file.loader() is YAMLConfigFile.loader()
+        assert config_file.loader().load('"on": ["push"]') == {"on": ["push"]}
 
-def test_represent_str() -> None:
-    """Test function."""
-    single_line = represent_str(YAML_DUMP.representer, "value")
-    assert single_line.style == '"', "Expected a double-quoted scalar"
-    assert single_line.value == "value", "Expected the value to be unchanged"
-
-    multi_line = represent_str(YAML_DUMP.representer, "line1\nline2")
-    assert multi_line.style == "|", "Expected a literal block scalar"
-    assert multi_line.value == "line1\nline2", "Expected the value to be unchanged"
+    def test_dumper(
+        self,
+        my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test method."""
+        config_file = my_test_yaml_config_file()
+        assert my_test_yaml_config_file.dumper() is my_test_yaml_config_file.dumper()
+        assert config_file.dumper() is my_test_yaml_config_file().dumper()
+        assert config_file.dumper() is my_test_yaml_config_file.dumper()
+        assert config_file.dumper() is YAMLConfigFile.dumper()
+        buffer = io.StringIO()
+        config_file.dumper().dump({"key": "value"}, buffer)
+        assert buffer.getvalue() == '---\n"key": "value"\n...\n'
 
 
 class TestYMLConfigFile:
@@ -117,50 +198,3 @@ class TestYMLConfigFile:
 
 class TestYMLDictConfigFile:
     """Test class."""
-
-
-def test_commented_map() -> None:
-    """Test function."""
-    result = commented_map(
-        {"contents": "read", "pages": "write"},
-        comments={"pages": "required"},
-        comments_before={"pages": "ryl disable-line rule:line-length"},
-    )
-
-    assert isinstance(result, CommentedMap)
-    assert result == {"contents": "read", "pages": "write"}
-
-    buffer = io.StringIO()
-    YAML_DUMP.dump(result, buffer)
-    dumped = buffer.getvalue()
-    assert '"contents": "read"\n' in dumped
-    assert '# ryl disable-line rule:line-length\n"pages":' in dumped
-    assert '"pages": "write"  # required' in dumped
-
-    undocumented = commented_map({"contents": "read"}, comments={})
-    assert isinstance(undocumented, CommentedMap)
-    buffer_undocumented = io.StringIO()
-    YAML_DUMP.dump(undocumented, buffer_undocumented)
-    assert "#" not in buffer_undocumented.getvalue()
-
-
-class TestEmitter:
-    """Test class."""
-
-    def test_write_comment(self) -> None:
-        """Test method."""
-        result = commented_map(
-            {
-                "steps": [
-                    commented_map(
-                        {"a": 1, "b": 2},
-                        comments={},
-                        comments_before={"b": "note"},
-                    ),
-                ],
-            },
-            comments={},
-        )
-        buffer = io.StringIO()
-        YAML_DUMP.dump(result, buffer)
-        assert '    # note\n    "b": 2' in buffer.getvalue()

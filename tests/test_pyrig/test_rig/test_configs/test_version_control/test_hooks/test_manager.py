@@ -48,6 +48,7 @@ class TestVersionControlHookManagerConfigFile:
             by_id["synchronize-project"]["priority"]
             < by_id["fix-spelling"]["priority"]
             < by_id["check-secrets"]["priority"]
+            < by_id["lint-python-order"]["priority"]
             < by_id["lint-python"]["priority"]
             < by_id["format-python"]["priority"]
             < by_id["check-dependencies"]["priority"]

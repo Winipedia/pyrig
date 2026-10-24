@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from pyrig.core.introspection.ast import cls_defs
+from pyrig.core.introspection.ast import cls_definitions
 from pyrig.rig import tests
 from pyrig.rig.tests.mirror import MirrorTestConfigFile
 from pyrig.rig.tools.linting.python import PythonLinter
@@ -468,7 +468,7 @@ class TestExample:
     ) -> None:
         """Test method."""
         config_cls, _ = mirror_config
-        cls = next(iter(cls_defs(ast.parse("class Example: pass"))))
+        cls = next(iter(cls_definitions(ast.parse("class Example: pass"))))
         assert config_cls().test_cls_name(cls) == "TestExample"
 
     def test_test_func_prefix(

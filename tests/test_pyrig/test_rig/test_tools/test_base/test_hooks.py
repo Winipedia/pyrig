@@ -5,41 +5,6 @@ from pyrig.rig.tools.formatting.end_of_file import EndOfFileFormatter
 from pyrig.rig.tools.version_control.merge_conflict import MergeConflictChecker
 
 
-class TestVersionControlHookTool:
-    """Test class."""
-
-    def test_hooks(self) -> None:
-        """Test method."""
-        # VersionControlHookTool is abstract, test through concrete implementation
-        assert MergeConflictChecker.I.hooks() == (MergeConflictChecker.I.check_hook(),)
-
-    def test_subclasses_hooks(self) -> None:
-        """Test method."""
-        hooks = list(VersionControlHookTool.subclasses_hooks())
-        assert len(hooks) > 0
-        assert all(isinstance(hook, dict) for hook in hooks)
-
-    def test_sorted_hooks(self) -> None:
-        """Test method."""
-        hooks = [
-            {"repo": "my-repo", "stages": ["pre-commit"], "priority": 2, "id": "b"},
-            {"repo": "my-repo", "stages": ["pre-commit"], "priority": 1, "id": "z"},
-            {"repo": "my-repo", "stages": ["pre-commit"], "priority": 1, "id": "a"},
-        ]
-        sorted_hooks = VersionControlHookTool.sorted_hooks(hooks)
-        assert [hook["id"] for hook in sorted_hooks] == ["a", "z", "b"]
-
-        hooks = [
-            {"repo": "a", "stages": ["pre-commit"], "priority": 1, "id": "b"},
-            {"repo": "b", "stages": ["pre-commit"], "priority": 1, "id": "a"},
-            {"repo": "a", "stages": ["pre-commit"], "priority": 1, "id": "a"},
-            {"repo": "c", "stages": ["pre-commit"], "priority": 1, "id": "a"},
-        ]
-        sorted_hooks = VersionControlHookTool.sorted_hooks(hooks)
-        assert [hook["id"] for hook in sorted_hooks] == ["a", "a", "a", "b"]
-        assert [hook["repo"] for hook in sorted_hooks] == ["b", "a", "c", "a"]
-
-
 class TestCheckHookTool:
     """Test class."""
 
@@ -78,3 +43,38 @@ class TestFormatHookTool:
     def test_hooks(self) -> None:
         """Test method."""
         assert EndOfFileFormatter.I.hooks() == (EndOfFileFormatter.I.format_hook(),)
+
+
+class TestVersionControlHookTool:
+    """Test class."""
+
+    def test_hooks(self) -> None:
+        """Test method."""
+        # VersionControlHookTool is abstract, test through concrete implementation
+        assert MergeConflictChecker.I.hooks() == (MergeConflictChecker.I.check_hook(),)
+
+    def test_subclasses_hooks(self) -> None:
+        """Test method."""
+        hooks = list(VersionControlHookTool.subclasses_hooks())
+        assert len(hooks) > 0
+        assert all(isinstance(hook, dict) for hook in hooks)
+
+    def test_sorted_hooks(self) -> None:
+        """Test method."""
+        hooks = [
+            {"repo": "my-repo", "stages": ["pre-commit"], "priority": 2, "id": "b"},
+            {"repo": "my-repo", "stages": ["pre-commit"], "priority": 1, "id": "z"},
+            {"repo": "my-repo", "stages": ["pre-commit"], "priority": 1, "id": "a"},
+        ]
+        sorted_hooks = VersionControlHookTool.sorted_hooks(hooks)
+        assert [hook["id"] for hook in sorted_hooks] == ["a", "z", "b"]
+
+        hooks = [
+            {"repo": "a", "stages": ["pre-commit"], "priority": 1, "id": "b"},
+            {"repo": "b", "stages": ["pre-commit"], "priority": 1, "id": "a"},
+            {"repo": "a", "stages": ["pre-commit"], "priority": 1, "id": "a"},
+            {"repo": "c", "stages": ["pre-commit"], "priority": 1, "id": "a"},
+        ]
+        sorted_hooks = VersionControlHookTool.sorted_hooks(hooks)
+        assert [hook["id"] for hook in sorted_hooks] == ["a", "a", "a", "b"]
+        assert [hook["repo"] for hook in sorted_hooks] == ["b", "a", "c", "a"]

@@ -19,6 +19,13 @@ def test_cmd(
     assert command_calls_func(cmd, make_subcommand, ["my-command"])
 
 
+def test_inits(
+    command_calls_func: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
+) -> None:
+    """Test function."""
+    assert command_calls_func(inits, make_project_init_files, [])
+
+
 def test_subcls(
     command_calls_func: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
 ) -> None:
@@ -33,10 +40,3 @@ def test_subcls(
     assert result.returncode == 0
 
     assert command_calls_func(subcls, make_subclass, [])
-
-
-def test_inits(
-    command_calls_func: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
-) -> None:
-    """Test function."""
-    assert command_calls_func(inits, make_project_init_files, [])

@@ -29,15 +29,15 @@ def test_module_file_path(tmp_path: Path) -> None:
         module_file_path(module_no_file)
 
 
-def test_package_name_as_path() -> None:
-    """Test function."""
-    name = "package.subpackage.module"
-    expected_path = Path("package/subpackage/module")
-    assert package_name_as_path(name) == expected_path
-
-
 def test_module_name_as_path() -> None:
     """Test function."""
     name = "package.subpackage.module"
     expected_path = Path("package/subpackage/module.py")
     assert module_name_as_path(name) == expected_path
+
+
+def test_package_name_as_path() -> None:
+    """Test function."""
+    name = "package.subpackage.module"
+    expected_path = Path("package/subpackage/module")
+    assert package_name_as_path(name) == expected_path

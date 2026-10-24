@@ -8,6 +8,29 @@ from typing import IO, Any
 UTF_8_ENCODING = "utf-8"
 
 
+def is_multiline(string: str) -> bool:
+    """Check whether a string contains one or more newline characters."""
+    return "\n" in string
+
+
+def make_linked_badge_markdown(
+    image_url: str,
+    link_url: str,
+    alt_text: str,
+) -> str:
+    """Return Markdown for a clickable badge image.
+
+    Args:
+        image_url: URL of the image.
+        link_url: URL the image should link to when clicked.
+        alt_text: Alternative text for the image (used for accessibility).
+
+    Returns:
+        Markdown string in the form `[![alt_text](image_url)](link_url)`.
+    """
+    return f"[![{alt_text}]({image_url})]({link_url})"
+
+
 def open_path_with_utf8(path: Path, *, mode: str = "r") -> IO[Any]:
     r"""Open a file with UTF-8 encoding and no newline translation.
 
@@ -35,42 +58,6 @@ def read_text_utf8(path: Path) -> str:
         FileNotFoundError: If the file does not exist.
     """
     return path.read_text(encoding=UTF_8_ENCODING)
-
-
-def write_text_utf8(path: Path, content: str) -> int:
-    r"""Write `content` to `path` as UTF-8, replacing any existing file.
-
-    Uses `newline="\n"` so `\n` characters in `content` are written as-is
-    instead of being translated to the platform's line separator (`\r\n`
-    on Windows), keeping output consistent across platforms.
-
-    Returns:
-        The number of characters written.
-    """
-    return path.write_text(content, encoding=UTF_8_ENCODING, newline="\n")
-
-
-def is_multiline(string: str) -> bool:
-    """Check whether a string contains one or more newline characters."""
-    return "\n" in string
-
-
-def make_linked_badge_markdown(
-    image_url: str,
-    link_url: str,
-    alt_text: str,
-) -> str:
-    """Return Markdown for a clickable badge image.
-
-    Args:
-        image_url: URL of the image.
-        link_url: URL the image should link to when clicked.
-        alt_text: Alternative text for the image (used for accessibility).
-
-    Returns:
-        Markdown string in the form `[![alt_text](image_url)](link_url)`.
-    """
-    return f"[![{alt_text}]({image_url})]({link_url})"
 
 
 def reformat_name(
@@ -126,3 +113,16 @@ def split_on_uppercase(string: str) -> Iterator[str]:
         ['alllowercase']
     """
     return (s for s in re.split(r"(?=[A-Z])", string) if s)
+
+
+def write_text_utf8(path: Path, content: str) -> int:
+    r"""Write `content` to `path` as UTF-8, replacing any existing file.
+
+    Uses `newline="\n"` so `\n` characters in `content` are written as-is
+    instead of being translated to the platform's line separator (`\r\n`
+    on Windows), keeping output consistent across platforms.
+
+    Returns:
+        The number of characters written.
+    """
+    return path.write_text(content, encoding=UTF_8_ENCODING, newline="\n")

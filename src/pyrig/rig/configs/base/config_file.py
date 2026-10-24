@@ -17,6 +17,24 @@ from pyrig.core.iterate import (
 from pyrig.rig import configs
 
 
+def validate_config_files[T: ConfigFile[Any]](
+    subclasses: Iterable[type[T]],
+) -> tuple[type[T], ...]:
+    """Validate a specific collection of `ConfigFile` subclasses.
+
+    Validates each supplied subclass in iteration order. Each subclass also
+    validates its own declared dependencies before validating itself.
+
+    Args:
+        subclasses: `ConfigFile` subclasses to validate.
+
+    Returns:
+        Tuple of subclasses that were created or updated, or that have a
+        dependency that was. Empty if all were already correct.
+    """
+    return tuple(cf for cf in subclasses if not cf().validate())
+
+
 class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
     """Abstract base class for declarative configuration file management.
 
@@ -380,22 +398,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         return True
 
 
-class ListConfigFile(ConfigFile[list[str]]):
-    """Abstract base for config files whose content is a list.
-
-    Binds the `ConfigT` type parameter to `list[str]`, so subclasses work
-    with a concretely typed list instead of the generic base type.
-    """
-
-    def empty_configs(self) -> list[str]:
-        """Return an empty list.
-
-        Returns:
-            An empty list of strings.
-        """
-        return []
-
-
 class DictConfigFile(ConfigFile[dict[str, Any]]):
     """Abstract base for config files whose content is a dict.
 
@@ -412,19 +414,17 @@ class DictConfigFile(ConfigFile[dict[str, Any]]):
         return {}
 
 
-def validate_config_files[T: ConfigFile[Any]](
-    subclasses: Iterable[type[T]],
-) -> tuple[type[T], ...]:
-    """Validate a specific collection of `ConfigFile` subclasses.
+class ListConfigFile(ConfigFile[list[str]]):
+    """Abstract base for config files whose content is a list.
 
-    Validates each supplied subclass in iteration order. Each subclass also
-    validates its own declared dependencies before validating itself.
-
-    Args:
-        subclasses: `ConfigFile` subclasses to validate.
-
-    Returns:
-        Tuple of subclasses that were created or updated, or that have a
-        dependency that was. Empty if all were already correct.
+    Binds the `ConfigT` type parameter to `list[str]`, so subclasses work
+    with a concretely typed list instead of the generic base type.
     """
-    return tuple(cf for cf in subclasses if not cf().validate())
+
+    def empty_configs(self) -> list[str]:
+        """Return an empty list.
+
+        Returns:
+            An empty list of strings.
+        """
+        return []

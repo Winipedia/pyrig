@@ -1,12 +1,12 @@
 """Explicit references for reviewed dead code false positives."""
 
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
+from ruamel.yaml import YAML
 
 from pyrig.rig.cli.make import inits, subcls
 from pyrig.rig.cli.remove import pyc
 from pyrig.rig.cli.subcommands import mk, rm, scratch
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
-from pyrig.rig.configs.base.yaml import YAML_DUMP
 from pyrig.rig.configs.community.code_of_conduct import CodeOfConductConfigFile
 from pyrig.rig.configs.community.contributing import ContributingConfigFile
 from pyrig.rig.configs.community.security import SecurityConfigFile
@@ -96,7 +96,7 @@ _TOOLS = (
     TypeChecker,
 )
 _YAML_USAGES = (
-    YAML_DUMP.compact_seq_map,
-    YAML_DUMP.explicit_end,
-    YAML_DUMP.explicit_start,
+    YAML().compact_seq_map,
+    YAML().explicit_end,
+    YAML().explicit_start,
 )

@@ -13,15 +13,6 @@ from pyrig.rig.cli.subcommands import (
 )
 
 
-def test_sync(
-    command_works: Callable[[FunctionType], bool],
-    command_calls_func: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
-) -> None:
-    """Test function."""
-    assert command_works(sync)
-    assert command_calls_func(sync, synchronize_project, [])
-
-
 def test_init(
     command_works: Callable[[FunctionType], bool],
     command_calls_func: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
@@ -38,3 +29,12 @@ def test_scratch(
     """Test function."""
     assert command_works(scratch)
     assert command_calls_func(scratch, run_scratch_file, [])
+
+
+def test_sync(
+    command_works: Callable[[FunctionType], bool],
+    command_calls_func: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
+) -> None:
+    """Test function."""
+    assert command_works(sync)
+    assert command_calls_func(sync, synchronize_project, [])

@@ -17,6 +17,26 @@ from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
+def test_synchronize_config_files(mocker: MockerFixture) -> None:
+    """Test function."""
+    mocker.patch.object(
+        synchronize,
+        validate_config_files.__name__,
+        side_effect=tuple,
+    )
+
+    all_subclasses = synchronize_config_files(None)
+    all_subclasses_str_reprs = {str(cls.L) for cls in all_subclasses}
+    concrete_leaves_str_reprs = {str(cls.L) for cls in ConfigFile.concrete_leaves()}
+    assert all_subclasses_str_reprs == concrete_leaves_str_reprs
+
+    target = PyprojectConfigFile.L
+    one_subclass = synchronize_config_files([target().path()])
+    assert set(one_subclass) == {target}
+
+    assert synchronize_config_files([]) == ()
+
+
 def test_synchronize_project(mocker: MockerFixture) -> None:
     """Test function."""
     config_file_mock = mocker.patch.object(
@@ -39,26 +59,6 @@ def test_synchronize_project(mocker: MockerFixture) -> None:
 
     with pytest.raises(typer.Exit):
         synchronize_project([])
-
-
-def test_synchronize_config_files(mocker: MockerFixture) -> None:
-    """Test function."""
-    mocker.patch.object(
-        synchronize,
-        validate_config_files.__name__,
-        side_effect=tuple,
-    )
-
-    all_subclasses = synchronize_config_files(None)
-    all_subclasses_str_reprs = {str(cls.L) for cls in all_subclasses}
-    concrete_leaves_str_reprs = {str(cls.L) for cls in ConfigFile.concrete_leaves()}
-    assert all_subclasses_str_reprs == concrete_leaves_str_reprs
-
-    target = PyprojectConfigFile.L
-    one_subclass = synchronize_config_files([target().path()])
-    assert set(one_subclass) == {target}
-
-    assert synchronize_config_files([]) == ()
 
 
 def test_synchronize_test_files(mocker: MockerFixture) -> None:

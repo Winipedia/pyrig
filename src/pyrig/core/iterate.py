@@ -7,6 +7,46 @@ from typing import Any, cast, overload
 from pyrig_runtime.core.constants import MISSING
 
 
+def deduplicate[T: Hashable](iterable: Iterable[T]) -> KeysView[T]:
+    """Yield each distinct item in its first-occurrence order.
+
+    Args:
+        iterable: Items to deduplicate.
+
+    Yields:
+        Each unique item, preserving the order of its first appearance.
+    """
+    return dict.fromkeys(iterable).keys()
+
+
+@overload
+def deep_sorted_dict[T](value: list[T]) -> list[T]: ...
+@overload
+def deep_sorted_dict[K, V](value: dict[K, V]) -> dict[K, V]: ...
+@overload
+def deep_sorted_dict[T](value: T) -> T: ...
+def deep_sorted_dict(value: Any) -> Any:
+    """Recursively sort every nested dict by key.
+
+    Lists are recursed into item by item without reordering them, and any
+    value that is neither a dict nor a list is returned unchanged.
+
+    Args:
+        value: The dict, list, or other value to sort.
+
+    Returns:
+        A new copy of `value` with every dict layer sorted by key; `value`
+        itself is not modified.
+    """
+    if isinstance(value, dict):
+        return {key: deep_sorted_dict(item) for key, item in sorted(value.items())}
+
+    if isinstance(value, list):
+        return [deep_sorted_dict(item) for item in value]
+
+    return value
+
+
 def iterator_has_items[T](
     iterable: Iterator[T],
 ) -> tuple[bool, Iterator[T]]:
@@ -110,6 +150,42 @@ def merge_structures(subset: Any, superset: Any) -> Any:
     return subset
 
 
+def sorted_dict[K, V](dict_: dict[K, V]) -> dict[K, V]:
+    """Sort a dictionary by its keys.
+
+    Args:
+        dict_: The dictionary to sort.
+
+    Returns:
+        A new dictionary with the same items as `dict_`, sorted by key.
+    """
+    return dict(sorted(dict_.items()))
+
+
+def traverse_structure(structure: object) -> Iterator[Any]:
+    """Yield leaf values from nested dictionaries and lists.
+
+    Args:
+        structure: The nested dict/list structure to walk.
+
+    Yields:
+        All values that are not themselves dictionaries or lists, in traversal order.
+    """
+    if isinstance(structure, dict):
+        for value in structure.values():
+            yield from traverse_structure(value)
+    elif isinstance(structure, list):
+        for item in structure:
+            yield from traverse_structure(item)
+    else:
+        yield structure
+
+
+def both_dicts_or_lists(a: object, b: object) -> bool:
+    """Return whether `a` and `b` are both dicts or both lists."""
+    return both_dicts(a, b) or both_lists(a, b)
+
+
 def dict_insert[K, V](
     dict_: dict[K, V],
     *,
@@ -143,15 +219,57 @@ def dict_insert[K, V](
     dict_.update(items)
 
 
+def match_list_items(subset: list[Any], superset: list[Any]) -> list[bool]:
+    """Check whether each `subset` item is satisfied by a distinct `superset` item.
+
+    An item satisfies another using the same nested subset semantics as
+    `structure_is_subset`, not plain equality. Each `superset` item
+    can satisfy at most one `subset` item, so a value that occurs multiple
+    times in `subset` requires that many distinct matches in `superset`
+    rather than being satisfied by a single occurrence.
+
+    Args:
+        subset: Items to find matches for.
+        superset: Items to match against. Not modified.
+
+    Returns:
+        One entry per item in `subset`, in order: `True` if a distinct,
+        not-yet-matched `superset` item satisfies it, `False` otherwise.
+
+    Examples:
+        >>> match_list_items(["", ""], [""])
+        [True, False]
+        >>> match_list_items(["", "a", ""], ["", "z"])
+        [True, False, False]
+    """
+    pool = list(superset)
+    matched: list[bool] = []
+    for sub_val in subset:
+        for index, other in enumerate(pool):
+            if structure_is_subset(sub_val, other):
+                del pool[index]
+                matched.append(True)
+                break
+        else:
+            matched.append(False)
+    return matched
+
+
 @overload
 def structure_is_subset(
     subset: dict[Any, Any],
     superset: dict[Any, Any],
 ) -> bool: ...
+
+
 @overload
 def structure_is_subset(subset: list[Any], superset: list[Any]) -> bool: ...
+
+
 @overload
 def structure_is_subset[T](subset: T, superset: T) -> bool: ...
+
+
 def structure_is_subset(subset: Any, superset: Any) -> bool:
     """Check whether one nested structure is contained within another.
 
@@ -195,87 +313,6 @@ def structure_is_subset(subset: Any, superset: Any) -> bool:
     return subset == superset
 
 
-def match_list_items(subset: list[Any], superset: list[Any]) -> list[bool]:
-    """Check whether each `subset` item is satisfied by a distinct `superset` item.
-
-    An item satisfies another using the same nested subset semantics as
-    `structure_is_subset`, not plain equality. Each `superset` item
-    can satisfy at most one `subset` item, so a value that occurs multiple
-    times in `subset` requires that many distinct matches in `superset`
-    rather than being satisfied by a single occurrence.
-
-    Args:
-        subset: Items to find matches for.
-        superset: Items to match against. Not modified.
-
-    Returns:
-        One entry per item in `subset`, in order: `True` if a distinct,
-        not-yet-matched `superset` item satisfies it, `False` otherwise.
-
-    Examples:
-        >>> match_list_items(["", ""], [""])
-        [True, False]
-        >>> match_list_items(["", "a", ""], ["", "z"])
-        [True, False, False]
-    """
-    pool = list(superset)
-    matched: list[bool] = []
-    for sub_val in subset:
-        for index, other in enumerate(pool):
-            if structure_is_subset(sub_val, other):
-                del pool[index]
-                matched.append(True)
-                break
-        else:
-            matched.append(False)
-    return matched
-
-
-def both_dicts_or_lists(a: object, b: object) -> bool:
-    """Return whether `a` and `b` are both dicts or both lists."""
-    return both_dicts(a, b) or both_lists(a, b)
-
-
-@overload
-def deep_sorted_dict[T](value: list[T]) -> list[T]: ...
-@overload
-def deep_sorted_dict[K, V](value: dict[K, V]) -> dict[K, V]: ...
-@overload
-def deep_sorted_dict[T](value: T) -> T: ...
-def deep_sorted_dict(value: Any) -> Any:
-    """Recursively sort every nested dict by key.
-
-    Lists are recursed into item by item without reordering them, and any
-    value that is neither a dict nor a list is returned unchanged.
-
-    Args:
-        value: The dict, list, or other value to sort.
-
-    Returns:
-        A new copy of `value` with every dict layer sorted by key; `value`
-        itself is not modified.
-    """
-    if isinstance(value, dict):
-        return {key: deep_sorted_dict(item) for key, item in sorted(value.items())}
-
-    if isinstance(value, list):
-        return [deep_sorted_dict(item) for item in value]
-
-    return value
-
-
-def sorted_dict[K, V](dict_: dict[K, V]) -> dict[K, V]:
-    """Sort a dictionary by its keys.
-
-    Args:
-        dict_: The dictionary to sort.
-
-    Returns:
-        A new dictionary with the same items as `dict_`, sorted by key.
-    """
-    return dict(sorted(dict_.items()))
-
-
 def both_dicts(a: object, b: object) -> bool:
     """Return whether `a` and `b` are both dicts."""
     return isinstance(a, dict) and isinstance(b, dict)
@@ -284,34 +321,3 @@ def both_dicts(a: object, b: object) -> bool:
 def both_lists(a: object, b: object) -> bool:
     """Return whether `a` and `b` are both lists."""
     return isinstance(a, list) and isinstance(b, list)
-
-
-def traverse_structure(structure: object) -> Iterator[Any]:
-    """Yield leaf values from nested dictionaries and lists.
-
-    Args:
-        structure: The nested dict/list structure to walk.
-
-    Yields:
-        All values that are not themselves dictionaries or lists, in traversal order.
-    """
-    if isinstance(structure, dict):
-        for value in structure.values():
-            yield from traverse_structure(value)
-    elif isinstance(structure, list):
-        for item in structure:
-            yield from traverse_structure(item)
-    else:
-        yield structure
-
-
-def deduplicate[T: Hashable](iterable: Iterable[T]) -> KeysView[T]:
-    """Yield each distinct item in its first-occurrence order.
-
-    Args:
-        iterable: Items to deduplicate.
-
-    Yields:
-        Each unique item, preserving the order of its first appearance.
-    """
-    return dict.fromkeys(iterable).keys()

@@ -189,10 +189,10 @@ groups = [
 priority = 10
 
 [[repos.hooks]]
-id = "lint-python"
-name = "lint python"
+id = "lint-python-order"
+name = "lint python order"
 language = "system"
-entry = "uv run ruff check"
+entry = "uv run pyorder check"
 args = [
   "--fix",
 ]
@@ -249,12 +249,14 @@ groups = [
 priority = 11
 
 [[repos.hooks]]
-id = "format-python"
-name = "format python"
+id = "lint-python"
+name = "lint python"
 language = "system"
-entry = "uv run ruff format"
-types_or = [
-  "markdown",
+entry = "uv run ruff check"
+args = [
+  "--fix",
+]
+types = [
   "python",
 ]
 stages = [
@@ -309,29 +311,12 @@ groups = [
 priority = 11
 
 [[repos.hooks]]
-id = "check-dead-code"
-name = "check dead code"
+id = "format-python"
+name = "format python"
 language = "system"
-entry = "uv run vulture"
-types = [
-  "python",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-pass_filenames = false
-priority = 12
-
-[[repos.hooks]]
-id = "check-dependencies"
-name = "check dependencies"
-language = "system"
-entry = "uv run deptry"
+entry = "uv run ruff format"
 types_or = [
-  "pyproject",
+  "markdown",
   "python",
 ]
 stages = [
@@ -340,43 +325,6 @@ stages = [
 groups = [
   "all",
 ]
-pass_filenames = false
-priority = 12
-
-[[repos.hooks]]
-id = "check-security"
-name = "check security"
-language = "system"
-entry = "uv run bandit"
-args = [
-  "--exclude=tests",
-]
-types = [
-  "python",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-priority = 12
-
-[[repos.hooks]]
-id = "check-types"
-name = "check types"
-language = "system"
-entry = "uv run ty check"
-types = [
-  "python",
-]
-stages = [
-  "pre-commit",
-]
-groups = [
-  "all",
-]
-pass_filenames = false
 priority = 12
 
 [[repos.hooks]]
@@ -402,6 +350,77 @@ groups = [
 priority = 12
 
 [[repos.hooks]]
+id = "check-dead-code"
+name = "check dead code"
+language = "system"
+entry = "uv run vulture"
+types = [
+  "python",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+pass_filenames = false
+priority = 13
+
+[[repos.hooks]]
+id = "check-dependencies"
+name = "check dependencies"
+language = "system"
+entry = "uv run deptry"
+types_or = [
+  "pyproject",
+  "python",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+pass_filenames = false
+priority = 13
+
+[[repos.hooks]]
+id = "check-security"
+name = "check security"
+language = "system"
+entry = "uv run bandit"
+args = [
+  "--exclude=tests",
+]
+types = [
+  "python",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+priority = 13
+
+[[repos.hooks]]
+id = "check-types"
+name = "check types"
+language = "system"
+entry = "uv run ty check"
+types = [
+  "python",
+]
+stages = [
+  "pre-commit",
+]
+groups = [
+  "all",
+]
+pass_filenames = false
+priority = 13
+
+[[repos.hooks]]
 id = "lint-markdown"
 name = "lint markdown"
 language = "system"
@@ -418,7 +437,7 @@ stages = [
 groups = [
   "all",
 ]
-priority = 12
+priority = 13
 
 [[repos]]
 repo = "builtin"

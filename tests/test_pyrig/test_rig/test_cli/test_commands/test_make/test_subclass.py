@@ -9,6 +9,16 @@ from pyrig.rig.cli.commands.make.subclass import choose_subclass, make_subclass
 from pyrig.rig.tools.pyrigger import Pyrigger
 
 
+def test_choose_subclass(mocker: MockerFixture) -> None:
+    """Test function."""
+    fuzzy_mock = mocker.patch("InquirerPy.inquirer.fuzzy")
+    fuzzy_mock.return_value.execute.return_value = "module.ClassName"
+
+    result = choose_subclass()
+    assert result == "module.ClassName"
+    fuzzy_mock.assert_called_once()
+
+
 def test_make_subclass(tmp_path: Path, mocker: MockerFixture) -> None:
     """Test function."""
     project_dir = tmp_path / "my-project"
@@ -67,13 +77,3 @@ def test_make_subclass_with_reference(
         assert (
             "from pyrig.rig.tools.pyrigger import Pyrigger as BasePyrigger" in content
         )
-
-
-def test_choose_subclass(mocker: MockerFixture) -> None:
-    """Test function."""
-    fuzzy_mock = mocker.patch("InquirerPy.inquirer.fuzzy")
-    fuzzy_mock.return_value.execute.return_value = "module.ClassName"
-
-    result = choose_subclass()
-    assert result == "module.ClassName"
-    fuzzy_mock.assert_called_once()

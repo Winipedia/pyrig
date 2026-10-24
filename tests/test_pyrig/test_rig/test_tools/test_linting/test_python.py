@@ -1,6 +1,7 @@
 """module."""
 
 from pyrig.rig.tools.linting.markdown import MarkdownLinter
+from pyrig.rig.tools.linting.order import PythonOrderLinter
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.security.secrets import SecretsChecker
@@ -53,6 +54,7 @@ class TestPythonLinter:
         """Test method."""
         # Ruff formatting runs after Ruff's autofixing linter
         hook = PythonLinter.I.check_hook()
+        assert hook["priority"] > PythonOrderLinter.I.check_hook()["priority"]
         format_hook = PythonLinter.I.format_hook()
         assert format_hook["priority"] > hook["priority"]
         assert hook["types"] == ["python"]
@@ -72,6 +74,8 @@ class TestPythonLinter:
         assert format_hook["priority"] > secrets_hook["priority"]
         markdown_hook = MarkdownLinter.I.format_hook()
         assert markdown_hook["priority"] < format_hook["priority"]
+        order_hook = PythonOrderLinter.I.check_hook()
+        assert order_hook["priority"] < format_hook["priority"]
         assert format_hook["types_or"] == ["markdown", "python"]
 
     def test_format_python(self) -> None:

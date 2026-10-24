@@ -12,6 +12,11 @@ from pyrig.core.introspection.modules import (
 )
 
 
+def test_leaf_module_name() -> None:
+    """Test function."""
+    assert leaf_module_name(ModuleType("package.subcommands")) == "subcommands"
+
+
 def test_module_content(tmp_path: Path) -> None:
     """Test function."""
     module_path = tmp_path / "example.py"
@@ -23,8 +28,3 @@ def test_module_content(tmp_path: Path) -> None:
 
     module_path.write_text("value = 2\n")
     assert module_content(module) == "value = 2\n"
-
-
-def test_leaf_module_name() -> None:
-    """Test function."""
-    assert leaf_module_name(ModuleType("package.subcommands")) == "subcommands"

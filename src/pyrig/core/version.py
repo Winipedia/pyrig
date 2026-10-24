@@ -6,6 +6,30 @@ from packaging.specifiers import SpecifierSet
 from packaging.version import Version
 
 
+def leveled_version(
+    version: Version,
+    level: Literal["major", "minor", "micro"],
+) -> Version:
+    """Truncate a version to the specified precision level.
+
+    Args:
+        version: The version to truncate.
+        level: Precision level:
+            - `"major"`: Keep only the major component (e.g., `"3.11.5"` → `"3"`).
+            - `"minor"`: Keep major and minor (e.g., `"3.11.5"` → `"3.11"`).
+            - `"micro"`: Return the version unchanged.
+
+    Returns:
+        The version at the specified precision. Pre-release and other suffixes
+        are stripped for `"major"` and `"minor"`.
+    """
+    if level == "major":
+        return Version(f"{version.major}")
+    if level == "minor":
+        return Version(f"{version.major}.{version.minor}")
+    return version
+
+
 class VersionConstraint:
     """Parsed PEP 440 version constraint with normalized bounds.
 
@@ -327,27 +351,3 @@ class VersionConstraint:
         if default is None:
             return None
         return Version(str(default))
-
-
-def leveled_version(
-    version: Version,
-    level: Literal["major", "minor", "micro"],
-) -> Version:
-    """Truncate a version to the specified precision level.
-
-    Args:
-        version: The version to truncate.
-        level: Precision level:
-            - `"major"`: Keep only the major component (e.g., `"3.11.5"` → `"3"`).
-            - `"minor"`: Keep major and minor (e.g., `"3.11.5"` → `"3.11"`).
-            - `"micro"`: Return the version unchanged.
-
-    Returns:
-        The version at the specified precision. Pre-release and other suffixes
-        are stripped for `"major"` and `"minor"`.
-    """
-    if level == "major":
-        return Version(f"{version.major}")
-    if level == "minor":
-        return Version(f"{version.major}.{version.minor}")
-    return version
