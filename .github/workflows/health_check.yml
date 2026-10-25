@@ -57,6 +57,20 @@
         "id": "analyze-code"
         # ryl disable-line rule:line-length
         "uses": "github/codeql-action/analyze@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee"  # v4.39.0
+      -
+        "name": "Check Alerts"
+        "id": "check-alerts"
+        "run": |-
+          gh \
+          api \
+          "repos/${GITHUB_REPOSITORY}/code-scanning/alerts" \
+          --method=GET \
+          --raw-field="ref=${GITHUB_REF}" \
+          --raw-field=state=open \
+          --raw-field=tool_name=CodeQL \
+          --jq='if . != [] then error("Alerts found") end'
+        "env":
+          "GH_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
   "health-checks":
     "name": "Health Checks"
     "permissions":
