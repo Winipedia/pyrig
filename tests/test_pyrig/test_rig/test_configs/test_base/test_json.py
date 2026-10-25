@@ -9,30 +9,6 @@ import pytest
 from pyrig.rig.configs.base.json import JSONDictConfigFile
 
 
-@pytest.fixture
-def my_test_json_config_file(
-    config_file_factory: Callable[[type[JSONDictConfigFile]], type[JSONDictConfigFile]],
-) -> type[JSONDictConfigFile]:
-    """Create a test json config file class with tmp_path."""
-
-    class MyTestJSONDictConfigFile(config_file_factory(JSONDictConfigFile)):  # ty: ignore[unsupported-base]
-        """Test json config file."""
-
-        def stem(self) -> str:
-            """Get the stem."""
-            return "test_json"
-
-        def parent_path(self) -> Path:
-            """Get the parent path."""
-            return Path()
-
-        def _configs(self) -> dict[str, Any]:
-            """Get the configs."""
-            return {"key": "value"}
-
-    return MyTestJSONDictConfigFile
-
-
 class TestJSONConfigFile:
     """Test class."""
 
@@ -59,3 +35,27 @@ class TestJSONConfigFile:
 
 class TestJSONDictConfigFile:
     """Test class."""
+
+
+@pytest.fixture
+def my_test_json_config_file(
+    config_file_factory: Callable[[type[JSONDictConfigFile]], type[JSONDictConfigFile]],
+) -> type[JSONDictConfigFile]:
+    """Create a test json config file class with tmp_path."""
+
+    class MyTestJSONDictConfigFile(config_file_factory(JSONDictConfigFile)):  # ty: ignore[unsupported-base]
+        """Test json config file."""
+
+        def stem(self) -> str:
+            """Get the stem."""
+            return "test_json"
+
+        def parent_path(self) -> Path:
+            """Get the parent path."""
+            return Path()
+
+        def _configs(self) -> dict[str, Any]:
+            """Get the configs."""
+            return {"key": "value"}
+
+    return MyTestJSONDictConfigFile

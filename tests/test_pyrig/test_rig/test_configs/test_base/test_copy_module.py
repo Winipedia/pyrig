@@ -15,76 +15,6 @@ from pyrig.rig.configs.base.copy_module import (
 from pyrig.rig.configs.base.python import PythonPackageConfigFile
 
 
-@pytest.fixture
-def my_test_copy_module_config_file(
-    config_file_factory: Callable[
-        [type[PythonPackageConfigFile]],
-        type[PythonPackageConfigFile],
-    ],
-    tmp_path: Path,
-) -> type[PythonPackageConfigFile]:
-    """Create a test copy module config file class with tmp_path."""
-    # Create a mock module for testing
-
-    mock_module = ModuleType("test_package.test_subpackage.test_module")
-    mock_module.__file__ = str(
-        tmp_path / "test_package" / "test_subpackage" / "test_module.py",
-    )
-
-    # Create the module file with some content
-    module_path = Path(mock_module.__file__)
-    module_path.parent.mkdir(parents=True, exist_ok=True)
-    test_content = (
-        '"""Test module content."""\n\n'
-        "def test_func():\n"
-        '    """Test function."""\n'
-        "    pass\n"
-    )
-    module_path.write_text(test_content)
-
-    class MyTestCopyModuleConfigFile(config_file_factory(CopyModuleConfigFile)):  # ty: ignore[unsupported-base]
-        """Test copy module config file with tmp_path override."""
-
-        def copy_module(self) -> ModuleType:
-            """Get the source module."""
-            return mock_module
-
-        def _dump(self, configs: list[Any]) -> None:
-            """Dump the config file."""
-            with chdir(tmp_path):
-                super()._dump(configs)
-
-    return MyTestCopyModuleConfigFile
-
-
-@pytest.fixture
-def my_test_copy_module_only_docstring_config_file(
-    config_file_factory: Callable[
-        [type[CopyModuleDocstringConfigFile]],
-        type[CopyModuleDocstringConfigFile],
-    ],
-    tmp_path: Path,
-) -> type[CopyModuleDocstringConfigFile]:
-    """Create a test copy module only docstring config file class with tmp_path."""
-    path = tmp_path / "test_package" / "test_subpackage" / "test_module.py"
-    path.parent.mkdir(parents=True)
-    path.write_text('"""Test module content."""')
-    module = ModuleType("test_package.test_subpackage.test_module")
-    module.__file__ = str(path)
-    module.__doc__ = "Test module content."
-
-    class MyTestCopyModuleDocstringConfigFile(
-        config_file_factory(CopyModuleDocstringConfigFile),  # ty: ignore[unsupported-base]
-    ):
-        """Test copy module only docstring config file with tmp_path override."""
-
-        def copy_module(self) -> ModuleType:
-            """Get the source module."""
-            return module
-
-    return MyTestCopyModuleDocstringConfigFile
-
-
 class TestCopyModuleConfigFile:
     """Test class."""
 
@@ -205,3 +135,73 @@ class TestCopyModuleDocstringConfigFile:
         with chdir(tmp_path):
             my_test_copy_module_only_docstring_config_file().validate()
             assert my_test_copy_module_only_docstring_config_file().is_correct()
+
+
+@pytest.fixture
+def my_test_copy_module_config_file(
+    config_file_factory: Callable[
+        [type[PythonPackageConfigFile]],
+        type[PythonPackageConfigFile],
+    ],
+    tmp_path: Path,
+) -> type[PythonPackageConfigFile]:
+    """Create a test copy module config file class with tmp_path."""
+    # Create a mock module for testing
+
+    mock_module = ModuleType("test_package.test_subpackage.test_module")
+    mock_module.__file__ = str(
+        tmp_path / "test_package" / "test_subpackage" / "test_module.py",
+    )
+
+    # Create the module file with some content
+    module_path = Path(mock_module.__file__)
+    module_path.parent.mkdir(parents=True, exist_ok=True)
+    test_content = (
+        '"""Test module content."""\n\n'
+        "def test_func():\n"
+        '    """Test function."""\n'
+        "    pass\n"
+    )
+    module_path.write_text(test_content)
+
+    class MyTestCopyModuleConfigFile(config_file_factory(CopyModuleConfigFile)):  # ty: ignore[unsupported-base]
+        """Test copy module config file with tmp_path override."""
+
+        def copy_module(self) -> ModuleType:
+            """Get the source module."""
+            return mock_module
+
+        def _dump(self, configs: list[Any]) -> None:
+            """Dump the config file."""
+            with chdir(tmp_path):
+                super()._dump(configs)
+
+    return MyTestCopyModuleConfigFile
+
+
+@pytest.fixture
+def my_test_copy_module_only_docstring_config_file(
+    config_file_factory: Callable[
+        [type[CopyModuleDocstringConfigFile]],
+        type[CopyModuleDocstringConfigFile],
+    ],
+    tmp_path: Path,
+) -> type[CopyModuleDocstringConfigFile]:
+    """Create a test copy module only docstring config file class with tmp_path."""
+    path = tmp_path / "test_package" / "test_subpackage" / "test_module.py"
+    path.parent.mkdir(parents=True)
+    path.write_text('"""Test module content."""')
+    module = ModuleType("test_package.test_subpackage.test_module")
+    module.__file__ = str(path)
+    module.__doc__ = "Test module content."
+
+    class MyTestCopyModuleDocstringConfigFile(
+        config_file_factory(CopyModuleDocstringConfigFile),  # ty: ignore[unsupported-base]
+    ):
+        """Test copy module only docstring config file with tmp_path override."""
+
+        def copy_module(self) -> ModuleType:
+            """Get the source module."""
+            return module
+
+    return MyTestCopyModuleDocstringConfigFile

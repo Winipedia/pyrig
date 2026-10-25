@@ -19,35 +19,6 @@ from pyrig.rig.configs.version_control.remote.workflows.health_check import (
 )
 
 
-@pytest.fixture
-def my_test_workflow(
-    config_file_factory: Callable[[type[WorkflowConfigFile]], type[WorkflowConfigFile]],
-) -> type[WorkflowConfigFile]:
-    """Create a test workflow class with tmp_path."""
-
-    class MyTestWorkflowConfigFileClass(config_file_factory(WorkflowConfigFile)):  # ty: ignore[unsupported-base]
-        """Test workflow class with tmp_path override."""
-
-        def stem(self) -> str:
-            """Get the stem."""
-            return "test_workflow"
-
-        def workflow_triggers(self) -> dict[str, Any]:
-            """Get the workflow triggers."""
-            return {"workflow_dispatch": {}}
-
-        def jobs(self) -> dict[str, Any]:
-            """Get the workflow jobs."""
-            return {
-                "test_job": {
-                    "runs-on": "ubuntu-latest",
-                    "steps": [{"name": "Test Step", "run": "echo test"}],
-                },
-            }
-
-    return MyTestWorkflowConfigFileClass
-
-
 class TestWorkflowConfigFile:
     """Test class."""
 
@@ -801,3 +772,32 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Test method."""
         assert my_test_workflow().pull_request_event_key() == "pull_request"
+
+
+@pytest.fixture
+def my_test_workflow(
+    config_file_factory: Callable[[type[WorkflowConfigFile]], type[WorkflowConfigFile]],
+) -> type[WorkflowConfigFile]:
+    """Create a test workflow class with tmp_path."""
+
+    class MyTestWorkflowConfigFileClass(config_file_factory(WorkflowConfigFile)):  # ty: ignore[unsupported-base]
+        """Test workflow class with tmp_path override."""
+
+        def stem(self) -> str:
+            """Get the stem."""
+            return "test_workflow"
+
+        def workflow_triggers(self) -> dict[str, Any]:
+            """Get the workflow triggers."""
+            return {"workflow_dispatch": {}}
+
+        def jobs(self) -> dict[str, Any]:
+            """Get the workflow jobs."""
+            return {
+                "test_job": {
+                    "runs-on": "ubuntu-latest",
+                    "steps": [{"name": "Test Step", "run": "echo test"}],
+                },
+            }
+
+    return MyTestWorkflowConfigFileClass

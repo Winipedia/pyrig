@@ -13,33 +13,6 @@ from pyrig.rig.configs.scratch import ScratchConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
 
 
-@pytest.fixture
-def my_test_python_package_config_file(
-    config_file_factory: Callable[
-        [type[PythonPackageConfigFile]],
-        type[PythonPackageConfigFile],
-    ],
-) -> type[PythonPackageConfigFile]:
-    """Create a test python package config file class with tmp_path."""
-
-    class MyTestPythonPackageConfigFile(config_file_factory(PythonPackageConfigFile)):  # ty: ignore[unsupported-base]
-        """Test python package config file with tmp_path override."""
-
-        def stem(self) -> str:
-            """Get the stem."""
-            return "test_package"
-
-        def parent_path(self) -> Path:
-            """Get the parent path under the package root."""
-            return PackageManager.I.package_root() / "parent_package"
-
-        def content(self) -> str:
-            """Get the content string."""
-            return '"""Test content."""'
-
-    return MyTestPythonPackageConfigFile
-
-
 class TestPythonConfigFile:
     """Test class."""
 
@@ -119,3 +92,30 @@ class TestPythonPackageConfigFile:
             assert not (
                 my_test_python_package_config_file().source_root() / "__init__.py"
             ).exists()
+
+
+@pytest.fixture
+def my_test_python_package_config_file(
+    config_file_factory: Callable[
+        [type[PythonPackageConfigFile]],
+        type[PythonPackageConfigFile],
+    ],
+) -> type[PythonPackageConfigFile]:
+    """Create a test python package config file class with tmp_path."""
+
+    class MyTestPythonPackageConfigFile(config_file_factory(PythonPackageConfigFile)):  # ty: ignore[unsupported-base]
+        """Test python package config file with tmp_path override."""
+
+        def stem(self) -> str:
+            """Get the stem."""
+            return "test_package"
+
+        def parent_path(self) -> Path:
+            """Get the parent path under the package root."""
+            return PackageManager.I.package_root() / "parent_package"
+
+        def content(self) -> str:
+            """Get the content string."""
+            return '"""Test content."""'
+
+    return MyTestPythonPackageConfigFile

@@ -34,61 +34,6 @@ def test_validate_config_files(
     assert my_test_config_file().exists_correct()
 
 
-@pytest.fixture
-def my_test_config_file(
-    config_file_factory: Callable[
-        [type[ConfigFile[dict[str, Any]]]],
-        type[ConfigFile[dict[str, Any]]],
-    ],
-) -> type[ConfigFile[dict[str, Any]]]:
-    """Create a test config file class with tmp_path."""
-
-    class MyTestConfigFile(config_file_factory(ConfigFile)):  # ty: ignore[unsupported-base]
-        """Test config file with tmp_path override."""
-
-        STORAGE_DICT: ClassVar[dict[str, Any]] = {
-            "key0": "value0",
-            "key1": "value1",
-            "key2": {"key3": "value3"},
-            "key4": [["value4"], {"key5": "value5", "key6": "value6"}],
-        }
-
-        def stem(self) -> str:
-            """Get the stem."""
-            return "my-test-file"
-
-        def extension(self) -> str:
-            """Get the file extension of the config file."""
-            return "txt"
-
-        def _load(self) -> dict[str, Any]:
-            """Load the config file."""
-            return copy.deepcopy(self.STORAGE_DICT)
-
-        def _dump(self, configs: dict[str, Any]) -> None:
-            """Dump the config file."""
-            self.__class__.STORAGE_DICT = configs
-
-        def parent_path(self) -> Path:
-            """Get the path to the config file."""
-            return Path("parent_dir")
-
-        def empty_configs(self) -> dict[str, Any]:
-            """Get the empty config."""
-            return {}
-
-        def _configs(self) -> dict[str, Any]:
-            """Get the config."""
-            return {
-                "key1": "value1",
-                "key2": {"key3": "value3"},
-                "key4": [["notvalue4", "extra_value"], {"key5": "notvalue5"}],
-                "key7": "value7",
-            }
-
-    return MyTestConfigFile
-
-
 class TestConfigFile:
     """Test class."""
 
@@ -494,3 +439,58 @@ class TestListConfigFile:
                 return []
 
         assert MyListConfigFile().empty_configs() == []
+
+
+@pytest.fixture
+def my_test_config_file(
+    config_file_factory: Callable[
+        [type[ConfigFile[dict[str, Any]]]],
+        type[ConfigFile[dict[str, Any]]],
+    ],
+) -> type[ConfigFile[dict[str, Any]]]:
+    """Create a test config file class with tmp_path."""
+
+    class MyTestConfigFile(config_file_factory(ConfigFile)):  # ty: ignore[unsupported-base]
+        """Test config file with tmp_path override."""
+
+        STORAGE_DICT: ClassVar[dict[str, Any]] = {
+            "key0": "value0",
+            "key1": "value1",
+            "key2": {"key3": "value3"},
+            "key4": [["value4"], {"key5": "value5", "key6": "value6"}],
+        }
+
+        def stem(self) -> str:
+            """Get the stem."""
+            return "my-test-file"
+
+        def extension(self) -> str:
+            """Get the file extension of the config file."""
+            return "txt"
+
+        def _load(self) -> dict[str, Any]:
+            """Load the config file."""
+            return copy.deepcopy(self.STORAGE_DICT)
+
+        def _dump(self, configs: dict[str, Any]) -> None:
+            """Dump the config file."""
+            self.__class__.STORAGE_DICT = configs
+
+        def parent_path(self) -> Path:
+            """Get the path to the config file."""
+            return Path("parent_dir")
+
+        def empty_configs(self) -> dict[str, Any]:
+            """Get the empty config."""
+            return {}
+
+        def _configs(self) -> dict[str, Any]:
+            """Get the config."""
+            return {
+                "key1": "value1",
+                "key2": {"key3": "value3"},
+                "key4": [["notvalue4", "extra_value"], {"key5": "notvalue5"}],
+                "key7": "value7",
+            }
+
+    return MyTestConfigFile

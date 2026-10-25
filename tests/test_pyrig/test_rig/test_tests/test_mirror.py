@@ -31,25 +31,6 @@ class Example:
 '''
 
 
-@pytest.fixture
-def mirror_config(
-    tmp_path: Path,
-) -> tuple[type[MirrorTestConfigFile], Path]:
-    """Test fixture."""
-    source_path = tmp_path / SOURCE_PATH
-    source_path.parent.mkdir(parents=True)
-    source_path.write_text(SOURCE_CONTENT)
-
-    class ExampleMirrorConfig(MirrorTestConfigFile):
-        def mirror_file(self) -> Path:
-            return SOURCE_PATH
-
-        def package_root(self) -> Path:
-            return Path("tests")
-
-    return ExampleMirrorConfig, tmp_path
-
-
 class TestMirrorTestConfigFile:
     """Test class."""
 
@@ -502,3 +483,22 @@ class TestExample:
         """Test method."""
         config_cls, _ = mirror_config
         assert config_cls().test_module_docstring() == '"""Test module."""\n'
+
+
+@pytest.fixture
+def mirror_config(
+    tmp_path: Path,
+) -> tuple[type[MirrorTestConfigFile], Path]:
+    """Test fixture."""
+    source_path = tmp_path / SOURCE_PATH
+    source_path.parent.mkdir(parents=True)
+    source_path.write_text(SOURCE_CONTENT)
+
+    class ExampleMirrorConfig(MirrorTestConfigFile):
+        def mirror_file(self) -> Path:
+            return SOURCE_PATH
+
+        def package_root(self) -> Path:
+            return Path("tests")
+
+    return ExampleMirrorConfig, tmp_path

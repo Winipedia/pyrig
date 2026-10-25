@@ -9,17 +9,6 @@ from pyrig.rig.configs.version_control.remote.workflows.health_check import (
 )
 
 
-@pytest.fixture
-def my_test_health_check_workflow(
-    config_file_factory: Callable[
-        [type[HealthCheckWorkflowConfigFile]],
-        type[HealthCheckWorkflowConfigFile],
-    ],
-) -> type[HealthCheckWorkflowConfigFile]:
-    """Create a test health check workflow class with tmp_path."""
-    return config_file_factory(HealthCheckWorkflowConfigFile)
-
-
 class TestHealthCheckWorkflowConfigFile:
     """Test class."""
 
@@ -136,3 +125,14 @@ class TestHealthCheckWorkflowConfigFile:
             HealthCheckWorkflowConfigFile.I.job_health_checks,
             HealthCheckWorkflowConfigFile.I.job_matrix_health_checks,
         )
+
+
+@pytest.fixture
+def my_test_health_check_workflow(
+    config_file_factory: Callable[
+        [type[HealthCheckWorkflowConfigFile]],
+        type[HealthCheckWorkflowConfigFile],
+    ],
+) -> type[HealthCheckWorkflowConfigFile]:
+    """Create a test health check workflow class with tmp_path."""
+    return config_file_factory(HealthCheckWorkflowConfigFile)

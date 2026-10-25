@@ -9,17 +9,6 @@ from pyrig.rig.configs.version_control.remote.workflows.release import (
 )
 
 
-@pytest.fixture
-def my_test_release_workflow(
-    config_file_factory: Callable[
-        [type[ReleaseWorkflowConfigFile]],
-        type[ReleaseWorkflowConfigFile],
-    ],
-) -> type[ReleaseWorkflowConfigFile]:
-    """Create a test release workflow class with tmp_path."""
-    return config_file_factory(ReleaseWorkflowConfigFile)
-
-
 class TestReleaseWorkflowConfigFile:
     """Test class."""
 
@@ -121,3 +110,14 @@ class TestReleaseWorkflowConfigFile:
         assert ReleaseWorkflowConfigFile.I.job_deploy_needs() == (
             ReleaseWorkflowConfigFile.I.job_publish,
         )
+
+
+@pytest.fixture
+def my_test_release_workflow(
+    config_file_factory: Callable[
+        [type[ReleaseWorkflowConfigFile]],
+        type[ReleaseWorkflowConfigFile],
+    ],
+) -> type[ReleaseWorkflowConfigFile]:
+    """Create a test release workflow class with tmp_path."""
+    return config_file_factory(ReleaseWorkflowConfigFile)

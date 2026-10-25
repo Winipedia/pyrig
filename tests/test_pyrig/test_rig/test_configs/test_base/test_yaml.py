@@ -61,37 +61,6 @@ def test_represent_str(
     assert multi_line.value == "line1\nline2", "Expected the value to be unchanged"
 
 
-@pytest.fixture
-def my_test_yaml_config_file(
-    config_file_factory: Callable[
-        [type[YAMLConfigFile[dict[str, Any]]]],
-        type[YAMLConfigFile[dict[str, Any]]],
-    ],
-) -> type[YAMLConfigFile[dict[str, Any]]]:
-    """Create a test yaml config file class with tmp_path."""
-
-    class MyTestYAMLConfigFile(config_file_factory(YAMLConfigFile)):  # ty: ignore[unsupported-base]
-        """Test yaml config file with tmp_path override."""
-
-        def parent_path(self) -> Path:
-            """Get the path to the config file."""
-            return Path()
-
-        def stem(self) -> str:
-            """Get the stem."""
-            return "test_yaml"
-
-        def empty_configs(self) -> dict[str, Any]:
-            """Get the empty config."""
-            return {}
-
-        def _configs(self) -> dict[str, Any]:
-            """Get the config."""
-            return {"key": "value"}
-
-    return MyTestYAMLConfigFile
-
-
 class TestEmitter:
     """Test class."""
 
@@ -198,3 +167,34 @@ class TestYMLConfigFile:
 
 class TestYMLDictConfigFile:
     """Test class."""
+
+
+@pytest.fixture
+def my_test_yaml_config_file(
+    config_file_factory: Callable[
+        [type[YAMLConfigFile[dict[str, Any]]]],
+        type[YAMLConfigFile[dict[str, Any]]],
+    ],
+) -> type[YAMLConfigFile[dict[str, Any]]]:
+    """Create a test yaml config file class with tmp_path."""
+
+    class MyTestYAMLConfigFile(config_file_factory(YAMLConfigFile)):  # ty: ignore[unsupported-base]
+        """Test yaml config file with tmp_path override."""
+
+        def parent_path(self) -> Path:
+            """Get the path to the config file."""
+            return Path()
+
+        def stem(self) -> str:
+            """Get the stem."""
+            return "test_yaml"
+
+        def empty_configs(self) -> dict[str, Any]:
+            """Get the empty config."""
+            return {}
+
+        def _configs(self) -> dict[str, Any]:
+            """Get the config."""
+            return {"key": "value"}
+
+    return MyTestYAMLConfigFile

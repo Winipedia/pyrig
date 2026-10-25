@@ -63,27 +63,6 @@ def commented_map(
     return commented
 
 
-def represent_str(representer: RoundTripRepresenter, data: str) -> ScalarNode:
-    """Represent a string in YAML.
-
-    Represents multi-line strings as literal block scalars and single-line
-    strings as double-quoted scalars.
-
-    Args:
-        representer: The YAML representer.
-        data: The string to represent.
-
-    Returns:
-        A double-quoted scalar node for single-line strings, or a literal
-        block scalar node for multi-line strings.
-    """
-    if is_multiline(data):
-        return representer.represent_literal_scalarstring(LiteralScalarString(data))
-    return representer.represent_double_quoted_scalarstring(
-        DoubleQuotedScalarString(data),
-    )
-
-
 class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
     """Base class for YAML configuration files.
 
@@ -160,6 +139,27 @@ class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
         yaml.compact_seq_map = False
         yaml.representer.add_representer(str, represent_str)
         return yaml
+
+
+def represent_str(representer: RoundTripRepresenter, data: str) -> ScalarNode:
+    """Represent a string in YAML.
+
+    Represents multi-line strings as literal block scalars and single-line
+    strings as double-quoted scalars.
+
+    Args:
+        representer: The YAML representer.
+        data: The string to represent.
+
+    Returns:
+        A double-quoted scalar node for single-line strings, or a literal
+        block scalar node for multi-line strings.
+    """
+    if is_multiline(data):
+        return representer.represent_literal_scalarstring(LiteralScalarString(data))
+    return representer.represent_double_quoted_scalarstring(
+        DoubleQuotedScalarString(data),
+    )
 
 
 class Emitter(BaseEmitter):

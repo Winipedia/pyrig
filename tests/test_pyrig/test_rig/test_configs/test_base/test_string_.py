@@ -8,34 +8,6 @@ import pytest
 from pyrig.rig.configs.base.string_ import StringConfigFile
 
 
-@pytest.fixture
-def my_test_string_config_file(
-    config_file_factory: Callable[[type[StringConfigFile]], type[StringConfigFile]],
-) -> type[StringConfigFile]:
-    """Create a test text config file class with tmp_path."""
-
-    class MyTestStringConfigFile(config_file_factory(StringConfigFile)):  # ty: ignore[unsupported-base]
-        """Test text config file with tmp_path override."""
-
-        def stem(self) -> str:
-            """Get the stem."""
-            return "test_string"
-
-        def parent_path(self) -> Path:
-            """Get the parent path."""
-            return Path()
-
-        def content(self) -> str:
-            """Get the content string."""
-            return "Test content."
-
-        def extension(self) -> str:
-            """Get the file extension."""
-            return "txt"
-
-    return MyTestStringConfigFile
-
-
 class TestStringConfigFile:
     """Test class."""
 
@@ -123,3 +95,31 @@ class TestStringConfigFile:
         my_test_string_config_file().validate()
         read_content = my_test_string_config_file().read_content()
         assert read_content == "Test content."
+
+
+@pytest.fixture
+def my_test_string_config_file(
+    config_file_factory: Callable[[type[StringConfigFile]], type[StringConfigFile]],
+) -> type[StringConfigFile]:
+    """Create a test text config file class with tmp_path."""
+
+    class MyTestStringConfigFile(config_file_factory(StringConfigFile)):  # ty: ignore[unsupported-base]
+        """Test text config file with tmp_path override."""
+
+        def stem(self) -> str:
+            """Get the stem."""
+            return "test_string"
+
+        def parent_path(self) -> Path:
+            """Get the parent path."""
+            return Path()
+
+        def content(self) -> str:
+            """Get the content string."""
+            return "Test content."
+
+        def extension(self) -> str:
+            """Get the file extension."""
+            return "txt"
+
+    return MyTestStringConfigFile

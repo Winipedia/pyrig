@@ -13,20 +13,6 @@ from pyrig.rig.configs.version_control.ignore import (
 )
 
 
-@pytest.fixture
-def my_test_gitignore_config_file(
-    config_file_factory: Callable[[type[ConfigFile]], type[ConfigFile]],
-) -> type[VersionControllerIgnoreConfigFile]:
-    """Create a test gitignore config file class with tmp_path."""
-
-    class MyTestVersionControllerIgnoreConfigFile(
-        config_file_factory(VersionControllerIgnoreConfigFile),  # ty: ignore[unsupported-base]
-    ):
-        """Test gitignore config file with tmp_path override."""
-
-    return MyTestVersionControllerIgnoreConfigFile
-
-
 class TestVersionControllerIgnoreConfigFile:
     """Test class."""
 
@@ -109,3 +95,17 @@ class TestVersionControllerIgnoreConfigFile:
         """Test method."""
         extension = my_test_gitignore_config_file().extension_separator()
         assert extension == "", f"Expected empty string, got {extension}"
+
+
+@pytest.fixture
+def my_test_gitignore_config_file(
+    config_file_factory: Callable[[type[ConfigFile]], type[ConfigFile]],
+) -> type[VersionControllerIgnoreConfigFile]:
+    """Create a test gitignore config file class with tmp_path."""
+
+    class MyTestVersionControllerIgnoreConfigFile(
+        config_file_factory(VersionControllerIgnoreConfigFile),  # ty: ignore[unsupported-base]
+    ):
+        """Test gitignore config file with tmp_path override."""
+
+    return MyTestVersionControllerIgnoreConfigFile

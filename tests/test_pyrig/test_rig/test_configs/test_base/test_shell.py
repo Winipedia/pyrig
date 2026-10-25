@@ -8,30 +8,6 @@ import pytest
 from pyrig.rig.configs.base.shell import ShellConfigFile
 
 
-@pytest.fixture
-def my_test_shell_config_file(
-    config_file_factory: Callable[[type[ShellConfigFile]], type[ShellConfigFile]],
-) -> type[ShellConfigFile]:
-    """Create a test shell config file class with tmp_path."""
-
-    class MyTestShellConfigFile(config_file_factory(ShellConfigFile)):  # ty: ignore[unsupported-base]
-        """Test shell config file with tmp_path override."""
-
-        def stem(self) -> str:
-            """Get the stem."""
-            return "test_script"
-
-        def parent_path(self) -> Path:
-            """Get the parent path."""
-            return Path()
-
-        def script(self) -> str:
-            """Get the script content."""
-            return 'greet() {\n  echo "Hello, $1"\n}'
-
-    return MyTestShellConfigFile
-
-
 class TestShellConfigFile:
     """Test class."""
 
@@ -70,3 +46,27 @@ class TestShellConfigFile:
             f"{script.shebang_line()}\n{script.strict_mode_line()}\n\n{script.script()}"
         )
         assert script.content() == expected
+
+
+@pytest.fixture
+def my_test_shell_config_file(
+    config_file_factory: Callable[[type[ShellConfigFile]], type[ShellConfigFile]],
+) -> type[ShellConfigFile]:
+    """Create a test shell config file class with tmp_path."""
+
+    class MyTestShellConfigFile(config_file_factory(ShellConfigFile)):  # ty: ignore[unsupported-base]
+        """Test shell config file with tmp_path override."""
+
+        def stem(self) -> str:
+            """Get the stem."""
+            return "test_script"
+
+        def parent_path(self) -> Path:
+            """Get the parent path."""
+            return Path()
+
+        def script(self) -> str:
+            """Get the script content."""
+            return 'greet() {\n  echo "Hello, $1"\n}'
+
+    return MyTestShellConfigFile

@@ -26,21 +26,6 @@ from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_control.controller import VersionController
 
 
-@pytest.fixture
-def my_test_pyproject_config_file(
-    config_file_factory: Callable[
-        [type[PyprojectConfigFile]],
-        type[PyprojectConfigFile],
-    ],
-) -> type[PyprojectConfigFile]:
-    """Create a test pyproject config file class with tmp_path."""
-
-    class MyTestPyprojectConfigFile(config_file_factory(PyprojectConfigFile)):  # ty: ignore[unsupported-base]
-        """Test pyproject config file with tmp_path override."""
-
-    return MyTestPyprojectConfigFile
-
-
 class TestPyprojectConfigFile:
     """Test class."""
 
@@ -483,3 +468,18 @@ class TestPyprojectConfigFile:
             PyprojectConfigFile.I.maintainer_name() == VersionController.I.repo_owner()
         )
         assert PyprojectConfigFile.I.maintainer_name() == "Winipedia"
+
+
+@pytest.fixture
+def my_test_pyproject_config_file(
+    config_file_factory: Callable[
+        [type[PyprojectConfigFile]],
+        type[PyprojectConfigFile],
+    ],
+) -> type[PyprojectConfigFile]:
+    """Create a test pyproject config file class with tmp_path."""
+
+    class MyTestPyprojectConfigFile(config_file_factory(PyprojectConfigFile)):  # ty: ignore[unsupported-base]
+        """Test pyproject config file with tmp_path override."""
+
+    return MyTestPyprojectConfigFile
