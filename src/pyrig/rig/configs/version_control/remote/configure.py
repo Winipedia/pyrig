@@ -12,30 +12,25 @@ from pyrig.rig.tools.version_control.remote.controller import (
 
 
 class ConfigureRepositoryConfigFile(ShellConfigFile):
-    """Configuration file for `.github/configure.sh`.
+    """Configuration manager for the repository setup script.
 
-    Defines shell functions that read `.github/settings.json` and apply its
-    contents to the repository via the GitHub CLI, plus functions that
-    enable Dependabot alerts, Dependabot security updates, and immutable
-    releases. The script is meant to be invoked directly rather than
-    sourced as a library: running it runs every function it defines.
-
-    Every function calls `gh api` against this repository directly, so only
-    a token accepted by `gh` (`GH_TOKEN` or `GITHUB_TOKEN`) needs to already
-    be set in the environment.
+    The generated script requires nonempty `GITHUB_REPOSITORY` and `GH_TOKEN`
+    environment variables and is intended to be run directly.
     """
 
+    def required_env_vars(self) -> tuple[str, ...]:
+        """Return the required names: `GH_TOKEN` and `GITHUB_REPOSITORY`."""
+        return ("GH_TOKEN", self.repo_variable())
+
     def script(self) -> str:
-        """Return the required shell script content, below the shared header.
+        """Return the function definitions and the block that runs them.
 
         Returns:
-            The shared setup code, every shell function definition
-            returned by `scripts()`, and the trailing block that runs
-            every function.
+            The shell function definitions returned by `scripts()` and the
+            block that runs every function. The shared header and required
+            environment checks are prepended by `content()`.
         """
-        return f"""{self.global_content()}
-
-{self.scripts_content()}
+        return f"""{self.scripts_content()}
 
 {self.footer_content()}
 """
@@ -212,18 +207,6 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
   "${step}"
 done"""
 
-    def global_content(self) -> str:
-        """Return the content defined outside any function, shared by all of them.
-
-        Defined once at the top of the script rather than inside each
-        function for reuse. Any other variable or setup shared across functions in
-        the future would also be returned here.
-
-        Returns:
-            Currently just the `repo_variable()` variable assignment.
-        """
-        return f'{self.repo_variable()}="{RemoteVersionController.I.repository()}"'
-
     def repo_variable(self) -> str:
-        """Return `"repo"`, the shell variable name holding `owner/repo`."""
-        return "repo"
+        """Return `"GITHUB_REPOSITORY"`, the Actions variable holding `owner/repo`."""
+        return "GITHUB_REPOSITORY"

@@ -1,12 +1,9 @@
-"""Tests for ConfigureRepositoryConfigFile."""
+"""module."""
 
 from pathlib import Path
 
 from pyrig.rig.configs.version_control.remote.configure import (
     ConfigureRepositoryConfigFile,
-)
-from pyrig.rig.tools.version_control.remote.controller import (
-    RemoteVersionController,
 )
 
 
@@ -55,6 +52,10 @@ class TestConfigureRepositoryConfigFile:
         script = ConfigureRepositoryConfigFile.I
         content = script.script()
         assert script.repo_variable() in content
+        assert content.startswith(f"{script.scripts_content()}\n\n")
+        assert script.content() == f"{script.global_content()}\n\n{content}"
+        assert ': "${GITHUB_REPOSITORY:?}"' in script.global_content()
+        assert ': "${GH_TOKEN:?}"' in script.global_content()
         assert script.repository_func() in content
         assert script.rulesets_func() in content
         assert script.dependency_alerts_func() in content
@@ -70,30 +71,23 @@ class TestConfigureRepositoryConfigFile:
         assert "declare -F" in result
         assert "for step in" in result
 
-    def test_global_content(self) -> None:
-        """Test method."""
-        script = ConfigureRepositoryConfigFile.I
-        result = script.global_content()
-        repo = RemoteVersionController.I.repository()
-        assert result == f'{script.repo_variable()}="{repo}"'
-
     def test_repo_variable(self) -> None:
         """Test method."""
-        assert ConfigureRepositoryConfigFile.I.repo_variable() == "repo"
+        assert ConfigureRepositoryConfigFile.I.repo_variable() == "GITHUB_REPOSITORY"
 
     def test_repository_script(self) -> None:
         """Test method."""
         script = ConfigureRepositoryConfigFile.I
         result = script.repository_script()
         assert result.startswith(f"{script.repository_func()}() {{")
-        assert "${repo}" in result
+        assert "${GITHUB_REPOSITORY}" in result
 
     def test_rulesets_script(self) -> None:
         """Test method."""
         script = ConfigureRepositoryConfigFile.I
         result = script.rulesets_script()
         assert result.startswith(f"{script.rulesets_func()}() {{")
-        assert "${repo}" in result
+        assert "${GITHUB_REPOSITORY}" in result
         assert 'gh api "${endpoint}" \\' in result
         assert 'url="${endpoint}${id:+/${id}}"' in result
         assert 'gh api "${url}"' in result
@@ -106,7 +100,7 @@ class TestConfigureRepositoryConfigFile:
         assert result.startswith(
             f"{script.dependency_alerts_func()}() {{",
         )
-        assert "${repo}" in result
+        assert "${GITHUB_REPOSITORY}" in result
         assert "vulnerability-alerts" in result
         assert "--method=PUT" in result
 
@@ -117,7 +111,7 @@ class TestConfigureRepositoryConfigFile:
         assert result.startswith(
             f"{script.dependency_security_updates_func()}() {{",
         )
-        assert "${repo}" in result
+        assert "${GITHUB_REPOSITORY}" in result
         assert "automated-security-fixes" in result
         assert "--method=PUT" in result
 
@@ -128,7 +122,7 @@ class TestConfigureRepositoryConfigFile:
         assert result.startswith(
             f"{script.release_immutability_func()}() {{",
         )
-        assert "${repo}" in result
+        assert "${GITHUB_REPOSITORY}" in result
         assert "immutable-releases" in result
         assert "--method=PUT" in result
 
@@ -149,3 +143,10 @@ class TestConfigureRepositoryConfigFile:
             script.release_immutability_script(),
         ):
             assert s in script.scripts()
+
+    def test_required_env_vars(self) -> None:
+        """Test method."""
+        assert ConfigureRepositoryConfigFile.I.required_env_vars() == (
+            "GH_TOKEN",
+            "GITHUB_REPOSITORY",
+        )

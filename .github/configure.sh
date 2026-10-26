@@ -1,30 +1,31 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repo="Winipedia/pyrig"
+: "${GH_TOKEN:?}"
+: "${GITHUB_REPOSITORY:?}"
 
 dependency_alerts() {
-  gh api "repos/${repo}/vulnerability-alerts" --method=PUT
+  gh api "repos/${GITHUB_REPOSITORY}/vulnerability-alerts" --method=PUT
 }
 
 dependency_security_updates() {
-  gh api "repos/${repo}/automated-security-fixes" --method=PUT
+  gh api "repos/${GITHUB_REPOSITORY}/automated-security-fixes" --method=PUT
 }
 
 fork_pr_contributor_approval() {
-  jq '.fork_pr_contributor_approval' .github/settings.json | gh api "repos/${repo}/actions/permissions/fork-pr-contributor-approval" --method=PUT --input=-
+  jq '.fork_pr_contributor_approval' .github/settings.json | gh api "repos/${GITHUB_REPOSITORY}/actions/permissions/fork-pr-contributor-approval" --method=PUT --input=-
 }
 
 release_immutability() {
-  gh api "repos/${repo}/immutable-releases" --method=PUT
+  gh api "repos/${GITHUB_REPOSITORY}/immutable-releases" --method=PUT
 }
 
 repository() {
-  jq '.repository' .github/settings.json | gh api "repos/${repo}" --method=PATCH --input=-
+  jq '.repository' .github/settings.json | gh api "repos/${GITHUB_REPOSITORY}" --method=PATCH --input=-
 }
 
 rulesets() {
-  local endpoint="repos/${repo}/rulesets"
+  local endpoint="repos/${GITHUB_REPOSITORY}/rulesets"
   jq --compact-output '.rulesets[]' .github/settings.json | while read -r ruleset; do
     id=$(gh api "${endpoint}" \
       | jq --raw-output --argjson r "${ruleset}" '.[] | select(.name==$r.name) | .id')
@@ -35,11 +36,11 @@ rulesets() {
 }
 
 topics() {
-  jq '{names: .topics}' .github/settings.json | gh api "repos/${repo}/topics" --method=PUT --input=-
+  jq '{names: .topics}' .github/settings.json | gh api "repos/${GITHUB_REPOSITORY}/topics" --method=PUT --input=-
 }
 
 vulnerability_reporting() {
-  gh api "repos/${repo}/private-vulnerability-reporting" --method=PUT
+  gh api "repos/${GITHUB_REPOSITORY}/private-vulnerability-reporting" --method=PUT
 }
 
 for step in $(declare -F | awk '{print $3}'); do

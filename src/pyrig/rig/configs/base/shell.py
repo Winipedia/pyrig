@@ -9,57 +9,68 @@ from pyrig.rig.tools.formatting.shell import ShellFormatter
 class ShellConfigFile(StringConfigFile):
     r"""Abstract base for shell script (`.sh`) configuration files.
 
-    Fixes the file extension to `"sh"` and prepends a shebang and strict
-    mode line to every script. The shebang pins the interpreter to `bash`,
-    required because the strict mode line's `pipefail` option is a bash
-    extension that a plain POSIX `sh` does not support. Strict mode
-    (`set -euo pipefail`) makes a failed command anywhere in a pipeline
-    abort the script instead of silently masking the failure.
+    Adds a Bash shebang and strict-mode header to each script, followed by
+    checks for any required environment variables.
 
     Subclasses must implement:
         - `parent_path`: Directory containing the `.sh` file.
         - `stem`: Filename without its extension.
         - `script`: Required shell script content, below the header.
 
-    Example:
-        >>> from pathlib import Path
-        >>> from pyrig.rig.configs.base.shell import ShellConfigFile
-        >>>
-        >>> class GreetScriptFile(ShellConfigFile):
-        ...     def parent_path(self) -> Path:
-        ...         return Path(".github/")
-        ...
-        ...     def stem(self) -> str:
-        ...         return "greet"
-        ...
-        ...     def script(self) -> str:
-        ...         return 'greet() {\n  echo "Hello, $1"\n}'
+    Override `required_env_vars` when a script needs nonempty environment
+    variables before it runs. By default, no variables are required.
     """
 
     @abstractmethod
     def script(self) -> str:
-        """Return the script's required content, below the shared header.
+        """Return shell content to place after the shared header.
 
         Returns:
-            Shell script content, excluding the shebang and strict mode
-            line, which `content()` prepends automatically.
+            Shell content without the shared header or required-variable checks.
         """
+
+    def required_env_vars(self) -> tuple[str, ...]:
+        """Return names of environment variables the script requires.
+
+        Each name must be valid as a shell variable reference, and each
+        variable must be nonempty when the script runs. Defaults to an empty
+        tuple.
+        """
+        return ()
 
     def content(self) -> str:
-        """Prepend the shebang and strict mode line to `script()`.
+        """Return the script with the shared header prepended.
 
         Returns:
-            The shebang line, the strict mode line, a blank line, and
-            `script()`.
+            The header, a blank line, and the shell content returned by `script()`.
         """
-        return f"""{self.shebang_line()}
-{self.strict_mode_line()}
+        return f"""{self.global_content()}
 
 {self.script()}"""
 
     def extension(self) -> str:
         """Return the file extension `"sh"`."""
         return "sh"
+
+    def global_content(self) -> str:
+        """Return the shebang, strict mode, and any required variable checks."""
+        content = f"""{self.shebang_line()}
+{self.strict_mode_line()}"""
+        if self.required_env_vars():
+            content = f"""{content}
+
+{self.required_env_var_checks()}"""
+        return content
+
+    def required_env_var_checks(self) -> str:
+        """Return an assertion for each required environment variable.
+
+        The shell exits if a variable is unset or empty. Return an empty string
+        when no variables are required.
+        """
+        return "\n".join(
+            f': "${{{var}:?}}"' for var in sorted(self.required_env_vars())
+        )
 
     def shebang_line(self) -> str:
         """Return the shebang pinning the interpreter to the shell dialect."""
