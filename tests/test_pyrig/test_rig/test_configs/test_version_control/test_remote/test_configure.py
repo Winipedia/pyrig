@@ -10,9 +10,9 @@ from pyrig.rig.configs.version_control.remote.configure import (
 class TestConfigureRepositoryConfigFile:
     """Test class."""
 
-    def test_repository_func(self) -> None:
+    def test_repo_func(self) -> None:
         """Test method."""
-        assert ConfigureRepositoryConfigFile.I.repository_func() == "repository"
+        assert ConfigureRepositoryConfigFile.I.repo_func() == "repository"
 
     def test_rulesets_func(self) -> None:
         """Test method."""
@@ -56,7 +56,7 @@ class TestConfigureRepositoryConfigFile:
         assert script.content() == f"{script.global_content()}\n\n{content}"
         assert ': "${GITHUB_REPOSITORY:?}"' in script.global_content()
         assert ': "${GH_TOKEN:?}"' in script.global_content()
-        assert script.repository_func() in content
+        assert script.repo_func() in content
         assert script.rulesets_func() in content
         assert script.dependency_alerts_func() in content
         assert script.dependency_security_updates_func() in content
@@ -75,11 +75,11 @@ class TestConfigureRepositoryConfigFile:
         """Test method."""
         assert ConfigureRepositoryConfigFile.I.repo_variable() == "GITHUB_REPOSITORY"
 
-    def test_repository_script(self) -> None:
+    def test_repo_script(self) -> None:
         """Test method."""
         script = ConfigureRepositoryConfigFile.I
-        result = script.repository_script()
-        assert result.startswith(f"{script.repository_func()}() {{")
+        result = script.repo_script()
+        assert result.startswith(f"{script.repo_func()}() {{")
         assert "${GITHUB_REPOSITORY}" in result
 
     def test_rulesets_script(self) -> None:
@@ -136,7 +136,7 @@ class TestConfigureRepositoryConfigFile:
         script = ConfigureRepositoryConfigFile.I
 
         for s in (
-            script.repository_script(),
+            script.repo_script(),
             script.rulesets_script(),
             script.dependency_alerts_script(),
             script.dependency_security_updates_script(),

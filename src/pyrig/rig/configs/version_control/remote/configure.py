@@ -54,14 +54,14 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     def scripts(self) -> tuple[str, ...]:
         """Return the shell function definitions that make up the script."""
         return (
-            self.repository_script(),
+            self.repo_script(),
             self.rulesets_script(),
             self.release_immutability_script(),
             self.dependency_alerts_script(),
             self.dependency_security_updates_script(),
         )
 
-    def repository_script(self) -> str:
+    def repo_script(self) -> str:
         """Return the `repository` shell function as a multi-line string.
 
         Returns:
@@ -69,24 +69,24 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
             settings file into `gh api` as a `PATCH` request.
         """
         settings_path = RepositorySettingsConfigFile.I.path().as_posix()
-        repository_key = RepositorySettingsConfigFile.I.repository_key()
+        repo_key = RepositorySettingsConfigFile.I.repo_key()
         endpoint = f'"repos/${{{self.repo_variable()}}}"'
         api_call = RemoteVersionController.I.api_method_input_args(
             endpoint=endpoint,
             method="PATCH",
             input_="-",
         )
-        return f"""{self.repository_func()}() {{
-  jq '.{repository_key}' {settings_path} | {api_call}
+        return f"""{self.repo_func()}() {{
+  jq '.{repo_key}' {settings_path} | {api_call}
 }}"""
 
-    def repository_func(self) -> str:
-        """Return `RepositorySettingsConfigFile.I.repository_key()`, the function name.
+    def repo_func(self) -> str:
+        """Return `RepositorySettingsConfigFile.I.repo_key()`, the function name.
 
         Named identically to the settings file key it reads, so both stay
         in sync automatically.
         """
-        return RepositorySettingsConfigFile.I.repository_key()
+        return RepositorySettingsConfigFile.I.repo_key()
 
     def rulesets_script(self) -> str:
         """Return the `rulesets` shell function as a multi-line string.

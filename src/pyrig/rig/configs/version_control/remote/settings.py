@@ -43,10 +43,10 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
         Repository admins are exempt from both rulesets.
 
         Returns:
-            Dict keyed by `repository_key()` and `rulesets_key()`.
+            Dict keyed by `repo_key()` and `rulesets_key()`.
         """
         return {
-            self.repository_key(): {
+            self.repo_key(): {
                 "name": PackageManager.I.project_name(),
                 "description": PyprojectConfigFile.I.project_description(),
                 "homepage": DocsBuilder.I.documentation_url(),
@@ -190,7 +190,7 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
         """Return `"settings"`."""
         return "settings"
 
-    def repository_key(self) -> str:
+    def repo_key(self) -> str:
         """Return `"repository"`, the top-level key for the repo settings."""
         return "repository"
 

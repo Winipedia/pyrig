@@ -10,9 +10,9 @@ from pyrig.rig.configs.version_control.remote.settings import (
 class TestRepositorySettingsConfigFile:
     """Test class."""
 
-    def test_repository_key(self) -> None:
+    def test_repo_key(self) -> None:
         """Test method."""
-        assert RepositorySettingsConfigFile.I.repository_key() == "repository"
+        assert RepositorySettingsConfigFile.I.repo_key() == "repository"
 
     def test_rulesets_key(self) -> None:
         """Test method."""
@@ -30,7 +30,7 @@ class TestRepositorySettingsConfigFile:
         """Test method."""
         configs = RepositorySettingsConfigFile.I.configs()
         assert isinstance(configs, dict)
-        assert RepositorySettingsConfigFile.I.repository_key() in configs
+        assert RepositorySettingsConfigFile.I.repo_key() in configs
         assert RepositorySettingsConfigFile.I.rulesets_key() in configs
         assert isinstance(configs[RepositorySettingsConfigFile.I.rulesets_key()], list)
 
@@ -85,6 +85,6 @@ class TestRepositorySettingsConfigFile:
         """Test method."""
         settings = RepositorySettingsConfigFile.I.settings()
         assert isinstance(settings, dict)
-        assert RepositorySettingsConfigFile.I.repository_key() in settings
+        assert RepositorySettingsConfigFile.I.repo_key() in settings
         assert RepositorySettingsConfigFile.I.rulesets_key() in settings
         assert isinstance(settings[RepositorySettingsConfigFile.I.rulesets_key()], list)
