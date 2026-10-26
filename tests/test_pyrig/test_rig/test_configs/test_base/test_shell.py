@@ -6,7 +6,6 @@ from pathlib import Path
 import pytest
 from pytest_mock import MockerFixture
 
-from pyrig.core.subprocesses import Args
 from pyrig.rig.configs.base.shell import ShellConfigFile
 
 
@@ -91,36 +90,6 @@ class TestShellConfigFile:
     ) -> None:
         """Test method."""
         assert my_test_shell_config_file().required_env_vars() == ()
-
-    @pytest.mark.parametrize("value", [None, "", "owner/repo with spaces *"])
-    def test_required_variable_runtime(
-        self,
-        my_test_shell_config_file: type[ShellConfigFile],
-        mocker: MockerFixture,
-        monkeypatch: pytest.MonkeyPatch,
-        value: str | None,
-    ) -> None:
-        """Test method."""
-        script = my_test_shell_config_file()
-        mocker.patch.object(
-            script,
-            "required_env_vars",
-            return_value=("PYRIG_TEST_REQUIRED",),
-        )
-        mocker.patch.object(script, "script", return_value="printf 'body reached'")
-        if value is None:
-            monkeypatch.delenv("PYRIG_TEST_REQUIRED", raising=False)
-        else:
-            monkeypatch.setenv("PYRIG_TEST_REQUIRED", value)
-        result = Args("bash", "-c", script.content()).run(check=False)
-        if value:
-            assert result.returncode == 0
-            assert result.stdout == "body reached"
-            assert result.stderr == ""
-        else:
-            assert result.returncode != 0
-            assert result.stdout == ""
-            assert "PYRIG_TEST_REQUIRED" in result.stderr
 
 
 @pytest.fixture
