@@ -183,8 +183,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         Returns:
             Parsed configuration as a dict or list.
         """
-        instance = cls()
-        return instance._load()
+        return cls()._load()  # noqa: SLF001
 
     @classmethod
     @cache
