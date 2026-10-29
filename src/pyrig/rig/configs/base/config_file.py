@@ -183,7 +183,8 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         Returns:
             Parsed configuration as a dict or list.
         """
-        return cls()._load()  # noqa: SLF001
+        self = cls()
+        return self._load()
 
     @classmethod
     @cache
@@ -195,7 +196,8 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         Returns:
             Minimum required configuration as a dict or list.
         """
-        return cls()._configs()  # noqa: SLF001
+        self = cls()
+        return self._configs()
 
     def removable(self) -> bool:
         """Return whether this config file can be safely removed.
