@@ -1,6 +1,6 @@
 """Wrapper around the mixed-line-ending tool."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
@@ -13,38 +13,12 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class EndOfLineFormatter(FormatHookTool):
     """Type-safe wrapper for prek's pre-commit-hooks-compatible line-ending fixer."""
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the badge image URL for mixed-line-ending."""
-        return f"https://img.shields.io/badge/EOL-{self.shield_name()}-orange"
-
-    def link_url(self) -> str:
-        """Return the documentation URL for this prek built-in hook."""
-        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
-
-    def name(self) -> str:
-        """Return `"mixed-line-ending"`, this tool's CLI command name."""
-        return "mixed-line-ending"
-
+    @override
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return no package dependency; prek provides this built-in hook."""
         return ()
 
-    def format_args(self, *args: str) -> Args:
-        """Construct mixed-line-ending arguments.
-
-        Args:
-            *args: Additional arguments forwarded to `mixed-line-ending`,
-                typically the file paths to fix.
-
-        Returns:
-            Args for `mixed-line-ending`.
-        """
-        return Args(f"--fix={VersionController.I.end_of_line()}", *args)
-
+    @override
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for normalizing mixed line endings.
 
@@ -64,6 +38,39 @@ class EndOfLineFormatter(FormatHookTool):
                 SpellChecker.I.check_hook(),
             ),
         )
+
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for mixed-line-ending."""
+        return f"https://img.shields.io/badge/EOL-{self.shield_name()}-orange"
+
+    @override
+    def link_url(self) -> str:
+        """Return the documentation URL for this prek built-in hook."""
+        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
+
+    @override
+    def name(self) -> str:
+        """Return `"mixed-line-ending"`, this tool's CLI command name."""
+        return "mixed-line-ending"
+
+    @override
+    def format_args(self, *args: str) -> Args:
+        """Construct mixed-line-ending arguments.
+
+        Args:
+            *args: Additional arguments forwarded to `mixed-line-ending`,
+                typically the file paths to fix.
+
+        Returns:
+            Args for `mixed-line-ending`.
+        """
+        return Args(f"--fix={VersionController.I.end_of_line()}", *args)
 
     def mixed_line_ending(self) -> Args:
         """Return arguments for the built-in hook.

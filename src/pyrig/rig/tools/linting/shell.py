@@ -1,6 +1,6 @@
 """Wrapper around the ShellCheck shell script linter tool."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
@@ -13,42 +13,7 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class ShellLinter(CheckHookTool):
     """Type-safe wrapper for the ShellCheck shell script linter."""
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the badge image URL for ShellCheck."""
-        return f"https://img.shields.io/badge/shell-{self.shield_name()}-blue"
-
-    def link_url(self) -> str:
-        """Return the URL of the ShellCheck project page."""
-        return "https://github.com/koalaman/shellcheck"
-
-    def name(self) -> str:
-        """Return `'shellcheck'`, the executable name for this tool's CLI command."""
-        return "shellcheck"
-
-    def dev_dependencies(self) -> tuple[str, ...]:
-        """Return `('shellcheck-py',)`, the PyPI package providing `shellcheck`."""
-        return ("shellcheck-py",)
-
-    def check_args(self, *args: str) -> Args:
-        """Construct ShellCheck check arguments.
-
-        No severity, dialect, or rule configuration is baked in here; the
-        hook's own `args=` supplies those flags, and callers are otherwise
-        expected to supply the specific files to check.
-
-        Args:
-            *args: Additional arguments forwarded to `shellcheck`, typically
-                the file paths to check.
-
-        Returns:
-            Args for `shellcheck`.
-        """
-        return self.args(*args)
-
+    @override
     def check_hook(self) -> dict[str, Any]:
         """Return hook metadata for linting shell scripts.
 
@@ -70,6 +35,48 @@ class ShellLinter(CheckHookTool):
                 f"--shell={ShellFormatter.I.dialect()}",
             ),
         )
+
+    @override
+    def dev_dependencies(self) -> tuple[str, ...]:
+        """Return `('shellcheck-py',)`, the PyPI package providing `shellcheck`."""
+        return ("shellcheck-py",)
+
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for ShellCheck."""
+        return f"https://img.shields.io/badge/shell-{self.shield_name()}-blue"
+
+    @override
+    def link_url(self) -> str:
+        """Return the URL of the ShellCheck project page."""
+        return "https://github.com/koalaman/shellcheck"
+
+    @override
+    def name(self) -> str:
+        """Return `'shellcheck'`, the executable name for this tool's CLI command."""
+        return "shellcheck"
+
+    @override
+    def check_args(self, *args: str) -> Args:
+        """Construct ShellCheck check arguments.
+
+        No severity, dialect, or rule configuration is baked in here; the
+        hook's own `args=` supplies those flags, and callers are otherwise
+        expected to supply the specific files to check.
+
+        Args:
+            *args: Additional arguments forwarded to `shellcheck`, typically
+                the file paths to check.
+
+        Returns:
+            Args for `shellcheck`.
+        """
+        return self.args(*args)
 
     def lint_shell(self) -> Args:
         """Return the `Args` this hook's entry runs.

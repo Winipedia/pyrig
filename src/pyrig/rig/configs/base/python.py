@@ -2,6 +2,7 @@
 
 import ast
 from pathlib import Path
+from typing import override
 
 from pyrig.core.introspection.packages import make_package_dir
 from pyrig.rig.configs.base.string_ import StringConfigFile
@@ -34,6 +35,7 @@ class PythonConfigFile(StringConfigFile):
         ...         return "from typing import Any\nimport sys"
     """
 
+    @override
     def extension(self) -> str:
         """Return `"py"`, the fixed extension for Python source files."""
         return "py"
@@ -63,6 +65,12 @@ class PythonPackageConfigFile(PythonConfigFile):
     example, when scaffolding new sub-packages or mirror test modules.
     """
 
+    @override
+    def source_root(self) -> Path:
+        """Return the source directory the package tree lives under."""
+        return self.package_root().parent
+
+    @override
     def _dump(self, configs: list[str]) -> None:
         """Create any missing ancestor package directories, then write the file.
 
@@ -75,10 +83,6 @@ class PythonPackageConfigFile(PythonConfigFile):
             content=ProgrammingLanguage.I.standard_init_content(),
         )
         super()._dump(configs)
-
-    def source_root(self) -> Path:
-        """Return the source directory the package tree lives under."""
-        return self.package_root().parent
 
     def package_root(self) -> Path:
         """Return the root directory of the package this config file belongs to."""

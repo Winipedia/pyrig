@@ -1,7 +1,7 @@
 """Tool wrapper for the pyrig CLI itself, including new-project initialization."""
 
 from types import FunctionType
-from typing import Any
+from typing import Any, override
 
 import pyrig_runtime
 import typer
@@ -23,10 +23,30 @@ from pyrig.rig.tools.version_control.hooks.manager import (
 class Pyrigger(VersionControlHookTool):
     """Pyrig CLI wrapper and new-project initialization orchestrator."""
 
+    @override
+    def dev_dependencies(self) -> tuple[str, ...]:
+        """Return no dev dependencies; projects add pyrig manually.
+
+        Pyrig would only be able to add itself as a dev dependency
+        if it is already installed so this is unnecessary.
+        """
+        return ()
+
+    @override
     def group(self) -> str:
         """Return `Group.TOOLING`."""
         return Group.TOOLING
 
+    @override
+    def hooks(self) -> tuple[dict[str, Any], ...]:
+        """Return the project-synchronization hook.
+
+        Returns:
+            `synchronize_project_hook`, wrapped in a single-element tuple.
+        """
+        return (self.synchronize_project_hook(),)
+
+    @override
     def image_url(self) -> str:
         """Return the badge image URL for pyrig.
 
@@ -37,10 +57,12 @@ class Pyrigger(VersionControlHookTool):
         """
         return "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Winipedia/pyrig/main/docs/assets/badge.json"
 
+    @override
     def link_url(self) -> str:
         """Return the badge link URL for pyrig."""
         return f"https://github.com/Winipedia/{self.name()}"
 
+    @override
     def name(self) -> str:
         """Return `"pyrig"`."""
         return snake_to_kebab_case(pyrig.__name__)
@@ -77,6 +99,14 @@ class Pyrigger(VersionControlHookTool):
             for step_args, run_kwargs in progress:
                 PackageManager.I.run_args(*step_args).run(**run_kwargs)
 
+    def runtime_dependencies(self) -> tuple[str, ...]:
+        """Return the runtime dependencies the target project must declare.
+
+        Returns:
+            Tuple of runtime dependencies, including `"pyrig-runtime"`.
+        """
+        return (self.runtime_dependency(),)
+
     def remove_config_files(self) -> None:
         """Delete every removable config file that currently exists.
 
@@ -85,6 +115,10 @@ class Pyrigger(VersionControlHookTool):
         """
         for config_file in ConfigFile.removable_subclasses():
             config_file().remove()
+
+    def runtime_dependency(self) -> str:
+        """Return `"pyrig-runtime"`, the package name of pyrig's runtime dependency."""
+        return snake_to_kebab_case(pyrig_runtime.__name__)
 
     def setup_steps(self) -> tuple[tuple[Args, dict[str, Any]], ...]:
         """Return the ordered setup steps for project initialization.
@@ -103,9 +137,26 @@ class Pyrigger(VersionControlHookTool):
             (VersionController.I.commit_with_msg_args(msg=self.setup_commit_msg()), {}),
         )
 
+    def synchronize_project_hook(self) -> dict[str, Any]:
+        """Return the hook metadata for the `pyrig sync` hook."""
+        return VersionControlHookManager.I.local_hook(
+            self.synchronize_project,
+            priority=VersionControlHookManager.I.deprioritize(
+                PackageManager.I.audit_dependencies_hook(),
+            ),
+        )
+
     def setup_commit_msg(self) -> str:
         """Return the commit message for the initial commit."""
         return f"{self.name()}: Initialized project"
+
+    def synchronize_project(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `uv run pyrig sync`.
+        """
+        return PackageManager.I.run_args(*self.cmd_args(cmd=sync))
 
     def cmd_args(self, *args: str, cmd: FunctionType) -> Args:
         """Construct `Args` for a top-level pyrig CLI command.
@@ -121,48 +172,3 @@ class Pyrigger(VersionControlHookTool):
             Args for `pyrig <cmd_name> [args...]`.
         """
         return self.args(snake_to_kebab_case(cmd.__name__), *args)
-
-    def runtime_dependencies(self) -> tuple[str, ...]:
-        """Return the runtime dependencies the target project must declare.
-
-        Returns:
-            Tuple of runtime dependencies, including `"pyrig-runtime"`.
-        """
-        return (self.runtime_dependency(),)
-
-    def runtime_dependency(self) -> str:
-        """Return `"pyrig-runtime"`, the package name of pyrig's runtime dependency."""
-        return snake_to_kebab_case(pyrig_runtime.__name__)
-
-    def dev_dependencies(self) -> tuple[str, ...]:
-        """Return no dev dependencies; projects add pyrig manually.
-
-        Pyrig would only be able to add itself as a dev dependency
-        if it is already installed so this is unnecessary.
-        """
-        return ()
-
-    def hooks(self) -> tuple[dict[str, Any], ...]:
-        """Return the project-synchronization hook.
-
-        Returns:
-            `synchronize_project_hook`, wrapped in a single-element tuple.
-        """
-        return (self.synchronize_project_hook(),)
-
-    def synchronize_project_hook(self) -> dict[str, Any]:
-        """Return the hook metadata for the `pyrig sync` hook."""
-        return VersionControlHookManager.I.local_hook(
-            self.synchronize_project,
-            priority=VersionControlHookManager.I.deprioritize(
-                PackageManager.I.audit_dependencies_hook(),
-            ),
-        )
-
-    def synchronize_project(self) -> Args:
-        """Return the `Args` this hook's entry runs.
-
-        Returns:
-            Args for `uv run pyrig sync`.
-        """
-        return PackageManager.I.run_args(*self.cmd_args(cmd=sync))

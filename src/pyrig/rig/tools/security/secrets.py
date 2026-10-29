@@ -1,6 +1,6 @@
 """Secrets scanner command construction and badge metadata."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
@@ -18,33 +18,7 @@ class SecretsChecker(CheckHookTool):
     secrets.
     """
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the Shields.io badge URL advertising `detect-secrets`."""
-        return f"https://img.shields.io/badge/secrets-{self.shield_name()}-blue"
-
-    def link_url(self) -> str:
-        """Return the URL of the `detect-secrets` project page."""
-        return "https://github.com/Yelp/detect-secrets"
-
-    def name(self) -> str:
-        """Return `'detect-secrets'`."""
-        return "detect-secrets"
-
-    def check_args(self, *args: str) -> Args:
-        """Construct `detect-secrets-hook` arguments for scanning for secrets.
-
-        Args:
-            *args: Additional arguments forwarded to `detect-secrets-hook`.
-
-        Returns:
-            Args for `detect-secrets-hook [args]`.
-        """
-        return Args("detect-secrets-hook", *args)
-
+    @override
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for scanning for committed secrets.
 
@@ -61,6 +35,38 @@ class SecretsChecker(CheckHookTool):
             ),
             types=["text"],
         )
+
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the Shields.io badge URL advertising `detect-secrets`."""
+        return f"https://img.shields.io/badge/secrets-{self.shield_name()}-blue"
+
+    @override
+    def link_url(self) -> str:
+        """Return the URL of the `detect-secrets` project page."""
+        return "https://github.com/Yelp/detect-secrets"
+
+    @override
+    def name(self) -> str:
+        """Return `'detect-secrets'`."""
+        return "detect-secrets"
+
+    @override
+    def check_args(self, *args: str) -> Args:
+        """Construct `detect-secrets-hook` arguments for scanning for secrets.
+
+        Args:
+            *args: Additional arguments forwarded to `detect-secrets-hook`.
+
+        Returns:
+            Args for `detect-secrets-hook [args]`.
+        """
+        return Args("detect-secrets-hook", *args)
 
     def check_secrets(self) -> Args:
         """Return the `Args` this hook's entry runs.

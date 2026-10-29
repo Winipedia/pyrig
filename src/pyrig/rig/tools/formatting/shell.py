@@ -1,6 +1,6 @@
 """Wrapper around the shfmt shell script formatter tool."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
@@ -13,38 +13,12 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class ShellFormatter(FormatHookTool):
     """Type-safe wrapper for the shfmt shell script formatter."""
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the badge image URL for shfmt."""
-        return f"https://img.shields.io/badge/shell-{self.shield_name()}-orange"
-
-    def link_url(self) -> str:
-        """Return the URL of the shfmt project page."""
-        return "https://github.com/mvdan/sh"
-
-    def name(self) -> str:
-        """Return `'shfmt'`, the executable name for this tool's CLI command."""
-        return "shfmt"
-
+    @override
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return `('shfmt-py',)`, the PyPI package providing `shfmt`."""
         return ("shfmt-py",)
 
-    def format_args(self, *args: str) -> Args:
-        """Construct shfmt arguments.
-
-        Args:
-            *args: Additional arguments forwarded to `shfmt`, typically the
-                file paths to format.
-
-        Returns:
-            Args for `shfmt`.
-        """
-        return self.args(*args)
-
+    @override
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting shell scripts.
 
@@ -80,6 +54,43 @@ class ShellFormatter(FormatHookTool):
             ),
         )
 
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for shfmt."""
+        return f"https://img.shields.io/badge/shell-{self.shield_name()}-orange"
+
+    @override
+    def link_url(self) -> str:
+        """Return the URL of the shfmt project page."""
+        return "https://github.com/mvdan/sh"
+
+    @override
+    def name(self) -> str:
+        """Return `'shfmt'`, the executable name for this tool's CLI command."""
+        return "shfmt"
+
+    @override
+    def format_args(self, *args: str) -> Args:
+        """Construct shfmt arguments.
+
+        Args:
+            *args: Additional arguments forwarded to `shfmt`, typically the
+                file paths to format.
+
+        Returns:
+            Args for `shfmt`.
+        """
+        return self.args(*args)
+
+    def dialect(self) -> str:
+        """Return the shell dialect this formatter standardizes on."""
+        return "bash"
+
     def format_shell(self) -> Args:
         """Return the `Args` this hook's entry runs.
 
@@ -87,7 +98,3 @@ class ShellFormatter(FormatHookTool):
             Args for `uv run shfmt`.
         """
         return PackageManager.I.run_args(*self.format_args())
-
-    def dialect(self) -> str:
-        """Return the shell dialect this formatter standardizes on."""
-        return "bash"

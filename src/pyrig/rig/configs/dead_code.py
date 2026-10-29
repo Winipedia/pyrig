@@ -1,6 +1,7 @@
 """Management of the project-root Vulture whitelist file."""
 
 from pathlib import Path
+from typing import override
 
 from pyrig.rig.configs.base.python import PythonConfigFile
 from pyrig.rig.tools.linting.dead_code import DeadCodeChecker
@@ -13,14 +14,17 @@ class DeadCodeCheckerConfigFile(PythonConfigFile):
     whitelist references are preserved across validation runs.
     """
 
+    @override
     def content(self) -> str:
         """Return a one-line module docstring followed by a trailing newline."""
         return '"""Explicit references for reviewed dead code false positives."""\n'
 
+    @override
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
         return Path()
 
+    @override
     def stem(self) -> str:
         """Return `"vulture_whitelist"`."""
         return f"{DeadCodeChecker.I.config_name()}_whitelist"

@@ -1,6 +1,6 @@
 """Command-line wrapper for Python source ordering."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
@@ -13,33 +13,7 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class PythonOrderLinter(CheckHookTool):
     """`pyorder` command wrapper for checking and fixing definition order."""
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the badge image URL for pyorder."""
-        return "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Winipedia/pyorder/main/docs/assets/badge.json"
-
-    def link_url(self) -> str:
-        """Return the URL of the pyorder project page."""
-        return "https://github.com/Winipedia/pyorder"
-
-    def name(self) -> str:
-        """Return `"pyorder"`."""
-        return "pyorder"
-
-    def check_args(self, *args: str) -> Args:
-        """Build a `pyorder check` command.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `pyorder check`.
-        """
-        return self.args("check", *args)
-
+    @override
     def check_hook(self) -> dict[str, Any]:
         """Return hook metadata for fixing Python definition order.
 
@@ -56,6 +30,38 @@ class PythonOrderLinter(CheckHookTool):
             types=["python"],
             args=Args("--fix"),
         )
+
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for pyorder."""
+        return "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Winipedia/pyorder/main/docs/assets/badge.json"
+
+    @override
+    def link_url(self) -> str:
+        """Return the URL of the pyorder project page."""
+        return "https://github.com/Winipedia/pyorder"
+
+    @override
+    def name(self) -> str:
+        """Return `"pyorder"`."""
+        return "pyorder"
+
+    @override
+    def check_args(self, *args: str) -> Args:
+        """Build a `pyorder check` command.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for `pyorder check`.
+        """
+        return self.args("check", *args)
 
     def lint_python_order(self) -> Args:
         """Return the `Args` this hook's entry runs.

@@ -83,19 +83,6 @@ class TestArgs:
         assert isinstance(args, Args)
         assert Args() == ()
 
-    def test_run_cached(self) -> None:
-        """Test method."""
-        args = Args("echo", "hello")
-        result1 = args.run_cached()
-        result2 = args.run_cached()
-        assert result1 == result2
-        assert result1 is result2
-        assert result1.returncode == 0, "Expected returncode 0"
-        assert result1.stdout == "hello\n", (
-            f"Expected stdout 'hello\n', got {result1.stdout}"
-        )
-        assert result1.stderr == "", f"Expected stderr '', got {result1.stderr}"
-
     def test___str__(self) -> None:
         """Test method."""
         args = Args("uv", "run", "pytest")
@@ -114,3 +101,16 @@ class TestArgs:
         args = Args("uv", "--version")
         args.run()
         mock_run_subprocess.assert_called_once()
+
+    def test_run_cached(self) -> None:
+        """Test method."""
+        args = Args("echo", "hello")
+        result1 = args.run_cached()
+        result2 = args.run_cached()
+        assert result1 == result2
+        assert result1 is result2
+        assert result1.returncode == 0, "Expected returncode 0"
+        assert result1.stdout == "hello\n", (
+            f"Expected stdout 'hello\n', got {result1.stdout}"
+        )
+        assert result1.stderr == "", f"Expected stderr '', got {result1.stderr}"

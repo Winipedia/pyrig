@@ -1,6 +1,7 @@
 """Zensical command construction and GitHub Pages documentation metadata."""
 
 from pathlib import Path
+from typing import override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
@@ -16,6 +17,7 @@ class DocsBuilder(Tool):
     since those follow conventions this tool defines.
     """
 
+    @override
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return `zensical` plus the `mkdocstrings` package."""
         return (
@@ -23,22 +25,27 @@ class DocsBuilder(Tool):
             "mkdocstrings[python]",
         )
 
+    @override
     def group(self) -> str:
         """Return `Group.PROJECT_INFO`."""
         return Group.PROJECT_INFO
 
+    @override
     def image_url(self) -> str:
         """Return the badge image URL."""
         return f"https://img.shields.io/badge/Documentation-{self.shield_name()}-326CE5"
 
+    @override
     def link_url(self) -> str:
         """Return the expected GitHub Pages URL for this project."""
         return self.documentation_url()
 
+    @override
     def name(self) -> str:
         """Return `'zensical'`."""
         return "zensical"
 
+    @override
     def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return patterns the tool produces and should be version-control-ignored."""
         return (

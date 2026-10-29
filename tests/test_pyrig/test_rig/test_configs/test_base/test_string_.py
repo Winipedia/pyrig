@@ -2,6 +2,7 @@
 
 from collections.abc import Callable
 from pathlib import Path
+from typing import override
 
 import pytest
 
@@ -11,15 +12,65 @@ from pyrig.rig.configs.base.string_ import StringConfigFile
 class TestStringConfigFile:
     """Test class."""
 
-    def test_write_content(
+    def test__configs(self, my_test_string_config_file: type[StringConfigFile]) -> None:
+        """Test method."""
+        configs = my_test_string_config_file().configs()
+        # empty line is added to the end of the file
+        assert configs == ["Test content."]
+
+    def test__dump(self, my_test_string_config_file: type[StringConfigFile]) -> None:
+        """Test method."""
+        my_test_string_config_file().validate()
+        # Test successful dump
+        content = ["New content.", ""]
+        my_test_string_config_file().dump(content)
+        loaded = my_test_string_config_file().load()
+        # load doesnt preserve the last "\n" as an "" in list bc of splitlines()
+        assert loaded == ["New content.", ""]
+
+    def test__load(self, my_test_string_config_file: type[StringConfigFile]) -> None:
+        """Test method."""
+        my_test_string_config_file().validate()
+        loaded = my_test_string_config_file().load()
+        assert loaded == ["Test content."]
+
+    def test_content(self, my_test_string_config_file: type[StringConfigFile]) -> None:
+        """Test method."""
+        content = my_test_string_config_file().content()
+        assert content == "Test content."
+
+    def test_is_correct_rejects_substring_only_match(
+        self,
+        my_test_string_config_file: type[StringConfigFile],
+    ) -> None:
+        """Test that required text must be present as an exact list item."""
+        config_file = my_test_string_config_file()
+        config_file.write_content("Prefix Test content. suffix")
+
+        assert not config_file.is_correct()
+
+    def test_join_lines(
         self,
         my_test_string_config_file: type[StringConfigFile],
     ) -> None:
         """Test method."""
-        content = "New content.\n"
-        my_test_string_config_file().write_content(content)
+        lines = ["Test content.", "Second line."]
+        string = my_test_string_config_file().join_lines(lines)
+        assert string == "Test content.\nSecond line."
+
+    def test_lines(self, my_test_string_config_file: type[StringConfigFile]) -> None:
+        """Test method."""
+        lines = my_test_string_config_file().lines()
+        assert lines == ["Test content."]
+
+    def test_read_content(
+        self,
+        my_test_string_config_file: type[StringConfigFile],
+    ) -> None:
+        """Test method."""
+        my_test_string_config_file().validate()
         read_content = my_test_string_config_file().read_content()
-        assert read_content == content
+        assert read_content == "Test content."
 
     def test_split_lines(
         self,
@@ -36,65 +87,15 @@ class TestStringConfigFile:
         lines_no_newline = my_test_string_config_file().split_lines(text_no_newline)
         assert lines_no_newline == expected_lines_no_newline
 
-    def test_join_lines(
+    def test_write_content(
         self,
         my_test_string_config_file: type[StringConfigFile],
     ) -> None:
         """Test method."""
-        lines = ["Test content.", "Second line."]
-        string = my_test_string_config_file().join_lines(lines)
-        assert string == "Test content.\nSecond line."
-
-    def test_content(self, my_test_string_config_file: type[StringConfigFile]) -> None:
-        """Test method."""
-        content = my_test_string_config_file().content()
-        assert content == "Test content."
-
-    def test_lines(self, my_test_string_config_file: type[StringConfigFile]) -> None:
-        """Test method."""
-        lines = my_test_string_config_file().lines()
-        assert lines == ["Test content."]
-
-    def test__load(self, my_test_string_config_file: type[StringConfigFile]) -> None:
-        """Test method."""
-        my_test_string_config_file().validate()
-        loaded = my_test_string_config_file().load()
-        assert loaded == ["Test content."]
-
-    def test__dump(self, my_test_string_config_file: type[StringConfigFile]) -> None:
-        """Test method."""
-        my_test_string_config_file().validate()
-        # Test successful dump
-        content = ["New content.", ""]
-        my_test_string_config_file().dump(content)
-        loaded = my_test_string_config_file().load()
-        # load doesnt preserve the last "\n" as an "" in list bc of splitlines()
-        assert loaded == ["New content.", ""]
-
-    def test__configs(self, my_test_string_config_file: type[StringConfigFile]) -> None:
-        """Test method."""
-        configs = my_test_string_config_file().configs()
-        # empty line is added to the end of the file
-        assert configs == ["Test content."]
-
-    def test_is_correct_rejects_substring_only_match(
-        self,
-        my_test_string_config_file: type[StringConfigFile],
-    ) -> None:
-        """Test that required text must be present as an exact list item."""
-        config_file = my_test_string_config_file()
-        config_file.write_content("Prefix Test content. suffix")
-
-        assert not config_file.is_correct()
-
-    def test_read_content(
-        self,
-        my_test_string_config_file: type[StringConfigFile],
-    ) -> None:
-        """Test method."""
-        my_test_string_config_file().validate()
+        content = "New content.\n"
+        my_test_string_config_file().write_content(content)
         read_content = my_test_string_config_file().read_content()
-        assert read_content == "Test content."
+        assert read_content == content
 
 
 @pytest.fixture
@@ -106,18 +107,22 @@ def my_test_string_config_file(
     class MyTestStringConfigFile(config_file_factory(StringConfigFile)):  # ty: ignore[unsupported-base]
         """Test text config file with tmp_path override."""
 
+        @override
         def stem(self) -> str:
             """Get the stem."""
             return "test_string"
 
+        @override
         def parent_path(self) -> Path:
             """Get the parent path."""
             return Path()
 
+        @override
         def content(self) -> str:
             """Get the content string."""
             return "Test content."
 
+        @override
         def extension(self) -> str:
             """Get the file extension."""
             return "txt"

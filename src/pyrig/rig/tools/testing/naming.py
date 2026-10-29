@@ -1,6 +1,6 @@
 """Wrapper around the name-tests-test tool."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
@@ -14,41 +14,7 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class ModuleTestNamingChecker(CheckHookTool):
     """Type-safe wrapper for the pre-commit-hooks test file naming checker."""
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the badge image URL for name-tests-test."""
-        return f"https://img.shields.io/badge/test--naming-{self.shield_name()}-blue"
-
-    def link_url(self) -> str:
-        """Return the documentation URL for the pre-commit-hooks naming checker."""
-        return f"https://github.com/pre-commit/pre-commit-hooks#{self.name()}"
-
-    def name(self) -> str:
-        """Return `"name-tests-test"`, this tool's CLI command name."""
-        return "name-tests-test"
-
-    def dev_dependencies(self) -> tuple[str, ...]:
-        """Return the package providing `name-tests-test`."""
-        return ("pre-commit-hooks",)
-
-    def check_args(self, *args: str) -> Args:
-        """Construct name-tests-test arguments.
-
-        Like `check-merge-conflict`, this tool has no autofix mode: a
-        misnamed test file has no safe automatic rename, only a report.
-
-        Args:
-            *args: Additional arguments forwarded to `name-tests-test`,
-                typically the file paths to check.
-
-        Returns:
-            Args for `name-tests-test`.
-        """
-        return self.args(*args)
-
+    @override
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for checking test file naming conventions.
 
@@ -70,6 +36,47 @@ class ModuleTestNamingChecker(CheckHookTool):
             files=f"^{ProjectTester.I.package_root().as_posix()}/",
             args=Args("--pytest-test-first"),
         )
+
+    @override
+    def dev_dependencies(self) -> tuple[str, ...]:
+        """Return the package providing `name-tests-test`."""
+        return ("pre-commit-hooks",)
+
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for name-tests-test."""
+        return f"https://img.shields.io/badge/test--naming-{self.shield_name()}-blue"
+
+    @override
+    def link_url(self) -> str:
+        """Return the documentation URL for the pre-commit-hooks naming checker."""
+        return f"https://github.com/pre-commit/pre-commit-hooks#{self.name()}"
+
+    @override
+    def name(self) -> str:
+        """Return `"name-tests-test"`, this tool's CLI command name."""
+        return "name-tests-test"
+
+    @override
+    def check_args(self, *args: str) -> Args:
+        """Construct name-tests-test arguments.
+
+        Like `check-merge-conflict`, this tool has no autofix mode: a
+        misnamed test file has no safe automatic rename, only a report.
+
+        Args:
+            *args: Additional arguments forwarded to `name-tests-test`,
+                typically the file paths to check.
+
+        Returns:
+            Args for `name-tests-test`.
+        """
+        return self.args(*args)
 
     def check_test_naming(self) -> Args:
         """Return the `Args` this hook's entry runs.

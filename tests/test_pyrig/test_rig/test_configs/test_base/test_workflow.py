@@ -4,7 +4,7 @@ import io
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
-from typing import Any
+from typing import Any, override
 
 import pytest
 from ruamel.yaml.comments import CommentedMap
@@ -22,9 +22,152 @@ from pyrig.rig.configs.version_control.remote.workflows.health_check import (
 class TestWorkflowConfigFile:
     """Test class."""
 
-    def test_repo_token_var(self) -> None:
+    def test__configs(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        assert HealthCheckWorkflowConfigFile.I.repo_token_var() == "secrets.REPO_TOKEN"
+        result = my_test_workflow().configs()
+        assert "name" in result
+        assert "on" in result
+        assert "concurrency" in result
+        assert "jobs" in result
+        assert "permissions" in result
+
+    def test_action_from_resource(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        assert workflow.action_from_resource(
+            workflow.checkout_action,
+            resources,
+        ) == tuple(
+            resource_content("CHECKOUT_ACTION", resources).splitlines(),
+        )
+
+    def test_action_ref(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        assert (
+            workflow.action_ref("actions/checkout", default="default-sha")
+            == "default-sha"
+        )
+
+        workflow.create_file()
+        custom_configs = {
+            "name": "Test",
+            "on": {},
+            "jobs": {
+                "test": {
+                    "runs-on": "ubuntu-latest",
+                    "steps": [
+                        {
+                            "name": "Checkout",
+                            "id": "checkout",
+                            "uses": "actions/checkout@custom-ref-123",
+                        },
+                    ],
+                },
+            },
+        }
+        workflow.dump(custom_configs)
+        assert (
+            workflow.action_ref("actions/checkout", default="default-sha")
+            == "custom-ref-123"
+        )
+        assert (
+            workflow.action_ref("astral-sh/setup-uv", default="default-uv")
+            == "default-uv"
+        )
+
+    def test_assign_command_substitution_output_var(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_workflow().assign_command_substitution_output_var(
+                "name",
+                Args("echo", "value"),
+            )
+            == 'NAME="$(echo value)"\necho name="${NAME}" >> "${GITHUB_OUTPUT}"'
+        )
+
+    def test_assign_output_var(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_workflow().assign_output_var("NAME", "value")
+            == 'echo name=value >> "${GITHUB_OUTPUT}"'
+        )
+
+    def test_checkout_action(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        assert workflow.checkout_action() == tuple(
+            resource_content(
+                "CHECKOUT_ACTION",
+                resources,
+            ).splitlines(),
+        )
+
+        action, ref, tag = HealthCheckWorkflowConfigFile.I.checkout_action()
+        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
+            HealthCheckWorkflowConfigFile.I.path(),
+        )
+
+    def test_concurrency(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        result = workflow.concurrency()
+        assert result["group"] == f"{workflow.workflow_name()}-${{{{ github.ref }}}}"
+        assert result["cancel-in-progress"] is True
+
+    def test_concurrency_cancel_in_progress(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().concurrency_cancel_in_progress() is True
+
+    def test_defaults(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        result = my_test_workflow().defaults()
+        assert "run" in result, "Expected 'run' in defaults"
+        assert result["run"]["shell"] == "bash", "Expected shell to be 'bash'"
+
+    def test_documented_permissions(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        result = workflow.documented_permissions(
+            {"contents": "read", "pages": "write"},
+        )
+
+        assert isinstance(result, CommentedMap)
+        assert result == {"contents": "read", "pages": "write"}
+
+        buffer = io.StringIO()
+        workflow.dumper().dump(result, buffer)
+        dumped = buffer.getvalue()
+        assert '"contents": "read"\n' in dumped
+        assert f'"pages": "write"  # {workflow.permission_comment()}' in dumped
+
+        # No entry needs a comment.
+        undocumented = workflow.documented_permissions({"contents": "read"})
+        assert isinstance(undocumented, CommentedMap)
+        buffer_undocumented = io.StringIO()
+        workflow.dumper().dump(undocumented, buffer_undocumented)
+        assert "#" not in buffer_undocumented.getvalue()
 
     def test_github_token_var(self) -> None:
         """Test method."""
@@ -32,20 +175,33 @@ class TestWorkflowConfigFile:
             HealthCheckWorkflowConfigFile.I.github_token_var() == "secrets.GITHUB_TOKEN"
         )
 
-    def test_secrets_var(self) -> None:
+    def test_id_from_method(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        assert (
-            HealthCheckWorkflowConfigFile.I.secrets_var("TEST_TOKEN")
-            == "secrets.TEST_TOKEN"
+        result = my_test_workflow().id_from_method(
+            self.test_id_from_method,
+            prefix="test",
         )
+        assert result == "id-from-method"
 
-    def test_step_update_dependencies(
+    def test_insert_command_substitution(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        result = my_test_workflow().step_update_dependencies()
-        assert "run" in result, f"Expected 'run' in step, got {result}"
+        assert (
+            my_test_workflow().insert_command_substitution("some command")
+            == '"$(some command)"'
+        )
+
+    def test_insert_expansion(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_workflow().insert_expansion("[some expansion]")
+            == '"$[some expansion]"'
+        )
 
     def test_insert_expression(
         self,
@@ -57,82 +213,88 @@ class TestWorkflowConfigFile:
         expected = "${{ condition }}"
         assert result == expected, f"Expected '{expected}', got {result}"
 
-    def test_steps_core_installed_setup(
+    def test_insert_github_ref(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        result = my_test_workflow().steps_core_installed_setup()
-        assert len(result) > 0
-
-    def test_id_from_method(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().id_from_method(
-            self.test_id_from_method,
-            prefix="test",
+        result = my_test_workflow().insert_github_ref()
+        assert result == "${{ github.ref }}", (
+            f"Expected '${{{{ github.ref }}}}', got {result}"
         )
-        assert result == "id-from-method"
 
-    def test__configs(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().configs()
-        assert "name" in result
-        assert "on" in result
-        assert "concurrency" in result
-        assert "jobs" in result
-        assert "permissions" in result
-
-    def test_parent_path(
+    def test_insert_github_token(
         self,
         my_test_workflow: type[WorkflowConfigFile],
-        tmp_path: Path,
     ) -> None:
         """Test method."""
-        with chdir(tmp_path):
-            result = my_test_workflow().parent_path()
-            assert result == Path(".github/workflows"), (
-                f"Expected '.github/workflows', got {result}"
+        result = my_test_workflow().insert_github_token()
+        assert result == "${{ secrets.GITHUB_TOKEN }}", (
+            f"Expected '${{{{ secrets.GITHUB_TOKEN }}}}', got {result}"
+        )
+
+    def test_insert_matrix_os(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        result = my_test_workflow().insert_matrix_os()
+        assert "matrix.os" in result, "Expected 'matrix.os' in result"
+
+    def test_insert_matrix_python_version(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().insert_matrix_python_version()
+        assert "matrix.python-version" in result, (
+            "Expected 'matrix.python-version' in result"
+        )
+
+    def test_insert_output_var(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_workflow().insert_output_var(
+                my_test_workflow().step_extract_version,
+                my_test_workflow().version_var(),
             )
-
-    def test_jobs(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().jobs()
-        assert "test_job" in result, "Expected 'test_job' in jobs"
-
-    def test_workflow_triggers(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().workflow_triggers()
-        assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
-
-    def test_on_workflow_dispatch(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        assert my_test_workflow().on_workflow_dispatch() == {
-            "workflow_dispatch": {},
-        }
-
-    def test_defaults(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().defaults()
-        assert "run" in result, "Expected 'run' in defaults"
-        assert result["run"]["shell"] == "bash", "Expected shell to be 'bash'"
-
-    def test_workflow_name(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().workflow_name()
-        assert len(result) > 0, "Expected workflow name to be non-empty"
-
-    def test_run_name(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().run_name()
-        assert result == my_test_workflow().workflow_name(), (
-            "Expected run name to match workflow name"
+            == "${{ steps.extract-version.outputs.version }}"
         )
+
+    def test_insert_output_version(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_workflow().insert_output_version()
+            == "${{ steps.extract-version.outputs.version }}"
+        )
+
+    def test_insert_parameter_expansion(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_workflow().insert_parameter_expansion("some parameter")
+            == '"${some parameter}"'
+        )
+
+    def test_insert_repo_token(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().insert_repo_token()
+        assert result == "${{ secrets.REPO_TOKEN }}"
+
+    def test_insert_version_expansion(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().insert_version_expansion() == '"${VERSION}"'
 
     def test_job(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -189,188 +351,22 @@ class TestWorkflowConfigFile:
         job_config = next(iter(result.values()))
         assert job_config["secrets"] == {"TOKEN": "${{ secrets.TOKEN }}"}
 
-    def test_workflow_call_reference(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
+    def test_job_id_from_method(self) -> None:
         """Test method."""
-        workflow = my_test_workflow()
-        result = workflow.workflow_call_reference()
-        assert result == f"$/{workflow.path().as_posix()}"
-
-    def test_name_from_id(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().name_from_id(
-            "test-name-from-id",
+        result = HealthCheckWorkflowConfigFile.I.job_id_from_method(
+            HealthCheckWorkflowConfigFile.I.job_health_check,
         )
-        assert result == "Test Name From Id"
+        assert result == "health-check"
 
-    def test_on_push(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+    def test_jobs(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_workflow().on_push()
-        assert "push" in result, "Expected 'push' in result"
-        assert result["push"]["branches"] == ["main"], (
-            "Expected default branch to be 'main'"
-        )
+        result = my_test_workflow().jobs()
+        assert "test_job" in result, "Expected 'test_job' in jobs"
 
-        result = my_test_workflow().on_push(branches=["develop", "release/*"])
-        assert result["push"]["branches"] == ["develop", "release/*"]
-
-    def test_on_schedule(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+    def test_matrix(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_workflow().on_schedule("0 0 * * *")
-        assert "schedule" in result, "Expected 'schedule' in result"
-
-    def test_on_pull_request(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().on_pull_request()
-        assert "pull_request" in result, "Expected 'pull_request' in result"
-
-        # Test with types=None (should use default types)
-        result = my_test_workflow().on_pull_request(
-            types=["opened", "synchronize", "reopened"],
-        )
-        assert result["pull_request"]["types"] == ["opened", "synchronize", "reopened"]
-
-    def test_on_workflow_call(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().on_workflow_call()
-        assert result == {"workflow_call": {}}
-
-    def test_used_secrets(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        assert my_test_workflow().used_secrets() == []
-
-    def test_used_secrets_discovered(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-
-        class WithSecretUsage(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
-            """Test workflow whose steps reference secrets."""
-
-            def jobs(self) -> dict[str, Any]:
-                """Return a job with secrets, GITHUB_TOKEN, and a non-string leaf."""
-                return {
-                    "job_a": {
-                        "continue-on-error": True,
-                        "steps": [
-                            {"env": {"TOKEN": "${{ secrets.TOKEN }}"}},
-                            {"with": {"gh-token": "${{ secrets.GITHUB_TOKEN }}"}},
-                        ],
-                    },
-                    "job_b": {"if": "${{ secrets.TOKEN != '' }}"},
-                }
-
-        result = WithSecretUsage().used_secrets()
-        assert result == ["TOKEN"]
-
-    def test_on_workflow_call_with_secrets(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-
-        class WithSecretUsage(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
-            """Test workflow whose steps reference a secret."""
-
-            def jobs(self) -> dict[str, Any]:
-                """Return a job referencing `TOKEN`."""
-                return {
-                    "job_a": {"steps": [{"env": {"TOKEN": "${{ secrets.TOKEN }}"}}]},
-                }
-
-        result = WithSecretUsage().on_workflow_call()
-        assert result == {"workflow_call": {"secrets": {"TOKEN": {"required": True}}}}
-
-    def test_used_secrets_mapping(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().used_secrets_mapping()
-        assert result == {}
-
-        class WithSecretUsage(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
-            """Test workflow whose steps reference a secret."""
-
-            def jobs(self) -> dict[str, Any]:
-                """Return a job referencing `TOKEN`."""
-                return {
-                    "job_a": {"steps": [{"env": {"TOKEN": "${{ secrets.TOKEN }}"}}]},
-                }
-
-        result = WithSecretUsage().used_secrets_mapping()
-        assert result == {"TOKEN": "${{ secrets.TOKEN }}"}
-
-    def test_used_permissions(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-
-        class WithJobs(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
-            """Test workflow with jobs requesting overlapping permissions."""
-
-            def jobs(self) -> dict[str, Any]:
-                """Return jobs with overlapping and write-escalating permissions."""
-                return {
-                    "job_a": {"permissions": {"pages": "write", "contents": "read"}},
-                    "job_b": {"permissions": {"contents": "read"}},
-                    "job_c": {},
-                }
-
-        result = WithJobs().used_permissions()
-        assert result == {"contents": "read", "pages": "write"}
-        assert list(result.keys()) == ["contents", "pages"]
-
-    def test_step(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().step(
-            self.test_step,
-            run="echo test",
-            if_condition="condition",
-            uses=("action/checkout", "v2", "v2"),
-            with_={"param": "value"},
-            env={"ENV_VAR": "value"},
-        )
-        assert "name" in result
-        assert "id" in result
-        assert "run" in result
-        assert "if" in result
-        assert "uses" in result
-        assert "with" in result
-        assert "env" in result
-
-    def test_strategy_matrix_os_and_python_version(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().strategy_matrix_os_and_python_version()
-        assert "matrix" in result, "Expected 'matrix' in strategy"
-
-    def test_strategy_matrix_os(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().strategy_matrix_os()
-        assert "matrix" in result, "Expected 'matrix' in strategy"
-
-    def test_strategy_matrix(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().strategy_matrix(matrix={})
-        assert "matrix" in result, "Expected 'matrix' in strategy"
-
-    def test_strategy(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().strategy(strategy={})
-        assert "fail-fast" in result
+        result = my_test_workflow().matrix({"test": ["value"]})
+        assert "test" in result
 
     def test_matrix_os(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -393,154 +389,109 @@ class TestWorkflowConfigFile:
         assert "python-version" in result
         assert result["python-version"] == ["3.14"]
 
-    def test_matrix(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+    def test_name_from_id(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_workflow().matrix({"test": ["value"]})
-        assert "test" in result
+        result = my_test_workflow().name_from_id(
+            "test-name-from-id",
+        )
+        assert result == "Test Name From Id"
 
-    def test_steps_core_setup(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+    def test_on_pull_request(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_workflow().steps_core_setup()
-        assert len(result) > 0
+        result = my_test_workflow().on_pull_request()
+        assert "pull_request" in result, "Expected 'pull_request' in result"
 
-    def test_checkout_action(
+        # Test with types=None (should use default types)
+        result = my_test_workflow().on_pull_request(
+            types=["opened", "synchronize", "reopened"],
+        )
+        assert result["pull_request"]["types"] == ["opened", "synchronize", "reopened"]
+
+    def test_on_push(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        result = my_test_workflow().on_push()
+        assert "push" in result, "Expected 'push' in result"
+        assert result["push"]["branches"] == ["main"], (
+            "Expected default branch to be 'main'"
+        )
+
+        result = my_test_workflow().on_push(branches=["develop", "release/*"])
+        assert result["push"]["branches"] == ["develop", "release/*"]
+
+    def test_on_schedule(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        result = my_test_workflow().on_schedule("0 0 * * *")
+        assert "schedule" in result, "Expected 'schedule' in result"
+
+    def test_on_workflow_call(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        result = my_test_workflow().on_workflow_call()
+        assert result == {"workflow_call": {}}
+
+    def test_on_workflow_call_with_secrets(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+
+        class WithSecretUsage(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
+            """Test workflow whose steps reference a secret."""
+
+            @override
+            def jobs(self) -> dict[str, Any]:
+                """Return a job referencing `TOKEN`."""
+                return {
+                    "job_a": {"steps": [{"env": {"TOKEN": "${{ secrets.TOKEN }}"}}]},
+                }
+
+        result = WithSecretUsage().on_workflow_call()
+        assert result == {"workflow_call": {"secrets": {"TOKEN": {"required": True}}}}
+
+    def test_on_workflow_dispatch(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().on_workflow_dispatch() == {
+            "workflow_dispatch": {},
+        }
+
+    def test_parent_path(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+        tmp_path: Path,
+    ) -> None:
+        """Test method."""
+        with chdir(tmp_path):
+            result = my_test_workflow().parent_path()
+            assert result == Path(".github/workflows"), (
+                f"Expected '.github/workflows', got {result}"
+            )
+
+    def test_permission(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         workflow = my_test_workflow()
-        assert workflow.checkout_action() == tuple(
-            resource_content(
-                "CHECKOUT_ACTION",
-                resources,
-            ).splitlines(),
-        )
+        assert workflow.permission("actions") == {"actions": "read"}
+        assert workflow.permission("actions", write=True) == {"actions": "write"}
 
-        action, ref, tag = HealthCheckWorkflowConfigFile.I.checkout_action()
-        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
-            HealthCheckWorkflowConfigFile.I.path(),
-        )
+    def test_permission_comment(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().permission_comment() == "required"
 
-    def test_step_checkout_repository(
+    def test_permission_contents(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         workflow = my_test_workflow()
-        result = workflow.step_checkout_repository()
-        assert "uses" in result, "Expected 'uses' in step"
-        assert result["uses"] == f"actions/checkout@{workflow.checkout_action()[1]}"
-
-    def test_setup_uv_action(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        workflow = my_test_workflow()
-        assert workflow.setup_uv_action() == tuple(
-            resource_content(
-                "SETUP_UV_ACTION",
-                resources,
-            ).splitlines(),
-        )
-
-        action, ref, tag = HealthCheckWorkflowConfigFile.I.setup_uv_action()
-        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
-            HealthCheckWorkflowConfigFile.I.path(),
-        )
-
-    def test_step_setup_package_manager(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        workflow = my_test_workflow()
-        result = workflow.step_setup_package_manager(python_version="3.14")
-        assert "uses" in result, "Expected 'uses' in step"
-        assert result["uses"] == f"astral-sh/setup-uv@{workflow.setup_uv_action()[1]}"
-
-    def test_step_install_dependencies(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_install_dependencies()
-        assert "run" in result
-
-    def test_insert_repo_token(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_repo_token()
-        assert result == "${{ secrets.REPO_TOKEN }}"
-
-    def test_insert_github_token(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_github_token()
-        assert result == "${{ secrets.GITHUB_TOKEN }}", (
-            f"Expected '${{{{ secrets.GITHUB_TOKEN }}}}', got {result}"
-        )
-
-    def test_insert_matrix_os(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_matrix_os()
-        assert "matrix.os" in result, "Expected 'matrix.os' in result"
-
-    def test_insert_matrix_python_version(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_matrix_python_version()
-        assert "matrix.python-version" in result, (
-            "Expected 'matrix.python-version' in result"
-        )
-
-    def test_job_id_from_method(self) -> None:
-        """Test method."""
-        result = HealthCheckWorkflowConfigFile.I.job_id_from_method(
-            HealthCheckWorkflowConfigFile.I.job_health_check,
-        )
-        assert result == "health-check"
-
-    def test_step_id_from_method(self) -> None:
-        """Test method."""
-        result = HealthCheckWorkflowConfigFile.I.step_id_from_method(
-            HealthCheckWorkflowConfigFile.I.step_run_tests,
-        )
-        assert result == "run-tests"
-
-    def test_concurrency(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        workflow = my_test_workflow()
-        result = workflow.concurrency()
-        assert result["group"] == f"{workflow.workflow_name()}-${{{{ github.ref }}}}"
-        assert result["cancel-in-progress"] is True
-
-    def test_concurrency_cancel_in_progress(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        assert my_test_workflow().concurrency_cancel_in_progress() is True
-
-    def test_insert_github_ref(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_github_ref()
-        assert result == "${{ github.ref }}", (
-            f"Expected '${{{{ github.ref }}}}', got {result}"
-        )
-
-    def test_permissions(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        assert my_test_workflow().permissions() == {}
+        assert workflow.permission_contents() == {"contents": "read"}
+        assert workflow.permission_contents(write=True) == {"contents": "write"}
 
     def test_permission_id_token(
         self,
@@ -560,86 +511,80 @@ class TestWorkflowConfigFile:
         assert workflow.permission_pages() == {"pages": "read"}
         assert workflow.permission_pages(write=True) == {"pages": "write"}
 
-    def test_permission_contents(
+    def test_permissions(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        assert my_test_workflow().permissions() == {}
+
+    def test_pull_request_event_key(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().pull_request_event_key() == "pull_request"
+
+    def test_repo_token_var(self) -> None:
+        """Test method."""
+        assert HealthCheckWorkflowConfigFile.I.repo_token_var() == "secrets.REPO_TOKEN"
+
+    def test_run_name(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        result = my_test_workflow().run_name()
+        assert result == my_test_workflow().workflow_name(), (
+            "Expected run name to match workflow name"
+        )
+
+    def test_secrets_var(self) -> None:
+        """Test method."""
+        assert (
+            HealthCheckWorkflowConfigFile.I.secrets_var("TEST_TOKEN")
+            == "secrets.TEST_TOKEN"
+        )
+
+    def test_setup_uv_action(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         workflow = my_test_workflow()
-        assert workflow.permission_contents() == {"contents": "read"}
-        assert workflow.permission_contents(write=True) == {"contents": "write"}
+        assert workflow.setup_uv_action() == tuple(
+            resource_content(
+                "SETUP_UV_ACTION",
+                resources,
+            ).splitlines(),
+        )
 
-    def test_permission(
+        action, ref, tag = HealthCheckWorkflowConfigFile.I.setup_uv_action()
+        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
+            HealthCheckWorkflowConfigFile.I.path(),
+        )
+
+    def test_step(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        result = my_test_workflow().step(
+            self.test_step,
+            run="echo test",
+            if_condition="condition",
+            uses=("action/checkout", "v2", "v2"),
+            with_={"param": "value"},
+            env={"ENV_VAR": "value"},
+        )
+        assert "name" in result
+        assert "id" in result
+        assert "run" in result
+        assert "if" in result
+        assert "uses" in result
+        assert "with" in result
+        assert "env" in result
+
+    def test_step_checkout_repository(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         workflow = my_test_workflow()
-        assert workflow.permission("actions") == {"actions": "read"}
-        assert workflow.permission("actions", write=True) == {"actions": "write"}
-
-    def test_documented_permissions(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        workflow = my_test_workflow()
-        result = workflow.documented_permissions(
-            {"contents": "read", "pages": "write"},
-        )
-
-        assert isinstance(result, CommentedMap)
-        assert result == {"contents": "read", "pages": "write"}
-
-        buffer = io.StringIO()
-        workflow.dumper().dump(result, buffer)
-        dumped = buffer.getvalue()
-        assert '"contents": "read"\n' in dumped
-        assert f'"pages": "write"  # {workflow.permission_comment()}' in dumped
-
-        # No entry needs a comment.
-        undocumented = workflow.documented_permissions({"contents": "read"})
-        assert isinstance(undocumented, CommentedMap)
-        buffer_undocumented = io.StringIO()
-        workflow.dumper().dump(undocumented, buffer_undocumented)
-        assert "#" not in buffer_undocumented.getvalue()
-
-    def test_permission_comment(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        assert my_test_workflow().permission_comment() == "required"
-
-    def test_insert_command_substitution(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        assert (
-            my_test_workflow().insert_command_substitution("some command")
-            == '"$(some command)"'
-        )
-
-    def test_insert_parameter_expansion(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        assert (
-            my_test_workflow().insert_parameter_expansion("some parameter")
-            == '"${some parameter}"'
-        )
-
-    def test_insert_expansion(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        assert (
-            my_test_workflow().insert_expansion("[some expansion]")
-            == '"$[some expansion]"'
-        )
+        result = workflow.step_checkout_repository()
+        assert "uses" in result, "Expected 'uses' in step"
+        assert result["uses"] == f"actions/checkout@{workflow.checkout_action()[1]}"
 
     def test_step_extract_version(
         self,
@@ -652,100 +597,153 @@ class TestWorkflowConfigFile:
             == 'VERSION="$(uv version --short)"\necho version="${VERSION}" >> "${GITHUB_OUTPUT}"'  # noqa: E501
         )
 
-    def test_assign_command_substitution_output_var(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
+    def test_step_id_from_method(self) -> None:
         """Test method."""
-        assert (
-            my_test_workflow().assign_command_substitution_output_var(
-                "name",
-                Args("echo", "value"),
-            )
-            == 'NAME="$(echo value)"\necho name="${NAME}" >> "${GITHUB_OUTPUT}"'
+        result = HealthCheckWorkflowConfigFile.I.step_id_from_method(
+            HealthCheckWorkflowConfigFile.I.step_run_tests,
         )
+        assert result == "run-tests"
 
-    def test_assign_output_var(
+    def test_step_install_dependencies(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        assert (
-            my_test_workflow().assign_output_var("NAME", "value")
-            == 'echo name=value >> "${GITHUB_OUTPUT}"'
-        )
+        result = my_test_workflow().step_install_dependencies()
+        assert "run" in result
 
-    def test_insert_output_version(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        assert (
-            my_test_workflow().insert_output_version()
-            == "${{ steps.extract-version.outputs.version }}"
-        )
-
-    def test_insert_output_var(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        assert (
-            my_test_workflow().insert_output_var(
-                my_test_workflow().step_extract_version,
-                my_test_workflow().version_var(),
-            )
-            == "${{ steps.extract-version.outputs.version }}"
-        )
-
-    def test_insert_version_expansion(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        assert my_test_workflow().insert_version_expansion() == '"${VERSION}"'
-
-    def test_version_var(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        assert my_test_workflow().version_var() == "VERSION"
-
-    def test_action_ref(
+    def test_step_setup_package_manager(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         workflow = my_test_workflow()
-        assert (
-            workflow.action_ref("actions/checkout", default="default-sha")
-            == "default-sha"
-        )
+        result = workflow.step_setup_package_manager(python_version="3.14")
+        assert "uses" in result, "Expected 'uses' in step"
+        assert result["uses"] == f"astral-sh/setup-uv@{workflow.setup_uv_action()[1]}"
 
-        workflow.create_file()
-        custom_configs = {
-            "name": "Test",
-            "on": {},
-            "jobs": {
-                "test": {
-                    "runs-on": "ubuntu-latest",
-                    "steps": [
-                        {
-                            "name": "Checkout",
-                            "id": "checkout",
-                            "uses": "actions/checkout@custom-ref-123",
-                        },
-                    ],
-                },
-            },
-        }
-        workflow.dump(custom_configs)
-        assert (
-            workflow.action_ref("actions/checkout", default="default-sha")
-            == "custom-ref-123"
-        )
-        assert (
-            workflow.action_ref("astral-sh/setup-uv", default="default-uv")
-            == "default-uv"
-        )
+    def test_step_update_dependencies(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().step_update_dependencies()
+        assert "run" in result, f"Expected 'run' in step, got {result}"
+
+    def test_steps_core_installed_setup(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().steps_core_installed_setup()
+        assert len(result) > 0
+
+    def test_steps_core_setup(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        result = my_test_workflow().steps_core_setup()
+        assert len(result) > 0
+
+    def test_strategy(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        result = my_test_workflow().strategy(strategy={})
+        assert "fail-fast" in result
+
+    def test_strategy_matrix(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        result = my_test_workflow().strategy_matrix(matrix={})
+        assert "matrix" in result, "Expected 'matrix' in strategy"
+
+    def test_strategy_matrix_os(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().strategy_matrix_os()
+        assert "matrix" in result, "Expected 'matrix' in strategy"
+
+    def test_strategy_matrix_os_and_python_version(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().strategy_matrix_os_and_python_version()
+        assert "matrix" in result, "Expected 'matrix' in strategy"
+
+    def test_used_permissions(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+
+        class WithJobs(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
+            """Test workflow with jobs requesting overlapping permissions."""
+
+            @override
+            def jobs(self) -> dict[str, Any]:
+                """Return jobs with overlapping and write-escalating permissions."""
+                return {
+                    "job_a": {"permissions": {"pages": "write", "contents": "read"}},
+                    "job_b": {"permissions": {"contents": "read"}},
+                    "job_c": {},
+                }
+
+        result = WithJobs().used_permissions()
+        assert result == {"contents": "read", "pages": "write"}
+        assert list(result.keys()) == ["contents", "pages"]
+
+    def test_used_secrets(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().used_secrets() == []
+
+    def test_used_secrets_discovered(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+
+        class WithSecretUsage(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
+            """Test workflow whose steps reference secrets."""
+
+            @override
+            def jobs(self) -> dict[str, Any]:
+                """Return a job with secrets, GITHUB_TOKEN, and a non-string leaf."""
+                return {
+                    "job_a": {
+                        "continue-on-error": True,
+                        "steps": [
+                            {"env": {"TOKEN": "${{ secrets.TOKEN }}"}},
+                            {"with": {"gh-token": "${{ secrets.GITHUB_TOKEN }}"}},
+                        ],
+                    },
+                    "job_b": {"if": "${{ secrets.TOKEN != '' }}"},
+                }
+
+        result = WithSecretUsage().used_secrets()
+        assert result == ["TOKEN"]
+
+    def test_used_secrets_mapping(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().used_secrets_mapping()
+        assert result == {}
+
+        class WithSecretUsage(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
+            """Test workflow whose steps reference a secret."""
+
+            @override
+            def jobs(self) -> dict[str, Any]:
+                """Return a job referencing `TOKEN`."""
+                return {
+                    "job_a": {"steps": [{"env": {"TOKEN": "${{ secrets.TOKEN }}"}}]},
+                }
+
+        result = WithSecretUsage().used_secrets_mapping()
+        assert result == {"TOKEN": "${{ secrets.TOKEN }}"}
 
     def test_uses(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -753,25 +751,31 @@ class TestWorkflowConfigFile:
             my_test_workflow().uses("action-name", "some-ref") == "action-name@some-ref"
         )
 
-    def test_action_from_resource(
+    def test_version_var(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        assert my_test_workflow().version_var() == "VERSION"
+
+    def test_workflow_call_reference(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         workflow = my_test_workflow()
-        assert workflow.action_from_resource(
-            workflow.checkout_action,
-            resources,
-        ) == tuple(
-            resource_content("CHECKOUT_ACTION", resources).splitlines(),
-        )
+        result = workflow.workflow_call_reference()
+        assert result == f"$/{workflow.path().as_posix()}"
 
-    def test_pull_request_event_key(
+    def test_workflow_name(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        result = my_test_workflow().workflow_name()
+        assert len(result) > 0, "Expected workflow name to be non-empty"
+
+    def test_workflow_triggers(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        assert my_test_workflow().pull_request_event_key() == "pull_request"
+        result = my_test_workflow().workflow_triggers()
+        assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
 
 
 @pytest.fixture
@@ -783,14 +787,17 @@ def my_test_workflow(
     class MyTestWorkflowConfigFileClass(config_file_factory(WorkflowConfigFile)):  # ty: ignore[unsupported-base]
         """Test workflow class with tmp_path override."""
 
+        @override
         def stem(self) -> str:
             """Get the stem."""
             return "test_workflow"
 
+        @override
         def workflow_triggers(self) -> dict[str, Any]:
             """Get the workflow triggers."""
             return {"workflow_dispatch": {}}
 
+        @override
         def jobs(self) -> dict[str, Any]:
             """Get the workflow jobs."""
             return {

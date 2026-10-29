@@ -2,7 +2,7 @@
 
 from abc import abstractmethod
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Tool
@@ -75,6 +75,7 @@ class CheckHookTool(VersionControlHookTool):
     def check_hook(self) -> dict[str, Any]:
         """Return this tool's check hook metadata."""
 
+    @override
     def hooks(self) -> tuple[dict[str, Any], ...]:
         """Return `super().hooks()` with this tool's check hook appended.
 
@@ -95,6 +96,7 @@ class FormatHookTool(VersionControlHookTool):
     def format_hook(self) -> dict[str, Any]:
         """Return this tool's format hook metadata."""
 
+    @override
     def hooks(self) -> tuple[dict[str, Any], ...]:
         """Return `super().hooks()` with this tool's format hook appended.
 

@@ -1,6 +1,6 @@
 """Configuration file management for the GitHub issue template chooser."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.rig.configs.base.issue_template import IssueTemplateConfigFile
 
@@ -13,10 +13,12 @@ class ConfigConfigFile(IssueTemplateConfigFile):
     provided issue templates when opening a new issue.
     """
 
+    @override
     def stem(self) -> str:
         """Return `"config"` as the filename stem."""
         return "config"
 
+    @override
     def _configs(self) -> dict[str, Any]:
         """Return `{"blank_issues_enabled": False}`."""
         return {"blank_issues_enabled": False}

@@ -1,6 +1,6 @@
 """Wrapper around the rumdl Markdown linter and formatter."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckFormatHookTool
@@ -18,48 +18,7 @@ class MarkdownLinter(CheckFormatHookTool):
     formatting markdown files.
     """
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the badge image URL for rumdl."""
-        return f"https://img.shields.io/badge/Markdown-{self.shield_name()}-darkgreen"
-
-    def link_url(self) -> str:
-        """Return the URL of the rumdl project page."""
-        return "https://github.com/rvben/rumdl"
-
-    def name(self) -> str:
-        """Return `'rumdl'`, the executable name for this tool's CLI command."""
-        return "rumdl"
-
-    def version_control_ignore_patterns(self) -> tuple[str, ...]:
-        """Return `('.rumdl_cache/',)`, rumdl's cache directory."""
-        return (*super().version_control_ignore_patterns(), ".rumdl_cache/")
-
-    def check_args(self, *args: str) -> Args:
-        """Construct rumdl check arguments.
-
-        Args:
-            *args: Additional arguments forwarded to `rumdl check`.
-
-        Returns:
-            Args for `rumdl check`.
-        """
-        return self.args("check", *args)
-
-    def format_args(self, *args: str) -> Args:
-        """Construct rumdl fmt arguments.
-
-        Args:
-            *args: Additional arguments forwarded to `rumdl fmt`.
-
-        Returns:
-            Args for `rumdl fmt`.
-        """
-        return self.args("fmt", *args)
-
+    @override
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting Markdown files.
 
@@ -79,14 +38,32 @@ class MarkdownLinter(CheckFormatHookTool):
             args=self.hook_args(),
         )
 
-    def lint_markdown(self) -> Args:
-        """Return the `Args` this hook's entry runs.
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
+        return Group.CODE_QUALITY
 
-        Returns:
-            Args for `uv run rumdl check`.
-        """
-        return PackageManager.I.run_args(*self.check_args())
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for rumdl."""
+        return f"https://img.shields.io/badge/Markdown-{self.shield_name()}-darkgreen"
 
+    @override
+    def link_url(self) -> str:
+        """Return the URL of the rumdl project page."""
+        return "https://github.com/rvben/rumdl"
+
+    @override
+    def name(self) -> str:
+        """Return `'rumdl'`, the executable name for this tool's CLI command."""
+        return "rumdl"
+
+    @override
+    def version_control_ignore_patterns(self) -> tuple[str, ...]:
+        """Return `('.rumdl_cache/',)`, rumdl's cache directory."""
+        return (*super().version_control_ignore_patterns(), ".rumdl_cache/")
+
+    @override
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting Markdown files.
 
@@ -104,6 +81,38 @@ class MarkdownLinter(CheckFormatHookTool):
             types=["markdown"],
             args=self.hook_args(),
         )
+
+    @override
+    def check_args(self, *args: str) -> Args:
+        """Construct rumdl check arguments.
+
+        Args:
+            *args: Additional arguments forwarded to `rumdl check`.
+
+        Returns:
+            Args for `rumdl check`.
+        """
+        return self.args("check", *args)
+
+    @override
+    def format_args(self, *args: str) -> Args:
+        """Construct rumdl fmt arguments.
+
+        Args:
+            *args: Additional arguments forwarded to `rumdl fmt`.
+
+        Returns:
+            Args for `rumdl fmt`.
+        """
+        return self.args("fmt", *args)
+
+    def lint_markdown(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `uv run rumdl check`.
+        """
+        return PackageManager.I.run_args(*self.check_args())
 
     def format_markdown(self) -> Args:
         """Return the `Args` this hook's entry runs.

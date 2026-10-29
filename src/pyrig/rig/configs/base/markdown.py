@@ -1,5 +1,7 @@
 """Abstract base for Markdown (`.md`) configuration file management."""
 
+from typing import override
+
 from pyrig.rig.configs.base.string_ import StringConfigFile
 
 
@@ -28,6 +30,7 @@ class MarkdownConfigFile(StringConfigFile):
         ...         return "# My Project\n\nDescription here."
     """
 
+    @override
     def extension(self) -> str:
         """Return the file extension `"md"`."""
         return "md"

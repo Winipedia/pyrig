@@ -1,6 +1,7 @@
 """Configuration management for `.gitattributes` files."""
 
 from pathlib import Path
+from typing import override
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
@@ -20,6 +21,7 @@ class VersionControllerAttributesConfigFile(StringConfigFile):
     lock file as generated.
     """
 
+    @override
     def content(self) -> str:
         """Return the required `.gitattributes` content.
 
@@ -42,18 +44,22 @@ class VersionControllerAttributesConfigFile(StringConfigFile):
 /{RemoteVersionController.I.config_dir().as_posix()}/**     export-ignore
 """
 
+    @override
     def extension(self) -> str:
         """Return an empty string, since `.gitattributes` has no extension."""
         return ""
 
+    @override
     def extension_separator(self) -> str:
         """Return an empty string, so `.gitattributes` has no trailing dot."""
         return ""
 
+    @override
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
         return Path()
 
+    @override
     def stem(self) -> str:
         """Return `'.gitattributes'`, the filename with no extension to split off."""
         return ".gitattributes"

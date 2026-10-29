@@ -1,7 +1,7 @@
 """Base classes for managing JSON configuration files."""
 
 import json
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.strings import open_path_with_utf8, read_text_utf8
 from pyrig.rig.configs.base.config_file import (
@@ -20,6 +20,12 @@ class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
     Subclasses must implement `parent_path()`, `stem()`, and `_configs()`.
     """
 
+    @override
+    def extension(self) -> str:
+        """Return `"json"`."""
+        return "json"
+
+    @override
     def _dump(self, configs: ConfigT) -> None:
         """Write configuration to the JSON file with 2-space indentation.
 
@@ -39,6 +45,7 @@ class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
             )
             f.write("\n")
 
+    @override
     def _load(self) -> ConfigT:
         """Read and parse the JSON file from disk.
 
@@ -48,10 +55,6 @@ class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
         path = self.path()
         data: ConfigT = json.loads(read_text_utf8(path))
         return data
-
-    def extension(self) -> str:
-        """Return `"json"`."""
-        return "json"
 
 
 class JSONDictConfigFile(JSONConfigFile[dict[str, Any]], DictConfigFile):

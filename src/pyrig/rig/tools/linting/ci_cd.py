@@ -1,7 +1,7 @@
 """CI/CD linter tool wrapper."""
 
 import re
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
@@ -20,26 +20,7 @@ class CICDLinter(CheckHookTool):
     It implements actionlint and wraps around it.
     """
 
-    def group(self) -> str:
-        """Return the group this tool belongs to."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the URL of the shield image."""
-        return f"https://img.shields.io/badge/CI/CD-{self.shield_name()}-blue"
-
-    def link_url(self) -> str:
-        """Return the URL of the tool's homepage or repository."""
-        return "https://github.com/rhysd/actionlint"
-
-    def name(self) -> str:
-        """Return the name of the tool."""
-        return "actionlint"
-
-    def check_args(self, *args: str) -> Args:
-        """Return the arguments for the CI/CD linter."""
-        return self.args(*args)
-
+    @override
     def check_hook(self) -> dict[str, Any]:
         """Return the configuration for the CI/CD linter hook."""
         shell_linter_hook = ShellLinter.I.check_hook()
@@ -59,14 +40,40 @@ class CICDLinter(CheckHookTool):
             ),
         )
 
+    @override
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return the development dependencies required for the CI/CD linter."""
         return ("actionlint-py", "pyflakes", "shellcheck-py")
 
-    def lint_ci_cd(self) -> Args:
-        """Return the args for running the CI/CD linter in the hook."""
-        return PackageManager.I.run_args(*self.check_args())
+    @override
+    def group(self) -> str:
+        """Return the group this tool belongs to."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the URL of the shield image."""
+        return f"https://img.shields.io/badge/CI/CD-{self.shield_name()}-blue"
+
+    @override
+    def link_url(self) -> str:
+        """Return the URL of the tool's homepage or repository."""
+        return "https://github.com/rhysd/actionlint"
+
+    @override
+    def name(self) -> str:
+        """Return the name of the tool."""
+        return "actionlint"
+
+    @override
+    def check_args(self, *args: str) -> Args:
+        """Return the arguments for the CI/CD linter."""
+        return self.args(*args)
 
     def ci_cd_files_pattern(self) -> str:
         """Return the regex to filter for files the tool can check."""
         return rf"^{re.escape(RemoteVersionController.I.ci_cd_dir().as_posix())}/"
+
+    def lint_ci_cd(self) -> Args:
+        """Return the args for running the CI/CD linter in the hook."""
+        return PackageManager.I.run_args(*self.check_args())

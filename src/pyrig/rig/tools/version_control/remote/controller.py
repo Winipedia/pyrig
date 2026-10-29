@@ -3,6 +3,7 @@
 import os
 from collections.abc import Iterable
 from pathlib import Path
+from typing import override
 
 from pyrig.core.strings import make_linked_badge_markdown
 from pyrig.core.subprocesses import Args
@@ -21,14 +22,17 @@ class RemoteVersionController(Tool):
     Actions CI environment, and builds `gh` CLI commands.
     """
 
+    @override
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return an empty tuple; `gh` is a system dependency, not a pip package."""
         return ()
 
+    @override
     def group(self) -> str:
         """Return `Group.TOOLING` as the badge category."""
         return Group.TOOLING
 
+    @override
     def image_url(self) -> str:
         """Return the shields.io badge image URL showing the repository's star count.
 
@@ -38,129 +42,17 @@ class RemoteVersionController(Tool):
         """
         return f"https://img.shields.io/github/stars/{self.repository()}?style=social"
 
+    @override
     def link_url(self) -> str:
         """Return the GitHub repository page URL."""
         return self.repo_url()
 
+    @override
     def name(self) -> str:
         """Return `'github'` as the executable name."""
         return "github"
 
-    def cicd_badge(self, workflow_name: str, label: str) -> str:
-        """Construct a clickable Markdown badge for a GitHub Actions workflow status.
-
-        Args:
-            workflow_name: Workflow file name without the `.yml` extension.
-            label: Display label shown on the badge (e.g., "CI", "Build").
-
-        Returns:
-            Markdown string in the form `[![label](badge_url)](cicd_url)`.
-        """
-        badge_url = self.cicd_badge_url(workflow_name, label)
-        cicd_url = self.cicd_url(workflow_name)
-        return make_linked_badge_markdown(
-            image_url=badge_url,
-            link_url=cicd_url,
-            alt_text=label,
-        )
-
-    def issues_url(self) -> str:
-        """Construct the GitHub issues URL.
-
-        Returns:
-            URL in the format `https://github.com/{owner}/{repo}/issues`.
-        """
-        return f"{self.repo_url()}/issues"
-
-    def releases_url(self) -> str:
-        """Construct the GitHub releases URL.
-
-        Returns:
-            URL in the format `https://github.com/{owner}/{repo}/releases`.
-        """
-        return f"{self.repo_url()}/releases"
-
-    def cicd_url(self, workflow_name: str) -> str:
-        """Construct the GitHub Actions workflow run history URL.
-
-        Args:
-            workflow_name: Workflow file name without the `.yml` extension.
-
-        Returns:
-            URL in the format
-            `https://github.com/{owner}/{repo}/actions/workflows/{workflow_name}.yml`.
-        """
-        return f"{self.repo_url()}/actions/workflows/{workflow_name}.yml"
-
-    def cicd_badge_url(self, workflow_name: str, label: str) -> str:
-        """Construct a shields.io badge URL for a GitHub Actions workflow status.
-
-        Args:
-            workflow_name: Workflow file name without the `.yml` extension.
-            label: Display label shown on the badge (e.g., "CI", "Build").
-
-        Returns:
-            shields.io URL that renders the current workflow status as a badge.
-        """
-        return f"https://img.shields.io/github/actions/workflow/status/{self.repository()}/{workflow_name}.yml?label={label}&logo=github"
-
-    def repo_url(self) -> str:
-        """Construct the HTTPS GitHub repository URL.
-
-        Returns:
-            URL in the format `https://github.com/{owner}/{repo}`.
-        """
-        return f"{self.url_base()}/{self.repository()}"
-
-    def repository(self) -> str:
-        """Return `"owner/repo"` for this repository.
-
-        Returns:
-            The repository owner and project name joined with `/`.
-        """
-        return f"{VersionController.I.repo_owner()}/{PackageManager.I.project_name()}"
-
-    def url_base(self) -> str:
-        """Return `'https://github.com'` as GitHub's base URL."""
-        return "https://github.com"
-
-    def ci_cd_dir(self) -> Path:
-        """Return the directory containing GitHub Actions workflows."""
-        return self.config_dir() / "workflows"
-
-    def dependency_bot_path(self) -> Path:
-        """Return the configuration file path for dependabot."""
-        return self.config_dir() / "dependabot.yml"
-
-    def action_path(self) -> Path:
-        """Return the name of a custom Github action file."""
-        return Path("action.yml")
-
-    def config_dir(self) -> Path:
-        """Return GitHub's special repository configuration directory.
-
-        Returns:
-            `Path(".github")`, the directory GitHub reads workflows, issue
-            templates, the pull request template, repository settings, and
-            `CODEOWNERS` from.
-        """
-        return Path(f".{self.name()}")
-
-    def access_token_key(self) -> str:
-        """Return `'REPO_TOKEN'` as the access token's environment variable name."""
-        return "REPO_TOKEN"
-
-    def running_in_ci(self) -> bool:
-        """Detect whether the code is running inside a GitHub Actions environment.
-
-        Checks the `GITHUB_ACTIONS` environment variable, which GitHub Actions
-        automatically sets to `"true"` for all workflow runs.
-
-        Returns:
-            `True` if running inside GitHub Actions, `False` otherwise.
-        """
-        return os.getenv("GITHUB_ACTIONS", "false") == "true"
-
+    @override
     def args(self, *args: str) -> Args:
         """Build an `Args` command starting with `gh`, the GitHub CLI.
 
@@ -176,77 +68,13 @@ class RemoteVersionController(Tool):
         """
         return Args("gh", *args)
 
-    def release_args(self, *args: str) -> Args:
-        """Build base arguments for `gh release`.
+    def access_token_key(self) -> str:
+        """Return `'REPO_TOKEN'` as the access token's environment variable name."""
+        return "REPO_TOKEN"
 
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `gh release [args]`.
-        """
-        return self.args("release", *args)
-
-    def create_release_args(
-        self,
-        *args: str,
-        tag: str,
-        files: Iterable[str] = (),
-    ) -> Args:
-        """Build arguments to create a GitHub release for a tag.
-
-        Args:
-            *args: Additional arguments appended to the command.
-            tag: The tag to release, also used as the release title.
-            files: Release asset paths to upload alongside the release,
-                e.g. built distributions or binaries.
-
-        Returns:
-            Args for `gh release create <tag> [files] --title=<tag>
-            --generate-notes [args]`.
-        """
-        return self.release_args(
-            "create",
-            tag,
-            *files,
-            f"--title={tag}",
-            "--generate-notes",
-            *args,
-        )
-
-    def api_args(self, *args: str, endpoint: str) -> Args:
-        """Build arguments for `gh api`, meant for embedding in shell scripts.
-
-        Callers are responsible for quoting `endpoint` themselves if it
-        contains a shell variable expansion that must survive word
-        splitting once expanded at runtime (e.g. `'"repos/${repo}"'`).
-
-        Args:
-            *args: Additional arguments appended to the command, e.g.
-                `"--input=-"`.
-            endpoint: The GitHub API endpoint path.
-
-        Returns:
-            Args for `gh api <endpoint> [args]`.
-        """
-        return self.args("api", endpoint, *args)
-
-    def api_method_args(self, *args: str, endpoint: str, method: str) -> Args:
-        """Build arguments for `gh api` with an HTTP method, for shell scripts.
-
-        Callers are responsible for quoting `endpoint` and `method`
-        themselves if either contains a shell variable expansion.
-
-        Args:
-            *args: Additional arguments appended to the command.
-            endpoint: The GitHub API endpoint path.
-            method: The HTTP method, e.g. `"PATCH"` or `'"${method}"'` if
-                it's a shell variable expansion.
-
-        Returns:
-            Args for `gh api <endpoint> --method=<method> [args]`.
-        """
-        return self.api_args(f"--method={method}", *args, endpoint=endpoint)
+    def action_path(self) -> Path:
+        """Return the name of a custom Github action file."""
+        return Path("action.yml")
 
     def api_method_input_args(
         self,
@@ -275,3 +103,182 @@ class RemoteVersionController(Tool):
             endpoint=endpoint,
             method=method,
         )
+
+    def ci_cd_dir(self) -> Path:
+        """Return the directory containing GitHub Actions workflows."""
+        return self.config_dir() / "workflows"
+
+    def cicd_badge(self, workflow_name: str, label: str) -> str:
+        """Construct a clickable Markdown badge for a GitHub Actions workflow status.
+
+        Args:
+            workflow_name: Workflow file name without the `.yml` extension.
+            label: Display label shown on the badge (e.g., "CI", "Build").
+
+        Returns:
+            Markdown string in the form `[![label](badge_url)](cicd_url)`.
+        """
+        badge_url = self.cicd_badge_url(workflow_name, label)
+        cicd_url = self.cicd_url(workflow_name)
+        return make_linked_badge_markdown(
+            image_url=badge_url,
+            link_url=cicd_url,
+            alt_text=label,
+        )
+
+    def create_release_args(
+        self,
+        *args: str,
+        tag: str,
+        files: Iterable[str] = (),
+    ) -> Args:
+        """Build arguments to create a GitHub release for a tag.
+
+        Args:
+            *args: Additional arguments appended to the command.
+            tag: The tag to release, also used as the release title.
+            files: Release asset paths to upload alongside the release,
+                e.g. built distributions or binaries.
+
+        Returns:
+            Args for `gh release create <tag> [files] --title=<tag>
+            --generate-notes [args]`.
+        """
+        return self.release_args(
+            "create",
+            tag,
+            *files,
+            f"--title={tag}",
+            "--generate-notes",
+            *args,
+        )
+
+    def dependency_bot_path(self) -> Path:
+        """Return the configuration file path for dependabot."""
+        return self.config_dir() / "dependabot.yml"
+
+    def issues_url(self) -> str:
+        """Construct the GitHub issues URL.
+
+        Returns:
+            URL in the format `https://github.com/{owner}/{repo}/issues`.
+        """
+        return f"{self.repo_url()}/issues"
+
+    def releases_url(self) -> str:
+        """Construct the GitHub releases URL.
+
+        Returns:
+            URL in the format `https://github.com/{owner}/{repo}/releases`.
+        """
+        return f"{self.repo_url()}/releases"
+
+    def running_in_ci(self) -> bool:
+        """Detect whether the code is running inside a GitHub Actions environment.
+
+        Checks the `GITHUB_ACTIONS` environment variable, which GitHub Actions
+        automatically sets to `"true"` for all workflow runs.
+
+        Returns:
+            `True` if running inside GitHub Actions, `False` otherwise.
+        """
+        return os.getenv("GITHUB_ACTIONS", "false") == "true"
+
+    def api_method_args(self, *args: str, endpoint: str, method: str) -> Args:
+        """Build arguments for `gh api` with an HTTP method, for shell scripts.
+
+        Callers are responsible for quoting `endpoint` and `method`
+        themselves if either contains a shell variable expansion.
+
+        Args:
+            *args: Additional arguments appended to the command.
+            endpoint: The GitHub API endpoint path.
+            method: The HTTP method, e.g. `"PATCH"` or `'"${method}"'` if
+                it's a shell variable expansion.
+
+        Returns:
+            Args for `gh api <endpoint> --method=<method> [args]`.
+        """
+        return self.api_args(f"--method={method}", *args, endpoint=endpoint)
+
+    def cicd_badge_url(self, workflow_name: str, label: str) -> str:
+        """Construct a shields.io badge URL for a GitHub Actions workflow status.
+
+        Args:
+            workflow_name: Workflow file name without the `.yml` extension.
+            label: Display label shown on the badge (e.g., "CI", "Build").
+
+        Returns:
+            shields.io URL that renders the current workflow status as a badge.
+        """
+        return f"https://img.shields.io/github/actions/workflow/status/{self.repository()}/{workflow_name}.yml?label={label}&logo=github"
+
+    def cicd_url(self, workflow_name: str) -> str:
+        """Construct the GitHub Actions workflow run history URL.
+
+        Args:
+            workflow_name: Workflow file name without the `.yml` extension.
+
+        Returns:
+            URL in the format
+            `https://github.com/{owner}/{repo}/actions/workflows/{workflow_name}.yml`.
+        """
+        return f"{self.repo_url()}/actions/workflows/{workflow_name}.yml"
+
+    def config_dir(self) -> Path:
+        """Return GitHub's special repository configuration directory.
+
+        Returns:
+            `Path(".github")`, the directory GitHub reads workflows, issue
+            templates, the pull request template, repository settings, and
+            `CODEOWNERS` from.
+        """
+        return Path(f".{self.name()}")
+
+    def release_args(self, *args: str) -> Args:
+        """Build base arguments for `gh release`.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for `gh release [args]`.
+        """
+        return self.args("release", *args)
+
+    def api_args(self, *args: str, endpoint: str) -> Args:
+        """Build arguments for `gh api`, meant for embedding in shell scripts.
+
+        Callers are responsible for quoting `endpoint` themselves if it
+        contains a shell variable expansion that must survive word
+        splitting once expanded at runtime (e.g. `'"repos/${repo}"'`).
+
+        Args:
+            *args: Additional arguments appended to the command, e.g.
+                `"--input=-"`.
+            endpoint: The GitHub API endpoint path.
+
+        Returns:
+            Args for `gh api <endpoint> [args]`.
+        """
+        return self.args("api", endpoint, *args)
+
+    def repo_url(self) -> str:
+        """Construct the HTTPS GitHub repository URL.
+
+        Returns:
+            URL in the format `https://github.com/{owner}/{repo}`.
+        """
+        return f"{self.url_base()}/{self.repository()}"
+
+    def repository(self) -> str:
+        """Return `"owner/repo"` for this repository.
+
+        Returns:
+            The repository owner and project name joined with `/`.
+        """
+        return f"{VersionController.I.repo_owner()}/{PackageManager.I.project_name()}"
+
+    def url_base(self) -> str:
+        """Return `'https://github.com'` as GitHub's base URL."""
+        return "https://github.com"

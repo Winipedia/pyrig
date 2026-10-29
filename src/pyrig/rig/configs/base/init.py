@@ -1,6 +1,7 @@
 """Base configuration for generating an `__init__.py` file from a source module."""
 
 from pathlib import Path
+from typing import override
 
 from pyrig.rig.configs.base.copy_module import (
     CopyModuleConfigFile,
@@ -18,6 +19,7 @@ class CopyInitConfigFile(CopyModuleConfigFile):
         - `copy_module`: Return the source module whose content will be copied.
     """
 
+    @override
     def module_path(self) -> Path:
         """Return the target path of the generated `__init__.py`.
 
@@ -29,6 +31,7 @@ class CopyInitConfigFile(CopyModuleConfigFile):
         """
         return super().module_path().with_suffix("") / self.filename()
 
+    @override
     def stem(self) -> str:
         """Return `"__init__"` as the filename stem."""
         return "__init__"

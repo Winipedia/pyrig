@@ -5,6 +5,7 @@ adopted code of conduct for open source projects.
 """
 
 from pathlib import Path
+from typing import override
 
 from pyrig.core.resources import (
     resource_content,
@@ -23,14 +24,17 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
     editorial note that precedes the enforcement ladder.
     """
 
+    @override
     def content(self) -> str:
         """Return the completed Contributor Covenant text."""
         return self.code_of_conduct()
 
+    @override
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
         return Path()
 
+    @override
     def stem(self) -> str:
         """Return `"CODE_OF_CONDUCT"` as the filename stem."""
         return "CODE_OF_CONDUCT"
@@ -71,24 +75,6 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
             resources,
         )
 
-    def reporting_method(self) -> str:
-        """Return the reporting instructions for the code of conduct.
-
-        Returns:
-            A sentence directing reporters to the project's maintainer
-            email, e.g. `send an email to <user@example.com>.`.
-        """
-        return f"send an email to <{PyprojectConfigFile.I.maintainer_email()}>."
-
-    def reporting_placeholder(self) -> str:
-        """Return the placeholder for the reporting instructions.
-
-        Returns:
-            The `[NOTE: describe your means of reporting here.]` placeholder
-            string.
-        """
-        return "[NOTE: describe your means of reporting here.]"
-
     def enforcement_method(self) -> str:
         """Return the replacement text for the enforcement editorial note.
 
@@ -112,3 +98,21 @@ practices in code of conduct enforcement. If your community has its own
 established enforcement process, be sure to edit this section to describe your
 own policies.]**
 """
+
+    def reporting_method(self) -> str:
+        """Return the reporting instructions for the code of conduct.
+
+        Returns:
+            A sentence directing reporters to the project's maintainer
+            email, e.g. `send an email to <user@example.com>.`.
+        """
+        return f"send an email to <{PyprojectConfigFile.I.maintainer_email()}>."
+
+    def reporting_placeholder(self) -> str:
+        """Return the placeholder for the reporting instructions.
+
+        Returns:
+            The `[NOTE: describe your means of reporting here.]` placeholder
+            string.
+        """
+        return "[NOTE: describe your means of reporting here.]"

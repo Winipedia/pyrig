@@ -1,6 +1,6 @@
 """Wrapper around prek's `trailing-whitespace` built-in hook."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
@@ -12,26 +12,46 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class TrailingWhitespaceFormatter(FormatHookTool):
     """Type-safe wrapper for prek's pre-commit-hooks-compatible whitespace fixer."""
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the badge image URL for the `trailing-whitespace` hook."""
-        return f"https://img.shields.io/badge/whitespace-{self.shield_name()}-orange"
-
-    def link_url(self) -> str:
-        """Return the documentation URL for this prek built-in hook."""
-        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
-
-    def name(self) -> str:
-        """Return `"trailing-whitespace"`, this tool's hook ID."""
-        return "trailing-whitespace"
-
+    @override
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return no package dependency; prek provides this built-in hook."""
         return ()
 
+    @override
+    def format_hook(self) -> dict[str, Any]:
+        """Return hook metadata for fixing trailing whitespace.
+
+        Returns:
+            Hook metadata dict for the `trailing-whitespace` hook.
+        """
+        return VersionControlHookManager.I.builtin_hook(
+            self.trailing_whitespace,
+            priority=VersionControlHookManager.I.deprioritize(
+                EndOfLineFormatter.I.format_hook(),
+            ),
+        )
+
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for the `trailing-whitespace` hook."""
+        return f"https://img.shields.io/badge/whitespace-{self.shield_name()}-orange"
+
+    @override
+    def link_url(self) -> str:
+        """Return the documentation URL for this prek built-in hook."""
+        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
+
+    @override
+    def name(self) -> str:
+        """Return `"trailing-whitespace"`, this tool's hook ID."""
+        return "trailing-whitespace"
+
+    @override
     def format_args(self, *args: str) -> Args:
         """Construct arguments for the `trailing-whitespace` hook.
 
@@ -48,19 +68,6 @@ class TrailingWhitespaceFormatter(FormatHookTool):
             Arguments for the `trailing-whitespace` hook.
         """
         return Args(*args)
-
-    def format_hook(self) -> dict[str, Any]:
-        """Return hook metadata for fixing trailing whitespace.
-
-        Returns:
-            Hook metadata dict for the `trailing-whitespace` hook.
-        """
-        return VersionControlHookManager.I.builtin_hook(
-            self.trailing_whitespace,
-            priority=VersionControlHookManager.I.deprioritize(
-                EndOfLineFormatter.I.format_hook(),
-            ),
-        )
 
     def trailing_whitespace(self) -> Args:
         """Return arguments for the built-in hook.

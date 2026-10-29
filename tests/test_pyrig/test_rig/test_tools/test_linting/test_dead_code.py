@@ -10,6 +10,32 @@ from pyrig.rig.tools.packages.manager import PackageManager
 class TestDeadCodeChecker:
     """Test class."""
 
+    def test_check_args(self) -> None:
+        """Test method."""
+        assert DeadCodeChecker.I.check_args() == Args("vulture")
+        assert DeadCodeChecker.I.check_args("--verbose", "src") == Args(
+            "vulture",
+            "--verbose",
+            "src",
+        )
+
+    def test_check_dead_code(self) -> None:
+        """Test method."""
+        assert DeadCodeChecker.I.check_dead_code() == PackageManager.I.run_args(
+            *DeadCodeChecker.I.check_args(),
+        )
+
+    def test_check_hook(self) -> None:
+        """Test method."""
+        hook = DeadCodeChecker.I.check_hook()
+        assert hook["priority"] > PythonLinter.I.format_hook()["priority"]
+        assert hook["priority"] > TOMLLinter.I.format_hook()["priority"]
+        assert hook["types"] == ["python"]
+        assert hook["pass_filenames"] is False
+        assert hook["entry"] == str(DeadCodeChecker.I.check_dead_code())
+        assert "args" not in hook
+        assert DeadCodeChecker.I.hooks() == (hook,)
+
     def test_group(self) -> None:
         """Test method."""
         assert DeadCodeChecker.I.group() == "code-quality"
@@ -29,29 +55,3 @@ class TestDeadCodeChecker:
         """Test method."""
         assert DeadCodeChecker.I.name() == "vulture"
         assert DeadCodeChecker.I.dev_dependencies() == ("vulture",)
-
-    def test_check_args(self) -> None:
-        """Test method."""
-        assert DeadCodeChecker.I.check_args() == Args("vulture")
-        assert DeadCodeChecker.I.check_args("--verbose", "src") == Args(
-            "vulture",
-            "--verbose",
-            "src",
-        )
-
-    def test_check_hook(self) -> None:
-        """Test method."""
-        hook = DeadCodeChecker.I.check_hook()
-        assert hook["priority"] > PythonLinter.I.format_hook()["priority"]
-        assert hook["priority"] > TOMLLinter.I.format_hook()["priority"]
-        assert hook["types"] == ["python"]
-        assert hook["pass_filenames"] is False
-        assert hook["entry"] == str(DeadCodeChecker.I.check_dead_code())
-        assert "args" not in hook
-        assert DeadCodeChecker.I.hooks() == (hook,)
-
-    def test_check_dead_code(self) -> None:
-        """Test method."""
-        assert DeadCodeChecker.I.check_dead_code() == PackageManager.I.run_args(
-            *DeadCodeChecker.I.check_args(),
-        )

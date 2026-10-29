@@ -15,6 +15,87 @@ from pyrig.rig.tools.pyrigger import Pyrigger
 class TestBadgesConfigFile:
     """Test class."""
 
+    def test_add_additional_badges(self) -> None:
+        """Test method."""
+        config_file = ReadmeConfigFile()
+        additional_badges = config_file.additional_badges()
+        grouped_badges: defaultdict[str, list[str]] = defaultdict(
+            list,
+            {
+                Group.PROJECT_INFO: ["existing-info"],
+                Group.PROJECT_STATUS: ["existing-status"],
+            },
+        )
+
+        config_file.add_additional_badges(grouped_badges)
+
+        assert grouped_badges[Group.PROJECT_INFO] == [
+            "existing-info",
+            additional_badges[0][0],
+        ]
+        assert grouped_badges[Group.PROJECT_STATUS] == [
+            additional_badges[1][0],
+            additional_badges[2][0],
+            "existing-status",
+        ]
+
+    def test_add_badge(self) -> None:
+        """Test method."""
+        config_file = ReadmeConfigFile()
+        grouped_badges: defaultdict[str, list[str]] = defaultdict(
+            list,
+            {Group.PROJECT_INFO: ["existing"]},
+        )
+
+        config_file.add_badge(
+            grouped_badges,
+            badge="appended",
+            group=Group.PROJECT_INFO,
+        )
+        config_file.add_badge(
+            grouped_badges,
+            badge="inserted-first",
+            group=Group.PROJECT_STATUS,
+            index=0,
+        )
+
+        assert grouped_badges[Group.PROJECT_INFO] == ["existing", "appended"]
+        assert grouped_badges[Group.PROJECT_STATUS] == ["inserted-first"]
+
+    def test_additional_badges(self) -> None:
+        """Test method."""
+        badges = ReadmeConfigFile().additional_badges()
+
+        assert [(group, index) for _, group, index in badges] == [
+            (Group.PROJECT_INFO, None),
+            (Group.PROJECT_STATUS, 0),
+            (Group.PROJECT_STATUS, 1),
+        ]
+        assert all(badge.startswith("[![") for badge, _, _ in badges)
+
+    def test_badges(self) -> None:
+        """Test method."""
+        assert issubclass(ReadmeConfigFile, BadgesConfigFile)
+        badges = ReadmeConfigFile().badges()
+        assert isinstance(badges, dict)
+
+    def test_badges_content(self) -> None:
+        """Test method."""
+        content = ReadmeConfigFile().badges_content()
+        assert isinstance(content, str)
+        assert "<!--" in content
+        assert "-->" in content
+
+    def test_content(self) -> None:
+        """Test method."""
+        content = ReadmeConfigFile().content()
+        assert isinstance(content, str)
+
+    def test_heading(self) -> None:
+        """Test method."""
+        heading = ReadmeConfigFile().heading()
+        assert isinstance(heading, str)
+
     def test_merge_configs(self, mocker: MockerFixture) -> None:
         """Test method."""
         config_file = ReadmeConfigFile()
@@ -80,84 +161,3 @@ class TestBadgesConfigFile:
         result = ReadmeConfigFile().replace_description(content)
         assert f"> {correct_description}" in result
         assert false_description not in result
-
-    def test_heading(self) -> None:
-        """Test method."""
-        heading = ReadmeConfigFile().heading()
-        assert isinstance(heading, str)
-
-    def test_content(self) -> None:
-        """Test method."""
-        content = ReadmeConfigFile().content()
-        assert isinstance(content, str)
-
-    def test_badges(self) -> None:
-        """Test method."""
-        assert issubclass(ReadmeConfigFile, BadgesConfigFile)
-        badges = ReadmeConfigFile().badges()
-        assert isinstance(badges, dict)
-
-    def test_badges_content(self) -> None:
-        """Test method."""
-        content = ReadmeConfigFile().badges_content()
-        assert isinstance(content, str)
-        assert "<!--" in content
-        assert "-->" in content
-
-    def test_add_additional_badges(self) -> None:
-        """Test method."""
-        config_file = ReadmeConfigFile()
-        additional_badges = config_file.additional_badges()
-        grouped_badges: defaultdict[str, list[str]] = defaultdict(
-            list,
-            {
-                Group.PROJECT_INFO: ["existing-info"],
-                Group.PROJECT_STATUS: ["existing-status"],
-            },
-        )
-
-        config_file.add_additional_badges(grouped_badges)
-
-        assert grouped_badges[Group.PROJECT_INFO] == [
-            "existing-info",
-            additional_badges[0][0],
-        ]
-        assert grouped_badges[Group.PROJECT_STATUS] == [
-            additional_badges[1][0],
-            additional_badges[2][0],
-            "existing-status",
-        ]
-
-    def test_add_badge(self) -> None:
-        """Test method."""
-        config_file = ReadmeConfigFile()
-        grouped_badges: defaultdict[str, list[str]] = defaultdict(
-            list,
-            {Group.PROJECT_INFO: ["existing"]},
-        )
-
-        config_file.add_badge(
-            grouped_badges,
-            badge="appended",
-            group=Group.PROJECT_INFO,
-        )
-        config_file.add_badge(
-            grouped_badges,
-            badge="inserted-first",
-            group=Group.PROJECT_STATUS,
-            index=0,
-        )
-
-        assert grouped_badges[Group.PROJECT_INFO] == ["existing", "appended"]
-        assert grouped_badges[Group.PROJECT_STATUS] == ["inserted-first"]
-
-    def test_additional_badges(self) -> None:
-        """Test method."""
-        badges = ReadmeConfigFile().additional_badges()
-
-        assert [(group, index) for _, group, index in badges] == [
-            (Group.PROJECT_INFO, None),
-            (Group.PROJECT_STATUS, 0),
-            (Group.PROJECT_STATUS, 1),
-        ]
-        assert all(badge.startswith("[![") for badge, _, _ in badges)

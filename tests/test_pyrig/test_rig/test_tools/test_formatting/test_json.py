@@ -7,6 +7,24 @@ from pyrig.rig.tools.security.secrets import SecretsChecker
 class TestJSONFormatter:
     """Test class."""
 
+    def test_dev_dependencies(self) -> None:
+        """Test method."""
+        result = JSONFormatter.I.dev_dependencies()
+        assert result == ()
+
+    def test_format_args(self) -> None:
+        """Test method."""
+        result = JSONFormatter.I.format_args()
+        assert result == ("--autofix", "--no-ensure-ascii", "--no-sort-keys")
+
+    def test_format_hook(self) -> None:
+        """Test method."""
+        # JSON formatting runs after the general read-only checks
+        hook = JSONFormatter.I.format_hook()
+        secrets_hook = SecretsChecker.I.check_hook()
+        assert hook["priority"] > secrets_hook["priority"]
+        assert hook["args"] == ["--autofix", "--no-ensure-ascii", "--no-sort-keys"]
+
     def test_group(self) -> None:
         """Test method."""
         result = JSONFormatter.I.group()
@@ -31,24 +49,6 @@ class TestJSONFormatter:
         """Test method."""
         result = JSONFormatter.I.name()
         assert result == "pretty-format-json"
-
-    def test_dev_dependencies(self) -> None:
-        """Test method."""
-        result = JSONFormatter.I.dev_dependencies()
-        assert result == ()
-
-    def test_format_args(self) -> None:
-        """Test method."""
-        result = JSONFormatter.I.format_args()
-        assert result == ("--autofix", "--no-ensure-ascii", "--no-sort-keys")
-
-    def test_format_hook(self) -> None:
-        """Test method."""
-        # JSON formatting runs after the general read-only checks
-        hook = JSONFormatter.I.format_hook()
-        secrets_hook = SecretsChecker.I.check_hook()
-        assert hook["priority"] > secrets_hook["priority"]
-        assert hook["args"] == ["--autofix", "--no-ensure-ascii", "--no-sort-keys"]
 
     def test_pretty_format_json(self) -> None:
         """Test method."""

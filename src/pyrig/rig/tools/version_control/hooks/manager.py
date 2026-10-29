@@ -3,7 +3,7 @@
 from collections.abc import Callable, Iterable
 from operator import itemgetter
 from types import MethodType
-from typing import Any, cast
+from typing import Any, cast, override
 
 from pyrig_runtime.core.strings import snake_to_kebab_case
 
@@ -23,6 +23,7 @@ class VersionControlHookManager(Tool):
     and sorting hooks into a deterministic run order.
     """
 
+    @override
     def group(self) -> str:
         """Return the badge group this tool belongs to.
 
@@ -37,6 +38,7 @@ class VersionControlHookManager(Tool):
         """
         return Group.TOOLING
 
+    @override
     def image_url(self) -> str:
         """Return the badge image URL for prek.
 
@@ -47,6 +49,7 @@ class VersionControlHookManager(Tool):
             "https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge.svg"
         )
 
+    @override
     def link_url(self) -> str:
         """Return the link URL for prek.
 
@@ -55,6 +58,7 @@ class VersionControlHookManager(Tool):
         """
         return "https://github.com/j178/prek"
 
+    @override
     def name(self) -> str:
         """Return the tool's command name.
 
@@ -62,6 +66,64 @@ class VersionControlHookManager(Tool):
             `'prek'`.
         """
         return "prek"
+
+    def builtin_hook(
+        self,
+        method: Callable[[], Args],
+        *,
+        priority: int,
+        stages: Iterable[str] = ("pre-commit",),
+        groups: Iterable[str] = (),
+    ) -> dict[str, Any]:
+        """Build metadata for a builtin hook provided by prek itself.
+
+        Args:
+            method: Bound, zero-argument method whose name identifies the
+                built-in hook and whose return value supplies its arguments.
+            priority: This hook's position in the prek pipeline.
+            stages: Git stages that trigger this hook. Defaults to
+                `["pre-commit"]`.
+            groups: Extra prek hook groups beyond `group_all()` to tag this
+                hook with.
+
+        Returns:
+            Hook metadata dictionary in prek's built-in hook schema.
+        """
+        base_hook = self.hook(
+            method,
+            priority=priority,
+            stages=stages,
+            groups=groups,
+        )
+        hook = {
+            "repo": "builtin",
+            "id": base_hook["id"],
+        }
+        if args := method():
+            hook["args"] = sorted(args)
+        hook["stages"] = base_hook["stages"]
+        hook["groups"] = base_hook["groups"]
+        hook["priority"] = base_hook["priority"]
+        return hook
+
+    def deprioritize(self, *hooks: dict[str, Any]) -> int:
+        """Return the priority one step after the highest priority of the given hooks.
+
+        Args:
+            *hooks: The hook metadata dictionaries to run after.
+
+        Returns:
+            The highest priority among `hooks` plus one.
+        """
+        return max(self.hook_priority(hook) for hook in hooks) + 1
+
+    def hook_sort_key(self, hook: dict[str, Any]) -> tuple[Any, ...]:
+        """Return a sort key ordering a hook by priority, stages, then id.
+
+        `priority` leads `stages`, matching prek's own scheduler, which
+        orders hooks by `priority` alone regardless of `stages`.
+        """
+        return itemgetter("priority", "stages", "id")(hook)
 
     def install_args(self, *args: str) -> Args:
         """Build arguments for `prek install`.
@@ -73,70 +135,6 @@ class VersionControlHookManager(Tool):
             Args for `prek install [args]`.
         """
         return self.args("install", *args)
-
-    def update_args(self, *args: str) -> Args:
-        """Build arguments for `prek update`.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `prek update [args]`.
-        """
-        return self.args("update", *args)
-
-    def run_all_files_all_hooks_args(self, *args: str) -> Args:
-        """Build arguments to run all hooks against every file.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `prek run --all-files --group=all [args]`.
-        """
-        return self.run_all_files_group_args(*args, group=self.group_all())
-
-    def run_all_files_group_args(self, *args: str, group: str) -> Args:
-        """Build arguments to run hooks of a given group against every file.
-
-        Args:
-            *args: Additional arguments appended to the command.
-            group: The hook group to run (e.g. `"tooling"`).
-
-        Returns:
-            Args for `prek run --all-files --group=<group> [args]`.
-        """
-        return self.run_all_files_args(f"--group={group}", *args)
-
-    def run_all_files_args(self, *args: str) -> Args:
-        """Build arguments to run hooks against every file in the project.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `prek run --all-files [args]`.
-        """
-        return self.run_args("--all-files", *args)
-
-    def run_args(self, *args: str) -> Args:
-        """Build base arguments for `prek run`.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `prek run [args]`.
-        """
-        return self.args("run", *args)
-
-    def hook_sort_key(self, hook: dict[str, Any]) -> tuple[Any, ...]:
-        """Return a sort key ordering a hook by priority, stages, then id.
-
-        `priority` leads `stages`, matching prek's own scheduler, which
-        orders hooks by `priority` alone regardless of `stages`.
-        """
-        return itemgetter("priority", "stages", "id")(hook)
 
     def local_hook(  # noqa: PLR0913
         self,
@@ -218,44 +216,27 @@ class VersionControlHookManager(Tool):
         hook["priority"] = base_hook["priority"]
         return hook
 
-    def builtin_hook(
-        self,
-        method: Callable[[], Args],
-        *,
-        priority: int,
-        stages: Iterable[str] = ("pre-commit",),
-        groups: Iterable[str] = (),
-    ) -> dict[str, Any]:
-        """Build metadata for a builtin hook provided by prek itself.
+    def run_all_files_all_hooks_args(self, *args: str) -> Args:
+        """Build arguments to run all hooks against every file.
 
         Args:
-            method: Bound, zero-argument method whose name identifies the
-                built-in hook and whose return value supplies its arguments.
-            priority: This hook's position in the prek pipeline.
-            stages: Git stages that trigger this hook. Defaults to
-                `["pre-commit"]`.
-            groups: Extra prek hook groups beyond `group_all()` to tag this
-                hook with.
+            *args: Additional arguments appended to the command.
 
         Returns:
-            Hook metadata dictionary in prek's built-in hook schema.
+            Args for `prek run --all-files --group=all [args]`.
         """
-        base_hook = self.hook(
-            method,
-            priority=priority,
-            stages=stages,
-            groups=groups,
-        )
-        hook = {
-            "repo": "builtin",
-            "id": base_hook["id"],
-        }
-        if args := method():
-            hook["args"] = sorted(args)
-        hook["stages"] = base_hook["stages"]
-        hook["groups"] = base_hook["groups"]
-        hook["priority"] = base_hook["priority"]
-        return hook
+        return self.run_all_files_group_args(*args, group=self.group_all())
+
+    def update_args(self, *args: str) -> Args:
+        """Build arguments for `prek update`.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for `prek update [args]`.
+        """
+        return self.args("update", *args)
 
     def hook(
         self,
@@ -283,6 +264,40 @@ class VersionControlHookManager(Tool):
             "groups": sorted((self.group_all(), *groups)),
         }
 
+    def hook_priority(self, hook: dict[str, Any]) -> int:
+        """Return another hook's priority, for hooks that should run alongside it.
+
+        Args:
+            hook: The hook metadata dictionary to match the priority of.
+
+        Returns:
+            `hook`'s priority, unchanged.
+        """
+        return hook["priority"]
+
+    def name_from_id(self, id_: str) -> str:
+        """Derive a hook's display `name` from its id.
+
+        Args:
+            id_: The hook's kebab-case id.
+
+        Returns:
+            The id with hyphens replaced by spaces.
+        """
+        return reformat_name(id_, split_on="-", join_on=" ")
+
+    def run_all_files_group_args(self, *args: str, group: str) -> Args:
+        """Build arguments to run hooks of a given group against every file.
+
+        Args:
+            *args: Additional arguments appended to the command.
+            group: The hook group to run (e.g. `"tooling"`).
+
+        Returns:
+            Args for `prek run --all-files --group=<group> [args]`.
+        """
+        return self.run_all_files_args(f"--group={group}", *args)
+
     def group_all(self) -> str:
         """Return the prek hook group every hook is tagged with.
 
@@ -303,35 +318,24 @@ class VersionControlHookManager(Tool):
         """
         return snake_to_kebab_case(method.__name__)
 
-    def name_from_id(self, id_: str) -> str:
-        """Derive a hook's display `name` from its id.
+    def run_all_files_args(self, *args: str) -> Args:
+        """Build arguments to run hooks against every file in the project.
 
         Args:
-            id_: The hook's kebab-case id.
+            *args: Additional arguments appended to the command.
 
         Returns:
-            The id with hyphens replaced by spaces.
+            Args for `prek run --all-files [args]`.
         """
-        return reformat_name(id_, split_on="-", join_on=" ")
+        return self.run_args("--all-files", *args)
 
-    def deprioritize(self, *hooks: dict[str, Any]) -> int:
-        """Return the priority one step after the highest priority of the given hooks.
+    def run_args(self, *args: str) -> Args:
+        """Build base arguments for `prek run`.
 
         Args:
-            *hooks: The hook metadata dictionaries to run after.
+            *args: Additional arguments appended to the command.
 
         Returns:
-            The highest priority among `hooks` plus one.
+            Args for `prek run [args]`.
         """
-        return max(self.hook_priority(hook) for hook in hooks) + 1
-
-    def hook_priority(self, hook: dict[str, Any]) -> int:
-        """Return another hook's priority, for hooks that should run alongside it.
-
-        Args:
-            hook: The hook metadata dictionary to match the priority of.
-
-        Returns:
-            `hook`'s priority, unchanged.
-        """
-        return hook["priority"]
+        return self.args("run", *args)

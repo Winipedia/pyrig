@@ -8,7 +8,7 @@ import re
 from datetime import UTC, datetime
 from functools import cache
 from pathlib import Path
-from typing import Any
+from typing import Any, override
 
 from pyrig_runtime.core.strings import regex_find
 from pyrig_runtime.core.wrappers import safe_call
@@ -39,6 +39,7 @@ class LicenseConfigFile(StringConfigFile):
     use in other generated files.
     """
 
+    @override
     def content(self) -> str:
         """Return the MIT license text.
 
@@ -47,77 +48,25 @@ class LicenseConfigFile(StringConfigFile):
         """
         return self.license()
 
+    @override
     def extension(self) -> str:
         """Return an empty string — LICENSE has no file extension."""
         return ""
 
+    @override
     def extension_separator(self) -> str:
         """Return an empty string — no separator is needed without an extension."""
         return ""
 
+    @override
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
         return Path()
 
+    @override
     def stem(self) -> str:
         """Return `'LICENSE'`."""
         return "LICENSE"
-
-    def license(self) -> str:
-        """Return the MIT license text with year and repository owner substituted."""
-        year = safe_call(
-            lambda: regex_find(
-                re.compile(r"Copyright \(c\) (\d{4})"),
-                self.read_content(),
-            ),
-            exceptions=(LookupError,),
-            default=str(datetime.now(tz=UTC).astimezone().year),
-        )
-        return (
-            self.license_template()
-            .replace(
-                self.year_placeholder(),
-                year,
-                1,
-            )
-            .replace(
-                self.fullname_placeholder(),
-                VersionController.I.repo_owner(),
-                1,
-            )
-        )
-
-    def license_template(self) -> str:
-        """Return the raw MIT license template text."""
-        return resource_content(self.license_template.__name__.upper(), resources)
-
-    def license_badge(self) -> str:
-        """Return a Markdown image-link badge for the project license.
-
-        Returns:
-            Markdown string in the form
-            `[![License](<badge_url>)](<repo_url>/blob/main/LICENSE)`.
-        """
-        badge_url = self.license_badge_url()
-        repo_url = RemoteVersionController.I.repo_url()
-        return make_linked_badge_markdown(
-            image_url=badge_url,
-            link_url=f"{repo_url}/blob/main/{self.stem()}",
-            alt_text="License",
-        )
-
-    def license_badge_url(self) -> str:
-        """Return the shields.io badge image URL for the repository license.
-
-        Returns:
-            URL in the form
-            `https://img.shields.io/github/license/<owner>/<repo>`.
-        """
-        owner, repo = (
-            VersionController.I.repo_owner(),
-            PackageManager.I.project_name(),
-        )
-        return f"https://img.shields.io/github/license/{owner}/{repo}"
 
     @classmethod
     @cache
@@ -147,13 +96,57 @@ class LicenseConfigFile(StringConfigFile):
         """
         return analyse_license_text(self.read_content())
 
-    def year_placeholder(self) -> str:
-        """Return the placeholder for the year in the license text.
+    def license_badge(self) -> str:
+        """Return a Markdown image-link badge for the project license.
 
         Returns:
-            The `[year]` placeholder string.
+            Markdown string in the form
+            `[![License](<badge_url>)](<repo_url>/blob/main/LICENSE)`.
         """
-        return "[year]"
+        badge_url = self.license_badge_url()
+        repo_url = RemoteVersionController.I.repo_url()
+        return make_linked_badge_markdown(
+            image_url=badge_url,
+            link_url=f"{repo_url}/blob/main/{self.stem()}",
+            alt_text="License",
+        )
+
+    def license(self) -> str:
+        """Return the MIT license text with year and repository owner substituted."""
+        year = safe_call(
+            lambda: regex_find(
+                re.compile(r"Copyright \(c\) (\d{4})"),
+                self.read_content(),
+            ),
+            exceptions=(LookupError,),
+            default=str(datetime.now(tz=UTC).astimezone().year),
+        )
+        return (
+            self.license_template()
+            .replace(
+                self.year_placeholder(),
+                year,
+                1,
+            )
+            .replace(
+                self.fullname_placeholder(),
+                VersionController.I.repo_owner(),
+                1,
+            )
+        )
+
+    def license_badge_url(self) -> str:
+        """Return the shields.io badge image URL for the repository license.
+
+        Returns:
+            URL in the form
+            `https://img.shields.io/github/license/<owner>/<repo>`.
+        """
+        owner, repo = (
+            VersionController.I.repo_owner(),
+            PackageManager.I.project_name(),
+        )
+        return f"https://img.shields.io/github/license/{owner}/{repo}"
 
     def fullname_placeholder(self) -> str:
         """Return the placeholder for the repository owner in the license text.
@@ -162,3 +155,15 @@ class LicenseConfigFile(StringConfigFile):
             The `[fullname]` placeholder string.
         """
         return "[fullname]"
+
+    def license_template(self) -> str:
+        """Return the raw MIT license template text."""
+        return resource_content(self.license_template.__name__.upper(), resources)
+
+    def year_placeholder(self) -> str:
+        """Return the placeholder for the year in the license text.
+
+        Returns:
+            The `[year]` placeholder string.
+        """
+        return "[year]"

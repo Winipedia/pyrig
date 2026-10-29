@@ -1,6 +1,6 @@
 """Command-line wrapper for the Python linter and formatter."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckFormatHookTool
@@ -13,75 +13,7 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class PythonLinter(CheckFormatHookTool):
     """`ruff` command wrapper for linting, auto-fixing, and formatting."""
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the Shields.io badge URL advertising `ruff`."""
-        return "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json"
-
-    def link_url(self) -> str:
-        """Return the URL of the `ruff` project page."""
-        return "https://github.com/astral-sh/ruff"
-
-    def name(self) -> str:
-        """Return `"ruff"`."""
-        return "ruff"
-
-    def version_control_ignore_patterns(self) -> tuple[str, ...]:
-        """Return `ruff`'s cache directory as a path to ignore."""
-        return (*super().version_control_ignore_patterns(), ".ruff_cache/")
-
-    def check_args(self, *args: str) -> Args:
-        """Build a `ruff check` command.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `ruff check`.
-        """
-        return self.args("check", *args)
-
-    def format_args(self, *args: str) -> Args:
-        """Build a `ruff format` command.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `ruff format`.
-        """
-        return self.args("format", *args)
-
-    def pydocstyle(self) -> str:
-        """Return `google` as the docstring standard."""
-        return "google"
-
-    def check_hook(self) -> dict[str, Any]:
-        """Return hook metadata for linting and auto-fixing Python source.
-
-        Returns:
-            Hook metadata dict for `ruff check --fix`.
-        """
-        return VersionControlHookManager.I.local_hook(
-            self.lint_python,
-            priority=VersionControlHookManager.I.deprioritize(
-                PythonOrderLinter.I.check_hook(),
-            ),
-            types=["python"],
-            args=Args("--fix"),
-        )
-
-    def lint_python(self) -> Args:
-        """Return the `Args` this hook's entry runs.
-
-        Returns:
-            Args for `uv run ruff check`.
-        """
-        return PackageManager.I.run_args(*self.check_args())
-
+    @override
     def format_hook(self) -> dict[str, Any]:
         """Return hook metadata for formatting Python source and Markdown blocks.
 
@@ -102,6 +34,75 @@ class PythonLinter(CheckFormatHookTool):
             types_or=["python", "markdown"],
         )
 
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the Shields.io badge URL advertising `ruff`."""
+        return "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json"
+
+    @override
+    def link_url(self) -> str:
+        """Return the URL of the `ruff` project page."""
+        return "https://github.com/astral-sh/ruff"
+
+    @override
+    def name(self) -> str:
+        """Return `"ruff"`."""
+        return "ruff"
+
+    @override
+    def version_control_ignore_patterns(self) -> tuple[str, ...]:
+        """Return `ruff`'s cache directory as a path to ignore."""
+        return (*super().version_control_ignore_patterns(), ".ruff_cache/")
+
+    @override
+    def check_hook(self) -> dict[str, Any]:
+        """Return hook metadata for linting and auto-fixing Python source.
+
+        Returns:
+            Hook metadata dict for `ruff check --fix`.
+        """
+        return VersionControlHookManager.I.local_hook(
+            self.lint_python,
+            priority=VersionControlHookManager.I.deprioritize(
+                PythonOrderLinter.I.check_hook(),
+            ),
+            types=["python"],
+            args=Args("--fix"),
+        )
+
+    @override
+    def format_args(self, *args: str) -> Args:
+        """Build a `ruff format` command.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for `ruff format`.
+        """
+        return self.args("format", *args)
+
+    @override
+    def check_args(self, *args: str) -> Args:
+        """Build a `ruff check` command.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for `ruff check`.
+        """
+        return self.args("check", *args)
+
+    def pydocstyle(self) -> str:
+        """Return `google` as the docstring standard."""
+        return "google"
+
     def format_python(self) -> Args:
         """Return the `Args` this hook's entry runs.
 
@@ -109,3 +110,11 @@ class PythonLinter(CheckFormatHookTool):
             Args for `uv run ruff format`.
         """
         return PackageManager.I.run_args(*self.format_args())
+
+    def lint_python(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `uv run ruff check`.
+        """
+        return PackageManager.I.run_args(*self.check_args())

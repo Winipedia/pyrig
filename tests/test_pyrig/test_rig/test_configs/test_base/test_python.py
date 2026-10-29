@@ -4,6 +4,7 @@ import ast
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
+from typing import override
 
 import pytest
 from pyrig_fixtures.rig.configs.conftest import ConftestConfigFile
@@ -16,17 +17,17 @@ from pyrig.rig.tools.packages.manager import PackageManager
 class TestPythonConfigFile:
     """Test class."""
 
-    def test_source_root(self) -> None:
-        """Test method."""
-        assert ConftestConfigFile.I.source_root() == Path()
-        assert ScratchConfigFile.I.source_root() == Path()
-
     def test_extension(self) -> None:
         """Test method."""
         expected = "py"
         assert issubclass(ConftestConfigFile, PythonConfigFile)
         actual = ConftestConfigFile().extension()
         assert actual == expected, f"Expected {expected}, got {actual}"
+
+    def test_source_root(self) -> None:
+        """Test method."""
+        assert ConftestConfigFile.I.source_root() == Path()
+        assert ScratchConfigFile.I.source_root() == Path()
 
     def test_tree(
         self,
@@ -48,26 +49,6 @@ class TestPythonConfigFile:
 
 class TestPythonPackageConfigFile:
     """Test class."""
-
-    def test_package_root(
-        self,
-        my_test_python_package_config_file: type[PythonPackageConfigFile],
-    ) -> None:
-        """Test method."""
-        assert (
-            my_test_python_package_config_file().package_root()
-            == PackageManager.I.package_root()
-        )
-
-    def test_source_root(
-        self,
-        my_test_python_package_config_file: type[PythonPackageConfigFile],
-    ) -> None:
-        """Test method."""
-        assert (
-            my_test_python_package_config_file().source_root()
-            == PackageManager.I.source_root()
-        )
 
     def test__dump(
         self,
@@ -93,6 +74,26 @@ class TestPythonPackageConfigFile:
                 my_test_python_package_config_file().source_root() / "__init__.py"
             ).exists()
 
+    def test_package_root(
+        self,
+        my_test_python_package_config_file: type[PythonPackageConfigFile],
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_python_package_config_file().package_root()
+            == PackageManager.I.package_root()
+        )
+
+    def test_source_root(
+        self,
+        my_test_python_package_config_file: type[PythonPackageConfigFile],
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_python_package_config_file().source_root()
+            == PackageManager.I.source_root()
+        )
+
 
 @pytest.fixture
 def my_test_python_package_config_file(
@@ -106,14 +107,17 @@ def my_test_python_package_config_file(
     class MyTestPythonPackageConfigFile(config_file_factory(PythonPackageConfigFile)):  # ty: ignore[unsupported-base]
         """Test python package config file with tmp_path override."""
 
+        @override
         def stem(self) -> str:
             """Get the stem."""
             return "test_package"
 
+        @override
         def parent_path(self) -> Path:
             """Get the parent path under the package root."""
             return PackageManager.I.package_root() / "parent_package"
 
+        @override
         def content(self) -> str:
             """Get the content string."""
             return '"""Test content."""'

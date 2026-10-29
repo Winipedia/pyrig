@@ -10,16 +10,16 @@ from pyrig.rig.configs.version_control.remote.pull_request_template import (
 class TestPullRequestTemplateConfigFile:
     """Test class."""
 
-    def test_stem(self) -> None:
+    def test_content(self) -> None:
         """Test method."""
-        assert PullRequestTemplateConfigFile.I.stem() == "pull_request_template"
+        result = PullRequestTemplateConfigFile.I.content()
+        assert len(result) > 0
 
     def test_parent_path(self) -> None:
         """Test method."""
         result = PullRequestTemplateConfigFile.I.parent_path()
         assert result == Path(".github")
 
-    def test_content(self) -> None:
+    def test_stem(self) -> None:
         """Test method."""
-        result = PullRequestTemplateConfigFile.I.content()
-        assert len(result) > 0
+        assert PullRequestTemplateConfigFile.I.stem() == "pull_request_template"

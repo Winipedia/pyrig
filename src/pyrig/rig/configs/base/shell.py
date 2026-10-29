@@ -1,6 +1,7 @@
 """Abstract base for shell script (`.sh`) configuration file management."""
 
 from abc import abstractmethod
+from typing import override
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.formatting.shell import ShellFormatter
@@ -29,15 +30,7 @@ class ShellConfigFile(StringConfigFile):
             Shell content without the shared header or required-variable checks.
         """
 
-    def required_env_vars(self) -> tuple[str, ...]:
-        """Return names of environment variables the script requires.
-
-        Each name must be valid as a shell variable reference, and each
-        variable must be nonempty when the script runs. Defaults to an empty
-        tuple.
-        """
-        return ()
-
+    @override
     def content(self) -> str:
         """Return the script with the shared header prepended.
 
@@ -48,6 +41,7 @@ class ShellConfigFile(StringConfigFile):
 
 {self.script()}"""
 
+    @override
     def extension(self) -> str:
         """Return the file extension `"sh"`."""
         return "sh"
@@ -79,3 +73,12 @@ class ShellConfigFile(StringConfigFile):
     def strict_mode_line(self) -> str:
         """Return `"set -euo pipefail"`."""
         return "set -euo pipefail"
+
+    def required_env_vars(self) -> tuple[str, ...]:
+        """Return names of environment variables the script requires.
+
+        Each name must be valid as a shell variable reference, and each
+        variable must be nonempty when the script runs. Defaults to an empty
+        tuple.
+        """
+        return ()

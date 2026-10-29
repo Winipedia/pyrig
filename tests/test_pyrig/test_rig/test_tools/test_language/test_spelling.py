@@ -8,27 +8,6 @@ from pyrig.rig.tools.packages.manager import PackageManager
 class TestSpellChecker:
     """Test class."""
 
-    def test_name(self) -> None:
-        """Test method."""
-        assert SpellChecker.I.name() == "typos"
-
-    def test_group(self) -> None:
-        """Test method."""
-        result = SpellChecker.I.group()
-        assert isinstance(result, str)
-        assert result == "code-quality"
-
-    def test_image_url(self) -> None:
-        """Test method."""
-        assert (
-            SpellChecker.I.image_url()
-            == "https://img.shields.io/badge/spell--check-typos-blue"
-        )
-
-    def test_link_url(self) -> None:
-        """Test method."""
-        assert SpellChecker.I.link_url() == "https://github.com/crate-ci/typos"
-
     def test_check_args(self) -> None:
         """Test method."""
         result = SpellChecker.I.check_args()
@@ -47,3 +26,24 @@ class TestSpellChecker:
         """Test method."""
         base_args = SpellChecker.I.check_args()
         assert SpellChecker.I.fix_spelling() == PackageManager.I.run_args(*base_args)
+
+    def test_group(self) -> None:
+        """Test method."""
+        result = SpellChecker.I.group()
+        assert isinstance(result, str)
+        assert result == "code-quality"
+
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            SpellChecker.I.image_url()
+            == "https://img.shields.io/badge/spell--check-typos-blue"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert SpellChecker.I.link_url() == "https://github.com/crate-ci/typos"
+
+    def test_name(self) -> None:
+        """Test method."""
+        assert SpellChecker.I.name() == "typos"

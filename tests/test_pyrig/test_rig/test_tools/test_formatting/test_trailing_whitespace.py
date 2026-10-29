@@ -7,6 +7,24 @@ from pyrig.rig.tools.language.spelling import SpellChecker
 class TestTrailingWhitespaceFormatter:
     """Test class."""
 
+    def test_dev_dependencies(self) -> None:
+        """Test method."""
+        result = TrailingWhitespaceFormatter.I.dev_dependencies()
+        assert result == ()
+
+    def test_format_args(self) -> None:
+        """Test method."""
+        result = TrailingWhitespaceFormatter.I.format_args()
+        assert result == ()
+
+    def test_format_hook(self) -> None:
+        """Test method."""
+        # trailing whitespace is fixed after spelling, so a spelling fix
+        # can't reintroduce whitespace this hook already cleaned up
+        hook = TrailingWhitespaceFormatter.I.format_hook()
+        spelling_hook = SpellChecker.I.check_hook()
+        assert hook["priority"] > spelling_hook["priority"]
+
     def test_group(self) -> None:
         """Test method."""
         result = TrailingWhitespaceFormatter.I.group()
@@ -31,24 +49,6 @@ class TestTrailingWhitespaceFormatter:
         """Test method."""
         result = TrailingWhitespaceFormatter.I.name()
         assert result == "trailing-whitespace"
-
-    def test_dev_dependencies(self) -> None:
-        """Test method."""
-        result = TrailingWhitespaceFormatter.I.dev_dependencies()
-        assert result == ()
-
-    def test_format_args(self) -> None:
-        """Test method."""
-        result = TrailingWhitespaceFormatter.I.format_args()
-        assert result == ()
-
-    def test_format_hook(self) -> None:
-        """Test method."""
-        # trailing whitespace is fixed after spelling, so a spelling fix
-        # can't reintroduce whitespace this hook already cleaned up
-        hook = TrailingWhitespaceFormatter.I.format_hook()
-        spelling_hook = SpellChecker.I.check_hook()
-        assert hook["priority"] > spelling_hook["priority"]
 
     def test_trailing_whitespace(self) -> None:
         """Test method."""

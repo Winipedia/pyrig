@@ -6,6 +6,7 @@ pull request expectations.
 """
 
 from pathlib import Path
+from typing import override
 
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.configs.version_control.remote.workflows.health_check import (
@@ -31,6 +32,7 @@ class ContributingConfigFile(MarkdownConfigFile):
     initial generation.
     """
 
+    @override
     def content(self) -> str:
         """Return the complete contributing guide text.
 
@@ -54,37 +56,15 @@ class ContributingConfigFile(MarkdownConfigFile):
 {self.pull_request_section()}
 """
 
+    @override
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
         return Path()
 
+    @override
     def stem(self) -> str:
         """Return `"CONTRIBUTING"` as the filename stem."""
         return "CONTRIBUTING"
-
-    def welcome_section(self) -> str:
-        """Return the opening welcome paragraph.
-
-        Returns:
-            A paragraph, addressed to the project by name, thanking the
-            reader and explaining why following the guide matters.
-        """
-        project_name = PackageManager.I.project_name()
-        return f"""Thanks for considering a contribution to {project_name}! Following
-these guidelines respects the time of the people who maintain and review
-this project, and helps them address your issue or pull request quickly."""
-
-    def security_notice_section(self) -> str:
-        """Return the security-vulnerability callout.
-
-        Points to `SECURITY.md` instead of restating its reporting
-        process, so the two files can't drift out of sync.
-
-        Returns:
-            A blockquote directing security reports toward `SECURITY.md`.
-        """
-        return """> **Found a security vulnerability?**
-> Please follow [SECURITY.md](SECURITY.md)."""
 
     def code_of_conduct_section(self) -> str:
         """Return the code-of-conduct section.
@@ -97,29 +77,6 @@ this project, and helps them address your issue or pull request quickly."""
 
 By participating in this project, you agree to abide by its
 [Code of Conduct](CODE_OF_CONDUCT.md)."""
-
-    def ways_to_contribute_section(self) -> str:
-        """Return the section describing how to report issues and ideas.
-
-        Returns:
-            The `## Ways to Contribute` section, linking to the project's
-            issue tracker and describing what a good bug report, feature
-            request, and question look like.
-        """
-        issues_url = RemoteVersionController.I.issues_url()
-        return f"""## Ways to Contribute
-
-Contributions aren't limited to code — reporting bugs, improving
-documentation, and answering questions are just as valuable. Before
-opening a new issue, search [existing issues]({issues_url})
-to avoid duplicates.
-
-- **Bugs** — describe what you expected, what happened instead, and the
-  steps to reproduce it.
-- **Features** — describe the problem before proposing a solution, and
-  open an issue before starting a large pull request so the approach can
-  be discussed first.
-- **Questions** — open an issue if nothing else already answers it."""
 
     def development_workflow_section(self) -> str:
         """Return the section walking through how to submit a change.
@@ -161,3 +118,50 @@ to avoid duplicates.
 - Keep changes focused and atomic.
 - Update documentation.
 - All checks in [CI]({cicd_url}) must pass before merge."""
+
+    def security_notice_section(self) -> str:
+        """Return the security-vulnerability callout.
+
+        Points to `SECURITY.md` instead of restating its reporting
+        process, so the two files can't drift out of sync.
+
+        Returns:
+            A blockquote directing security reports toward `SECURITY.md`.
+        """
+        return """> **Found a security vulnerability?**
+> Please follow [SECURITY.md](SECURITY.md)."""
+
+    def ways_to_contribute_section(self) -> str:
+        """Return the section describing how to report issues and ideas.
+
+        Returns:
+            The `## Ways to Contribute` section, linking to the project's
+            issue tracker and describing what a good bug report, feature
+            request, and question look like.
+        """
+        issues_url = RemoteVersionController.I.issues_url()
+        return f"""## Ways to Contribute
+
+Contributions aren't limited to code — reporting bugs, improving
+documentation, and answering questions are just as valuable. Before
+opening a new issue, search [existing issues]({issues_url})
+to avoid duplicates.
+
+- **Bugs** — describe what you expected, what happened instead, and the
+  steps to reproduce it.
+- **Features** — describe the problem before proposing a solution, and
+  open an issue before starting a large pull request so the approach can
+  be discussed first.
+- **Questions** — open an issue if nothing else already answers it."""
+
+    def welcome_section(self) -> str:
+        """Return the opening welcome paragraph.
+
+        Returns:
+            A paragraph, addressed to the project by name, thanking the
+            reader and explaining why following the guide matters.
+        """
+        project_name = PackageManager.I.project_name()
+        return f"""Thanks for considering a contribution to {project_name}! Following
+these guidelines respects the time of the people who maintain and review
+this project, and helps them address your issue or pull request quickly."""

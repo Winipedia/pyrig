@@ -2,7 +2,7 @@
 
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, override
 
 import pytest
 
@@ -11,6 +11,24 @@ from pyrig.rig.configs.base.toml import TOMLConfigFile
 
 class TestTOMLConfigFile:
     """Test class."""
+
+    def test__dump(self, my_test_toml_config_file: type[TOMLConfigFile]) -> None:
+        """Test method."""
+        my_test_toml_config_file().dump({"key": "value"})
+        assert my_test_toml_config_file().load() == {"key": "value"}, (
+            "Expected dump to work"
+        )
+
+    def test__load(self, my_test_toml_config_file: type[TOMLConfigFile]) -> None:
+        """Test method."""
+        my_test_toml_config_file().validate()
+        expected = {"key": "value"}
+        actual = my_test_toml_config_file().load()
+        assert actual == expected, f"Expected {expected}, got {actual}"
+
+    def test_extension(self, my_test_toml_config_file: type[TOMLConfigFile]) -> None:
+        """Test method."""
+        assert my_test_toml_config_file().extension() == "toml", "Expected toml"
 
     def test_pretty_dump(self, my_test_toml_config_file: type[TOMLConfigFile]) -> None:
         """Test method."""
@@ -30,24 +48,6 @@ class TestTOMLConfigFile:
         text = my_test_toml_config_file().path().read_text()
         assert "key = [\n" in text, "Expected array to be forced multiline"
 
-    def test__load(self, my_test_toml_config_file: type[TOMLConfigFile]) -> None:
-        """Test method."""
-        my_test_toml_config_file().validate()
-        expected = {"key": "value"}
-        actual = my_test_toml_config_file().load()
-        assert actual == expected, f"Expected {expected}, got {actual}"
-
-    def test__dump(self, my_test_toml_config_file: type[TOMLConfigFile]) -> None:
-        """Test method."""
-        my_test_toml_config_file().dump({"key": "value"})
-        assert my_test_toml_config_file().load() == {"key": "value"}, (
-            "Expected dump to work"
-        )
-
-    def test_extension(self, my_test_toml_config_file: type[TOMLConfigFile]) -> None:
-        """Test method."""
-        assert my_test_toml_config_file().extension() == "toml", "Expected toml"
-
 
 @pytest.fixture
 def my_test_toml_config_file(
@@ -58,14 +58,17 @@ def my_test_toml_config_file(
     class MyTestTOMLConfigFile(config_file_factory(TOMLConfigFile)):  # ty: ignore[unsupported-base]
         """Test toml config file with tmp_path override."""
 
+        @override
         def parent_path(self) -> Path:
             """Get the path to the config file."""
             return Path()
 
+        @override
         def stem(self) -> str:
             """Get the stem."""
             return "test_toml"
 
+        @override
         def _configs(self) -> dict[str, Any]:
             """Get the config."""
             return {"key": "value"}

@@ -1,6 +1,6 @@
 """Configuration file for the GitHub feature request issue template."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.rig.configs.base.issue_template import IssueTemplateConfigFile
 
@@ -13,6 +13,12 @@ class FeatureRequestConfigFile(IssueTemplateConfigFile):
     how it might work.
     """
 
+    @override
+    def stem(self) -> str:
+        """Return `"feature_request"` as the filename stem."""
+        return "feature_request"
+
+    @override
     def _configs(self) -> dict[str, Any]:
         """Return the GitHub issue form definition for feature requests.
 
@@ -67,7 +73,3 @@ class FeatureRequestConfigFile(IssueTemplateConfigFile):
                 },
             ],
         }
-
-    def stem(self) -> str:
-        """Return `"feature_request"` as the filename stem."""
-        return "feature_request"

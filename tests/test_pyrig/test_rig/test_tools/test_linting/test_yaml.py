@@ -8,25 +8,6 @@ from pyrig.rig.tools.security.secrets import SecretsChecker
 class TestYAMLLinter:
     """Test class."""
 
-    def test_image_url(self) -> None:
-        """Test method."""
-        assert YAMLLinter.I.image_url() == "https://img.shields.io/badge/YAML-ryl-red"
-
-    def test_link_url(self) -> None:
-        """Test method."""
-        assert YAMLLinter.I.link_url() == "https://github.com/owenlamont/ryl"
-
-    def test_group(self) -> None:
-        """Test method."""
-        result = YAMLLinter.I.group()
-        assert isinstance(result, str)
-        assert result == "code-quality"
-
-    def test_name(self) -> None:
-        """Test method."""
-        result = YAMLLinter.I.name()
-        assert result == "ryl"
-
     def test_check_args(self) -> None:
         """Test method."""
         result = YAMLLinter.I.check_args()
@@ -41,10 +22,15 @@ class TestYAMLLinter:
         assert hook["types"] == ["yaml"]
         assert hook["args"] == ["--fix"]
 
-    def test_lint_yaml(self) -> None:
+    def test_directive(self) -> None:
         """Test method."""
-        base_args = YAMLLinter.I.check_args()
-        assert YAMLLinter.I.lint_yaml() == PackageManager.I.run_args(*base_args)
+        directive = YAMLLinter.I.directive("some_directive")
+        assert directive == "# ryl some_directive"
+
+    def test_disable_line(self) -> None:
+        """Test method."""
+        directive = YAMLLinter.I.disable_line("some-rule")
+        assert directive == "# ryl disable-line rule:some-rule"
 
     def test_disable_line_line_length(self) -> None:
         """Test method."""
@@ -53,15 +39,29 @@ class TestYAMLLinter:
             == "# ryl disable-line rule:line-length"
         )
 
-    def test_disable_line(self) -> None:
+    def test_group(self) -> None:
         """Test method."""
-        directive = YAMLLinter.I.disable_line("some-rule")
-        assert directive == "# ryl disable-line rule:some-rule"
+        result = YAMLLinter.I.group()
+        assert isinstance(result, str)
+        assert result == "code-quality"
 
-    def test_directive(self) -> None:
+    def test_image_url(self) -> None:
         """Test method."""
-        directive = YAMLLinter.I.directive("some_directive")
-        assert directive == "# ryl some_directive"
+        assert YAMLLinter.I.image_url() == "https://img.shields.io/badge/YAML-ryl-red"
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert YAMLLinter.I.link_url() == "https://github.com/owenlamont/ryl"
+
+    def test_lint_yaml(self) -> None:
+        """Test method."""
+        base_args = YAMLLinter.I.check_args()
+        assert YAMLLinter.I.lint_yaml() == PackageManager.I.run_args(*base_args)
+
+    def test_name(self) -> None:
+        """Test method."""
+        result = YAMLLinter.I.name()
+        assert result == "ryl"
 
     def test_version_control_ignore_patterns(self) -> None:
         """Test method."""

@@ -9,16 +9,6 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 class TestSecurityConfigFile:
     """Test class."""
 
-    def test_stem(self) -> None:
-        """Test method."""
-        result = SecurityConfigFile.I.stem()
-        assert result == "SECURITY"
-
-    def test_parent_path(self) -> None:
-        """Test method."""
-        result = SecurityConfigFile.I.parent_path()
-        assert result == Path()
-
     def test_content(self) -> None:
         """Test method."""
         result = SecurityConfigFile.I.content()
@@ -27,20 +17,6 @@ class TestSecurityConfigFile:
         assert SecurityConfigFile.I.reporting_section() in result
         assert SecurityConfigFile.I.expectations_section() in result
         assert SecurityConfigFile.I.safe_harbor_section() in result
-
-    def test_supported_versions_section(self) -> None:
-        """Test method."""
-        result = SecurityConfigFile.I.supported_versions_section()
-        assert result.startswith("## Supported Versions")
-        assert "latest released version" in result
-
-    def test_reporting_section(self) -> None:
-        """Test method."""
-        result = SecurityConfigFile.I.reporting_section()
-        assert result.startswith("## Reporting a Vulnerability")
-        assert "report to that project directly" in result
-        assert "special configuration" in result
-        assert "Full paths of any source files" in result
 
     def test_expectations_section(self) -> None:
         """Test method."""
@@ -52,10 +28,10 @@ class TestSecurityConfigFile:
         assert "coordinate" not in result.lower()
         assert "business day" not in result.lower()
 
-    def test_safe_harbor_section(self) -> None:
+    def test_parent_path(self) -> None:
         """Test method."""
-        result = SecurityConfigFile.I.safe_harbor_section()
-        assert result.startswith("## Safe Harbor")
+        result = SecurityConfigFile.I.parent_path()
+        assert result == Path()
 
     def test_reporting_method(self) -> None:
         """Test method."""
@@ -67,3 +43,27 @@ class TestSecurityConfigFile:
             SecurityConfigFile().reporting_method()
             == f"<{PyprojectConfigFile.I.maintainer_email()}>"
         )
+
+    def test_reporting_section(self) -> None:
+        """Test method."""
+        result = SecurityConfigFile.I.reporting_section()
+        assert result.startswith("## Reporting a Vulnerability")
+        assert "report to that project directly" in result
+        assert "special configuration" in result
+        assert "Full paths of any source files" in result
+
+    def test_safe_harbor_section(self) -> None:
+        """Test method."""
+        result = SecurityConfigFile.I.safe_harbor_section()
+        assert result.startswith("## Safe Harbor")
+
+    def test_stem(self) -> None:
+        """Test method."""
+        result = SecurityConfigFile.I.stem()
+        assert result == "SECURITY"
+
+    def test_supported_versions_section(self) -> None:
+        """Test method."""
+        result = SecurityConfigFile.I.supported_versions_section()
+        assert result.startswith("## Supported Versions")
+        assert "latest released version" in result

@@ -4,7 +4,7 @@ import copy
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any, ClassVar, override
 
 import pytest
 from pyrig_env.rig.configs.env import EnvConfigFile
@@ -37,13 +37,6 @@ def test_validate_config_files(
 class TestConfigFile:
     """Test class."""
 
-    def test_filename(
-        self,
-        my_test_config_file: type[ConfigFile[dict[str, Any]]],
-    ) -> None:
-        """Test method."""
-        assert my_test_config_file().filename() == "my-test-file.txt"
-
     def test___str__(
         self,
         my_test_config_file: type[ConfigFile[dict[str, Any]]],
@@ -52,42 +45,21 @@ class TestConfigFile:
         cf = my_test_config_file()
         assert str(cf.path()) in str(cf)
 
-    def test_version_control_ignored(
+    def test__configs(
         self,
         my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
-        assert not my_test_config_file().version_control_ignored()
+        assert isinstance(my_test_config_file().configs(), dict), "Expected dict"
 
-    def test_version_control_ignored_subclasses(self) -> None:
+    def test__dump(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
         """Test method."""
-        assert set(ConfigFile.version_control_ignored_subclasses()) == {
-            ScratchConfigFile,
-            EnvConfigFile,
-        }
+        my_test_config_file()._dump({"key": "value"})  # noqa: SLF001
+        assert my_test_config_file().load()["key"] == "value"
 
-    def test_configs(
-        self,
-        my_test_config_file: type[ConfigFile[dict[str, Any]]],
-    ) -> None:
-        """Test method."""
-        configs = my_test_config_file()._configs()  # noqa: SLF001
-        cached_configs = my_test_config_file().configs()
-        assert configs == cached_configs
-        assert configs is not cached_configs
-        assert my_test_config_file().configs() is cached_configs
-
-    def test_discovery_module(self) -> None:
-        """Test method."""
-        assert ConfigFile.discovery_module() is configs
-
-    def test_create_file(
-        self,
-        my_test_config_file: type[ConfigFile[dict[str, Any]]],
-    ) -> None:
-        """Test method."""
-        my_test_config_file().create_file()
-        assert my_test_config_file().path().exists()
+        # dump and assert cache is cleared
+        my_test_config_file().dump({"key": "new_value"})
+        assert my_test_config_file().load()["key"] == "new_value"
 
     def test__load(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
         """Test method."""
@@ -109,35 +81,50 @@ class TestConfigFile:
         loaded = my_test_config_file().load()
         assert loaded["key0"] == "new_value0"
 
-    def test__dump(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
-        """Test method."""
-        my_test_config_file()._dump({"key": "value"})  # noqa: SLF001
-        assert my_test_config_file().load()["key"] == "value"
-
-        # dump and assert cache is cleared
-        my_test_config_file().dump({"key": "new_value"})
-        assert my_test_config_file().load()["key"] == "new_value"
-
-    def test_extension_separator(
+    def test_configs(
         self,
         my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
-        assert my_test_config_file().extension_separator() == "."
+        configs = my_test_config_file()._configs()  # noqa: SLF001
+        cached_configs = my_test_config_file().configs()
+        assert configs == cached_configs
+        assert configs is not cached_configs
+        assert my_test_config_file().configs() is cached_configs
 
-    def test_parent_path(
+    def test_configs_is_subset(
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test whether required configs match within a larger structure."""
+        config_file = my_test_config_file()
+        superset = copy.deepcopy(config_file.configs())
+        superset["extra_key"] = "extra_value"
+        assert config_file.configs_is_subset(superset)
+
+        superset["key1"] = "different_value"
+        assert not config_file.configs_is_subset(superset)
+
+    def test_create_file(
         self,
         my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
-        expected = Path("parent_dir")
-        actual = my_test_config_file().parent_path()
-        assert actual == expected, f"Expected {expected}, got {actual}"
+        my_test_config_file().create_file()
+        assert my_test_config_file().path().exists()
 
-    def test_load(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
+    def test_dependencies(self) -> None:
         """Test method."""
-        # assert is dict
-        assert isinstance(my_test_config_file().load(), dict), "Expected dict"
+        assert tuple(PyprojectConfigFile.I.dependencies()) == (
+            ReadmeConfigFile,
+            LicenseConfigFile,
+            PackageInitConfigFile,
+        )
+        assert LicenseConfigFile.I.dependencies() == ()
+
+    def test_discovery_module(self) -> None:
+        """Test method."""
+        assert ConfigFile.discovery_module() is configs
 
     def test_dump(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
         """Test method."""
@@ -149,6 +136,24 @@ class TestConfigFile:
         my_test_config_file().dump(dump_dict)
         assert my_test_config_file().load() == dump_dict, "Expected dump to work"
 
+    def test_empty_configs(
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test method."""
+        assert my_test_config_file().empty_configs() == {}
+
+    def test_exists_correct(
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test method."""
+        config = my_test_config_file()
+        assert not config.exists_correct()
+
+        config.dump(config.configs())
+        assert config.exists_correct()
+
     def test_extension(
         self,
         my_test_config_file: type[ConfigFile[dict[str, Any]]],
@@ -156,12 +161,142 @@ class TestConfigFile:
         """Test method."""
         assert my_test_config_file().extension() == "txt", "Expected txt"
 
-    def test__configs(
+    def test_extension_separator(
         self,
         my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
-        assert isinstance(my_test_config_file().configs(), dict), "Expected dict"
+        assert my_test_config_file().extension_separator() == "."
+
+    def test_filename(
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test method."""
+        assert my_test_config_file().filename() == "my-test-file.txt"
+
+    def test_is_correct(
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test method."""
+        assert not my_test_config_file().is_correct()
+        my_test_config_file().validate()
+        assert my_test_config_file().is_correct()
+
+    def test_leaf_dependencies(self) -> None:
+        """Test method."""
+        dependencies = tuple(PyprojectConfigFile.I.dependencies())
+        assert tuple(PyprojectConfigFile.I.leaf_dependencies()) == tuple(
+            dependency.L for dependency in dependencies
+        )
+        assert len(dependencies) > 0
+        assert tuple(LicenseConfigFile.I.leaf_dependencies()) == ()
+
+    def test_load(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
+        """Test method."""
+        # assert is dict
+        assert isinstance(my_test_config_file().load(), dict), "Expected dict"
+
+    def test_merge_configs(
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test method."""
+        # same test as in init test
+        my_test_config_file().create_file()
+        expected: dict[str, Any] = {
+            "key0": "value0",
+            "key1": "value1",
+            "key2": {"key3": "value3"},
+            "key4": [
+                ["value4", "notvalue4", "extra_value"],
+                {"key5": "notvalue5", "key6": "value6"},
+            ],
+            "key7": "value7",
+        }
+        actual = my_test_config_file().merge_configs()
+        assert actual == expected
+
+    def test_merge_key(self) -> None:
+        """Test method."""
+        assert PyprojectConfigFile.L.merge_key() == Path("pyproject.toml")
+        assert ReadmeConfigFile.L.merge_key() == Path("README.md")
+
+    def test_parent_path(
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test method."""
+        expected = Path("parent_dir")
+        actual = my_test_config_file().parent_path()
+        assert actual == expected, f"Expected {expected}, got {actual}"
+
+    def test_path(
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+        tmp_path: Path,
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_config_file().path() == tmp_path / "parent_dir" / "my-test-file.txt"
+        )
+
+    def test_removable(self) -> None:
+        """Test method."""
+        for subclass in ConfigFile.concrete_leaves():
+            if subclass is PyprojectConfigFile.L:
+                assert not subclass().removable()
+                continue
+            assert subclass().removable()
+
+    def test_removable_subclasses(self) -> None:
+        """Test method."""
+        expected = set(ConfigFile.concrete_leaves()) - {
+            PyprojectConfigFile.L,
+        }
+        expected_str_reprs = {str(cls.L) for cls in expected}
+        actual_str_reprs = {str(cls.L) for cls in ConfigFile.removable_subclasses()}
+        assert actual_str_reprs == expected_str_reprs
+
+    def test_remove(
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+        tmp_path: Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Test method."""
+        config = my_test_config_file()
+        with chdir(tmp_path):
+            assert not config.validate()
+            assert config.validate()
+            capsys.readouterr()
+
+            assert config.remove() is True
+
+            assert not config.path().exists()
+            assert capsys.readouterr().out == f"Removed {config}\n"
+
+            assert config.remove() is False
+            assert capsys.readouterr().out == ""
+
+    def test_safe_load(
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test method."""
+        cf = my_test_config_file()
+        assert not cf.path().exists()
+        assert cf.safe_load() == {}
+        cf.create_file()
+        cf.dump(cf.configs())
+        assert cf.safe_load() == cf.configs()
+
+    def test_stem(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
+        """Test method."""
+        expected = "my-test-file"
+        actual = my_test_config_file().stem()
+        assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_validate(
         self,
@@ -235,154 +370,19 @@ class TestConfigFile:
 
         assert validate_deps_mock.call_count == 2  # noqa: PLR2004
 
-    def test_path(
-        self,
-        my_test_config_file: type[ConfigFile[dict[str, Any]]],
-        tmp_path: Path,
-    ) -> None:
-        """Test method."""
-        assert (
-            my_test_config_file().path() == tmp_path / "parent_dir" / "my-test-file.txt"
-        )
-
-    def test_stem(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
-        """Test method."""
-        expected = "my-test-file"
-        actual = my_test_config_file().stem()
-        assert actual == expected, f"Expected {expected}, got {actual}"
-
-    def test_merge_configs(
+    def test_version_control_ignored(
         self,
         my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
-        # same test as in init test
-        my_test_config_file().create_file()
-        expected: dict[str, Any] = {
-            "key0": "value0",
-            "key1": "value1",
-            "key2": {"key3": "value3"},
-            "key4": [
-                ["value4", "notvalue4", "extra_value"],
-                {"key5": "notvalue5", "key6": "value6"},
-            ],
-            "key7": "value7",
+        assert not my_test_config_file().version_control_ignored()
+
+    def test_version_control_ignored_subclasses(self) -> None:
+        """Test method."""
+        assert set(ConfigFile.version_control_ignored_subclasses()) == {
+            ScratchConfigFile,
+            EnvConfigFile,
         }
-        actual = my_test_config_file().merge_configs()
-        assert actual == expected
-
-    def test_is_correct(
-        self,
-        my_test_config_file: type[ConfigFile[dict[str, Any]]],
-    ) -> None:
-        """Test method."""
-        assert not my_test_config_file().is_correct()
-        my_test_config_file().validate()
-        assert my_test_config_file().is_correct()
-
-    def test_removable_subclasses(self) -> None:
-        """Test method."""
-        expected = set(ConfigFile.concrete_leaves()) - {
-            PyprojectConfigFile.L,
-        }
-        expected_str_reprs = {str(cls.L) for cls in expected}
-        actual_str_reprs = {str(cls.L) for cls in ConfigFile.removable_subclasses()}
-        assert actual_str_reprs == expected_str_reprs
-
-    def test_removable(self) -> None:
-        """Test method."""
-        for subclass in ConfigFile.concrete_leaves():
-            if subclass is PyprojectConfigFile.L:
-                assert not subclass().removable()
-                continue
-            assert subclass().removable()
-
-    def test_merge_key(self) -> None:
-        """Test method."""
-        assert PyprojectConfigFile.L.merge_key() == Path("pyproject.toml")
-        assert ReadmeConfigFile.L.merge_key() == Path("README.md")
-
-    def test_empty_configs(
-        self,
-        my_test_config_file: type[ConfigFile[dict[str, Any]]],
-    ) -> None:
-        """Test method."""
-        assert my_test_config_file().empty_configs() == {}
-
-    def test_safe_load(
-        self,
-        my_test_config_file: type[ConfigFile[dict[str, Any]]],
-    ) -> None:
-        """Test method."""
-        cf = my_test_config_file()
-        assert not cf.path().exists()
-        assert cf.safe_load() == {}
-        cf.create_file()
-        cf.dump(cf.configs())
-        assert cf.safe_load() == cf.configs()
-
-    def test_leaf_dependencies(self) -> None:
-        """Test method."""
-        dependencies = tuple(PyprojectConfigFile.I.dependencies())
-        assert tuple(PyprojectConfigFile.I.leaf_dependencies()) == tuple(
-            dependency.L for dependency in dependencies
-        )
-        assert len(dependencies) > 0
-        assert tuple(LicenseConfigFile.I.leaf_dependencies()) == ()
-
-    def test_dependencies(self) -> None:
-        """Test method."""
-        assert tuple(PyprojectConfigFile.I.dependencies()) == (
-            ReadmeConfigFile,
-            LicenseConfigFile,
-            PackageInitConfigFile,
-        )
-        assert LicenseConfigFile.I.dependencies() == ()
-
-    def test_exists_correct(
-        self,
-        my_test_config_file: type[ConfigFile[dict[str, Any]]],
-    ) -> None:
-        """Test method."""
-        config = my_test_config_file()
-        assert not config.exists_correct()
-
-        config.dump(config.configs())
-        assert config.exists_correct()
-
-    def test_remove(
-        self,
-        my_test_config_file: type[ConfigFile[dict[str, Any]]],
-        tmp_path: Path,
-        capsys: pytest.CaptureFixture[str],
-    ) -> None:
-        """Test method."""
-        config = my_test_config_file()
-        with chdir(tmp_path):
-            assert not config.validate()
-            assert config.validate()
-            capsys.readouterr()
-
-            assert config.remove() is True
-
-            assert not config.path().exists()
-            assert capsys.readouterr().out == f"Removed {config}\n"
-
-            assert config.remove() is False
-            assert capsys.readouterr().out == ""
-
-    def test_configs_is_subset(
-        self,
-        my_test_config_file: type[ConfigFile[dict[str, Any]]],
-    ) -> None:
-        """Test whether required configs match within a larger structure."""
-        config_file = my_test_config_file()
-        superset = copy.deepcopy(config_file.configs())
-        superset["extra_key"] = "extra_value"
-        assert config_file.configs_is_subset(superset)
-
-        superset["key1"] = "different_value"
-        assert not config_file.configs_is_subset(superset)
 
 
 class TestDictConfigFile:
@@ -392,21 +392,27 @@ class TestDictConfigFile:
         """Test method."""
 
         class MyDictConfigFile(DictConfigFile):
+            @override
             def stem(self) -> str:
                 return "test"
 
+            @override
             def extension(self) -> str:
                 return "txt"
 
+            @override
             def _load(self) -> dict[str, Any]:
                 return {}
 
+            @override
             def _dump(self, configs: dict[str, Any]) -> None:
                 pass
 
+            @override
             def parent_path(self) -> Path:
                 return Path()
 
+            @override
             def _configs(self) -> dict[str, Any]:
                 return {}
 
@@ -420,21 +426,27 @@ class TestListConfigFile:
         """Test method."""
 
         class MyListConfigFile(ListConfigFile):
+            @override
             def stem(self) -> str:
                 return "test"
 
+            @override
             def extension(self) -> str:
                 return "txt"
 
+            @override
             def _load(self) -> list[str]:
                 return []
 
+            @override
             def _dump(self, configs: list[str]) -> None:
                 pass
 
+            @override
             def parent_path(self) -> Path:
                 return Path()
 
+            @override
             def _configs(self) -> list[str]:
                 return []
 
@@ -460,30 +472,37 @@ def my_test_config_file(
             "key4": [["value4"], {"key5": "value5", "key6": "value6"}],
         }
 
+        @override
         def stem(self) -> str:
             """Get the stem."""
             return "my-test-file"
 
+        @override
         def extension(self) -> str:
             """Get the file extension of the config file."""
             return "txt"
 
+        @override
         def _load(self) -> dict[str, Any]:
             """Load the config file."""
             return copy.deepcopy(self.STORAGE_DICT)
 
+        @override
         def _dump(self, configs: dict[str, Any]) -> None:
             """Dump the config file."""
             self.__class__.STORAGE_DICT = configs
 
+        @override
         def parent_path(self) -> Path:
             """Get the path to the config file."""
             return Path("parent_dir")
 
+        @override
         def empty_configs(self) -> dict[str, Any]:
             """Get the empty config."""
             return {}
 
+        @override
         def _configs(self) -> dict[str, Any]:
             """Get the config."""
             return {

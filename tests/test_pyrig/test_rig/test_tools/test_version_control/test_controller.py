@@ -14,6 +14,97 @@ from pyrig.rig.tools.version_control.remote.controller import RemoteVersionContr
 class TestVersionController:
     """Test class."""
 
+    def test_add_all_args(self) -> None:
+        """Test method."""
+        result = VersionController.I.add_all_args()
+        assert result == ("git", "add", ".")
+
+    def test_add_args(self) -> None:
+        """Test method."""
+        result = VersionController.I.add_args("file.py")
+        assert result == ("git", "add", "file.py")
+
+    def test_commit_args(self) -> None:
+        """Test method."""
+        result = VersionController.I.commit_args("-m", "Initial commit")
+        assert result == ("git", "commit", "-m", "Initial commit")
+
+    def test_commit_with_msg_args(self) -> None:
+        """Test method."""
+        result = VersionController.I.commit_with_msg_args(msg="Initial commit")
+        assert result == ("git", "commit", "--message=Initial commit")
+
+    def test_config_args(self) -> None:
+        """Test method."""
+        result = VersionController.I.config_args("user.email", "test@example.com")
+        assert result == ("git", "config", "user.email", "test@example.com")
+
+    def test_config_get_args(self) -> None:
+        """Test method."""
+        result = VersionController.I.config_get_args()
+        assert result == ("git", "config", "--get")
+
+    def test_config_get_user_email_args(self) -> None:
+        """Test method."""
+        result = VersionController.I.config_get_user_email_args()
+        assert result == ("git", "config", "--get", "user.email")
+
+    def test_config_get_username_args(self) -> None:
+        """Test method."""
+        result = VersionController.I.config_get_username_args()
+        assert result == ("git", "config", "--get", "user.name")
+
+    def test_config_remote_origin_url_args(self) -> None:
+        """Test method."""
+        result = VersionController.I.config_remote_origin_url_args()
+        assert result == ("git", "config", "--get", "remote.origin.url")
+
+    def test_default_branch(self) -> None:
+        """Test method."""
+        result = VersionController.I.default_branch()
+        assert result == "main"
+
+    def test_dev_dependencies(self) -> None:
+        """Test method."""
+        result = VersionController.I.dev_dependencies()
+        assert result == ()
+
+    def test_email(self, mocker: MockerFixture) -> None:
+        """Test method."""
+        if not RemoteVersionController.I.running_in_ci():
+            assert VersionController.I.email() == "winipedia@gmx.de"
+
+        run_mock = mocker.patch.object(
+            Args,
+            Args.run_cached.__name__,
+            return_value=mocker.Mock(stdout="some.email@here.com\n"),
+        )
+        result = VersionController.I.email()
+        run_mock.assert_called_once()
+        assert result == "some.email@here.com"
+
+    def test_end_of_line(self) -> None:
+        """Test method."""
+        result = VersionController.I.end_of_line()
+        assert result == "lf"
+
+    def test_group(self) -> None:
+        """Test method."""
+        result = VersionController.I.group()
+        assert isinstance(result, str)
+        assert result == "tooling"
+
+    def test_has_commits(self, tmp_path: Path) -> None:
+        """Test method."""
+        result = VersionController.I.has_commits()
+        assert isinstance(result, bool)
+        assert result is True
+        with chdir(tmp_path):
+            run_subprocess_cached.cache_clear()
+            result = VersionController.I.has_commits()
+            run_subprocess_cached.cache_clear()
+            assert result is False
+
     def test_image_url(self) -> None:
         """Test method."""
         assert (
@@ -21,9 +112,36 @@ class TestVersionController:
             == "https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white"
         )
 
+    def test_init_args(self) -> None:
+        """Test method."""
+        result = VersionController.I.init_args()
+        assert result == ("git", "init")
+
     def test_link_url(self) -> None:
         """Test method."""
         assert VersionController.I.link_url() == "https://git-scm.com"
+
+    def test_name(self) -> None:
+        """Test method."""
+        result = VersionController.I.name()
+        assert result == "git"
+
+    def test_normalized_username(self, mocker: MockerFixture) -> None:
+        """Test method."""
+        mock_run = mocker.patch.object(
+            Args,
+            Args.run_cached.__name__,
+            return_value=mocker.Mock(stdout="Winipedia\n"),
+        )
+
+        result = VersionController.I.normalized_username()
+        mock_run.assert_called_once()
+        assert result == "Winipedia"
+
+        mock_run.return_value = mocker.Mock(stdout="Some User\n")
+        result = VersionController.I.normalized_username()
+        assert mock_run.call_count == 2  # noqa: PLR2004
+        assert result == "SomeUser"
 
     def test_remote_repo_owner(self, mocker: MockerFixture) -> None:
         """Test method."""
@@ -38,10 +156,23 @@ class TestVersionController:
         assert VersionController.I.remote_repo_owner() == ""
         mock_remote_url.assert_called_once()
 
-    def test_commit_with_msg_args(self) -> None:
+    def test_remote_url(self, tmp_path: Path) -> None:
         """Test method."""
-        result = VersionController.I.commit_with_msg_args(msg="Initial commit")
-        assert result == ("git", "commit", "--message=Initial commit")
+        assert "github" in VersionController.I.remote_url()
+
+        # make sure no remote given gets us empty string
+        with chdir(tmp_path):
+            run_subprocess_cached.cache_clear()
+            result = VersionController.I.remote_url()
+            run_subprocess_cached.cache_clear()
+            assert result == ""
+
+        assert "github" in VersionController.I.remote_url()
+
+    def test_repo_owner(self) -> None:
+        """Test method."""
+        result = VersionController.I.repo_owner()
+        assert isinstance(result, str)
 
     def test_resolve_repo_owner(self, mocker: MockerFixture) -> None:
         """Test method."""
@@ -86,108 +217,15 @@ class TestVersionController:
         result = VersionController().resolve_repo_owner()
         assert result == "OWNER"
 
-    def test_group(self) -> None:
+    def test_rev_parse_args(self) -> None:
         """Test method."""
-        result = VersionController.I.group()
-        assert isinstance(result, str)
-        assert result == "tooling"
+        result = VersionController.I.rev_parse_args("some-commit-hash")
+        assert result == ("git", "rev-parse", "some-commit-hash")
 
-    def test_dev_dependencies(self) -> None:
+    def test_rev_parse_verify_args(self) -> None:
         """Test method."""
-        result = VersionController.I.dev_dependencies()
-        assert result == ()
-
-    def test_config_get_user_email_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.config_get_user_email_args()
-        assert result == ("git", "config", "--get", "user.email")
-
-    def test_email(self, mocker: MockerFixture) -> None:
-        """Test method."""
-        if not RemoteVersionController.I.running_in_ci():
-            assert VersionController.I.email() == "winipedia@gmx.de"
-
-        run_mock = mocker.patch.object(
-            Args,
-            Args.run_cached.__name__,
-            return_value=mocker.Mock(stdout="some.email@here.com\n"),
-        )
-        result = VersionController.I.email()
-        run_mock.assert_called_once()
-        assert result == "some.email@here.com"
-
-    def test_default_branch(self) -> None:
-        """Test method."""
-        result = VersionController.I.default_branch()
-        assert result == "main"
-
-    def test_end_of_line(self) -> None:
-        """Test method."""
-        result = VersionController.I.end_of_line()
-        assert result == "lf"
-
-    def test_config_get_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.config_get_args()
-        assert result == ("git", "config", "--get")
-
-    def test_config_remote_origin_url_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.config_remote_origin_url_args()
-        assert result == ("git", "config", "--get", "remote.origin.url")
-
-    def test_config_get_username_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.config_get_username_args()
-        assert result == ("git", "config", "--get", "user.name")
-
-    def test_name(self) -> None:
-        """Test method."""
-        result = VersionController.I.name()
-        assert result == "git"
-
-    def test_init_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.init_args()
-        assert result == ("git", "init")
-
-    def test_add_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.add_args("file.py")
-        assert result == ("git", "add", "file.py")
-
-    def test_add_all_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.add_all_args()
-        assert result == ("git", "add", ".")
-
-    def test_commit_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.commit_args("-m", "Initial commit")
-        assert result == ("git", "commit", "-m", "Initial commit")
-
-    def test_config_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.config_args("user.email", "test@example.com")
-        assert result == ("git", "config", "user.email", "test@example.com")
-
-    def test_repo_owner(self) -> None:
-        """Test method."""
-        result = VersionController.I.repo_owner()
-        assert isinstance(result, str)
-
-    def test_remote_url(self, tmp_path: Path) -> None:
-        """Test method."""
-        assert "github" in VersionController.I.remote_url()
-
-        # make sure no remote given gets us empty string
-        with chdir(tmp_path):
-            run_subprocess_cached.cache_clear()
-            result = VersionController.I.remote_url()
-            run_subprocess_cached.cache_clear()
-            assert result == ""
-
-        assert "github" in VersionController.I.remote_url()
+        result = VersionController.I.rev_parse_verify_args("some-commit-hash")
+        assert result == ("git", "rev-parse", "--verify", "some-commit-hash")
 
     def test_username(self, mocker: MockerFixture) -> None:
         """Test method."""
@@ -199,41 +237,3 @@ class TestVersionController:
         result = VersionController.I.username()
         run_mock.assert_called_once()
         assert result == "Some User"
-
-    def test_normalized_username(self, mocker: MockerFixture) -> None:
-        """Test method."""
-        mock_run = mocker.patch.object(
-            Args,
-            Args.run_cached.__name__,
-            return_value=mocker.Mock(stdout="Winipedia\n"),
-        )
-
-        result = VersionController.I.normalized_username()
-        mock_run.assert_called_once()
-        assert result == "Winipedia"
-
-        mock_run.return_value = mocker.Mock(stdout="Some User\n")
-        result = VersionController.I.normalized_username()
-        assert mock_run.call_count == 2  # noqa: PLR2004
-        assert result == "SomeUser"
-
-    def test_has_commits(self, tmp_path: Path) -> None:
-        """Test method."""
-        result = VersionController.I.has_commits()
-        assert isinstance(result, bool)
-        assert result is True
-        with chdir(tmp_path):
-            run_subprocess_cached.cache_clear()
-            result = VersionController.I.has_commits()
-            run_subprocess_cached.cache_clear()
-            assert result is False
-
-    def test_rev_parse_verify_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.rev_parse_verify_args("some-commit-hash")
-        assert result == ("git", "rev-parse", "--verify", "some-commit-hash")
-
-    def test_rev_parse_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.rev_parse_args("some-commit-hash")
-        assert result == ("git", "rev-parse", "some-commit-hash")

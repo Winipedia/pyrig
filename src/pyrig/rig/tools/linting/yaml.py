@@ -1,6 +1,6 @@
 """Wrapper around the ryl YAML linter tool."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
@@ -17,38 +17,7 @@ class YAMLLinter(CheckHookTool):
     files, and builds ryl inline directive comments.
     """
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the badge image URL for ryl."""
-        return f"https://img.shields.io/badge/YAML-{self.shield_name()}-red"
-
-    def link_url(self) -> str:
-        """Return the URL of the ryl project page."""
-        return "https://github.com/owenlamont/ryl"
-
-    def version_control_ignore_patterns(self) -> tuple[str, ...]:
-        """Return ryl's cache directory as a path to ignore."""
-        return (*super().version_control_ignore_patterns(), ".ryl_cache/")
-
-    def name(self) -> str:
-        """Return `'ryl'`, the executable name for this tool's CLI command."""
-        return "ryl"
-
-    def check_args(self, *args: str) -> Args:
-        """Construct ryl lint arguments.
-
-        Args:
-            *args: Additional arguments forwarded to `ryl check`, typically
-                the file paths to check.
-
-        Returns:
-            Args for `ryl check`.
-        """
-        return self.args("check", *args)
-
+    @override
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for linting and auto-fixing YAML files.
 
@@ -64,13 +33,43 @@ class YAMLLinter(CheckHookTool):
             args=Args("--fix"),
         )
 
-    def lint_yaml(self) -> Args:
-        """Return the `Args` this hook's entry runs.
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for ryl."""
+        return f"https://img.shields.io/badge/YAML-{self.shield_name()}-red"
+
+    @override
+    def link_url(self) -> str:
+        """Return the URL of the ryl project page."""
+        return "https://github.com/owenlamont/ryl"
+
+    @override
+    def version_control_ignore_patterns(self) -> tuple[str, ...]:
+        """Return ryl's cache directory as a path to ignore."""
+        return (*super().version_control_ignore_patterns(), ".ryl_cache/")
+
+    @override
+    def check_args(self, *args: str) -> Args:
+        """Construct ryl lint arguments.
+
+        Args:
+            *args: Additional arguments forwarded to `ryl check`, typically
+                the file paths to check.
 
         Returns:
-            Args for `uv run ryl check`.
+            Args for `ryl check`.
         """
-        return PackageManager.I.run_args(*self.check_args())
+        return self.args("check", *args)
+
+    @override
+    def name(self) -> str:
+        """Return `'ryl'`, the executable name for this tool's CLI command."""
+        return "ryl"
 
     def disable_line_line_length(self) -> str:
         """Return a comment string to disable the `line-length` rule for this line."""
@@ -86,6 +85,14 @@ class YAMLLinter(CheckHookTool):
             The `disable-line` directive comment for `rule`.
         """
         return self.directive(f"disable-line rule:{rule}")
+
+    def lint_yaml(self) -> Args:
+        """Return the `Args` this hook's entry runs.
+
+        Returns:
+            Args for `uv run ryl check`.
+        """
+        return PackageManager.I.run_args(*self.check_args())
 
     def directive(self, directive: str) -> str:
         """Return an inline directive comment for this tool.

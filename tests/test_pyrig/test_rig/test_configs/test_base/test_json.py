@@ -2,7 +2,7 @@
 
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, override
 
 import pytest
 
@@ -12,15 +12,15 @@ from pyrig.rig.configs.base.json import JSONDictConfigFile
 class TestJSONConfigFile:
     """Test class."""
 
-    def test__load(self, my_test_json_config_file: type[JSONDictConfigFile]) -> None:
-        """Test method."""
-        my_test_json_config_file().validate()
-        loaded = my_test_json_config_file().load()
-        assert loaded == {"key": "value"}
-
     def test__dump(self, my_test_json_config_file: type[JSONDictConfigFile]) -> None:
         """Test method."""
         my_test_json_config_file().dump({"key": "value"})
+        loaded = my_test_json_config_file().load()
+        assert loaded == {"key": "value"}
+
+    def test__load(self, my_test_json_config_file: type[JSONDictConfigFile]) -> None:
+        """Test method."""
+        my_test_json_config_file().validate()
         loaded = my_test_json_config_file().load()
         assert loaded == {"key": "value"}
 
@@ -46,14 +46,17 @@ def my_test_json_config_file(
     class MyTestJSONDictConfigFile(config_file_factory(JSONDictConfigFile)):  # ty: ignore[unsupported-base]
         """Test json config file."""
 
+        @override
         def stem(self) -> str:
             """Get the stem."""
             return "test_json"
 
+        @override
         def parent_path(self) -> Path:
             """Get the parent path."""
             return Path()
 
+        @override
         def _configs(self) -> dict[str, Any]:
             """Get the configs."""
             return {"key": "value"}

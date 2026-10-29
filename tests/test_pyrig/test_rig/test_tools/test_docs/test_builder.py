@@ -8,25 +8,23 @@ from pyrig.rig.tools.docs.builder import DocsBuilder
 class TestDocsBuilder:
     """Test class."""
 
-    def test_site_dir(self) -> None:
+    def test_build_args(self) -> None:
         """Test method."""
-        result = DocsBuilder.I.site_dir()
-        assert result == Path("site")
+        result = DocsBuilder.I.build_args()
+        assert result == ("zensical", "build")
 
-    def test_image_url(self) -> None:
+    def test_dev_dependencies(self) -> None:
         """Test method."""
-        assert (
-            DocsBuilder.I.image_url()
-            == "https://img.shields.io/badge/Documentation-zensical-326CE5"
+        result = DocsBuilder.I.dev_dependencies()
+        assert result == (
+            "zensical",
+            "mkdocstrings[python]",
         )
 
-    def test_link_url(self) -> None:
+    def test_docs_dir(self) -> None:
         """Test method."""
-        assert DocsBuilder.I.link_url() == "https://Winipedia.github.io/pyrig"
-
-    def test_version_control_ignore_patterns(self) -> None:
-        """Test method."""
-        assert DocsBuilder.I.version_control_ignore_patterns() == ("/site", ".cache")
+        result = DocsBuilder.I.docs_dir()
+        assert result == Path("docs")
 
     def test_documentation_url(self) -> None:
         """Test method."""
@@ -42,25 +40,27 @@ class TestDocsBuilder:
         assert isinstance(result, str)
         assert result == "project-info"
 
-    def test_dev_dependencies(self) -> None:
+    def test_image_url(self) -> None:
         """Test method."""
-        result = DocsBuilder.I.dev_dependencies()
-        assert result == (
-            "zensical",
-            "mkdocstrings[python]",
+        assert (
+            DocsBuilder.I.image_url()
+            == "https://img.shields.io/badge/Documentation-zensical-326CE5"
         )
 
-    def test_docs_dir(self) -> None:
+    def test_link_url(self) -> None:
         """Test method."""
-        result = DocsBuilder.I.docs_dir()
-        assert result == Path("docs")
+        assert DocsBuilder.I.link_url() == "https://Winipedia.github.io/pyrig"
 
     def test_name(self) -> None:
         """Test method."""
         result = DocsBuilder.I.name()
         assert result == "zensical"
 
-    def test_build_args(self) -> None:
+    def test_site_dir(self) -> None:
         """Test method."""
-        result = DocsBuilder.I.build_args()
-        assert result == ("zensical", "build")
+        result = DocsBuilder.I.site_dir()
+        assert result == Path("site")
+
+    def test_version_control_ignore_patterns(self) -> None:
+        """Test method."""
+        assert DocsBuilder.I.version_control_ignore_patterns() == ("/site", ".cache")

@@ -7,6 +7,29 @@ from pyrig.rig.tools.version_control.large_files import LargeFileChecker
 class TestLargeFileChecker:
     """Test class."""
 
+    def test_check_added_large_files(self) -> None:
+        """Test method."""
+        assert LargeFileChecker.I.check_added_large_files() == ("--enforce-all",)
+
+    def test_check_args(self) -> None:
+        """Test method."""
+        result = LargeFileChecker.I.check_args()
+        assert result == ("--enforce-all",)
+
+    def test_check_hook(self) -> None:
+        """Test method."""
+        # large-file checking runs after the general text-fixing chain
+        hook = LargeFileChecker.I.check_hook()
+        eof_hook = EndOfFileFormatter.I.format_hook()
+        assert hook["priority"] > eof_hook["priority"]
+        assert "types" not in hook
+        assert hook["args"] == ["--enforce-all"]
+
+    def test_dev_dependencies(self) -> None:
+        """Test method."""
+        result = LargeFileChecker.I.dev_dependencies()
+        assert result == ()
+
     def test_group(self) -> None:
         """Test method."""
         result = LargeFileChecker.I.group()
@@ -31,26 +54,3 @@ class TestLargeFileChecker:
         """Test method."""
         result = LargeFileChecker.I.name()
         assert result == "check-added-large-files"
-
-    def test_dev_dependencies(self) -> None:
-        """Test method."""
-        result = LargeFileChecker.I.dev_dependencies()
-        assert result == ()
-
-    def test_check_args(self) -> None:
-        """Test method."""
-        result = LargeFileChecker.I.check_args()
-        assert result == ("--enforce-all",)
-
-    def test_check_hook(self) -> None:
-        """Test method."""
-        # large-file checking runs after the general text-fixing chain
-        hook = LargeFileChecker.I.check_hook()
-        eof_hook = EndOfFileFormatter.I.format_hook()
-        assert hook["priority"] > eof_hook["priority"]
-        assert "types" not in hook
-        assert hook["args"] == ["--enforce-all"]
-
-    def test_check_added_large_files(self) -> None:
-        """Test method."""
-        assert LargeFileChecker.I.check_added_large_files() == ("--enforce-all",)

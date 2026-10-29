@@ -8,6 +8,10 @@ from pyrig.rig.tools.packages.manager import PackageManager
 class TestPackageManager:
     """Test class."""
 
+    def test_add_args(self) -> None:
+        """Test method."""
+        assert PackageManager.I.add_args("smth") == ("uv", "add", "smth")
+
     def test_add_group_args(self) -> None:
         """Test method."""
         assert PackageManager.I.add_group_args("pkg", group="smth") == (
@@ -17,171 +21,18 @@ class TestPackageManager:
             "pkg",
         )
 
-    def test_add_args(self) -> None:
-        """Test method."""
-        assert PackageManager.I.add_args("smth") == ("uv", "add", "smth")
-
-    def test_install_dependencies_no_dev_args(self) -> None:
-        """Test method."""
-        assert PackageManager.I.install_dependencies_no_dev_args("hello") == (
-            "uv",
-            "sync",
-            "--no-group=dev",
-            "hello",
-        )
-
-    def test_image_url(self) -> None:
-        """Test method."""
-        assert (
-            PackageManager.I.image_url()
-            == "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json"
-        )
-
-    def test_link_url(self) -> None:
-        """Test method."""
-        assert PackageManager.I.link_url() == "https://github.com/astral-sh/uv"
-
-    def test_version_control_ignore_patterns(self) -> None:
-        """Test method."""
-        assert PackageManager.I.version_control_ignore_patterns() == (".venv", "dist/")
-
-    def test_lock_file(self) -> None:
-        """Test method."""
-        assert PackageManager.I.lock_file() == Path("uv.lock")
-
-    def test_source_root(self) -> None:
-        """Test method."""
-        assert PackageManager.I.source_root() == Path("src")
-
-    def test_package_root(self) -> None:
-        """Test method."""
-        assert PackageManager.I.package_root() == Path("src/pyrig")
-
-    def test_project_name(self) -> None:
-        """Test method."""
-        result = PackageManager.I.project_name()
-        assert result == "pyrig"
-
-    def test_package_name(self) -> None:
-        """Test method."""
-        result = PackageManager.I.package_name()
-        assert result == "pyrig"
-
-    def test_group(self) -> None:
-        """Test method."""
-        result = PackageManager.I.group()
-        assert isinstance(result, str)
-        assert result == "tooling"
-
-    def test_dev_dependencies(self) -> None:
-        """Test method."""
-        result = PackageManager.I.dev_dependencies()
-        assert result == ()
-
-    def test_build_system_requires(self) -> None:
-        """Test method."""
-        result = PackageManager.I.build_system_requires()
-        assert result == ["uv-build"]
-
-    def test_build_backend(self) -> None:
-        """Test method."""
-        result = PackageManager.I.build_backend()
-        assert result == "uv_build"
-
-    def test_name(self) -> None:
-        """Test method."""
-        result = PackageManager.I.name()
-        assert result == "uv"
-
-    def test_run_args(self) -> None:
-        """Test method."""
-        result = PackageManager.I.run_args("pytest")
-        assert result == ("uv", "run", "pytest")
-
     def test_add_group_dev_args(self) -> None:
         """Test method."""
         result = PackageManager.I.add_group_dev_args("pytest", "ruff")
         assert result == ("uv", "add", "--group=dev", "pytest", "ruff")
 
-    def test_install_dependencies_args(self) -> None:
-        """Test method."""
-        result = PackageManager.I.install_dependencies_args()
-        assert result == ("uv", "sync")
-
-    def test_update_dependencies_args(self) -> None:
-        """Test method."""
-        result = PackageManager.I.update_dependencies_args()
-        assert result == ("uv", "lock", "--upgrade")
-
-    def test_version_args(self) -> None:
-        """Test method."""
-        result = PackageManager.I.version_args()
-        assert result == ("uv", "version")
-
-    def test_version_short_args(self) -> None:
-        """Test method."""
-        result = PackageManager.I.version_short_args()
-        assert result == ("uv", "version", "--short")
-
-    def test_build_args(self) -> None:
-        """Test method."""
-        result = PackageManager.I.build_args()
-        assert result == ("uv", "build")
-
-    def test_update_dependencies_hook(self) -> None:
-        """Test method."""
-        hook = PackageManager.I.update_dependencies_hook()
-        assert hook["priority"] == 0
-        assert hook["stages"] == ["pre-push"]
-        assert hook["always_run"] is True
-        assert hook["pass_filenames"] is False
-
-    def test_update_dependencies(self) -> None:
-        """Test method."""
-        assert (
-            PackageManager.I.update_dependencies()
-            == PackageManager.I.update_dependencies_args()
-        )
-
-    def test_install_dependencies_hook(self) -> None:
-        """Test method."""
-        # installing depends on the lock file update having already run
-        update_hook = PackageManager.I.update_dependencies_hook()
-        install_hook = PackageManager.I.install_dependencies_hook()
-        assert install_hook["priority"] > update_hook["priority"]
-        assert install_hook["stages"] == [
-            "post-checkout",
-            "post-merge",
-            "post-rewrite",
-            "pre-push",
-        ]
-
-    def test_install_dependencies(self) -> None:
-        """Test method."""
-        assert (
-            PackageManager.I.install_dependencies()
-            == PackageManager.I.install_dependencies_args()
-        )
-
-    def test_hooks(self) -> None:
-        """Test method."""
-        assert PackageManager.I.hooks() == (
-            PackageManager.I.update_dependencies_hook(),
-            PackageManager.I.install_dependencies_hook(),
-            PackageManager.I.audit_dependencies_hook(),
-        )
-
-    def test_install_dependencies_no_group_args(self) -> None:
-        """Test method."""
-        assert PackageManager.I.install_dependencies_no_group_args(
-            "some",
-            "args",
-            group="whatever",
-        ) == ("uv", "sync", "--no-group=whatever", "some", "args")
-
     def test_audit_args(self) -> None:
         """Test method."""
         assert PackageManager.I.audit_args() == ("uv", "audit")
+
+    def test_audit_dependencies(self) -> None:
+        """Test method."""
+        assert PackageManager.I.audit_dependencies() == PackageManager.I.audit_args()
 
     def test_audit_dependencies_hook(self) -> None:
         """Test method."""
@@ -198,16 +49,125 @@ class TestPackageManager:
         assert hook["always_run"] is True
         assert hook["pass_filenames"] is False
 
-    def test_audit_dependencies(self) -> None:
+    def test_build_args(self) -> None:
         """Test method."""
-        assert PackageManager.I.audit_dependencies() == PackageManager.I.audit_args()
+        result = PackageManager.I.build_args()
+        assert result == ("uv", "build")
 
-    def test_remove_group_dev_args(self) -> None:
+    def test_build_backend(self) -> None:
         """Test method."""
-        assert PackageManager.I.remove_group_dev_args("some", "args") == (
+        result = PackageManager.I.build_backend()
+        assert result == "uv_build"
+
+    def test_build_system_requires(self) -> None:
+        """Test method."""
+        result = PackageManager.I.build_system_requires()
+        assert result == ["uv-build"]
+
+    def test_dev_dependencies(self) -> None:
+        """Test method."""
+        result = PackageManager.I.dev_dependencies()
+        assert result == ()
+
+    def test_dist_dir(self) -> None:
+        """Test method."""
+        assert PackageManager.I.dist_dir() == Path("dist")
+
+    def test_group(self) -> None:
+        """Test method."""
+        result = PackageManager.I.group()
+        assert isinstance(result, str)
+        assert result == "tooling"
+
+    def test_hooks(self) -> None:
+        """Test method."""
+        assert PackageManager.I.hooks() == (
+            PackageManager.I.update_dependencies_hook(),
+            PackageManager.I.install_dependencies_hook(),
+            PackageManager.I.audit_dependencies_hook(),
+        )
+
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            PackageManager.I.image_url()
+            == "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json"
+        )
+
+    def test_install_dependencies(self) -> None:
+        """Test method."""
+        assert (
+            PackageManager.I.install_dependencies()
+            == PackageManager.I.install_dependencies_args()
+        )
+
+    def test_install_dependencies_args(self) -> None:
+        """Test method."""
+        result = PackageManager.I.install_dependencies_args()
+        assert result == ("uv", "sync")
+
+    def test_install_dependencies_hook(self) -> None:
+        """Test method."""
+        # installing depends on the lock file update having already run
+        update_hook = PackageManager.I.update_dependencies_hook()
+        install_hook = PackageManager.I.install_dependencies_hook()
+        assert install_hook["priority"] > update_hook["priority"]
+        assert install_hook["stages"] == [
+            "post-checkout",
+            "post-merge",
+            "post-rewrite",
+            "pre-push",
+        ]
+
+    def test_install_dependencies_no_dev_args(self) -> None:
+        """Test method."""
+        assert PackageManager.I.install_dependencies_no_dev_args("hello") == (
+            "uv",
+            "sync",
+            "--no-group=dev",
+            "hello",
+        )
+
+    def test_install_dependencies_no_group_args(self) -> None:
+        """Test method."""
+        assert PackageManager.I.install_dependencies_no_group_args(
+            "some",
+            "args",
+            group="whatever",
+        ) == ("uv", "sync", "--no-group=whatever", "some", "args")
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert PackageManager.I.link_url() == "https://github.com/astral-sh/uv"
+
+    def test_lock_file(self) -> None:
+        """Test method."""
+        assert PackageManager.I.lock_file() == Path("uv.lock")
+
+    def test_name(self) -> None:
+        """Test method."""
+        result = PackageManager.I.name()
+        assert result == "uv"
+
+    def test_package_name(self) -> None:
+        """Test method."""
+        result = PackageManager.I.package_name()
+        assert result == "pyrig"
+
+    def test_package_root(self) -> None:
+        """Test method."""
+        assert PackageManager.I.package_root() == Path("src/pyrig")
+
+    def test_project_name(self) -> None:
+        """Test method."""
+        result = PackageManager.I.project_name()
+        assert result == "pyrig"
+
+    def test_remove_args(self) -> None:
+        """Test method."""
+        assert PackageManager.I.remove_args("some", "args") == (
             "uv",
             "remove",
-            "--group=dev",
             "some",
             "args",
         )
@@ -222,15 +182,55 @@ class TestPackageManager:
             "args",
         )
 
-    def test_remove_args(self) -> None:
+    def test_remove_group_dev_args(self) -> None:
         """Test method."""
-        assert PackageManager.I.remove_args("some", "args") == (
+        assert PackageManager.I.remove_group_dev_args("some", "args") == (
             "uv",
             "remove",
+            "--group=dev",
             "some",
             "args",
         )
 
-    def test_dist_dir(self) -> None:
+    def test_run_args(self) -> None:
         """Test method."""
-        assert PackageManager.I.dist_dir() == Path("dist")
+        result = PackageManager.I.run_args("pytest")
+        assert result == ("uv", "run", "pytest")
+
+    def test_source_root(self) -> None:
+        """Test method."""
+        assert PackageManager.I.source_root() == Path("src")
+
+    def test_update_dependencies(self) -> None:
+        """Test method."""
+        assert (
+            PackageManager.I.update_dependencies()
+            == PackageManager.I.update_dependencies_args()
+        )
+
+    def test_update_dependencies_args(self) -> None:
+        """Test method."""
+        result = PackageManager.I.update_dependencies_args()
+        assert result == ("uv", "lock", "--upgrade")
+
+    def test_update_dependencies_hook(self) -> None:
+        """Test method."""
+        hook = PackageManager.I.update_dependencies_hook()
+        assert hook["priority"] == 0
+        assert hook["stages"] == ["pre-push"]
+        assert hook["always_run"] is True
+        assert hook["pass_filenames"] is False
+
+    def test_version_args(self) -> None:
+        """Test method."""
+        result = PackageManager.I.version_args()
+        assert result == ("uv", "version")
+
+    def test_version_control_ignore_patterns(self) -> None:
+        """Test method."""
+        assert PackageManager.I.version_control_ignore_patterns() == (".venv", "dist/")
+
+    def test_version_short_args(self) -> None:
+        """Test method."""
+        result = PackageManager.I.version_short_args()
+        assert result == ("uv", "version", "--short")

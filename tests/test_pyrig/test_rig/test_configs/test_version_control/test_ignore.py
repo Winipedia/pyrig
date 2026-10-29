@@ -16,6 +16,49 @@ from pyrig.rig.configs.version_control.ignore import (
 class TestVersionControllerIgnoreConfigFile:
     """Test class."""
 
+    def test_additional_ignore_lines(self) -> None:
+        """Test method."""
+        lines = VersionControllerIgnoreConfigFile.I.additional_ignore_lines()
+        assert "__pycache__/" in lines
+        assert ".scratch.py" in lines
+        assert ".rumdl_cache/" in lines
+
+    def test_content(
+        self,
+        my_test_gitignore_config_file: type[VersionControllerIgnoreConfigFile],
+        tmp_path: Path,
+    ) -> None:
+        """Test method."""
+        with chdir(tmp_path):
+            my_test_gitignore_config_file().create_file()
+            content = my_test_gitignore_config_file().content()
+            assert "__pycache__/" in content
+            assert ".env" in content
+            assert ".scratch.py" in content
+
+    def test_extension(self) -> None:
+        """Test method."""
+        result = VersionControllerIgnoreConfigFile.I.extension()
+        assert result == "", f"Expected empty string, got {result}"
+
+    def test_extension_separator(
+        self,
+        my_test_gitignore_config_file: type[VersionControllerIgnoreConfigFile],
+    ) -> None:
+        """Test method."""
+        extension = my_test_gitignore_config_file().extension_separator()
+        assert extension == "", f"Expected empty string, got {extension}"
+
+    def test_parent_path(
+        self,
+        my_test_gitignore_config_file: type[VersionControllerIgnoreConfigFile],
+        tmp_path: Path,
+    ) -> None:
+        """Test method."""
+        with chdir(tmp_path):
+            parent_path = my_test_gitignore_config_file().parent_path()
+            assert parent_path == Path(), f"Expected Path(), got {parent_path}"
+
     def test_remote_standard_ignore_text(
         self,
         *,
@@ -34,41 +77,16 @@ class TestVersionControllerIgnoreConfigFile:
         assert ".env" in text
         assert VersionControllerIgnoreConfigFile.I.standard_ignore_text() == text
 
+    def test_standard_ignore_lines(self) -> None:
+        """Test method."""
+        github_gitignore = VersionControllerIgnoreConfigFile.I.standard_ignore_lines()
+        assert "__pycache__/" in github_gitignore
+
     def test_standard_ignore_text(self) -> None:
         """Test method."""
         text = VersionControllerIgnoreConfigFile.I.standard_ignore_text()
         assert "__pycache__/" in text
         assert ".env" in text
-
-    def test_additional_ignore_lines(self) -> None:
-        """Test method."""
-        lines = VersionControllerIgnoreConfigFile.I.additional_ignore_lines()
-        assert "__pycache__/" in lines
-        assert ".scratch.py" in lines
-        assert ".rumdl_cache/" in lines
-
-    def test_extension(self) -> None:
-        """Test method."""
-        result = VersionControllerIgnoreConfigFile.I.extension()
-        assert result == "", f"Expected empty string, got {result}"
-
-    def test_content(
-        self,
-        my_test_gitignore_config_file: type[VersionControllerIgnoreConfigFile],
-        tmp_path: Path,
-    ) -> None:
-        """Test method."""
-        with chdir(tmp_path):
-            my_test_gitignore_config_file().create_file()
-            content = my_test_gitignore_config_file().content()
-            assert "__pycache__/" in content
-            assert ".env" in content
-            assert ".scratch.py" in content
-
-    def test_standard_ignore_lines(self) -> None:
-        """Test method."""
-        github_gitignore = VersionControllerIgnoreConfigFile.I.standard_ignore_lines()
-        assert "__pycache__/" in github_gitignore
 
     def test_stem(
         self,
@@ -77,24 +95,6 @@ class TestVersionControllerIgnoreConfigFile:
         """Test method."""
         filename = my_test_gitignore_config_file().stem()
         assert filename == ".gitignore", f"Expected '.gitignore', got {filename}"
-
-    def test_parent_path(
-        self,
-        my_test_gitignore_config_file: type[VersionControllerIgnoreConfigFile],
-        tmp_path: Path,
-    ) -> None:
-        """Test method."""
-        with chdir(tmp_path):
-            parent_path = my_test_gitignore_config_file().parent_path()
-            assert parent_path == Path(), f"Expected Path(), got {parent_path}"
-
-    def test_extension_separator(
-        self,
-        my_test_gitignore_config_file: type[VersionControllerIgnoreConfigFile],
-    ) -> None:
-        """Test method."""
-        extension = my_test_gitignore_config_file().extension_separator()
-        assert extension == "", f"Expected empty string, got {extension}"
 
 
 @pytest.fixture

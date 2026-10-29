@@ -1,6 +1,6 @@
 """Configuration file for the GitHub bug report issue template."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.rig.configs.base.issue_template import IssueTemplateConfigFile
 
@@ -11,6 +11,12 @@ class BugReportConfigFile(IssueTemplateConfigFile):
     Defines the GitHub issue form contributors use to submit bug reports.
     """
 
+    @override
+    def stem(self) -> str:
+        """Return `"bug_report"` as the filename stem."""
+        return "bug_report"
+
+    @override
     def _configs(self) -> dict[str, Any]:
         """Return the GitHub issue form definition for bug reports.
 
@@ -89,7 +95,3 @@ class BugReportConfigFile(IssueTemplateConfigFile):
                 },
             ],
         }
-
-    def stem(self) -> str:
-        """Return `"bug_report"` as the filename stem."""
-        return "bug_report"

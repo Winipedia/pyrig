@@ -1,6 +1,7 @@
 """Wrapper for the project's test runner and test-package layout conventions."""
 
 from pathlib import Path
+from typing import override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
@@ -15,23 +16,7 @@ class ProjectTester(Tool):
     convention distinct from the source package layout.
     """
 
-    def group(self) -> str:
-        """Return `Group.PROJECT_STATUS`."""
-        return Group.PROJECT_STATUS
-
-    def image_url(self) -> str:
-        """Return the badge image URL, with a label and color set by the threshold."""
-        hue, saturation, lightness = self.color()
-        return f"https://img.shields.io/badge/coverage-%3E%3D{self.threshold()}%25-hsl({hue},{saturation}%25,{lightness}%25)?logo=codecov&logoColor=white"
-
-    def link_url(self) -> str:
-        """Return the URL of the pytest project page."""
-        return "https://pytest.org"
-
-    def name(self) -> str:
-        """Return `'pytest'`."""
-        return "pytest"
-
+    @override
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return `('pytest', 'pytest-cov', 'pytest-randomly', 'pytest-xdist')`."""
         return (
@@ -41,6 +26,28 @@ class ProjectTester(Tool):
             "pytest-xdist",
         )
 
+    @override
+    def group(self) -> str:
+        """Return `Group.PROJECT_STATUS`."""
+        return Group.PROJECT_STATUS
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL, with a label and color set by the threshold."""
+        hue, saturation, lightness = self.color()
+        return f"https://img.shields.io/badge/coverage-%3E%3D{self.threshold()}%25-hsl({hue},{saturation}%25,{lightness}%25)?logo=codecov&logoColor=white"
+
+    @override
+    def link_url(self) -> str:
+        """Return the URL of the pytest project page."""
+        return "https://pytest.org"
+
+    @override
+    def name(self) -> str:
+        """Return `'pytest'`."""
+        return "pytest"
+
+    @override
     def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return `('.pytest_cache/', '.coverage')`."""
         return (
@@ -48,28 +55,6 @@ class ProjectTester(Tool):
             ".pytest_cache/",
             ".coverage",
         )
-
-    def color(self) -> tuple[int, int, int]:
-        """Return the badge color derived from the coverage threshold.
-
-        Interpolates the hue on a red-to-green spectrum where a threshold of
-        0% is red (hue 0), 50% is yellow (hue 60), and 100% is green (hue 120).
-
-        Returns:
-            An `(hue, saturation, lightness)` tuple.
-        """
-        hue = int((self.threshold() / 100) * 120)
-        return hue, 80, 45
-
-    def threshold(self) -> int:
-        """Return the minimum required coverage percentage.
-
-        Subclasses may override this to enforce a different threshold.
-
-        Returns:
-            90
-        """
-        return 90
 
     def additional_args(self) -> Args:
         """Return additional pytest command arguments.
@@ -91,6 +76,29 @@ class ProjectTester(Tool):
         """Return the path to the top-level tests package."""
         return self.source_root() / self.package_name()
 
+    def test_args(self, *args: str) -> Args:
+        """Build a pytest command with the given arguments.
+
+        Args:
+            *args: Pytest command arguments to pass after the command name.
+
+        Returns:
+            Args starting with `'pytest'` followed by the given arguments.
+        """
+        return self.args(*args)
+
+    def color(self) -> tuple[int, int, int]:
+        """Return the badge color derived from the coverage threshold.
+
+        Interpolates the hue on a red-to-green spectrum where a threshold of
+        0% is red (hue 0), 50% is yellow (hue 60), and 100% is green (hue 120).
+
+        Returns:
+            An `(hue, saturation, lightness)` tuple.
+        """
+        hue = int((self.threshold() / 100) * 120)
+        return hue, 80, 45
+
     def package_name(self) -> str:
         """Return `'tests'`, the name of the top-level tests package."""
         return "tests"
@@ -103,13 +111,12 @@ class ProjectTester(Tool):
         """
         return Path()
 
-    def test_args(self, *args: str) -> Args:
-        """Build a pytest command with the given arguments.
+    def threshold(self) -> int:
+        """Return the minimum required coverage percentage.
 
-        Args:
-            *args: Pytest command arguments to pass after the command name.
+        Subclasses may override this to enforce a different threshold.
 
         Returns:
-            Args starting with `'pytest'` followed by the given arguments.
+            90
         """
-        return self.args(*args)
+        return 90

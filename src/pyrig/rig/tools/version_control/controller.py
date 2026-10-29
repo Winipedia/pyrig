@@ -1,6 +1,7 @@
 """Type-safe construction of version control CLI commands."""
 
 from functools import cache
+from typing import override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
@@ -13,22 +14,27 @@ class VersionController(Tool):
     to run or to render as a shell string.
     """
 
+    @override
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return an empty tuple; git is a system dependency, not a pip package."""
         return ()
 
+    @override
     def group(self) -> str:
         """Return `Group.TOOLING` as the badge category."""
         return Group.TOOLING
 
+    @override
     def image_url(self) -> str:
         """Return the Shields.io badge image URL for Git."""
         return f"https://img.shields.io/badge/Git-F05032?logo={self.name()}&logoColor=white"
 
+    @override
     def link_url(self) -> str:
         """Return the URL of the Git homepage."""
         return "https://git-scm.com"
 
+    @override
     def name(self) -> str:
         """Return `'git'` as the executable name."""
         return "git"
@@ -42,6 +48,70 @@ class VersionController(Tool):
             The repository owner.
         """
         return cls().resolve_repo_owner()
+
+    def add_all_args(self, *args: str) -> Args:
+        """Build arguments equivalent to running `git add .`.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for `git add . [args]`.
+        """
+        return self.add_args(".", *args)
+
+    def commit_with_msg_args(self, *args: str, msg: str) -> Args:
+        """Build arguments for `git commit --message=<msg>`.
+
+        Args:
+            *args: Additional arguments appended to the command.
+            msg: The commit message.
+
+        Returns:
+            Args for `git commit --message=<msg> [args]`.
+        """
+        return self.commit_args(f"--message={msg}", *args)
+
+    def default_branch(self) -> str:
+        """Return `'main'` as this project's default branch name."""
+        return "main"
+
+    def email(self) -> str:
+        """Return the git `user.email` from the active configuration.
+
+        Returns:
+            The configured git user email.
+
+        Raises:
+            subprocess.CalledProcessError: If `user.email` is not configured.
+        """
+        return self.config_get_user_email_args().run_cached().stdout.strip()
+
+    def end_of_line(self) -> str:
+        """Return `'lf'`, the project's line-ending convention."""
+        return "lf"
+
+    def has_commits(self) -> bool:
+        """Return whether the repository has at least one commit.
+
+        Returns:
+            `True` if the repository has at least one commit; `False`
+            otherwise.
+        """
+        return (
+            self.rev_parse_verify_args("HEAD").run_cached(check=False).returncode == 0
+        )
+
+    def init_args(self, *args: str) -> Args:
+        """Build arguments for `git init`.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for `git init [args]`.
+        """
+        return self.args("init", *args)
 
     def resolve_repo_owner(self) -> str:
         """Return the repository owner.
@@ -62,36 +132,6 @@ class VersionController(Tool):
             or self.normalized_username()
         )
 
-    def default_branch(self) -> str:
-        """Return `'main'` as this project's default branch name."""
-        return "main"
-
-    def end_of_line(self) -> str:
-        """Return `'lf'`, the project's line-ending convention."""
-        return "lf"
-
-    def init_args(self, *args: str) -> Args:
-        """Build arguments for `git init`.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `git init [args]`.
-        """
-        return self.args("init", *args)
-
-    def add_all_args(self, *args: str) -> Args:
-        """Build arguments equivalent to running `git add .`.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `git add . [args]`.
-        """
-        return self.add_args(".", *args)
-
     def add_args(self, *args: str) -> Args:
         """Build base arguments for `git add`.
 
@@ -102,18 +142,6 @@ class VersionController(Tool):
             Args for `git add [args]`.
         """
         return self.args("add", *args)
-
-    def commit_with_msg_args(self, *args: str, msg: str) -> Args:
-        """Build arguments for `git commit --message=<msg>`.
-
-        Args:
-            *args: Additional arguments appended to the command.
-            msg: The commit message.
-
-        Returns:
-            Args for `git commit --message=<msg> [args]`.
-        """
-        return self.commit_args(f"--message={msg}", *args)
 
     def commit_args(self, *args: str) -> Args:
         """Build base arguments for `git commit`.
@@ -136,6 +164,82 @@ class VersionController(Tool):
             Args for `git config --get user.email [args]`.
         """
         return self.config_get_args("user.email", *args)
+
+    def normalized_username(self) -> str:
+        """Return the git `user.name` with spaces removed.
+
+        Returns:
+            The configured git user name with spaces removed.
+
+        Raises:
+            subprocess.CalledProcessError: If `user.name` is not configured.
+        """
+        return self.username().replace(" ", "")
+
+    def remote_repo_owner(self) -> str:
+        """Return the repository owner parsed from the remote origin URL.
+
+        Supports HTTPS (`https://github.com/owner/repo.git`) and SSH
+        (`git@github.com:owner/repo.git` or `ssh://git@github.com/owner/repo.git`)
+        remote formats.
+
+        Returns:
+            The repository owner, or an empty string if no remote origin
+            is configured.
+        """
+        url = self.remote_url()
+        # possible formats:
+        # ssh://git@github.com/owner/repo.git
+        # git@github.com:owner/repo.git
+        # https://github.com/owner/repo.git
+        url = url.split("github.com", 1)[-1]  # split off the domain, keep the path
+        url = url.removeprefix("/").removeprefix(":")
+        # the url left must have the format: owner/repo.git
+        return url.split("/")[0]
+
+    def rev_parse_verify_args(self, *args: str) -> Args:
+        """Build arguments for `git rev-parse --verify`.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for `git rev-parse --verify [args]`.
+        """
+        return self.rev_parse_args("--verify", *args)
+
+    def remote_url(self) -> str:
+        """Return the remote origin URL configured for this repository.
+
+        Returns:
+            The configured `remote.origin.url` value, or an empty string if
+            no remote origin is configured.
+        """
+        return (
+            self.config_remote_origin_url_args().run_cached(check=False).stdout.strip()
+        )
+
+    def rev_parse_args(self, *args: str) -> Args:
+        """Build arguments for `git rev-parse`.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for `git rev-parse [args]`.
+        """
+        return self.args("rev-parse", *args)
+
+    def username(self) -> str:
+        """Return the git `user.name` from the active configuration.
+
+        Returns:
+            The configured git user name.
+
+        Raises:
+            subprocess.CalledProcessError: If `user.name` is not configured.
+        """
+        return self.config_get_username_args().run_cached().stdout.strip()
 
     def config_get_username_args(self, *args: str) -> Args:
         """Build arguments to read the configured `user.name` value.
@@ -184,101 +288,3 @@ class VersionController(Tool):
             Args for `git config [args]`.
         """
         return self.args("config", *args)
-
-    def remote_repo_owner(self) -> str:
-        """Return the repository owner parsed from the remote origin URL.
-
-        Supports HTTPS (`https://github.com/owner/repo.git`) and SSH
-        (`git@github.com:owner/repo.git` or `ssh://git@github.com/owner/repo.git`)
-        remote formats.
-
-        Returns:
-            The repository owner, or an empty string if no remote origin
-            is configured.
-        """
-        url = self.remote_url()
-        # possible formats:
-        # ssh://git@github.com/owner/repo.git
-        # git@github.com:owner/repo.git
-        # https://github.com/owner/repo.git
-        url = url.split("github.com", 1)[-1]  # split off the domain, keep the path
-        url = url.removeprefix("/").removeprefix(":")
-        # the url left must have the format: owner/repo.git
-        return url.split("/")[0]
-
-    def remote_url(self) -> str:
-        """Return the remote origin URL configured for this repository.
-
-        Returns:
-            The configured `remote.origin.url` value, or an empty string if
-            no remote origin is configured.
-        """
-        return (
-            self.config_remote_origin_url_args().run_cached(check=False).stdout.strip()
-        )
-
-    def normalized_username(self) -> str:
-        """Return the git `user.name` with spaces removed.
-
-        Returns:
-            The configured git user name with spaces removed.
-
-        Raises:
-            subprocess.CalledProcessError: If `user.name` is not configured.
-        """
-        return self.username().replace(" ", "")
-
-    def username(self) -> str:
-        """Return the git `user.name` from the active configuration.
-
-        Returns:
-            The configured git user name.
-
-        Raises:
-            subprocess.CalledProcessError: If `user.name` is not configured.
-        """
-        return self.config_get_username_args().run_cached().stdout.strip()
-
-    def email(self) -> str:
-        """Return the git `user.email` from the active configuration.
-
-        Returns:
-            The configured git user email.
-
-        Raises:
-            subprocess.CalledProcessError: If `user.email` is not configured.
-        """
-        return self.config_get_user_email_args().run_cached().stdout.strip()
-
-    def has_commits(self) -> bool:
-        """Return whether the repository has at least one commit.
-
-        Returns:
-            `True` if the repository has at least one commit; `False`
-            otherwise.
-        """
-        return (
-            self.rev_parse_verify_args("HEAD").run_cached(check=False).returncode == 0
-        )
-
-    def rev_parse_verify_args(self, *args: str) -> Args:
-        """Build arguments for `git rev-parse --verify`.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `git rev-parse --verify [args]`.
-        """
-        return self.rev_parse_args("--verify", *args)
-
-    def rev_parse_args(self, *args: str) -> Args:
-        """Build arguments for `git rev-parse`.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `git rev-parse [args]`.
-        """
-        return self.args("rev-parse", *args)

@@ -2,6 +2,7 @@
 
 from abc import abstractmethod
 from collections.abc import Iterable
+from typing import override
 
 from pyrig.core.strings import read_text_utf8, write_text_utf8
 from pyrig.rig.configs.base.config_file import ListConfigFile
@@ -25,18 +26,12 @@ class StringConfigFile(ListConfigFile):
             contiguous, ordered, or exact matches.
         """
 
-    def lines(self) -> list[str]:
-        """Return the required content split into individual lines.
-
-        Returns:
-            The result of splitting `content()` into lines.
-        """
-        return self.split_lines(self.content())
-
+    @override
     def _configs(self) -> list[str]:
         """Return the required lines."""
         return self.lines()
 
+    @override
     def _dump(self, configs: list[str]) -> None:
         """Join the lines and write them to the file as UTF-8 text.
 
@@ -45,6 +40,7 @@ class StringConfigFile(ListConfigFile):
         """
         write_text_utf8(self.path(), self.join_lines(configs))
 
+    @override
     def _load(self) -> list[str]:
         """Read the file as UTF-8 text and split it into lines."""
         return self.split_lines(read_text_utf8(self.path()))
@@ -60,6 +56,14 @@ class StringConfigFile(ListConfigFile):
     def join_lines(self, lines: Iterable[str]) -> str:
         """Join lines with a newline character."""
         return "\n".join(lines)
+
+    def lines(self) -> list[str]:
+        """Return the required content split into individual lines.
+
+        Returns:
+            The result of splitting `content()` into lines.
+        """
+        return self.split_lines(self.content())
 
     def split_lines(self, text: str) -> list[str]:
         """Split text into lines, preserving a trailing newline as an empty string.

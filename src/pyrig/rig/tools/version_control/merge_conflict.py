@@ -1,6 +1,6 @@
 """Wrapper around the check-merge-conflict tool."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
@@ -12,26 +12,48 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class MergeConflictChecker(CheckHookTool):
     """Type-safe wrapper for prek's pre-commit-hooks-compatible conflict check."""
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
-        return Group.CODE_QUALITY
+    @override
+    def check_hook(self) -> dict[str, Any]:
+        """Return the hook metadata for checking for merge conflict markers.
 
-    def image_url(self) -> str:
-        """Return the badge image URL for check-merge-conflict."""
-        return f"https://img.shields.io/badge/merge--conflict-{self.shield_name()}-blue"
+        Runs after the general text-fixing chain.
 
-    def link_url(self) -> str:
-        """Return the documentation URL for this prek built-in hook."""
-        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
+        Returns:
+            Hook metadata dict for `check-merge-conflict --assume-in-merge`.
+        """
+        return VersionControlHookManager.I.builtin_hook(
+            self.check_merge_conflict,
+            priority=VersionControlHookManager.I.deprioritize(
+                EndOfFileFormatter.I.format_hook(),
+            ),
+        )
 
-    def name(self) -> str:
-        """Return `"check-merge-conflict"`, this tool's CLI command name."""
-        return "check-merge-conflict"
-
+    @override
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return no package dependency; prek provides this built-in hook."""
         return ()
 
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for check-merge-conflict."""
+        return f"https://img.shields.io/badge/merge--conflict-{self.shield_name()}-blue"
+
+    @override
+    def link_url(self) -> str:
+        """Return the documentation URL for this prek built-in hook."""
+        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
+
+    @override
+    def name(self) -> str:
+        """Return `"check-merge-conflict"`, this tool's CLI command name."""
+        return "check-merge-conflict"
+
+    @override
     def check_args(self, *args: str) -> Args:
         """Construct check-merge-conflict arguments.
 
@@ -48,21 +70,6 @@ class MergeConflictChecker(CheckHookTool):
             Args for `check-merge-conflict`.
         """
         return Args("--assume-in-merge", *args)
-
-    def check_hook(self) -> dict[str, Any]:
-        """Return the hook metadata for checking for merge conflict markers.
-
-        Runs after the general text-fixing chain.
-
-        Returns:
-            Hook metadata dict for `check-merge-conflict --assume-in-merge`.
-        """
-        return VersionControlHookManager.I.builtin_hook(
-            self.check_merge_conflict,
-            priority=VersionControlHookManager.I.deprioritize(
-                EndOfFileFormatter.I.format_hook(),
-            ),
-        )
 
     def check_merge_conflict(self) -> Args:
         """Return arguments for the built-in hook.

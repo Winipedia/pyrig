@@ -15,6 +15,22 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class TestVersionControlHookManagerConfigFile:
     """Test class."""
 
+    def test__configs(
+        self,
+    ) -> None:
+        """Test method."""
+        configs = VersionControlHookManagerConfigFile.I.configs()
+        assert "repos" in configs, "Expected 'repos' key in configs"
+        assert isinstance(configs["repos"], list), "Expected 'repos' to be a list"
+        assert len(configs["repos"]) > 0, "Expected at least one repo in configs"
+        repo = configs["repos"][0]
+        assert repo["repo"] == "local", (
+            f"Expected repo to be 'local', got {repo['repo']}"
+        )
+        assert "hooks" in repo, "Expected 'hooks' key in repo"
+        assert isinstance(repo["hooks"], list), "Expected 'hooks' to be a list"
+        assert len(repo["hooks"]) > 0, "Expected at least one hook in repo"
+
     def test_dependencies(self) -> None:
         """Test method."""
         assert tuple(VersionControlHookManagerConfigFile.I.dependencies()) == (
@@ -64,9 +80,19 @@ class TestVersionControlHookManagerConfigFile:
         # priority instead of continuing the pre-commit chain.
         assert by_id["update-dependencies"]["priority"] == 0
 
-    def test_stem(self) -> None:
+    def test_hooks_by_repo(self) -> None:
         """Test method."""
-        assert VersionControlHookManagerConfigFile.I.stem() == "prek"
+        hooks = [
+            {"repo": "local", "id": "a"},
+            {"repo": "other", "id": "b"},
+            {"repo": "local", "id": "c"},
+        ]
+        by_repo = VersionControlHookManagerConfigFile.I.hooks_by_repo(hooks)
+        assert list(by_repo) == ["local", "other"]
+        assert by_repo["local"] == [{"id": "a"}, {"id": "c"}]
+        assert by_repo["other"] == [{"id": "b"}]
+        # the "repo" key is consumed, not left behind on each hook
+        assert "repo" not in hooks[0]
 
     def test_parent_path(
         self,
@@ -76,22 +102,6 @@ class TestVersionControlHookManagerConfigFile:
         with chdir(tmp_path):
             parent_path = VersionControlHookManagerConfigFile.I.parent_path()
             assert parent_path == Path(), f"Expected Path(), got {parent_path}"
-
-    def test__configs(
-        self,
-    ) -> None:
-        """Test method."""
-        configs = VersionControlHookManagerConfigFile.I.configs()
-        assert "repos" in configs, "Expected 'repos' key in configs"
-        assert isinstance(configs["repos"], list), "Expected 'repos' to be a list"
-        assert len(configs["repos"]) > 0, "Expected at least one repo in configs"
-        repo = configs["repos"][0]
-        assert repo["repo"] == "local", (
-            f"Expected repo to be 'local', got {repo['repo']}"
-        )
-        assert "hooks" in repo, "Expected 'hooks' key in repo"
-        assert isinstance(repo["hooks"], list), "Expected 'hooks' to be a list"
-        assert len(repo["hooks"]) > 0, "Expected at least one hook in repo"
 
     def test_repositories(self) -> None:
         """Test method."""
@@ -106,19 +116,9 @@ class TestVersionControlHookManagerConfigFile:
             {"repo": "other", "hooks": [{"id": "b"}]},
         ]
 
-    def test_hooks_by_repo(self) -> None:
+    def test_stem(self) -> None:
         """Test method."""
-        hooks = [
-            {"repo": "local", "id": "a"},
-            {"repo": "other", "id": "b"},
-            {"repo": "local", "id": "c"},
-        ]
-        by_repo = VersionControlHookManagerConfigFile.I.hooks_by_repo(hooks)
-        assert list(by_repo) == ["local", "other"]
-        assert by_repo["local"] == [{"id": "a"}, {"id": "c"}]
-        assert by_repo["other"] == [{"id": "b"}]
-        # the "repo" key is consumed, not left behind on each hook
-        assert "repo" not in hooks[0]
+        assert VersionControlHookManagerConfigFile.I.stem() == "prek"
 
     def test_validate(self, mocker: MockerFixture) -> None:
         """Test method."""

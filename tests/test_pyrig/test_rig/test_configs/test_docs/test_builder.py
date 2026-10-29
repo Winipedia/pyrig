@@ -8,15 +8,6 @@ from pyrig.rig.configs.docs.builder import DocsBuilderConfigFile
 class TestDocsBuilderConfigFile:
     """Test class."""
 
-    def test_stem(self) -> None:
-        """Test method."""
-        assert DocsBuilderConfigFile.I.stem() == "zensical"
-
-    def test_parent_path(self) -> None:
-        """Test method."""
-        parent_path = DocsBuilderConfigFile.I.parent_path()
-        assert parent_path == Path()
-
     def test__configs(self) -> None:
         """Test method."""
         configs = DocsBuilderConfigFile.I.configs()
@@ -99,3 +90,12 @@ class TestDocsBuilderConfigFile:
             # API reference.
             "filters": [],
         }
+
+    def test_parent_path(self) -> None:
+        """Test method."""
+        parent_path = DocsBuilderConfigFile.I.parent_path()
+        assert parent_path == Path()
+
+    def test_stem(self) -> None:
+        """Test method."""
+        assert DocsBuilderConfigFile.I.stem() == "zensical"

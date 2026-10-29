@@ -1,6 +1,7 @@
 """Shell script that applies repository configuration via the GitHub CLI."""
 
 from pathlib import Path
+from typing import override
 
 from pyrig.rig.configs.base.shell import ShellConfigFile
 from pyrig.rig.configs.version_control.remote.settings import (
@@ -18,10 +19,17 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     environment variables and is intended to be run directly.
     """
 
+    @override
+    def parent_path(self) -> Path:
+        """Return the `RemoteVersionController`'s config directory."""
+        return RemoteVersionController.I.config_dir()
+
+    @override
     def required_env_vars(self) -> tuple[str, ...]:
         """Return the required names: `GH_TOKEN` and `GITHUB_REPOSITORY`."""
         return ("GH_TOKEN", self.repo_variable())
 
+    @override
     def script(self) -> str:
         """Return the function definitions and the block that runs them.
 
@@ -35,13 +43,24 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
 {self.footer_content()}
 """
 
-    def parent_path(self) -> Path:
-        """Return the `RemoteVersionController`'s config directory."""
-        return RemoteVersionController.I.config_dir()
-
+    @override
     def stem(self) -> str:
         """Return `"configure"`."""
         return "configure"
+
+    def footer_content(self) -> str:
+        """Return the block that runs every function the script defines.
+
+        Placed at the end of the script, after every function is defined,
+        so they all exist by the time this runs. A newly added function
+        needs no corresponding change here to run automatically.
+
+        Returns:
+            Shell code that loops over and calls every defined function.
+        """
+        return """for step in $(declare -F | awk '{print $3}'); do
+  "${step}"
+done"""
 
     def scripts_content(self) -> str:
         """Return the content of all scripts defined in this file.
@@ -61,6 +80,56 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
             self.dependency_security_updates_script(),
         )
 
+    def dependency_alerts_script(self) -> str:
+        """Return the `dependency_alerts` shell function.
+
+        Returns:
+            Function definition that `PUT`s the GitHub API endpoint that
+            enables Dependabot alerts (and the dependency graph) for the
+            repository.
+        """
+        endpoint = f'"repos/${{{self.repo_variable()}}}/vulnerability-alerts"'
+        api_call = RemoteVersionController.I.api_method_args(
+            endpoint=endpoint,
+            method="PUT",
+        )
+        return f"""{self.dependency_alerts_func()}() {{
+  {api_call}
+}}"""
+
+    def dependency_security_updates_script(self) -> str:
+        """Return the `dependency_security_updates` shell function.
+
+        Returns:
+            Function definition that `PUT`s the GitHub API endpoint that
+            enables Dependabot security updates (automated security fixes)
+            for the repository.
+        """
+        endpoint = f'"repos/${{{self.repo_variable()}}}/automated-security-fixes"'
+        api_call = RemoteVersionController.I.api_method_args(
+            endpoint=endpoint,
+            method="PUT",
+        )
+        return f"""{self.dependency_security_updates_func()}() {{
+  {api_call}
+}}"""
+
+    def release_immutability_script(self) -> str:
+        """Return the `release_immutability` shell function as a multi-line string.
+
+        Returns:
+            Function definition that `PUT`s the GitHub API endpoint that
+            enables immutable releases for the repository.
+        """
+        endpoint = f'"repos/${{{self.repo_variable()}}}/immutable-releases"'
+        api_call = RemoteVersionController.I.api_method_args(
+            endpoint=endpoint,
+            method="PUT",
+        )
+        return f"""{self.release_immutability_func()}() {{
+  {api_call}
+}}"""
+
     def repo_script(self) -> str:
         """Return the `repository` shell function as a multi-line string.
 
@@ -79,14 +148,6 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         return f"""{self.repo_func()}() {{
   jq '.{repo_key}' {settings_path} | {api_call}
 }}"""
-
-    def repo_func(self) -> str:
-        """Return `RepositorySettingsConfigFile.I.repo_key()`, the function name.
-
-        Named identically to the settings file key it reads, so both stay
-        in sync automatically.
-        """
-        return RepositorySettingsConfigFile.I.repo_key()
 
     def rulesets_script(self) -> str:
         """Return the `rulesets` shell function as a multi-line string.
@@ -123,6 +184,30 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
   done
 }}"""
 
+    def dependency_alerts_func(self) -> str:
+        """Return `"dependency_alerts"`, the function name."""
+        return "dependency_alerts"
+
+    def dependency_security_updates_func(self) -> str:
+        """Return `"dependency_security_updates"`, the function name."""
+        return "dependency_security_updates"
+
+    def release_immutability_func(self) -> str:
+        """Return `"release_immutability"`, the function name."""
+        return "release_immutability"
+
+    def repo_func(self) -> str:
+        """Return `RepositorySettingsConfigFile.I.repo_key()`, the function name.
+
+        Named identically to the settings file key it reads, so both stay
+        in sync automatically.
+        """
+        return RepositorySettingsConfigFile.I.repo_key()
+
+    def repo_variable(self) -> str:
+        """Return `"GITHUB_REPOSITORY"`, the Actions variable holding `owner/repo`."""
+        return "GITHUB_REPOSITORY"
+
     def rulesets_func(self) -> str:
         """Return `RepositorySettingsConfigFile.I.rulesets_key()`, the function name.
 
@@ -130,83 +215,3 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
         in sync automatically.
         """
         return RepositorySettingsConfigFile.I.rulesets_key()
-
-    def dependency_alerts_script(self) -> str:
-        """Return the `dependency_alerts` shell function.
-
-        Returns:
-            Function definition that `PUT`s the GitHub API endpoint that
-            enables Dependabot alerts (and the dependency graph) for the
-            repository.
-        """
-        endpoint = f'"repos/${{{self.repo_variable()}}}/vulnerability-alerts"'
-        api_call = RemoteVersionController.I.api_method_args(
-            endpoint=endpoint,
-            method="PUT",
-        )
-        return f"""{self.dependency_alerts_func()}() {{
-  {api_call}
-}}"""
-
-    def dependency_alerts_func(self) -> str:
-        """Return `"dependency_alerts"`, the function name."""
-        return "dependency_alerts"
-
-    def dependency_security_updates_script(self) -> str:
-        """Return the `dependency_security_updates` shell function.
-
-        Returns:
-            Function definition that `PUT`s the GitHub API endpoint that
-            enables Dependabot security updates (automated security fixes)
-            for the repository.
-        """
-        endpoint = f'"repos/${{{self.repo_variable()}}}/automated-security-fixes"'
-        api_call = RemoteVersionController.I.api_method_args(
-            endpoint=endpoint,
-            method="PUT",
-        )
-        return f"""{self.dependency_security_updates_func()}() {{
-  {api_call}
-}}"""
-
-    def dependency_security_updates_func(self) -> str:
-        """Return `"dependency_security_updates"`, the function name."""
-        return "dependency_security_updates"
-
-    def release_immutability_script(self) -> str:
-        """Return the `release_immutability` shell function as a multi-line string.
-
-        Returns:
-            Function definition that `PUT`s the GitHub API endpoint that
-            enables immutable releases for the repository.
-        """
-        endpoint = f'"repos/${{{self.repo_variable()}}}/immutable-releases"'
-        api_call = RemoteVersionController.I.api_method_args(
-            endpoint=endpoint,
-            method="PUT",
-        )
-        return f"""{self.release_immutability_func()}() {{
-  {api_call}
-}}"""
-
-    def release_immutability_func(self) -> str:
-        """Return `"release_immutability"`, the function name."""
-        return "release_immutability"
-
-    def footer_content(self) -> str:
-        """Return the block that runs every function the script defines.
-
-        Placed at the end of the script, after every function is defined,
-        so they all exist by the time this runs. A newly added function
-        needs no corresponding change here to run automatically.
-
-        Returns:
-            Shell code that loops over and calls every defined function.
-        """
-        return """for step in $(declare -F | awk '{print $3}'); do
-  "${step}"
-done"""
-
-    def repo_variable(self) -> str:
-        """Return `"GITHUB_REPOSITORY"`, the Actions variable holding `owner/repo`."""
-        return "GITHUB_REPOSITORY"

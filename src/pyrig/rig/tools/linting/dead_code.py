@@ -1,6 +1,6 @@
 """Dead code checker command construction and badge metadata."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
@@ -13,33 +13,7 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class DeadCodeChecker(CheckHookTool):
     """Wrapper for the dead code checker `vulture`."""
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the Shields.io badge URL advertising `vulture`."""
-        return f"https://img.shields.io/badge/dead--code-{self.shield_name()}-blue"
-
-    def link_url(self) -> str:
-        """Return the URL of the `vulture` project page."""
-        return "https://github.com/jendrikseipp/vulture"
-
-    def name(self) -> str:
-        """Return `"vulture"`."""
-        return "vulture"
-
-    def check_args(self, *args: str) -> Args:
-        """Build the `vulture` command.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for running `vulture` with the given arguments.
-        """
-        return self.args(*args)
-
+    @override
     def check_hook(self) -> dict[str, Any]:
         """Return hook metadata for checking dead code.
 
@@ -54,6 +28,38 @@ class DeadCodeChecker(CheckHookTool):
             types=["python"],
             pass_filenames=False,
         )
+
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the Shields.io badge URL advertising `vulture`."""
+        return f"https://img.shields.io/badge/dead--code-{self.shield_name()}-blue"
+
+    @override
+    def link_url(self) -> str:
+        """Return the URL of the `vulture` project page."""
+        return "https://github.com/jendrikseipp/vulture"
+
+    @override
+    def name(self) -> str:
+        """Return `"vulture"`."""
+        return "vulture"
+
+    @override
+    def check_args(self, *args: str) -> Args:
+        """Build the `vulture` command.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for running `vulture` with the given arguments.
+        """
+        return self.args(*args)
 
     def check_dead_code(self) -> Args:
         """Return the `Args` this hook's entry runs.

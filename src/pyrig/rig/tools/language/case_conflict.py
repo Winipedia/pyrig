@@ -1,6 +1,6 @@
 """Wrapper around the check-case-conflict tool."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
@@ -12,42 +12,7 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class CaseConflictChecker(CheckHookTool):
     """Type-safe wrapper for prek's pre-commit-hooks-compatible case checker."""
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the badge image URL for check-case-conflict."""
-        return f"https://img.shields.io/badge/case--conflict-{self.shield_name()}-blue"
-
-    def link_url(self) -> str:
-        """Return the documentation URL for this prek built-in hook."""
-        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
-
-    def name(self) -> str:
-        """Return `"check-case-conflict"`, this tool's CLI command name."""
-        return "check-case-conflict"
-
-    def dev_dependencies(self) -> tuple[str, ...]:
-        """Return no package dependency; prek provides this built-in hook."""
-        return ()
-
-    def check_args(self, *args: str) -> Args:
-        """Construct check-case-conflict arguments.
-
-        Like `check-merge-conflict`, this tool has no autofix mode: two
-        filenames differing only by case have no safe automatic rename,
-        only a report.
-
-        Args:
-            *args: Additional arguments forwarded to `check-case-conflict`,
-                typically the file paths to check.
-
-        Returns:
-            Args for `check-case-conflict`.
-        """
-        return Args(*args)
-
+    @override
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for checking for case-conflicting filenames.
 
@@ -65,6 +30,48 @@ class CaseConflictChecker(CheckHookTool):
                 EndOfFileFormatter.I.format_hook(),
             ),
         )
+
+    @override
+    def dev_dependencies(self) -> tuple[str, ...]:
+        """Return no package dependency; prek provides this built-in hook."""
+        return ()
+
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for check-case-conflict."""
+        return f"https://img.shields.io/badge/case--conflict-{self.shield_name()}-blue"
+
+    @override
+    def link_url(self) -> str:
+        """Return the documentation URL for this prek built-in hook."""
+        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
+
+    @override
+    def name(self) -> str:
+        """Return `"check-case-conflict"`, this tool's CLI command name."""
+        return "check-case-conflict"
+
+    @override
+    def check_args(self, *args: str) -> Args:
+        """Construct check-case-conflict arguments.
+
+        Like `check-merge-conflict`, this tool has no autofix mode: two
+        filenames differing only by case have no safe automatic rename,
+        only a report.
+
+        Args:
+            *args: Additional arguments forwarded to `check-case-conflict`,
+                typically the file paths to check.
+
+        Returns:
+            Args for `check-case-conflict`.
+        """
+        return Args(*args)
 
     def check_case_conflict(self) -> Args:
         """Return arguments for the built-in hook.

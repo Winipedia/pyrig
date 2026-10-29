@@ -1,7 +1,7 @@
 """Configuration for the GitHub dependency bot's version updates."""
 
 from pathlib import Path
-from typing import Any
+from typing import Any, override
 
 from pyrig.rig.configs.base.yaml import YMLDictConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
@@ -15,6 +15,17 @@ class DependencyBotConfigFile(YMLDictConfigFile):
     updated on a weekly schedule.
     """
 
+    @override
+    def parent_path(self) -> Path:
+        """Return the `RemoteVersionController`'s config directory."""
+        return RemoteVersionController.I.dependency_bot_path().parent
+
+    @override
+    def stem(self) -> str:
+        """Return `"dependabot"`, GitHub's required filename stem."""
+        return RemoteVersionController.I.dependency_bot_path().stem
+
+    @override
     def _configs(self) -> dict[str, Any]:
         """Return the required dependency bot configuration."""
         return {
@@ -43,11 +54,3 @@ class DependencyBotConfigFile(YMLDictConfigFile):
             "schedule": schedule,
             "cooldown": cooldown,
         }
-
-    def parent_path(self) -> Path:
-        """Return the `RemoteVersionController`'s config directory."""
-        return RemoteVersionController.I.dependency_bot_path().parent
-
-    def stem(self) -> str:
-        """Return `"dependabot"`, GitHub's required filename stem."""
-        return RemoteVersionController.I.dependency_bot_path().stem

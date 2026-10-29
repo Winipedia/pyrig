@@ -1,6 +1,6 @@
 """Wrapper around the end-of-file-fixer tool."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
@@ -12,38 +12,12 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class EndOfFileFormatter(FormatHookTool):
     """Type-safe wrapper for prek's pre-commit-hooks-compatible EOF fixer."""
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the badge image URL for end-of-file-fixer."""
-        return f"https://img.shields.io/badge/EOF-{self.shield_name()}-orange"
-
-    def link_url(self) -> str:
-        """Return the documentation URL for this prek built-in hook."""
-        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
-
-    def name(self) -> str:
-        """Return `"end-of-file-fixer"`, this tool's CLI command name."""
-        return "end-of-file-fixer"
-
+    @override
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return no package dependency; prek provides this built-in hook."""
         return ()
 
-    def format_args(self, *args: str) -> Args:
-        """Construct end-of-file-fixer arguments.
-
-        Args:
-            *args: Additional arguments forwarded to `end-of-file-fixer`,
-                typically the file paths to fix.
-
-        Returns:
-            Args for `end-of-file-fixer`.
-        """
-        return Args(*args)
-
+    @override
     def format_hook(self) -> dict[str, Any]:
         """Return hook metadata for fixing a file's trailing newline.
 
@@ -56,6 +30,39 @@ class EndOfFileFormatter(FormatHookTool):
                 TrailingWhitespaceFormatter.I.format_hook(),
             ),
         )
+
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for end-of-file-fixer."""
+        return f"https://img.shields.io/badge/EOF-{self.shield_name()}-orange"
+
+    @override
+    def link_url(self) -> str:
+        """Return the documentation URL for this prek built-in hook."""
+        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
+
+    @override
+    def name(self) -> str:
+        """Return `"end-of-file-fixer"`, this tool's CLI command name."""
+        return "end-of-file-fixer"
+
+    @override
+    def format_args(self, *args: str) -> Args:
+        """Construct end-of-file-fixer arguments.
+
+        Args:
+            *args: Additional arguments forwarded to `end-of-file-fixer`,
+                typically the file paths to fix.
+
+        Returns:
+            Args for `end-of-file-fixer`.
+        """
+        return Args(*args)
 
     def end_of_file_fixer(self) -> Args:
         """Return arguments for the built-in hook.

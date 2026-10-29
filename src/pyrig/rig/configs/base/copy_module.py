@@ -9,7 +9,7 @@ import ast
 from abc import abstractmethod
 from pathlib import Path
 from types import ModuleType
-from typing import Self
+from typing import Self, override
 
 from pyrig_runtime.core.introspection.classes import generate_cls
 from pyrig_runtime.core.introspection.modules import replace_root_module_name
@@ -52,6 +52,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             The module to copy.
         """
 
+    @override
     def content(self) -> str:
         """Read the source module's file content.
 
@@ -60,6 +61,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         """
         return module_content(self.copy_module())
 
+    @override
     def parent_path(self) -> Path:
         """Return the directory that will contain the copied module file.
 
@@ -68,6 +70,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         """
         return self.module_path().parent
 
+    @override
     def stem(self) -> str:
         """Return the filename stem for the copied module.
 
@@ -160,6 +163,7 @@ class CopyModuleDocstringConfigFile(CopyModuleConfigFile):
         - `copy_module`: Return the source module whose docstring will be copied.
     """
 
+    @override
     def content(self) -> str:
         """Return the source module's docstring as file content.
 
@@ -178,6 +182,7 @@ class CopyModuleDocstringConfigFile(CopyModuleConfigFile):
         )
         return f"{ast.unparse(module)}\n"
 
+    @override
     def is_correct(self) -> bool:
         """Return `True` if the scaffolded module has a docstring, `False` otherwise."""
         return (

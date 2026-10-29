@@ -8,7 +8,7 @@ from abc import abstractmethod
 from collections.abc import Hashable, Iterator
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Self
+from typing import Any, Self, override
 
 from pyrig_runtime.core.introspection.classes import generate_cls
 
@@ -44,15 +44,18 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             Path to the source file whose test module is managed.
         """
 
-    def mirror_tree(self) -> ast.Module:
-        """Parse and return the source file's syntax tree."""
-        return ast.parse(read_text_utf8(self.mirror_file()))
+    @classmethod
+    @override
+    def discovery_module(cls) -> ModuleType:
+        """Return the `pyrig.rig.tests` package, scoping discovery to mirror tests.
 
-    def test_tree(self) -> ast.Module:
-        """Parse and return the managed test file's syntax tree."""
-        return ast.parse(self.read_content())
+        Returns:
+            The `pyrig.rig.tests` package module.
+        """
+        return tests
 
     @classmethod
+    @override
     def merge_key(cls) -> Hashable:
         """Return the shared merge key for mirror-test configurations.
 
@@ -61,22 +64,16 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         return MirrorTestConfigFile.__name__
 
-    def validate(self) -> bool:
-        """Create the test file if it does not exist before validating.
+    @override
+    def content(self) -> str:
+        """Return the managed test content with missing test skeletons added.
 
         Returns:
-            `True` if neither the file nor its dependencies needed updating once
-            the file existed; otherwise `False`.
+            Test module source ready to be written to disk.
         """
-        if not self.path().exists():
-            self.create_file()
-        return super().validate()
+        return self.test_file_content_with_skeletons()
 
-    def create_file(self) -> None:
-        """Create the test file with its default module docstring."""
-        super().create_file()
-        self.write_content(self.test_module_docstring())
-
+    @override
     def is_correct(self) -> bool:
         """Check whether each eligible source function and method has a test name.
 
@@ -99,14 +96,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             )
         )
 
-    def content(self) -> str:
-        """Return the managed test content with missing test skeletons added.
-
-        Returns:
-            Test module source ready to be written to disk.
-        """
-        return self.test_file_content_with_skeletons()
-
+    @override
     def merge_configs(self) -> list[Any]:
         """Return the required test module lines without merging in the file's lines.
 
@@ -118,14 +108,12 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         return self.configs()
 
-    def package_root(self) -> Path:
-        """Return the root directory of the tests package."""
-        return ProjectTester.I.package_root()
-
+    @override
     def parent_path(self) -> Path:
         """Return the directory where the test file lives."""
         return self.test_path().parent
 
+    @override
     def stem(self) -> str:
         """Return the test file's base name without its extension.
 
@@ -134,14 +122,28 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         return self.test_path().stem
 
-    @classmethod
-    def discovery_module(cls) -> ModuleType:
-        """Return the `pyrig.rig.tests` package, scoping discovery to mirror tests.
+    @override
+    def validate(self) -> bool:
+        """Create the test file if it does not exist before validating.
 
         Returns:
-            The `pyrig.rig.tests` package module.
+            `True` if neither the file nor its dependencies needed updating once
+            the file existed; otherwise `False`.
         """
-        return tests
+        if not self.path().exists():
+            self.create_file()
+        return super().validate()
+
+    @override
+    def create_file(self) -> None:
+        """Create the test file with its default module docstring."""
+        super().create_file()
+        self.write_content(self.test_module_docstring())
+
+    @override
+    def package_root(self) -> Path:
+        """Return the root directory of the tests package."""
+        return ProjectTester.I.package_root()
 
     @classmethod
     def generate_subclass(cls, file: Path) -> type[Self]:
@@ -173,21 +175,6 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             methods=(mirror_file,),
         )
 
-    def test_path(self) -> Path:
-        """Return the test file path corresponding to the source file.
-
-        Returns:
-            Path under the test package root.
-        """
-        return self.package_root() / Path(
-            *(
-                self.test_module_prefix() + part
-                for part in self.mirror_file()
-                .relative_to(PackageManager.I.source_root())
-                .parts
-            ),
-        )
-
     def test_file_content_with_skeletons(self) -> str:
         """Add missing test skeletons to the existing test module content.
 
@@ -207,67 +194,24 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             test_tree=test_tree,
         )
 
-    def test_file_content_with_func_skeletons(
-        self,
-        test_file_content: str,
-        mirror_tree: ast.Module,
-        test_tree: ast.Module,
-    ) -> str:
-        """Append stubs for source functions without matching test names.
-
-        Args:
-            test_file_content: Existing test module content to extend.
-            mirror_tree: Syntax tree of the source module.
-            test_tree: Syntax tree of the test module.
+    def test_path(self) -> Path:
+        """Return the test file path corresponding to the source file.
 
         Returns:
-            Test module content with the missing function stubs appended.
+            Path under the test package root.
         """
-        return test_file_content + "".join(
-            self.test_func_skeleton(name)
-            for name in self.untested_func_names(
-                mirror_tree=mirror_tree,
-                test_tree=test_tree,
-            )
+        return self.package_root() / Path(
+            *(
+                self.test_module_prefix() + part
+                for part in self.mirror_file()
+                .relative_to(PackageManager.I.source_root())
+                .parts
+            ),
         )
 
-    def untested_func_names(
-        self,
-        mirror_tree: ast.Module,
-        test_tree: ast.Module,
-    ) -> Iterator[str]:
-        """Yield test names missing for module-level source functions.
-
-        Args:
-            mirror_tree: Syntax tree of the source module.
-            test_tree: Syntax tree of the test module.
-
-        Yields:
-            Expected test function names in source definition order.
-        """
-        funcs = func_definitions(mirror_tree)
-        test_funcs = func_definitions(test_tree)
-
-        supposed_test_func_names = deduplicate(self.test_func_name(f) for f in funcs)
-        actual_test_func_names = {f.name for f in test_funcs}
-
-        return (f for f in supposed_test_func_names if f not in actual_test_func_names)
-
-    def test_func_skeleton(self, test_func_name: str) -> str:
-        """Build a test function stub that raises `NotImplementedError`.
-
-        Args:
-            test_func_name: Name for the test function (e.g., `"test_my_func"`).
-
-        Returns:
-            Python source code for the skeleton test function.
-        """
-        return f'''
-
-def {test_func_name}() -> None:
-    """Test function."""
-    raise {NotImplementedError.__name__}
-'''
+    def mirror_tree(self) -> ast.Module:
+        """Parse and return the source file's syntax tree."""
+        return ast.parse(read_text_utf8(self.mirror_file()))
 
     def test_file_content_with_cls_skeletons(
         self,
@@ -314,6 +258,89 @@ def {test_func_name}() -> None:
             test_file_content += test_cls_content
 
         return test_file_content
+
+    def test_file_content_with_func_skeletons(
+        self,
+        test_file_content: str,
+        mirror_tree: ast.Module,
+        test_tree: ast.Module,
+    ) -> str:
+        """Append stubs for source functions without matching test names.
+
+        Args:
+            test_file_content: Existing test module content to extend.
+            mirror_tree: Syntax tree of the source module.
+            test_tree: Syntax tree of the test module.
+
+        Returns:
+            Test module content with the missing function stubs appended.
+        """
+        return test_file_content + "".join(
+            self.test_func_skeleton(name)
+            for name in self.untested_func_names(
+                mirror_tree=mirror_tree,
+                test_tree=test_tree,
+            )
+        )
+
+    def test_module_docstring(self) -> str:
+        """Return the default test module docstring with a trailing newline."""
+        return '"""Test module."""\n'
+
+    def test_module_prefix(self) -> str:
+        """Return `"test_"`, the prefix used for test module names."""
+        return "test_"
+
+    def test_tree(self) -> ast.Module:
+        """Parse and return the managed test file's syntax tree."""
+        return ast.parse(self.read_content())
+
+    def test_cls_skeleton(self, test_cls_name: str) -> str:
+        """Build a test class stub.
+
+        Args:
+            test_cls_name: Name for the test class (e.g., `"TestMyClass"`).
+
+        Returns:
+            Python source code for the skeleton test class definition.
+        """
+        return f'''
+
+class {test_cls_name}:
+    """Test class."""
+'''
+
+    def test_func_skeleton(self, test_func_name: str) -> str:
+        """Build a test function stub that raises `NotImplementedError`.
+
+        Args:
+            test_func_name: Name for the test function (e.g., `"test_my_func"`).
+
+        Returns:
+            Python source code for the skeleton test function.
+        """
+        return f'''
+
+def {test_func_name}() -> None:
+    """Test function."""
+    raise {NotImplementedError.__name__}
+'''
+
+    def test_method_skeleton(self, test_method_name: str) -> str:
+        """Build a test method stub that raises `NotImplementedError`.
+
+        Args:
+            test_method_name: Name for the test method (e.g., `"test_my_method"`).
+
+        Returns:
+            Python source code for the skeleton test method, indented for
+            placement inside a class body.
+        """
+        return f'''
+    def {test_method_name}(self) -> None:
+        """Test method."""
+        raise {NotImplementedError.__name__}
+'''
 
     def untested_cls_and_method_names(
         self,
@@ -398,47 +425,27 @@ def {test_func_name}() -> None:
                 test_cls_source,
             )
 
-    def test_cls_skeleton(self, test_cls_name: str) -> str:
-        """Build a test class stub.
+    def untested_func_names(
+        self,
+        mirror_tree: ast.Module,
+        test_tree: ast.Module,
+    ) -> Iterator[str]:
+        """Yield test names missing for module-level source functions.
 
         Args:
-            test_cls_name: Name for the test class (e.g., `"TestMyClass"`).
+            mirror_tree: Syntax tree of the source module.
+            test_tree: Syntax tree of the test module.
 
-        Returns:
-            Python source code for the skeleton test class definition.
+        Yields:
+            Expected test function names in source definition order.
         """
-        return f'''
+        funcs = func_definitions(mirror_tree)
+        test_funcs = func_definitions(test_tree)
 
-class {test_cls_name}:
-    """Test class."""
-'''
+        supposed_test_func_names = deduplicate(self.test_func_name(f) for f in funcs)
+        actual_test_func_names = {f.name for f in test_funcs}
 
-    def test_method_skeleton(self, test_method_name: str) -> str:
-        """Build a test method stub that raises `NotImplementedError`.
-
-        Args:
-            test_method_name: Name for the test method (e.g., `"test_my_method"`).
-
-        Returns:
-            Python source code for the skeleton test method, indented for
-            placement inside a class body.
-        """
-        return f'''
-    def {test_method_name}(self) -> None:
-        """Test method."""
-        raise {NotImplementedError.__name__}
-'''
-
-    def test_func_name(self, func: ast.FunctionDef | ast.AsyncFunctionDef) -> str:
-        """Return the expected test function name for a given source function.
-
-        Args:
-            func: Source function whose test name to derive.
-
-        Returns:
-            Test function name (e.g., `"test_my_func"` for `my_func`).
-        """
-        return self.test_func_prefix() + func.name
+        return (f for f in supposed_test_func_names if f not in actual_test_func_names)
 
     def test_cls_name(self, cls: ast.ClassDef) -> str:
         """Return the expected test class name for a given source class.
@@ -451,18 +458,21 @@ class {test_cls_name}:
         """
         return self.test_cls_prefix() + cls.name
 
-    def test_func_prefix(self) -> str:
-        """Return `"test_"`, the prefix used for test function names."""
-        return "test_"
+    def test_func_name(self, func: ast.FunctionDef | ast.AsyncFunctionDef) -> str:
+        """Return the expected test function name for a given source function.
+
+        Args:
+            func: Source function whose test name to derive.
+
+        Returns:
+            Test function name (e.g., `"test_my_func"` for `my_func`).
+        """
+        return self.test_func_prefix() + func.name
 
     def test_cls_prefix(self) -> str:
         """Return `"Test"`, the prefix used for test class names."""
         return "Test"
 
-    def test_module_prefix(self) -> str:
-        """Return `"test_"`, the prefix used for test module names."""
+    def test_func_prefix(self) -> str:
+        """Return `"test_"`, the prefix used for test function names."""
         return "test_"
-
-    def test_module_docstring(self) -> str:
-        """Return the default test module docstring with a trailing newline."""
-        return '"""Test module."""\n'

@@ -1,7 +1,7 @@
 """Base classes for managing YAML configuration files."""
 
 from functools import cache
-from typing import Any
+from typing import Any, override
 
 from ruamel.yaml import YAML, CommentedMap
 from ruamel.yaml.emitter import Emitter as BaseEmitter
@@ -98,6 +98,12 @@ class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
         ...         return {"name": "My Workflow", "on": ["push", "pull_request"]}
     """
 
+    @override
+    def extension(self) -> str:
+        """Return `"yaml"`, the fixed extension for YAML files."""
+        return "yaml"
+
+    @override
     def _dump(self, configs: ConfigT) -> None:
         """Write configuration to the YAML file, preserving key order.
 
@@ -107,22 +113,10 @@ class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
         with open_path_with_utf8(self.path(), mode="w") as f:
             self.dumper().dump(configs, f)
 
+    @override
     def _load(self) -> ConfigT:
         """Read and parse the YAML file from disk, returning a dict or list."""
         return self.loader().load(read_text_utf8(self.path()))
-
-    def extension(self) -> str:
-        """Return `"yaml"`, the fixed extension for YAML files."""
-        return "yaml"
-
-    @staticmethod
-    @cache
-    def loader() -> YAML:
-        """Custom YAML loader.
-
-        Is cached globally to avoid repeated instantiation of the YAML loader.
-        """
-        return YAML(typ="safe")
 
     @staticmethod
     @cache
@@ -139,6 +133,15 @@ class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
         yaml.compact_seq_map = False
         yaml.representer.add_representer(str, represent_str)
         return yaml
+
+    @staticmethod
+    @cache
+    def loader() -> YAML:
+        """Custom YAML loader.
+
+        Is cached globally to avoid repeated instantiation of the YAML loader.
+        """
+        return YAML(typ="safe")
 
 
 def represent_str(representer: RoundTripRepresenter, data: str) -> ScalarNode:
@@ -167,7 +170,8 @@ class Emitter(BaseEmitter):
 
     NO_COLUMN = -1
 
-    def write_comment(self, comment: CommentToken, pre: bool = False) -> None:  # noqa: FBT001, FBT002
+    @override
+    def write_comment(self, comment: CommentToken, pre: bool = False) -> None:
         """Write a comment, resolving `NO_COLUMN` to the current indentation.
 
         Comments whose column is `NO_COLUMN` are written at the emitter's
@@ -194,6 +198,7 @@ class YMLConfigFile[ConfigT: dict[str, Any] | list[Any]](YAMLConfigFile[ConfigT]
     Subclasses must implement `parent_path()`, `stem()`, and `_configs()`.
     """
 
+    @override
     def extension(self) -> str:
         """Return `"yml"`."""
         return "yml"

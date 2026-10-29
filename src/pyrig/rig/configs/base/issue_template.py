@@ -1,6 +1,7 @@
 """Abstract base class for GitHub issue template configuration files."""
 
 from pathlib import Path
+from typing import override
 
 from pyrig.rig.configs.base.yaml import YMLDictConfigFile
 from pyrig.rig.tools.version_control.remote.controller import (
@@ -28,6 +29,7 @@ class IssueTemplateConfigFile(YMLDictConfigFile):
         ...         return {"name": "My Template", "description": "..."}
     """
 
+    @override
     def parent_path(self) -> Path:
         """Return the GitHub issue template directory."""
         return RemoteVersionController.I.config_dir() / "ISSUE_TEMPLATE"

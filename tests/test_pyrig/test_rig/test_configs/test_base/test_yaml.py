@@ -3,7 +3,7 @@
 import io
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, override
 
 import pytest
 from ruamel.yaml.comments import CommentedMap
@@ -89,16 +89,6 @@ class TestEmitter:
 class TestYAMLConfigFile:
     """Test class."""
 
-    def test__load(
-        self,
-        my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
-    ) -> None:
-        """Test method."""
-        my_test_yaml_config_file().validate()
-        expected = {"key": "value"}
-        actual = my_test_yaml_config_file().load()
-        assert actual == expected, f"Expected {expected}, got {actual}"
-
     def test__dump(
         self,
         my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
@@ -121,6 +111,30 @@ class TestYAMLConfigFile:
         assert '"key": |-' in content, "Expected a literal block scalar"
         assert config_file.load() == {"key": value}, "Expected round-trip to work"
 
+    def test__load(
+        self,
+        my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test method."""
+        my_test_yaml_config_file().validate()
+        expected = {"key": "value"}
+        actual = my_test_yaml_config_file().load()
+        assert actual == expected, f"Expected {expected}, got {actual}"
+
+    def test_dumper(
+        self,
+        my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
+    ) -> None:
+        """Test method."""
+        config_file = my_test_yaml_config_file()
+        assert my_test_yaml_config_file.dumper() is my_test_yaml_config_file.dumper()
+        assert config_file.dumper() is my_test_yaml_config_file().dumper()
+        assert config_file.dumper() is my_test_yaml_config_file.dumper()
+        assert config_file.dumper() is YAMLConfigFile.dumper()
+        buffer = io.StringIO()
+        config_file.dumper().dump({"key": "value"}, buffer)
+        assert buffer.getvalue() == '---\n"key": "value"\n...\n'
+
     def test_extension(
         self,
         my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
@@ -139,20 +153,6 @@ class TestYAMLConfigFile:
         assert config_file.loader() is my_test_yaml_config_file.loader()
         assert config_file.loader() is YAMLConfigFile.loader()
         assert config_file.loader().load('"on": ["push"]') == {"on": ["push"]}
-
-    def test_dumper(
-        self,
-        my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
-    ) -> None:
-        """Test method."""
-        config_file = my_test_yaml_config_file()
-        assert my_test_yaml_config_file.dumper() is my_test_yaml_config_file.dumper()
-        assert config_file.dumper() is my_test_yaml_config_file().dumper()
-        assert config_file.dumper() is my_test_yaml_config_file.dumper()
-        assert config_file.dumper() is YAMLConfigFile.dumper()
-        buffer = io.StringIO()
-        config_file.dumper().dump({"key": "value"}, buffer)
-        assert buffer.getvalue() == '---\n"key": "value"\n...\n'
 
 
 class TestYMLConfigFile:
@@ -181,18 +181,22 @@ def my_test_yaml_config_file(
     class MyTestYAMLConfigFile(config_file_factory(YAMLConfigFile)):  # ty: ignore[unsupported-base]
         """Test yaml config file with tmp_path override."""
 
+        @override
         def parent_path(self) -> Path:
             """Get the path to the config file."""
             return Path()
 
+        @override
         def stem(self) -> str:
             """Get the stem."""
             return "test_yaml"
 
+        @override
         def empty_configs(self) -> dict[str, Any]:
             """Get the empty config."""
             return {}
 
+        @override
         def _configs(self) -> dict[str, Any]:
             """Get the config."""
             return {"key": "value"}

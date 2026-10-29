@@ -4,6 +4,7 @@ Manages SECURITY.md, the project's vulnerability-reporting policy.
 """
 
 from pathlib import Path
+from typing import override
 
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
@@ -21,6 +22,7 @@ class SecurityConfigFile(MarkdownConfigFile):
     fill it in by hand.
     """
 
+    @override
     def content(self) -> str:
         """Return the complete security policy text.
 
@@ -39,28 +41,33 @@ class SecurityConfigFile(MarkdownConfigFile):
 {self.safe_harbor_section()}
 """
 
+    @override
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
         return Path()
 
+    @override
     def stem(self) -> str:
         """Return the filename stem `"SECURITY"`."""
         return "SECURITY"
 
-    def supported_versions_section(self) -> str:
-        """Return the section stating which versions receive security fixes.
+    def expectations_section(self) -> str:
+        """Return the section describing what happens after a report is filed.
 
-        Framed as prose rather than a version table, since pyrig-based
-        projects use continuous single-branch versioning with no
-        maintained-branch/backport policy to tabulate.
+        Deliberately minimal and free of any concrete commitment — no
+        response time, fix-by date, disclosure-timing coordination, or
+        credit policy — since a generated default can't know what's
+        sustainable for whoever ends up maintaining a given downstream
+        project. A project that wants firmer guarantees can subclass and
+        override this method.
 
         Returns:
-            The `## Supported Versions` section.
+            The `## What to Expect` section.
         """
-        return """## Supported Versions
+        return """## What to Expect
 
-Only the latest released version receives security fixes. Please upgrade
-before reporting, or mention your version if you can't."""
+- We will acknowledge your report as soon as possible.
+- We will investigate and work on a fix."""
 
     def reporting_section(self) -> str:
         """Return the section describing where and how to report a vulnerability.
@@ -94,32 +101,6 @@ Please include:
 This covers vulnerabilities in this project's own code. For a dependency,
 please report to that project directly."""
 
-    def reporting_method(self) -> str:
-        """Return the method used for reporting a vulnerability.
-
-        Returns:
-            The reporting method as a string.
-        """
-        return f"<{PyprojectConfigFile.I.maintainer_email()}>"
-
-    def expectations_section(self) -> str:
-        """Return the section describing what happens after a report is filed.
-
-        Deliberately minimal and free of any concrete commitment — no
-        response time, fix-by date, disclosure-timing coordination, or
-        credit policy — since a generated default can't know what's
-        sustainable for whoever ends up maintaining a given downstream
-        project. A project that wants firmer guarantees can subclass and
-        override this method.
-
-        Returns:
-            The `## What to Expect` section.
-        """
-        return """## What to Expect
-
-- We will acknowledge your report as soon as possible.
-- We will investigate and work on a fix."""
-
     def safe_harbor_section(self) -> str:
         """Return the safe-harbor statement for good-faith security research.
 
@@ -131,3 +112,26 @@ please report to that project directly."""
 Security research conducted in good faith, following this policy, and
 without harming users, data, or service availability, is authorized. We
 will not pursue legal action for reports that comply with this policy."""
+
+    def supported_versions_section(self) -> str:
+        """Return the section stating which versions receive security fixes.
+
+        Framed as prose rather than a version table, since pyrig-based
+        projects use continuous single-branch versioning with no
+        maintained-branch/backport policy to tabulate.
+
+        Returns:
+            The `## Supported Versions` section.
+        """
+        return """## Supported Versions
+
+Only the latest released version receives security fixes. Please upgrade
+before reporting, or mention your version if you can't."""
+
+    def reporting_method(self) -> str:
+        """Return the method used for reporting a vulnerability.
+
+        Returns:
+            The reporting method as a string.
+        """
+        return f"<{PyprojectConfigFile.I.maintainer_email()}>"

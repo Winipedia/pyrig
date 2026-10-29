@@ -1,7 +1,7 @@
 """Base class for managing TOML configuration files."""
 
 import tomllib
-from typing import Any
+from typing import Any, override
 
 import tomli_w
 
@@ -12,6 +12,12 @@ from pyrig.rig.configs.base.config_file import DictConfigFile
 class TOMLConfigFile(DictConfigFile):
     """Base class for TOML configuration files."""
 
+    @override
+    def extension(self) -> str:
+        """Return `"toml"`."""
+        return "toml"
+
+    @override
     def _dump(self, configs: dict[str, Any]) -> None:
         """Write configuration to the TOML file via `pretty_dump()`.
 
@@ -20,6 +26,7 @@ class TOMLConfigFile(DictConfigFile):
         """
         self.pretty_dump(configs)
 
+    @override
     def _load(self) -> dict[str, Any]:
         """Read and parse the TOML file.
 
@@ -27,10 +34,6 @@ class TOMLConfigFile(DictConfigFile):
             Parsed content as a plain dict.
         """
         return tomllib.loads(read_text_utf8(self.path()))
-
-    def extension(self) -> str:
-        """Return `"toml"`."""
-        return "toml"
 
     def pretty_dump(self, configs: dict[str, Any]) -> None:
         """Write configuration to the TOML file using `tomli_w`.

@@ -35,6 +35,36 @@ class Args(tuple[str, ...]):
         """Create an `Args` instance from individual command-line tokens."""
         return super().__new__(cls, args)
 
+    def __getnewargs__(self) -> tuple[str, ...]:
+        """Return the constructor arguments used to rebuild this instance.
+
+        `copy.copy`, `copy.deepcopy`, and `pickle` reconstruct immutable objects
+        by calling `Args(*result)`. The inherited `tuple.__getnewargs__` wraps the
+        tokens in a single tuple to match `tuple.__new__`, but `__new__` takes the
+        tokens as varargs, so the tokens must be returned unwrapped instead.
+
+        Returns:
+            The individual tokens, so `Args(*tokens)` rebuilds this instance.
+        """
+        return tuple(self)
+
+    def __str__(self) -> str:
+        """Return the command as a single space-separated string."""
+        return " ".join(self)
+
+    def multiline(self) -> str:
+        r"""Return the command as a backslash-continued, multiline string.
+
+        Each token gets its own line, joined by a trailing backslash. Unlike
+        `__str__`, which is the right default for a short command, this suits
+        printing or writing a long command to a shell script, where a single
+        space-separated line would run off the screen.
+
+        Returns:
+            The tokens joined by `" \\\n"`.
+        """
+        return " \\\n".join(self)
+
     def run(self, *args: str, check: bool = True) -> subprocess.CompletedProcess[Any]:
         """Execute the command with any extra positional arguments appended.
 
@@ -72,36 +102,6 @@ class Args(tuple[str, ...]):
                 command exits with a non-zero return code.
         """
         return run_subprocess_cached(*self, *args, check=check)
-
-    def multiline(self) -> str:
-        r"""Return the command as a backslash-continued, multiline string.
-
-        Each token gets its own line, joined by a trailing backslash. Unlike
-        `__str__`, which is the right default for a short command, this suits
-        printing or writing a long command to a shell script, where a single
-        space-separated line would run off the screen.
-
-        Returns:
-            The tokens joined by `" \\\n"`.
-        """
-        return " \\\n".join(self)
-
-    def __str__(self) -> str:
-        """Return the command as a single space-separated string."""
-        return " ".join(self)
-
-    def __getnewargs__(self) -> tuple[str, ...]:
-        """Return the constructor arguments used to rebuild this instance.
-
-        `copy.copy`, `copy.deepcopy`, and `pickle` reconstruct immutable objects
-        by calling `Args(*result)`. The inherited `tuple.__getnewargs__` wraps the
-        tokens in a single tuple to match `tuple.__new__`, but `__new__` takes the
-        tokens as varargs, so the tokens must be returned unwrapped instead.
-
-        Returns:
-            The individual tokens, so `Args(*tokens)` rebuilds this instance.
-        """
-        return tuple(self)
 
 
 @cache

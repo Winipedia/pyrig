@@ -1,6 +1,6 @@
 """Wrapper around the pretty-format-json JSON formatter tool."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
@@ -12,38 +12,12 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class JSONFormatter(FormatHookTool):
     """Type-safe wrapper for the pretty-format-json JSON formatter."""
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the badge image URL for pretty-format-json."""
-        return f"https://img.shields.io/badge/JSON-{self.shield_name()}-orange"
-
-    def link_url(self) -> str:
-        """Return the documentation URL for this prek built-in hook."""
-        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
-
-    def name(self) -> str:
-        """Return `"pretty-format-json"`, this tool's CLI command name."""
-        return "pretty-format-json"
-
+    @override
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return no package dependency; prek provides this built-in hook."""
         return ()
 
-    def format_args(self, *args: str) -> Args:
-        """Construct pretty-format-json arguments.
-
-        Args:
-            *args: Additional arguments forwarded to `pretty-format-json`,
-                typically the file paths to format.
-
-        Returns:
-            Args for `pretty-format-json`.
-        """
-        return Args("--autofix", "--no-ensure-ascii", "--no-sort-keys", *args)
-
+    @override
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for formatting JSON files.
 
@@ -68,6 +42,39 @@ class JSONFormatter(FormatHookTool):
                 SecretsChecker.I.check_hook(),
             ),
         )
+
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for pretty-format-json."""
+        return f"https://img.shields.io/badge/JSON-{self.shield_name()}-orange"
+
+    @override
+    def link_url(self) -> str:
+        """Return the documentation URL for this prek built-in hook."""
+        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
+
+    @override
+    def name(self) -> str:
+        """Return `"pretty-format-json"`, this tool's CLI command name."""
+        return "pretty-format-json"
+
+    @override
+    def format_args(self, *args: str) -> Args:
+        """Construct pretty-format-json arguments.
+
+        Args:
+            *args: Additional arguments forwarded to `pretty-format-json`,
+                typically the file paths to format.
+
+        Returns:
+            Args for `pretty-format-json`.
+        """
+        return Args("--autofix", "--no-ensure-ascii", "--no-sort-keys", *args)
 
     def pretty_format_json(self) -> Args:
         """Return arguments for the built-in hook.

@@ -1,6 +1,6 @@
 """Wrapper around the check-added-large-files tool."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
@@ -12,41 +12,7 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class LargeFileChecker(CheckHookTool):
     """Type-safe wrapper for prek's pre-commit-hooks-compatible large file check."""
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the badge image URL for check-added-large-files."""
-        return f"https://img.shields.io/badge/large--files-{self.shield_name()}-blue"
-
-    def link_url(self) -> str:
-        """Return the documentation URL for this prek built-in hook."""
-        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
-
-    def name(self) -> str:
-        """Return `"check-added-large-files"`, this tool's CLI command name."""
-        return "check-added-large-files"
-
-    def dev_dependencies(self) -> tuple[str, ...]:
-        """Return no package dependency; prek provides this built-in hook."""
-        return ()
-
-    def check_args(self, *args: str) -> Args:
-        """Construct check-added-large-files arguments.
-
-        Like `check-merge-conflict`, this tool has no autofix mode: an
-        oversized file has no safe automatic remedy, only a report.
-
-        Args:
-            *args: Additional arguments forwarded to
-                `check-added-large-files`, typically the file paths to check.
-
-        Returns:
-            Args for `check-added-large-files`.
-        """
-        return Args("--enforce-all", *args)
-
+    @override
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for checking for accidentally added large files.
 
@@ -64,6 +30,47 @@ class LargeFileChecker(CheckHookTool):
                 EndOfFileFormatter.I.format_hook(),
             ),
         )
+
+    @override
+    def dev_dependencies(self) -> tuple[str, ...]:
+        """Return no package dependency; prek provides this built-in hook."""
+        return ()
+
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for check-added-large-files."""
+        return f"https://img.shields.io/badge/large--files-{self.shield_name()}-blue"
+
+    @override
+    def link_url(self) -> str:
+        """Return the documentation URL for this prek built-in hook."""
+        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
+
+    @override
+    def name(self) -> str:
+        """Return `"check-added-large-files"`, this tool's CLI command name."""
+        return "check-added-large-files"
+
+    @override
+    def check_args(self, *args: str) -> Args:
+        """Construct check-added-large-files arguments.
+
+        Like `check-merge-conflict`, this tool has no autofix mode: an
+        oversized file has no safe automatic remedy, only a report.
+
+        Args:
+            *args: Additional arguments forwarded to
+                `check-added-large-files`, typically the file paths to check.
+
+        Returns:
+            Args for `check-added-large-files`.
+        """
+        return Args("--enforce-all", *args)
 
     def check_added_large_files(self) -> Args:
         """Return arguments for the built-in hook.

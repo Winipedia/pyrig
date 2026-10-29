@@ -1,6 +1,6 @@
 """CLI tool wrapper for spell checking source code and documentation."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
@@ -17,33 +17,7 @@ class SpellChecker(CheckHookTool):
     spelling mistakes in source code, comments, and documentation.
     """
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the badge image URL for `typos`."""
-        return f"https://img.shields.io/badge/spell--check-{self.shield_name()}-blue"
-
-    def link_url(self) -> str:
-        """Return the URL of the `typos` project page."""
-        return "https://github.com/crate-ci/typos"
-
-    def name(self) -> str:
-        """Return `'typos'`."""
-        return "typos"
-
-    def check_args(self, *args: str) -> Args:
-        """Construct `typos` arguments.
-
-        Args:
-            *args: Additional arguments forwarded to `typos`.
-
-        Returns:
-            Args for `typos [args]`.
-        """
-        return self.args(*args)
-
+    @override
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for fixing spelling mistakes.
 
@@ -61,6 +35,38 @@ class SpellChecker(CheckHookTool):
             types=["text"],
             args=Args("--write-changes"),
         )
+
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for `typos`."""
+        return f"https://img.shields.io/badge/spell--check-{self.shield_name()}-blue"
+
+    @override
+    def link_url(self) -> str:
+        """Return the URL of the `typos` project page."""
+        return "https://github.com/crate-ci/typos"
+
+    @override
+    def name(self) -> str:
+        """Return `'typos'`."""
+        return "typos"
+
+    @override
+    def check_args(self, *args: str) -> Args:
+        """Construct `typos` arguments.
+
+        Args:
+            *args: Additional arguments forwarded to `typos`.
+
+        Returns:
+            Args for `typos [args]`.
+        """
+        return self.args(*args)
 
     def fix_spelling(self) -> Args:
         """Return the `Args` this hook's entry runs.

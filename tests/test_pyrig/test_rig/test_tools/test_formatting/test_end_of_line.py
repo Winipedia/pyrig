@@ -7,31 +7,6 @@ from pyrig.rig.tools.language.spelling import SpellChecker
 class TestEndOfLineFormatter:
     """Test class."""
 
-    def test_group(self) -> None:
-        """Test method."""
-        result = EndOfLineFormatter.I.group()
-        assert isinstance(result, str)
-        assert result == "code-quality"
-
-    def test_image_url(self) -> None:
-        """Test method."""
-        assert (
-            EndOfLineFormatter.I.image_url()
-            == "https://img.shields.io/badge/EOL-mixed--line--ending-orange"
-        )
-
-    def test_link_url(self) -> None:
-        """Test method."""
-        assert (
-            EndOfLineFormatter.I.link_url()
-            == "https://prek.j178.dev/reference/built-in-hooks/#mixed-line-ending"
-        )
-
-    def test_name(self) -> None:
-        """Test method."""
-        result = EndOfLineFormatter.I.name()
-        assert result == "mixed-line-ending"
-
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = EndOfLineFormatter.I.dev_dependencies()
@@ -52,6 +27,31 @@ class TestEndOfLineFormatter:
         assert hook["priority"] > spelling_hook["priority"]
         assert hook["args"] == ["--fix=lf"]
 
+    def test_group(self) -> None:
+        """Test method."""
+        result = EndOfLineFormatter.I.group()
+        assert isinstance(result, str)
+        assert result == "code-quality"
+
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            EndOfLineFormatter.I.image_url()
+            == "https://img.shields.io/badge/EOL-mixed--line--ending-orange"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert (
+            EndOfLineFormatter.I.link_url()
+            == "https://prek.j178.dev/reference/built-in-hooks/#mixed-line-ending"
+        )
+
     def test_mixed_line_ending(self) -> None:
         """Test method."""
         assert EndOfLineFormatter.I.mixed_line_ending() == ("--fix=lf",)
+
+    def test_name(self) -> None:
+        """Test method."""
+        result = EndOfLineFormatter.I.name()
+        assert result == "mixed-line-ending"

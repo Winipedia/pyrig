@@ -1,6 +1,6 @@
 """Wrapper around the fix-byte-order-marker tool."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
@@ -12,38 +12,12 @@ from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookMana
 class ByteOrderMarkerFormatter(FormatHookTool):
     """Type-safe wrapper for prek's pre-commit-hooks-compatible BOM fixer."""
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the badge image URL for fix-byte-order-marker."""
-        return f"https://img.shields.io/badge/BOM-{self.shield_name()}-orange"
-
-    def link_url(self) -> str:
-        """Return the documentation URL for this prek built-in hook."""
-        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
-
-    def name(self) -> str:
-        """Return `"fix-byte-order-marker"`, this tool's CLI command name."""
-        return "fix-byte-order-marker"
-
+    @override
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return no package dependency; prek provides this built-in hook."""
         return ()
 
-    def format_args(self, *args: str) -> Args:
-        """Construct fix-byte-order-marker arguments.
-
-        Args:
-            *args: Additional arguments forwarded to `fix-byte-order-marker`,
-                typically the file paths to fix.
-
-        Returns:
-            Args for `fix-byte-order-marker`.
-        """
-        return Args(*args)
-
+    @override
     def format_hook(self) -> dict[str, Any]:
         """Return the hook metadata for stripping a leading byte-order mark.
 
@@ -62,6 +36,39 @@ class ByteOrderMarkerFormatter(FormatHookTool):
                 Pyrigger.I.synchronize_project_hook(),
             ),
         )
+
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for fix-byte-order-marker."""
+        return f"https://img.shields.io/badge/BOM-{self.shield_name()}-orange"
+
+    @override
+    def link_url(self) -> str:
+        """Return the documentation URL for this prek built-in hook."""
+        return f"https://prek.j178.dev/reference/built-in-hooks/#{self.name()}"
+
+    @override
+    def name(self) -> str:
+        """Return `"fix-byte-order-marker"`, this tool's CLI command name."""
+        return "fix-byte-order-marker"
+
+    @override
+    def format_args(self, *args: str) -> Args:
+        """Construct fix-byte-order-marker arguments.
+
+        Args:
+            *args: Additional arguments forwarded to `fix-byte-order-marker`,
+                typically the file paths to fix.
+
+        Returns:
+            Args for `fix-byte-order-marker`.
+        """
+        return Args(*args)
 
     def fix_byte_order_marker(self) -> Args:
         """Return arguments for the built-in hook.

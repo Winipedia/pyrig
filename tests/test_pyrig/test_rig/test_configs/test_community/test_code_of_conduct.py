@@ -10,6 +10,47 @@ from pyrig.rig.configs.community.code_of_conduct import CodeOfConductConfigFile
 class TestCodeOfConductConfigFile:
     """Test class."""
 
+    def test_code_of_conduct(self) -> None:
+        """Test method."""
+        content = CodeOfConductConfigFile.I.code_of_conduct()
+        assert "winipedia@gmx.de" in content
+
+    def test_code_of_conduct_template(self) -> None:
+        """Test method."""
+        code_of_conduct = CodeOfConductConfigFile.I.code_of_conduct_template()
+        assert isinstance(code_of_conduct, str)
+        assert "[NOTE: describe your means of reporting here.]" in code_of_conduct
+        assert len(code_of_conduct) > 0
+
+    def test_content(self) -> None:
+        """Test method."""
+        content = CodeOfConductConfigFile.I.content()
+        assert len(content) > 1
+        assert "<winipedia@gmx.de>." in content
+        assert CodeOfConductConfigFile.I.reporting_placeholder() not in content
+        assert CodeOfConductConfigFile.I.enforcement_placeholder() not in content
+
+    def test_enforcement_method(self) -> None:
+        """Test method."""
+        assert CodeOfConductConfigFile.I.enforcement_method() == ""
+
+    def test_enforcement_placeholder(self) -> None:
+        """Test method."""
+        assert (
+            CodeOfConductConfigFile.I.enforcement_placeholder()
+            == """
+**[NOTE: The remedies and repairs outlined below are suggestions based on best
+practices in code of conduct enforcement. If your community has its own
+established enforcement process, be sure to edit this section to describe your
+own policies.]**
+"""
+        )
+
+    def test_parent_path(self) -> None:
+        """Test method."""
+        result = CodeOfConductConfigFile.I.parent_path()
+        assert result == Path()
+
     def test_remote_code_of_conduct_template(
         self,
         *,
@@ -49,40 +90,10 @@ class TestCodeOfConductConfigFile:
         ) in normalized(remote_template)
         assert normalized(remote_template) == normalized(local_template)
 
-    def test_code_of_conduct(self) -> None:
-        """Test method."""
-        content = CodeOfConductConfigFile.I.code_of_conduct()
-        assert "winipedia@gmx.de" in content
-
     def test_reporting_method(self) -> None:
         """Test method."""
         method = CodeOfConductConfigFile.I.reporting_method()
         assert method == "send an email to <winipedia@gmx.de>."
-
-    def test_stem(self) -> None:
-        """Test method."""
-        result = CodeOfConductConfigFile.I.stem()
-        assert result == "CODE_OF_CONDUCT"
-
-    def test_parent_path(self) -> None:
-        """Test method."""
-        result = CodeOfConductConfigFile.I.parent_path()
-        assert result == Path()
-
-    def test_content(self) -> None:
-        """Test method."""
-        content = CodeOfConductConfigFile.I.content()
-        assert len(content) > 1
-        assert "<winipedia@gmx.de>." in content
-        assert CodeOfConductConfigFile.I.reporting_placeholder() not in content
-        assert CodeOfConductConfigFile.I.enforcement_placeholder() not in content
-
-    def test_code_of_conduct_template(self) -> None:
-        """Test method."""
-        code_of_conduct = CodeOfConductConfigFile.I.code_of_conduct_template()
-        assert isinstance(code_of_conduct, str)
-        assert "[NOTE: describe your means of reporting here.]" in code_of_conduct
-        assert len(code_of_conduct) > 0
 
     def test_reporting_placeholder(self) -> None:
         """Test method."""
@@ -91,18 +102,7 @@ class TestCodeOfConductConfigFile:
             == "[NOTE: describe your means of reporting here.]"
         )
 
-    def test_enforcement_method(self) -> None:
+    def test_stem(self) -> None:
         """Test method."""
-        assert CodeOfConductConfigFile.I.enforcement_method() == ""
-
-    def test_enforcement_placeholder(self) -> None:
-        """Test method."""
-        assert (
-            CodeOfConductConfigFile.I.enforcement_placeholder()
-            == """
-**[NOTE: The remedies and repairs outlined below are suggestions based on best
-practices in code of conduct enforcement. If your community has its own
-established enforcement process, be sure to edit this section to describe your
-own policies.]**
-"""
-        )
+        result = CodeOfConductConfigFile.I.stem()
+        assert result == "CODE_OF_CONDUCT"

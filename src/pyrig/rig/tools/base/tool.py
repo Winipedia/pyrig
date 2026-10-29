@@ -4,6 +4,7 @@ from abc import abstractmethod
 from collections import defaultdict
 from collections.abc import Hashable
 from types import ModuleType
+from typing import override
 
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.strings import kebab_to_snake_case
@@ -74,11 +75,13 @@ class Tool(DependencySubclass):
         """Return the executable name for this tool's CLI command (e.g. `"git"`)."""
 
     @classmethod
+    @override
     def discovery_module(cls) -> ModuleType:
         """Return the `pyrig.rig.tools` package as the tool discovery scope."""
         return tools
 
     @classmethod
+    @override
     def merge_key(cls) -> Hashable:
         """Return the tool's name, so subclasses wrapping the same tool are merged.
 
@@ -92,9 +95,18 @@ class Tool(DependencySubclass):
         return cls().name()
 
     @classmethod
+    @override
     def sort_key(cls) -> tuple[int, str]:
         """Return a tuple for sorting tools by group and name."""
         return (cls.group_order(cls().group()), cls.__name__)
+
+    def __str__(self) -> str:
+        """Add the tool name to the string representation.
+
+        Returns:
+            The class's string representation followed by the tool name in parentheses.
+        """
+        return f"{super().__str__()} ({self.name()})"
 
     @classmethod
     def grouped_badges(cls) -> defaultdict[str, list[str]]:
@@ -111,34 +123,6 @@ class Tool(DependencySubclass):
             tool = subclass()
             groups[tool.group()].append(tool.badge())
         return groups
-
-    @classmethod
-    def group_order(cls, group: str) -> int:
-        """Return the display order of a `Group` category.
-
-        Args:
-            group: The group name to look up.
-
-        Returns:
-            The index of the group in `groups()`, or `len(groups())` if not found.
-        """
-        groups = cls.groups()
-        return safe_call(
-            groups.index,
-            args=(group,),
-            default=len(groups),
-            exceptions=(ValueError,),
-        )
-
-    @classmethod
-    def groups(cls) -> tuple[str, ...]:
-        """Return the display order of the `Group` categories."""
-        return (
-            Group.PROJECT_STATUS,
-            Group.CODE_QUALITY,
-            Group.TOOLING,
-            Group.PROJECT_INFO,
-        )
 
     @classmethod
     def subclasses_dev_dependencies(cls) -> list[str]:
@@ -169,6 +153,34 @@ class Tool(DependencySubclass):
             for path in subclass().version_control_ignore_patterns()
         )
 
+    @classmethod
+    def group_order(cls, group: str) -> int:
+        """Return the display order of a `Group` category.
+
+        Args:
+            group: The group name to look up.
+
+        Returns:
+            The index of the group in `groups()`, or `len(groups())` if not found.
+        """
+        groups = cls.groups()
+        return safe_call(
+            groups.index,
+            args=(group,),
+            default=len(groups),
+            exceptions=(ValueError,),
+        )
+
+    @classmethod
+    def groups(cls) -> tuple[str, ...]:
+        """Return the display order of the `Group` categories."""
+        return (
+            Group.PROJECT_STATUS,
+            Group.CODE_QUALITY,
+            Group.TOOLING,
+            Group.PROJECT_INFO,
+        )
+
     def args(self, *args: str) -> Args:
         """Build an `Args` command starting with this tool's executable name.
 
@@ -179,19 +191,6 @@ class Tool(DependencySubclass):
             An `Args` object whose first element is the tool name.
         """
         return Args(self.name(), *args)
-
-    def shield_name(self) -> str:
-        """Return this tool's name escaped for a shields.io static badge segment.
-
-        shields.io's static badge URL splits its path on `-`, so a literal
-        hyphen in the name itself (e.g. `check-json`) must be doubled to
-        `--` to survive as one segment instead of being misread as a field
-        separator.
-
-        Returns:
-            `self.name()` with every `-` doubled.
-        """
-        return self.name().replace("-", "--")
 
     def badge(self) -> str:
         """Return the Markdown badge string for this tool.
@@ -229,6 +228,19 @@ class Tool(DependencySubclass):
         """
         return (self.name(),)
 
+    def shield_name(self) -> str:
+        """Return this tool's name escaped for a shields.io static badge segment.
+
+        shields.io's static badge URL splits its path on `-`, so a literal
+        hyphen in the name itself (e.g. `check-json`) must be doubled to
+        `--` to survive as one segment instead of being misread as a field
+        separator.
+
+        Returns:
+            `self.name()` with every `-` doubled.
+        """
+        return self.name().replace("-", "--")
+
     def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return paths this tool writes that should be excluded from version control.
 
@@ -239,14 +251,6 @@ class Tool(DependencySubclass):
             File paths to ignore. Empty by default.
         """
         return ()
-
-    def __str__(self) -> str:
-        """Add the tool name to the string representation.
-
-        Returns:
-            The class's string representation followed by the tool name in parentheses.
-        """
-        return f"{super().__str__()} ({self.name()})"
 
 
 class Group:

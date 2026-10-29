@@ -3,7 +3,7 @@
 import re
 from abc import abstractmethod
 from collections import defaultdict
-from typing import Any
+from typing import Any, override
 
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.configs.community.license import LicenseConfigFile
@@ -42,6 +42,7 @@ class BadgesConfigFile(MarkdownConfigFile):
             Heading text to use in the Markdown file.
         """
 
+    @override
     def content(self) -> str:
         """Return the project header: title, grouped badge rows, and description.
 
@@ -62,14 +63,7 @@ class BadgesConfigFile(MarkdownConfigFile):
 ---
 """
 
-    def badges_content(self) -> str:
-        """Return the Markdown content for all badge groups."""
-        return self.join_lines(
-            line
-            for category, badge_list in self.badges().items()
-            for line in (f"<!-- {category} -->", *badge_list)
-        )
-
+    @override
     def merge_configs(self) -> list[Any]:
         """Return merged file content with current badge URLs and project description.
 
@@ -89,23 +83,13 @@ class BadgesConfigFile(MarkdownConfigFile):
 
         return super().merge_configs()
 
-    def replace_description(self, content: str) -> str:
-        """Replace the description block with the current one from pyproject.toml.
-
-        Locates the first description block (text between the first two `---`
-        dividers) and replaces its content with the current project description.
-        Only the first occurrence is replaced.
-
-        Args:
-            content: Full Markdown file content to update.
-
-        Returns:
-            Updated content with the current description in place of the old one.
-            If no `---` divider pattern is found, the content is returned unchanged.
-        """
-        pattern = r"---\s*\n(.*?)\n---"
-        replacement = f"---\n\n> {PyprojectConfigFile.I.project_description()}\n\n---"
-        return re.sub(pattern, lambda _: replacement, content, count=1, flags=re.DOTALL)
+    def badges_content(self) -> str:
+        """Return the Markdown content for all badge groups."""
+        return self.join_lines(
+            line
+            for category, badge_list in self.badges().items()
+            for line in (f"<!-- {category} -->", *badge_list)
+        )
 
     def replace_badges(self, content: str) -> str:
         """Replace stale badge URLs in the badge section with current ones.
@@ -135,6 +119,24 @@ class BadgesConfigFile(MarkdownConfigFile):
                 badges_content,
             )
         return content.replace(old_badges_content, badges_content, 1)
+
+    def replace_description(self, content: str) -> str:
+        """Replace the description block with the current one from pyproject.toml.
+
+        Locates the first description block (text between the first two `---`
+        dividers) and replaces its content with the current project description.
+        Only the first occurrence is replaced.
+
+        Args:
+            content: Full Markdown file content to update.
+
+        Returns:
+            Updated content with the current description in place of the old one.
+            If no `---` divider pattern is found, the content is returned unchanged.
+        """
+        pattern = r"---\s*\n(.*?)\n---"
+        replacement = f"---\n\n> {PyprojectConfigFile.I.project_description()}\n\n---"
+        return re.sub(pattern, lambda _: replacement, content, count=1, flags=re.DOTALL)
 
     def badges(self) -> dict[str, list[str]]:
         """Return all project badges grouped by category.

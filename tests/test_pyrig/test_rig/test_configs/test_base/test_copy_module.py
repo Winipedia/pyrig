@@ -4,7 +4,7 @@ from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
-from typing import Any
+from typing import Any, override
 
 import pytest
 
@@ -17,6 +17,42 @@ from pyrig.rig.configs.base.python import PythonPackageConfigFile
 
 class TestCopyModuleConfigFile:
     """Test class."""
+
+    def test_content(
+        self,
+        my_test_copy_module_config_file: type[CopyModuleConfigFile],
+    ) -> None:
+        """Test method."""
+        content = my_test_copy_module_config_file().content()
+        assert len(content) > 0, "Expected non-empty string"
+        # Verify it contains the module content
+        assert "Test module content" in content, "Expected module content in string"
+
+    def test_copy_module(
+        self,
+        my_test_copy_module_config_file: type[CopyModuleConfigFile],
+    ) -> None:
+        """Test method."""
+        src_module = my_test_copy_module_config_file().copy_module()
+        assert isinstance(src_module, ModuleType), "Expected ModuleType"
+        expected_name = "test_package.test_subpackage.test_module"
+        assert src_module.__name__ == expected_name, (
+            f"Expected '{expected_name}', got {src_module.__name__}"
+        )
+
+    def test_generate_subclass(self) -> None:
+        """Test method."""
+        # Create a mock module to subclass
+        module = ModuleType("test_package.test_subpackage.test_module")
+        module.__file__ = "test_package/test_subpackage/test_module.py"
+
+        # Generate the subclass config file
+        subclass = CopyModuleConfigFile.generate_subclass(module)
+
+        # Verify the generated subclass has the correct src_module method
+        subclass_instance = subclass()
+        assert isinstance(subclass_instance, CopyModuleConfigFile)
+        assert subclass_instance.copy_module() == module
 
     def test_module_path(self) -> None:
         """Test method."""
@@ -33,32 +69,6 @@ class TestCopyModuleConfigFile:
         actual_path = subclass_instance.module_path()
         assert actual_path == expected_path
 
-    def test_generate_subclass(self) -> None:
-        """Test method."""
-        # Create a mock module to subclass
-        module = ModuleType("test_package.test_subpackage.test_module")
-        module.__file__ = "test_package/test_subpackage/test_module.py"
-
-        # Generate the subclass config file
-        subclass = CopyModuleConfigFile.generate_subclass(module)
-
-        # Verify the generated subclass has the correct src_module method
-        subclass_instance = subclass()
-        assert isinstance(subclass_instance, CopyModuleConfigFile)
-        assert subclass_instance.copy_module() == module
-
-    def test_copy_module(
-        self,
-        my_test_copy_module_config_file: type[CopyModuleConfigFile],
-    ) -> None:
-        """Test method."""
-        src_module = my_test_copy_module_config_file().copy_module()
-        assert isinstance(src_module, ModuleType), "Expected ModuleType"
-        expected_name = "test_package.test_subpackage.test_module"
-        assert src_module.__name__ == expected_name, (
-            f"Expected '{expected_name}', got {src_module.__name__}"
-        )
-
     def test_parent_path(
         self,
         my_test_copy_module_config_file: type[CopyModuleConfigFile],
@@ -66,16 +76,6 @@ class TestCopyModuleConfigFile:
         """Test method."""
         parent_path = my_test_copy_module_config_file().parent_path()
         assert isinstance(parent_path, Path), "Expected Path"
-
-    def test_content(
-        self,
-        my_test_copy_module_config_file: type[CopyModuleConfigFile],
-    ) -> None:
-        """Test method."""
-        content = my_test_copy_module_config_file().content()
-        assert len(content) > 0, "Expected non-empty string"
-        # Verify it contains the module content
-        assert "Test module content" in content, "Expected module content in string"
 
     def test_stem(
         self,
@@ -167,10 +167,12 @@ def my_test_copy_module_config_file(
     class MyTestCopyModuleConfigFile(config_file_factory(CopyModuleConfigFile)):  # ty: ignore[unsupported-base]
         """Test copy module config file with tmp_path override."""
 
+        @override
         def copy_module(self) -> ModuleType:
             """Get the source module."""
             return mock_module
 
+        @override
         def _dump(self, configs: list[Any]) -> None:
             """Dump the config file."""
             with chdir(tmp_path):
@@ -200,6 +202,7 @@ def my_test_copy_module_only_docstring_config_file(
     ):
         """Test copy module only docstring config file with tmp_path override."""
 
+        @override
         def copy_module(self) -> ModuleType:
             """Get the source module."""
             return module

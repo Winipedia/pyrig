@@ -7,6 +7,28 @@ from pyrig.rig.tools.version_control.merge_conflict import MergeConflictChecker
 class TestMergeConflictChecker:
     """Test class."""
 
+    def test_check_args(self) -> None:
+        """Test method."""
+        result = MergeConflictChecker.I.check_args()
+        assert result == ("--assume-in-merge",)
+
+    def test_check_hook(self) -> None:
+        """Test method."""
+        # conflict checking runs after the general text-fixing chain
+        hook = MergeConflictChecker.I.check_hook()
+        eof_hook = EndOfFileFormatter.I.format_hook()
+        assert hook["priority"] > eof_hook["priority"]
+        assert hook["args"] == ["--assume-in-merge"]
+
+    def test_check_merge_conflict(self) -> None:
+        """Test method."""
+        assert MergeConflictChecker.I.check_merge_conflict() == ("--assume-in-merge",)
+
+    def test_dev_dependencies(self) -> None:
+        """Test method."""
+        result = MergeConflictChecker.I.dev_dependencies()
+        assert result == ()
+
     def test_group(self) -> None:
         """Test method."""
         result = MergeConflictChecker.I.group()
@@ -31,25 +53,3 @@ class TestMergeConflictChecker:
         """Test method."""
         result = MergeConflictChecker.I.name()
         assert result == "check-merge-conflict"
-
-    def test_dev_dependencies(self) -> None:
-        """Test method."""
-        result = MergeConflictChecker.I.dev_dependencies()
-        assert result == ()
-
-    def test_check_args(self) -> None:
-        """Test method."""
-        result = MergeConflictChecker.I.check_args()
-        assert result == ("--assume-in-merge",)
-
-    def test_check_hook(self) -> None:
-        """Test method."""
-        # conflict checking runs after the general text-fixing chain
-        hook = MergeConflictChecker.I.check_hook()
-        eof_hook = EndOfFileFormatter.I.format_hook()
-        assert hook["priority"] > eof_hook["priority"]
-        assert hook["args"] == ["--assume-in-merge"]
-
-    def test_check_merge_conflict(self) -> None:
-        """Test method."""
-        assert MergeConflictChecker.I.check_merge_conflict() == ("--assume-in-merge",)

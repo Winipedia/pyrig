@@ -12,27 +12,6 @@ from pyrig.rig.tools.security.secrets import SecretsChecker
 class TestPythonOrderLinter:
     """Test class."""
 
-    def test_group(self) -> None:
-        """Test method."""
-        assert PythonOrderLinter.I.group() == "code-quality"
-
-    def test_image_url(self) -> None:
-        """Test method."""
-        assert (
-            PythonOrderLinter.I.image_url()
-            == "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Winipedia/pyorder/main/docs/assets/badge.json"
-        )
-
-    def test_link_url(self) -> None:
-        """Test method."""
-        assert PythonOrderLinter.I.link_url() == "https://github.com/Winipedia/pyorder"
-
-    def test_name(self) -> None:
-        """Test method."""
-        assert PythonOrderLinter.I.name() == "pyorder"
-        assert PythonOrderLinter.I.dev_dependencies() == ("pyorder",)
-        assert "pyorder" in Tool.subclasses_dev_dependencies()
-
     def test_check_args(self) -> None:
         """Test method."""
         assert PythonOrderLinter.I.check_args() == Args("pyorder", "check")
@@ -59,8 +38,29 @@ class TestPythonOrderLinter:
         assert PythonOrderLinter.I.hooks() == (hook,)
         assert hook in VersionControlHookTool.subclasses_hooks()
 
+    def test_group(self) -> None:
+        """Test method."""
+        assert PythonOrderLinter.I.group() == "code-quality"
+
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            PythonOrderLinter.I.image_url()
+            == "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Winipedia/pyorder/main/docs/assets/badge.json"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert PythonOrderLinter.I.link_url() == "https://github.com/Winipedia/pyorder"
+
     def test_lint_python_order(self) -> None:
         """Test method."""
         assert PythonOrderLinter.I.lint_python_order() == PackageManager.I.run_args(
             *PythonOrderLinter.I.check_args(),
         )
+
+    def test_name(self) -> None:
+        """Test method."""
+        assert PythonOrderLinter.I.name() == "pyorder"
+        assert PythonOrderLinter.I.dev_dependencies() == ("pyorder",)
+        assert "pyorder" in Tool.subclasses_dev_dependencies()

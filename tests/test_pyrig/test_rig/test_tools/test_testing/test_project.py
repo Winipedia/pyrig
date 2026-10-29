@@ -25,13 +25,6 @@ class TestProjectTester:
             " --numprocesses=auto --dist=worksteal --report-chars=a"
         )
 
-    def test_threshold(self) -> None:
-        """Test method."""
-        threshold = 90
-        assert ProjectTester().threshold() == threshold
-        override_threshold = 100
-        assert ProjectTester.I.threshold() == override_threshold
-
     def test_color(self) -> None:
         """Test method."""
         assert ProjectTester().color() == (108, 80, 45)
@@ -46,6 +39,12 @@ class TestProjectTester:
             "pytest-xdist",
         )
 
+    def test_group(self) -> None:
+        """Test method."""
+        result = ProjectTester.I.group()
+        assert isinstance(result, str)
+        assert result == "project-status"
+
     def test_image_url(self) -> None:
         """Test method."""
         assert (
@@ -57,32 +56,6 @@ class TestProjectTester:
         """Test method."""
         assert ProjectTester().link_url() == "https://pytest.org"
 
-    def test_version_control_ignore_patterns(self) -> None:
-        """Test method."""
-        assert ProjectTester().version_control_ignore_patterns() == (
-            ".pytest_cache/",
-            ".coverage",
-        )
-
-    def test_source_root(self) -> None:
-        """Test method."""
-        assert ProjectTester.I.source_root() == Path()
-
-    def test_package_root(self) -> None:
-        """Test method."""
-        assert ProjectTester.I.package_root() == Path("tests")
-
-    def test_group(self) -> None:
-        """Test method."""
-        result = ProjectTester.I.group()
-        assert isinstance(result, str)
-        assert result == "project-status"
-
-    def test_test_args(self) -> None:
-        """Test method."""
-        result = ProjectTester.I.test_args()
-        assert result == ("pytest",)
-
     def test_name(self) -> None:
         """Test method."""
         result = ProjectTester.I.name()
@@ -92,3 +65,30 @@ class TestProjectTester:
         """Test method."""
         result = ProjectTester.I.package_name()
         assert result == "tests"
+
+    def test_package_root(self) -> None:
+        """Test method."""
+        assert ProjectTester.I.package_root() == Path("tests")
+
+    def test_source_root(self) -> None:
+        """Test method."""
+        assert ProjectTester.I.source_root() == Path()
+
+    def test_test_args(self) -> None:
+        """Test method."""
+        result = ProjectTester.I.test_args()
+        assert result == ("pytest",)
+
+    def test_threshold(self) -> None:
+        """Test method."""
+        threshold = 90
+        assert ProjectTester().threshold() == threshold
+        override_threshold = 100
+        assert ProjectTester.I.threshold() == override_threshold
+
+    def test_version_control_ignore_patterns(self) -> None:
+        """Test method."""
+        assert ProjectTester().version_control_ignore_patterns() == (
+            ".pytest_cache/",
+            ".coverage",
+        )

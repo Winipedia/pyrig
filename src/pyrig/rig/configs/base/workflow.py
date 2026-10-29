@@ -5,7 +5,7 @@ from abc import abstractmethod
 from collections.abc import Iterable
 from pathlib import Path
 from types import MethodType, ModuleType
-from typing import Any
+from typing import Any, override
 
 from pyrig_runtime.core.strings import snake_to_kebab_case
 from ruamel.yaml.comments import CommentedMap
@@ -45,14 +45,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
     MACOS_LATEST = "macos-latest"
 
     @abstractmethod
-    def jobs(self) -> dict[str, Any]:
-        """Return the jobs that make up this workflow.
-
-        Returns:
-            Dict mapping job IDs to their configurations.
-        """
-
-    @abstractmethod
     def workflow_triggers(self) -> dict[str, Any]:
         """Return this workflow's trigger configuration.
 
@@ -60,6 +52,20 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Trigger configuration keyed by event name.
         """
 
+    @abstractmethod
+    def jobs(self) -> dict[str, Any]:
+        """Return the jobs that make up this workflow.
+
+        Returns:
+            Dict mapping job IDs to their configurations.
+        """
+
+    @override
+    def parent_path(self) -> Path:
+        """Return the GitHub Actions workflows directory."""
+        return RemoteVersionController.I.ci_cd_dir()
+
+    @override
     def _configs(self) -> dict[str, Any]:
         """Assemble the complete workflow configuration dict.
 
@@ -79,169 +85,59 @@ class WorkflowConfigFile(YMLDictConfigFile):
             "jobs": self.jobs(),
         }
 
-    def permissions(self) -> dict[str, Any]:
-        """Return the workflow's default `GITHUB_TOKEN` permissions.
-
-        Denies all permissions by default so that jobs receive no token
-        access unless they explicitly declare what they need.
+    def insert_github_token(self) -> str:
+        """Return the `${{ secrets.GITHUB_TOKEN }}` expression.
 
         Returns:
-            Empty dict, denying every permission.
+            GitHub Actions expression for the automatic `GITHUB_TOKEN`
+            secret.
         """
-        return {}
+        return self.insert_expression(self.github_token_var())
 
-    def permission_contents(self, *, write: bool = False) -> dict[str, str]:
-        """Return the permission needed to read or write repository contents.
-
-        Args:
-            write: Whether the permission should be write (`True`) or read (`False`).
+    def insert_matrix_os(self) -> str:
+        """Return the expression that resolves to the current matrix OS value.
 
         Returns:
-            Dict with the "contents" permission set to either "write" or "read".
+            GitHub Actions expression for `matrix.os`.
         """
-        return self.permission("contents", write=write)
+        return self.insert_expression("matrix.os")
 
-    def permission_id_token(self, *, write: bool = False) -> dict[str, str]:
-        """Return the permission needed to mint an OIDC token.
-
-        Args:
-            write: Whether the permission should be write (`True`) or read (`False`).
+    def insert_matrix_python_version(self) -> str:
+        """Return the expression that resolves to the current matrix Python version.
 
         Returns:
-            Dict with the "id-token" permission set to either "write" or "read".
+            GitHub Actions expression for `matrix.python-version`.
         """
-        return self.permission("id-token", write=write)
+        return self.insert_expression("matrix.python-version")
 
-    def permission_pages(self, *, write: bool = False) -> dict[str, str]:
-        """Return the permission needed to deploy to GitHub Pages, optionally as write.
+    def insert_output_version(self) -> str:
+        """Return the expression that resolves to the project version output variable.
 
-        Args:
-            write: Whether the permission should be write (`True`) or read (`False`).
+        Inserts the version saved in GITHUB_OUTPUT from the extract version step.
 
         Returns:
-            Dict with the "pages" permission set to either "write" or "read".
+            GitHub Actions expression for the project version output variable.
         """
-        return self.permission("pages", write=write)
-
-    def permission(self, name: str, *, write: bool = False) -> dict[str, str]:
-        """Return a permission dictionary for the given permission name.
-
-        Args:
-            name: The name of the permission.
-            write: Whether the permission should be write (`True`) or read (`False`).
-
-        Returns:
-            Dict with the permission name mapped to either "write" or "read".
-        """
-        return {name: "write" if write else "read"}
-
-    def documented_permissions(self, permissions: dict[str, str]) -> CommentedMap:
-        """Return `permissions` as a documented `CommentedMap`.
-
-        zizmor's `undocumented-permissions` audit requires an explanatory
-        comment on any permission entry other than `contents: read`.
-
-        Args:
-            permissions: Mapping of permission name to `"read"` or `"write"`.
-
-        Returns:
-            Equivalent `CommentedMap`; every entry except `contents: read`
-            carries an inline comment.
-        """
-        return commented_map(
-            permissions,
-            comments={
-                k: self.permission_comment()
-                for k in permissions
-                if (k, permissions[k]) != ("contents", "read")
-            },
+        return self.insert_output_var(
+            self.step_extract_version,
+            self.version_var(),
         )
 
-    def permission_comment(self) -> str:
-        """Return the comment attached to every documented permission entry.
+    def insert_repo_token(self) -> str:
+        """Return the `${{ secrets.REPO_TOKEN }}` expression.
 
         Returns:
-            `"required"`.
+            GitHub Actions expression for the `REPO_TOKEN` secret.
         """
-        return "required"
+        return self.insert_expression(self.repo_token_var())
 
-    def uses(self, action: str, ref: str) -> str:
-        """Return the full reference for a GitHub Actions action.
-
-        If the file already exists and already has a reference for the action,
-        that reference will be used instead of the provided `ref`.
-
-        Args:
-            action: The name of the action (e.g., `actions/checkout`).
-            ref: The git ref for the action (e.g., <sha>).
+    def insert_version_expansion(self) -> str:
+        """Return the shell parameter expansion for the `VERSION` environment variable.
 
         Returns:
-            The full action reference in the format `action@ref`.
+            Shell parameter expansion string for the `VERSION` variable: `"${VERSION}"`.
         """
-        return f"{action}@{self.action_ref(action, default=ref)}"
-
-    def concurrency(self) -> dict[str, Any]:
-        """Return the workflow's concurrency setting.
-
-        Groups runs by this generated workflow's name and ref so that
-        superseded runs are queued or cancelled without colliding with a
-        caller when this workflow is reused.
-
-        Returns:
-            Dict of concurrency settings.
-        """
-        return {
-            "group": f"{self.workflow_name()}-{self.insert_github_ref()}",
-            "cancel-in-progress": self.concurrency_cancel_in_progress(),
-        }
-
-    def concurrency_cancel_in_progress(self) -> bool:
-        """Return whether superseded runs of this workflow should be cancelled.
-
-        Override to `False` for workflows that mutate external state (e.g.
-        publishing a release or package) and therefore shouldn't be
-        interrupted mid-run; such runs are still serialized via the shared
-        concurrency group, just not cancelled.
-
-        Returns:
-            `True` by default.
-        """
-        return True
-
-    def parent_path(self) -> Path:
-        """Return the GitHub Actions workflows directory."""
-        return RemoteVersionController.I.ci_cd_dir()
-
-    def defaults(self) -> dict[str, Any]:
-        """Return the default settings applied to every step in the workflow.
-
-        Returns:
-            Dict of default settings.
-        """
-        return {"run": {"shell": ShellFormatter.I.dialect()}}
-
-    def workflow_name(self) -> str:
-        """Derive a human-readable name from the class name.
-
-        Removes the `WorkflowConfigFile` suffix and splits the remainder on
-        uppercase letters to produce a space-separated title.
-
-        Returns:
-            Workflow name, e.g. `"Health Check"` for
-            `HealthCheckWorkflowConfigFile`.
-        """
-        name = self.__class__.__name__.removesuffix(WorkflowConfigFile.__name__)
-        return " ".join(split_on_uppercase(name))
-
-    def run_name(self) -> str:
-        """Return the display name shown for individual workflow runs.
-
-        Override to customize. Defaults to `workflow_name`.
-
-        Returns:
-            The run name.
-        """
-        return self.workflow_name()
+        return self.insert_parameter_expansion(self.version_var())
 
     def job(  # noqa: PLR0913
         self,
@@ -312,6 +208,205 @@ class WorkflowConfigFile(YMLDictConfigFile):
             job["steps"] = steps
         return {job_id: job}
 
+    def job_id_from_method(self, method: MethodType) -> str:
+        """Generate a job identifier from a `job_*` method name.
+
+        Args:
+            method: The job method whose name provides the source text.
+
+        Returns:
+            Identifier string in kebab-case, e.g. `"do-something"` from
+            `job_do_something`.
+        """
+        return self.id_from_method(method, prefix=self.job.__name__)
+
+    def on_pull_request(self, types: list[str] | None = None) -> dict[str, Any]:
+        """Create a `pull_request` trigger.
+
+        Args:
+            types: Pull request event types to react to. Defaults to
+                `["opened", "synchronize", "reopened"]`.
+
+        Returns:
+            Trigger configuration for pull request events.
+        """
+        if types is None:
+            types = ["opened", "synchronize", "reopened"]
+        return {self.pull_request_event_key(): {"types": types}}
+
+    def on_push(self, branches: list[str] | None = None) -> dict[str, Any]:
+        """Create a `push` trigger.
+
+        Args:
+            branches: Branches to trigger on. Defaults to the default branch
+                (`"main"`).
+
+        Returns:
+            Trigger configuration for push events.
+        """
+        if branches is None:
+            branches = [VersionController.I.default_branch()]
+        return {"push": {"branches": branches}}
+
+    def on_schedule(self, cron: str) -> dict[str, Any]:
+        """Create a scheduled `cron` trigger.
+
+        Args:
+            cron: Cron expression defining the schedule
+                (e.g. `"0 1 * * *"` for 01:00 UTC daily).
+
+        Returns:
+            Trigger configuration for scheduled runs.
+        """
+        return {"schedule": [{"cron": cron}]}
+
+    def on_workflow_call(self) -> dict[str, Any]:
+        """Create a reusable-workflow trigger.
+
+        Returns:
+            Workflow-call configuration declaring required secrets.
+        """
+        secret_names = self.used_secrets()
+        trigger: dict[str, Any] = {}
+        if secret_names:
+            trigger["secrets"] = {name: {"required": True} for name in secret_names}
+        return {"workflow_call": trigger}
+
+    def on_workflow_dispatch(self) -> dict[str, Any]:
+        """Create a manual `workflow_dispatch` trigger.
+
+        Returns:
+            Trigger configuration for manually dispatched workflow runs.
+        """
+        return {"workflow_dispatch": {}}
+
+    def permission_contents(self, *, write: bool = False) -> dict[str, str]:
+        """Return the permission needed to read or write repository contents.
+
+        Args:
+            write: Whether the permission should be write (`True`) or read (`False`).
+
+        Returns:
+            Dict with the "contents" permission set to either "write" or "read".
+        """
+        return self.permission("contents", write=write)
+
+    def permission_id_token(self, *, write: bool = False) -> dict[str, str]:
+        """Return the permission needed to mint an OIDC token.
+
+        Args:
+            write: Whether the permission should be write (`True`) or read (`False`).
+
+        Returns:
+            Dict with the "id-token" permission set to either "write" or "read".
+        """
+        return self.permission("id-token", write=write)
+
+    def permission_pages(self, *, write: bool = False) -> dict[str, str]:
+        """Return the permission needed to deploy to GitHub Pages, optionally as write.
+
+        Args:
+            write: Whether the permission should be write (`True`) or read (`False`).
+
+        Returns:
+            Dict with the "pages" permission set to either "write" or "read".
+        """
+        return self.permission("pages", write=write)
+
+    def steps_core_installed_setup(
+        self,
+        *,
+        python_version: str | None = None,
+        update_dependencies: bool = False,
+    ) -> list[dict[str, Any]]:
+        """Build setup steps that include dependency installation.
+
+        Produces steps for repository checkout, Python environment setup,
+        optional dependency upgrade, and a full `uv sync`.
+
+        Args:
+            python_version: Python version string. Defaults to the latest
+                minor version supported by the project.
+            update_dependencies: Whether to include a step that updates all
+                dependencies to their latest allowed versions before installing.
+
+        Returns:
+            Ordered list of step configuration dicts.
+        """
+        return [
+            *self.steps_core_setup(
+                python_version=python_version,
+            ),
+            *((self.step_update_dependencies(),) if update_dependencies else ()),
+            self.step_install_dependencies(),
+        ]
+
+    def strategy_matrix_os(
+        self,
+        os: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Create a strategy with OS matrix.
+
+        Args:
+            os: Runner labels to test against. Defaults to Ubuntu, Windows,
+                and macOS latest (`ubuntu-latest`, `windows-latest`,
+                `macos-latest`).
+
+        Returns:
+            Strategy configuration containing the OS matrix.
+        """
+        return self.strategy_matrix(matrix=self.matrix_os(os=os))
+
+    def strategy_matrix_os_and_python_version(
+        self,
+        os: list[str] | None = None,
+        python_versions: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Create a strategy with OS and Python version matrix.
+
+        Args:
+            os: Runner labels to test against. Defaults to Ubuntu, Windows,
+                and macOS latest (`ubuntu-latest`, `windows-latest`,
+                `macos-latest`).
+            python_versions: Python version strings to test against. Defaults
+                to all versions returned by
+                `PyprojectConfigFile.supported_python_versions()`.
+
+        Returns:
+            Strategy configuration containing the combined OS and Python
+            version matrix.
+        """
+        return self.strategy_matrix(
+            matrix={
+                **self.matrix_os(os=os),
+                **self.matrix_python_version(python_versions=python_versions),
+            },
+        )
+
+    def used_permissions(self) -> dict[str, str]:
+        """Return the permissions required by this workflow's jobs.
+
+        Returns:
+            Permission names mapped to their highest requested levels.
+        """
+        permissions: dict[str, str] = {}
+        for job in self.jobs().values():
+            for name, level in job.get("permissions", {}).items():
+                if name not in permissions or level == "write":
+                    permissions[name] = level
+        return deep_sorted_dict(permissions)
+
+    def used_secrets_mapping(self) -> dict[str, str]:
+        """Return the secret mapping required to call this workflow.
+
+        Returns:
+            Referenced secret names mapped to caller expressions.
+        """
+        return {
+            name: self.insert_expression(self.secrets_var(name))
+            for name in self.used_secrets()
+        }
+
     def workflow_call_reference(self) -> str:
         """Return a same-repository reusable-workflow reference.
 
@@ -319,6 +414,240 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Reference to this workflow at the caller's commit.
         """
         return f"$/{self.path().as_posix()}"
+
+    def concurrency(self) -> dict[str, Any]:
+        """Return the workflow's concurrency setting.
+
+        Groups runs by this generated workflow's name and ref so that
+        superseded runs are queued or cancelled without colliding with a
+        caller when this workflow is reused.
+
+        Returns:
+            Dict of concurrency settings.
+        """
+        return {
+            "group": f"{self.workflow_name()}-{self.insert_github_ref()}",
+            "cancel-in-progress": self.concurrency_cancel_in_progress(),
+        }
+
+    def defaults(self) -> dict[str, Any]:
+        """Return the default settings applied to every step in the workflow.
+
+        Returns:
+            Dict of default settings.
+        """
+        return {"run": {"shell": ShellFormatter.I.dialect()}}
+
+    def documented_permissions(self, permissions: dict[str, str]) -> CommentedMap:
+        """Return `permissions` as a documented `CommentedMap`.
+
+        zizmor's `undocumented-permissions` audit requires an explanatory
+        comment on any permission entry other than `contents: read`.
+
+        Args:
+            permissions: Mapping of permission name to `"read"` or `"write"`.
+
+        Returns:
+            Equivalent `CommentedMap`; every entry except `contents: read`
+            carries an inline comment.
+        """
+        return commented_map(
+            permissions,
+            comments={
+                k: self.permission_comment()
+                for k in permissions
+                if (k, permissions[k]) != ("contents", "read")
+            },
+        )
+
+    def github_token_var(self) -> str:
+        """Return the raw secrets expression for `GITHUB_TOKEN`.
+
+        Returns:
+            The `"secrets.GITHUB_TOKEN"` expression string.
+        """
+        return self.secrets_var("GITHUB_TOKEN")
+
+    def insert_output_var(self, step: MethodType, name: str) -> str:
+        """Return the expression that resolves to the output variable of a step.
+
+        Args:
+            step: The step method whose output variable to reference.
+            name: The name of the output variable.
+
+        Returns:
+            GitHub Actions expression for the step's output variable.
+        """
+        return self.insert_expression(
+            f"steps.{self.step_id_from_method(step)}.outputs.{name.lower()}",
+        )
+
+    def matrix_os(
+        self,
+        *,
+        os: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Create a matrix with OS dimension.
+
+        Args:
+            os: Runner labels to include. Defaults to Ubuntu, Windows, and
+                macOS latest (`ubuntu-latest`, `windows-latest`,
+                `macos-latest`).
+
+        Returns:
+            Matrix dict with the `os` key populated.
+        """
+        if os is None:
+            os = [self.UBUNTU_LATEST, self.WINDOWS_LATEST, self.MACOS_LATEST]
+        return self.matrix({"os": os})
+
+    def matrix_python_version(
+        self,
+        *,
+        python_versions: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Create a matrix with Python version dimension.
+
+        Args:
+            python_versions: Python version strings to include. Defaults to
+                all versions returned by
+                `PyprojectConfigFile.supported_python_versions()`.
+
+        Returns:
+            Matrix dict with the `python-version` key populated.
+        """
+        if python_versions is None:
+            python_versions = [
+                str(v) for v in PyprojectConfigFile.I.supported_python_versions()
+            ]
+        return self.matrix({"python-version": python_versions})
+
+    def permission(self, name: str, *, write: bool = False) -> dict[str, str]:
+        """Return a permission dictionary for the given permission name.
+
+        Args:
+            name: The name of the permission.
+            write: Whether the permission should be write (`True`) or read (`False`).
+
+        Returns:
+            Dict with the permission name mapped to either "write" or "read".
+        """
+        return {name: "write" if write else "read"}
+
+    def permissions(self) -> dict[str, Any]:
+        """Return the workflow's default `GITHUB_TOKEN` permissions.
+
+        Denies all permissions by default so that jobs receive no token
+        access unless they explicitly declare what they need.
+
+        Returns:
+            Empty dict, denying every permission.
+        """
+        return {}
+
+    def pull_request_event_key(self) -> str:
+        """Return the key used for pull request events."""
+        return "pull_request"
+
+    def repo_token_var(self) -> str:
+        """Return the raw secrets expression for `REPO_TOKEN`.
+
+        Returns:
+            The `"secrets.REPO_TOKEN"` expression string.
+        """
+        return self.secrets_var(RemoteVersionController.I.access_token_key())
+
+    def run_name(self) -> str:
+        """Return the display name shown for individual workflow runs.
+
+        Override to customize. Defaults to `workflow_name`.
+
+        Returns:
+            The run name.
+        """
+        return self.workflow_name()
+
+    def step_extract_version(self) -> dict[str, Any]:
+        """Build a step that extracts the current version.
+
+        The project version is extracted and assigned to the `VERSION`
+        variable in the GITHUB_OUTPUT.
+        """
+        return self.step(
+            self.step_extract_version,
+            run=self.assign_command_substitution_output_var(
+                self.version_var(),
+                PackageManager.I.version_short_args(),
+            ),
+        )
+
+    def step_install_dependencies(self) -> dict[str, Any]:
+        """Build a step that synchronizes the virtual environment.
+
+        Runs `uv sync` to install all locked dependencies.
+
+        Returns:
+            Step that runs `uv sync`.
+        """
+        return self.step(
+            self.step_install_dependencies,
+            run=str(PackageManager.I.install_dependencies_args()),
+        )
+
+    def step_update_dependencies(self) -> dict[str, Any]:
+        """Build a step that upgrades all pinned dependencies.
+
+        Runs `uv lock --upgrade` to update the lock file to the latest
+        versions allowed by the version constraints in `pyproject.toml`.
+
+        Returns:
+            Step that runs `uv lock --upgrade`.
+        """
+        return self.step(
+            self.step_update_dependencies,
+            run=str(PackageManager.I.update_dependencies_args()),
+        )
+
+    def steps_core_setup(
+        self,
+        python_version: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """Build the base checkout and environment setup steps.
+
+        Checks out the repository and installs the package manager (`uv`) with
+        the specified Python version. The containing job must grant at least
+        `contents: read` through `permission_contents()`.
+
+        Args:
+            python_version: Python version string for `uv`. Defaults to the
+                latest minor version supported by the project.
+
+        Returns:
+            Ordered list of step configuration dicts.
+        """
+        if python_version is None:
+            python_version = str(
+                PyprojectConfigFile.I.latest_possible_python_version(level="minor"),
+            )
+        return [
+            self.step_checkout_repository(),
+            self.step_setup_package_manager(python_version=python_version),
+        ]
+
+    def strategy_matrix(
+        self,
+        *,
+        matrix: dict[str, list[Any]],
+    ) -> dict[str, Any]:
+        """Create a matrix strategy configuration.
+
+        Args:
+            matrix: Matrix dimensions.
+
+        Returns:
+            Strategy configuration with matrix.
+        """
+        return self.strategy(strategy={"matrix": matrix})
 
     def used_secrets(self) -> list[str]:
         """Return non-default secrets referenced by this workflow.
@@ -333,29 +662,215 @@ class WorkflowConfigFile(YMLDictConfigFile):
         names.discard("GITHUB_TOKEN")
         return sorted(names)
 
-    def used_secrets_mapping(self) -> dict[str, str]:
-        """Return the secret mapping required to call this workflow.
+    def assign_command_substitution_output_var(self, name: str, args: Args) -> str:
+        """Shell script to assign the output of a command substitution to a variable.
+
+        Args:
+            name: The name of the variable.
+            args: The command substitution arguments.
 
         Returns:
-            Referenced secret names mapped to caller expressions.
+            Shell script string that assigns the output of the command substitution to
+            the variable.
         """
-        return {
-            name: self.insert_expression(self.secrets_var(name))
-            for name in self.used_secrets()
-        }
+        var_name = name.upper()
+        shell_assignment = f"{var_name}={self.insert_command_substitution(str(args))}"
+        output_assignment = self.assign_output_var(
+            name,
+            self.insert_parameter_expansion(var_name),
+        )
+        return f"{shell_assignment}\n{output_assignment}"
 
-    def used_permissions(self) -> dict[str, str]:
-        """Return the permissions required by this workflow's jobs.
+    def concurrency_cancel_in_progress(self) -> bool:
+        """Return whether superseded runs of this workflow should be cancelled.
+
+        Override to `False` for workflows that mutate external state (e.g.
+        publishing a release or package) and therefore shouldn't be
+        interrupted mid-run; such runs are still serialized via the shared
+        concurrency group, just not cancelled.
 
         Returns:
-            Permission names mapped to their highest requested levels.
+            `True` by default.
         """
-        permissions: dict[str, str] = {}
-        for job in self.jobs().values():
-            for name, level in job.get("permissions", {}).items():
-                if name not in permissions or level == "write":
-                    permissions[name] = level
-        return deep_sorted_dict(permissions)
+        return True
+
+    def insert_github_ref(self) -> str:
+        """Return the expression that resolves to the triggering ref.
+
+        Returns:
+            GitHub Actions expression for `github.ref`.
+        """
+        return self.insert_expression("github.ref")
+
+    def matrix(self, matrix: dict[str, list[Any]]) -> dict[str, Any]:
+        """Return the matrix configuration.
+
+        This method is an extension point. The base implementation returns the
+        dict unchanged; subclasses can override it to apply transformations or
+        add fixed dimensions to every matrix produced by this workflow.
+
+        Args:
+            matrix: Matrix dimensions dict to pass through.
+
+        Returns:
+            The matrix configuration, unchanged by default.
+        """
+        return matrix
+
+    def permission_comment(self) -> str:
+        """Return the comment attached to every documented permission entry.
+
+        Returns:
+            `"required"`.
+        """
+        return "required"
+
+    def secrets_var(self, name: str) -> str:
+        """Build the raw GitHub secrets expression for a secret name.
+
+        Args:
+            name: The secret's key name (e.g. `"REPO_TOKEN"`).
+
+        Returns:
+            Raw expression string `"secrets.<name>"` suitable for use
+            inside `${{ ... }}` wrappers.
+        """
+        return f"secrets.{name}"
+
+    def step_checkout_repository(self) -> dict[str, Any]:
+        """Build a step that checks out the repository.
+
+        Uses `actions/checkout`, defaulting to `checkout_action()`. It
+        authenticates with the automatic `GITHUB_TOKEN`. Credential
+        persistence is disabled since no later step needs the checked-out
+        git credentials. The containing job must grant at least
+        `contents: read` through `permission_contents()`.
+
+        Returns:
+            Step using `actions/checkout@<ref>`.
+        """
+        return self.step(
+            self.step_checkout_repository,
+            uses=self.checkout_action(),
+            with_={"persist-credentials": False},
+        )
+
+    def step_setup_package_manager(
+        self,
+        *,
+        python_version: str,
+    ) -> dict[str, Any]:
+        """Build a step that installs uv and pins the Python version.
+
+        Uses `astral-sh/setup-uv`, defaulting to `setup_uv_action()`, to
+        install uv on the runner and configure it to use the given Python
+        version. All subsequent `uv run` and `uv sync` commands will use this
+        version.
+
+        Args:
+            python_version: Python version string to pin, e.g. `"3.13"`.
+
+        Returns:
+            Step using `astral-sh/setup-uv@<ref>`.
+        """
+        return self.step(
+            self.step_setup_package_manager,
+            uses=self.setup_uv_action(),
+            with_={"python-version": python_version},
+        )
+
+    def strategy(
+        self,
+        *,
+        strategy: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Apply defaults to a strategy configuration.
+
+        Sets `fail-fast` to `True` if not already present in the
+        strategy dict.
+
+        Args:
+            strategy: Strategy configuration to process.
+
+        Returns:
+            The strategy dict with `fail-fast` defaulting to `True`.
+        """
+        strategy["fail-fast"] = strategy.pop("fail-fast", True)
+        return strategy
+
+    def version_var(self) -> str:
+        """Return the name of the environment variable that holds the project version.
+
+        Returns:
+            The `"VERSION"` environment variable name.
+        """
+        return "VERSION"
+
+    def workflow_name(self) -> str:
+        """Derive a human-readable name from the class name.
+
+        Removes the `WorkflowConfigFile` suffix and splits the remainder on
+        uppercase letters to produce a space-separated title.
+
+        Returns:
+            Workflow name, e.g. `"Health Check"` for
+            `HealthCheckWorkflowConfigFile`.
+        """
+        name = self.__class__.__name__.removesuffix(WorkflowConfigFile.__name__)
+        return " ".join(split_on_uppercase(name))
+
+    def assign_output_var(self, name: str, value: str) -> str:
+        """Shell command to assign a value to a GitHub Actions output variable.
+
+        Args:
+            name: The name of the output variable.
+            value: The value to assign to the output variable.
+
+        Returns:
+            Shell command string to assign the value to the output variable in
+            `GITHUB_OUTPUT`.
+        """
+        return str(
+            Args(
+                "echo",
+                f"{name.lower()}={value}",
+                ">>",
+                self.insert_parameter_expansion("GITHUB_OUTPUT"),
+            ),
+        )
+
+    def checkout_action(self) -> tuple[str, str, str]:
+        """Return action metadata for `actions/checkout`.
+
+        Returns:
+            Tuple of action name, pinned commit SHA, and release tag.
+        """
+        return self.action_from_resource(self.checkout_action, resources)
+
+    def insert_command_substitution(self, command: str) -> str:
+        """Wrap a shell command in command substitution syntax "`$(...)"`."""
+        return self.insert_expansion(f"({command})")
+
+    def insert_expression(self, var: str) -> str:
+        """Wrap an expression in GitHub Actions `${{ ... }}` syntax.
+
+        Args:
+            var: The raw expression to wrap
+                (e.g. `"secrets.REPO_TOKEN"`).
+
+        Returns:
+            The expression surrounded by `${{ }}` delimiters, e.g.
+            `"${{ secrets.REPO_TOKEN }}"`.
+        """
+        return f"${{{{ {var} }}}}"
+
+    def setup_uv_action(self) -> tuple[str, str, str]:
+        """Return action metadata for `astral-sh/setup-uv`.
+
+        Returns:
+            Tuple of action name, pinned commit SHA, and release tag.
+        """
+        return self.action_from_resource(self.setup_uv_action, resources)
 
     def step(  # noqa: PLR0913
         self,
@@ -422,37 +937,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             comments_before=comments_before,
         )
 
-    def name_from_id(self, id_: str) -> str:
-        """Generate a human-readable display name from a kebab-case identifier.
-
-        Splits the identifier on hyphens and capitalizes each word.
-
-        Args:
-            id_: The kebab-case identifier to convert, e.g. one produced by
-                `job_id_from_method()` or `step_id_from_method()`.
-
-        Returns:
-            Display name, e.g. `"Do Something"` from `"do-something"`.
-        """
-        return reformat_name(
-            id_,
-            split_on="-",
-            join_on=" ",
-            capitalize=True,
-        )
-
-    def job_id_from_method(self, method: MethodType) -> str:
-        """Generate a job identifier from a `job_*` method name.
-
-        Args:
-            method: The job method whose name provides the source text.
-
-        Returns:
-            Identifier string in kebab-case, e.g. `"do-something"` from
-            `job_do_something`.
-        """
-        return self.id_from_method(method, prefix=self.job.__name__)
-
     def step_id_from_method(self, method: MethodType) -> str:
         """Generate a step identifier from a `step_*` method name.
 
@@ -464,279 +948,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             `step_do_something`.
         """
         return self.id_from_method(method, prefix=self.step.__name__)
-
-    def id_from_method(self, method: MethodType, prefix: str) -> str:
-        """Generate a compact identifier from a method name.
-
-        Strips the given prefix (plus the underscore joining it to the rest
-        of the name) and returns the rest in kebab-case.
-
-        Args:
-            method: The method whose name provides the source text.
-            prefix: The leading segment to strip, e.g. `"job"` or `"step"`.
-
-        Returns:
-            Identifier string in kebab-case, e.g. `"do-something"` from
-            `job_do_something` with `prefix="job"`.
-        """
-        return snake_to_kebab_case(method.__name__.removeprefix(f"{prefix}_"))
-
-    def on_push(self, branches: list[str] | None = None) -> dict[str, Any]:
-        """Create a `push` trigger.
-
-        Args:
-            branches: Branches to trigger on. Defaults to the default branch
-                (`"main"`).
-
-        Returns:
-            Trigger configuration for push events.
-        """
-        if branches is None:
-            branches = [VersionController.I.default_branch()]
-        return {"push": {"branches": branches}}
-
-    def on_schedule(self, cron: str) -> dict[str, Any]:
-        """Create a scheduled `cron` trigger.
-
-        Args:
-            cron: Cron expression defining the schedule
-                (e.g. `"0 1 * * *"` for 01:00 UTC daily).
-
-        Returns:
-            Trigger configuration for scheduled runs.
-        """
-        return {"schedule": [{"cron": cron}]}
-
-    def on_pull_request(self, types: list[str] | None = None) -> dict[str, Any]:
-        """Create a `pull_request` trigger.
-
-        Args:
-            types: Pull request event types to react to. Defaults to
-                `["opened", "synchronize", "reopened"]`.
-
-        Returns:
-            Trigger configuration for pull request events.
-        """
-        if types is None:
-            types = ["opened", "synchronize", "reopened"]
-        return {self.pull_request_event_key(): {"types": types}}
-
-    def on_workflow_dispatch(self) -> dict[str, Any]:
-        """Create a manual `workflow_dispatch` trigger.
-
-        Returns:
-            Trigger configuration for manually dispatched workflow runs.
-        """
-        return {"workflow_dispatch": {}}
-
-    def pull_request_event_key(self) -> str:
-        """Return the key used for pull request events."""
-        return "pull_request"
-
-    def on_workflow_call(self) -> dict[str, Any]:
-        """Create a reusable-workflow trigger.
-
-        Returns:
-            Workflow-call configuration declaring required secrets.
-        """
-        secret_names = self.used_secrets()
-        trigger: dict[str, Any] = {}
-        if secret_names:
-            trigger["secrets"] = {name: {"required": True} for name in secret_names}
-        return {"workflow_call": trigger}
-
-    def strategy_matrix_os_and_python_version(
-        self,
-        os: list[str] | None = None,
-        python_versions: list[str] | None = None,
-    ) -> dict[str, Any]:
-        """Create a strategy with OS and Python version matrix.
-
-        Args:
-            os: Runner labels to test against. Defaults to Ubuntu, Windows,
-                and macOS latest (`ubuntu-latest`, `windows-latest`,
-                `macos-latest`).
-            python_versions: Python version strings to test against. Defaults
-                to all versions returned by
-                `PyprojectConfigFile.supported_python_versions()`.
-
-        Returns:
-            Strategy configuration containing the combined OS and Python
-            version matrix.
-        """
-        return self.strategy_matrix(
-            matrix={
-                **self.matrix_os(os=os),
-                **self.matrix_python_version(python_versions=python_versions),
-            },
-        )
-
-    def strategy_matrix_os(
-        self,
-        os: list[str] | None = None,
-    ) -> dict[str, Any]:
-        """Create a strategy with OS matrix.
-
-        Args:
-            os: Runner labels to test against. Defaults to Ubuntu, Windows,
-                and macOS latest (`ubuntu-latest`, `windows-latest`,
-                `macos-latest`).
-
-        Returns:
-            Strategy configuration containing the OS matrix.
-        """
-        return self.strategy_matrix(matrix=self.matrix_os(os=os))
-
-    def strategy_matrix(
-        self,
-        *,
-        matrix: dict[str, list[Any]],
-    ) -> dict[str, Any]:
-        """Create a matrix strategy configuration.
-
-        Args:
-            matrix: Matrix dimensions.
-
-        Returns:
-            Strategy configuration with matrix.
-        """
-        return self.strategy(strategy={"matrix": matrix})
-
-    def strategy(
-        self,
-        *,
-        strategy: dict[str, Any],
-    ) -> dict[str, Any]:
-        """Apply defaults to a strategy configuration.
-
-        Sets `fail-fast` to `True` if not already present in the
-        strategy dict.
-
-        Args:
-            strategy: Strategy configuration to process.
-
-        Returns:
-            The strategy dict with `fail-fast` defaulting to `True`.
-        """
-        strategy["fail-fast"] = strategy.pop("fail-fast", True)
-        return strategy
-
-    def matrix_os(
-        self,
-        *,
-        os: list[str] | None = None,
-    ) -> dict[str, Any]:
-        """Create a matrix with OS dimension.
-
-        Args:
-            os: Runner labels to include. Defaults to Ubuntu, Windows, and
-                macOS latest (`ubuntu-latest`, `windows-latest`,
-                `macos-latest`).
-
-        Returns:
-            Matrix dict with the `os` key populated.
-        """
-        if os is None:
-            os = [self.UBUNTU_LATEST, self.WINDOWS_LATEST, self.MACOS_LATEST]
-        return self.matrix({"os": os})
-
-    def matrix_python_version(
-        self,
-        *,
-        python_versions: list[str] | None = None,
-    ) -> dict[str, Any]:
-        """Create a matrix with Python version dimension.
-
-        Args:
-            python_versions: Python version strings to include. Defaults to
-                all versions returned by
-                `PyprojectConfigFile.supported_python_versions()`.
-
-        Returns:
-            Matrix dict with the `python-version` key populated.
-        """
-        if python_versions is None:
-            python_versions = [
-                str(v) for v in PyprojectConfigFile.I.supported_python_versions()
-            ]
-        return self.matrix({"python-version": python_versions})
-
-    def matrix(self, matrix: dict[str, list[Any]]) -> dict[str, Any]:
-        """Return the matrix configuration.
-
-        This method is an extension point. The base implementation returns the
-        dict unchanged; subclasses can override it to apply transformations or
-        add fixed dimensions to every matrix produced by this workflow.
-
-        Args:
-            matrix: Matrix dimensions dict to pass through.
-
-        Returns:
-            The matrix configuration, unchanged by default.
-        """
-        return matrix
-
-    def steps_core_installed_setup(
-        self,
-        *,
-        python_version: str | None = None,
-        update_dependencies: bool = False,
-    ) -> list[dict[str, Any]]:
-        """Build setup steps that include dependency installation.
-
-        Produces steps for repository checkout, Python environment setup,
-        optional dependency upgrade, and a full `uv sync`.
-
-        Args:
-            python_version: Python version string. Defaults to the latest
-                minor version supported by the project.
-            update_dependencies: Whether to include a step that updates all
-                dependencies to their latest allowed versions before installing.
-
-        Returns:
-            Ordered list of step configuration dicts.
-        """
-        return [
-            *self.steps_core_setup(
-                python_version=python_version,
-            ),
-            *((self.step_update_dependencies(),) if update_dependencies else ()),
-            self.step_install_dependencies(),
-        ]
-
-    def steps_core_setup(
-        self,
-        python_version: str | None = None,
-    ) -> list[dict[str, Any]]:
-        """Build the base checkout and environment setup steps.
-
-        Checks out the repository and installs the package manager (`uv`) with
-        the specified Python version. The containing job must grant at least
-        `contents: read` through `permission_contents()`.
-
-        Args:
-            python_version: Python version string for `uv`. Defaults to the
-                latest minor version supported by the project.
-
-        Returns:
-            Ordered list of step configuration dicts.
-        """
-        if python_version is None:
-            python_version = str(
-                PyprojectConfigFile.I.latest_possible_python_version(level="minor"),
-            )
-        return [
-            self.step_checkout_repository(),
-            self.step_setup_package_manager(python_version=python_version),
-        ]
-
-    def checkout_action(self) -> tuple[str, str, str]:
-        """Return action metadata for `actions/checkout`.
-
-        Returns:
-            Tuple of action name, pinned commit SHA, and release tag.
-        """
-        return self.action_from_resource(self.checkout_action, resources)
 
     def action_from_resource(
         self,
@@ -760,6 +971,60 @@ class WorkflowConfigFile(YMLDictConfigFile):
             package,
         ).splitlines()
         return action, ref, tag
+
+    def id_from_method(self, method: MethodType, prefix: str) -> str:
+        """Generate a compact identifier from a method name.
+
+        Strips the given prefix (plus the underscore joining it to the rest
+        of the name) and returns the rest in kebab-case.
+
+        Args:
+            method: The method whose name provides the source text.
+            prefix: The leading segment to strip, e.g. `"job"` or `"step"`.
+
+        Returns:
+            Identifier string in kebab-case, e.g. `"do-something"` from
+            `job_do_something` with `prefix="job"`.
+        """
+        return snake_to_kebab_case(method.__name__.removeprefix(f"{prefix}_"))
+
+    def insert_parameter_expansion(self, parameter: str) -> str:
+        """Wrap a shell parameter in parameter expansion syntax `"${...}"`."""
+        return self.insert_expansion(f"{{{parameter}}}")
+
+    def name_from_id(self, id_: str) -> str:
+        """Generate a human-readable display name from a kebab-case identifier.
+
+        Splits the identifier on hyphens and capitalizes each word.
+
+        Args:
+            id_: The kebab-case identifier to convert, e.g. one produced by
+                `job_id_from_method()` or `step_id_from_method()`.
+
+        Returns:
+            Display name, e.g. `"Do Something"` from `"do-something"`.
+        """
+        return reformat_name(
+            id_,
+            split_on="-",
+            join_on=" ",
+            capitalize=True,
+        )
+
+    def uses(self, action: str, ref: str) -> str:
+        """Return the full reference for a GitHub Actions action.
+
+        If the file already exists and already has a reference for the action,
+        that reference will be used instead of the provided `ref`.
+
+        Args:
+            action: The name of the action (e.g., `actions/checkout`).
+            ref: The git ref for the action (e.g., <sha>).
+
+        Returns:
+            The full action reference in the format `action@ref`.
+        """
+        return f"{action}@{self.action_ref(action, default=ref)}"
 
     def action_ref(self, name: str, *, default: str) -> str:
         """Return the ref for an action, preferring the existing ref in the file.
@@ -786,269 +1051,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         )
         return step["uses"].removeprefix(prefix)
 
-    def step_checkout_repository(self) -> dict[str, Any]:
-        """Build a step that checks out the repository.
-
-        Uses `actions/checkout`, defaulting to `checkout_action()`. It
-        authenticates with the automatic `GITHUB_TOKEN`. Credential
-        persistence is disabled since no later step needs the checked-out
-        git credentials. The containing job must grant at least
-        `contents: read` through `permission_contents()`.
-
-        Returns:
-            Step using `actions/checkout@<ref>`.
-        """
-        return self.step(
-            self.step_checkout_repository,
-            uses=self.checkout_action(),
-            with_={"persist-credentials": False},
-        )
-
-    def setup_uv_action(self) -> tuple[str, str, str]:
-        """Return action metadata for `astral-sh/setup-uv`.
-
-        Returns:
-            Tuple of action name, pinned commit SHA, and release tag.
-        """
-        return self.action_from_resource(self.setup_uv_action, resources)
-
-    def step_setup_package_manager(
-        self,
-        *,
-        python_version: str,
-    ) -> dict[str, Any]:
-        """Build a step that installs uv and pins the Python version.
-
-        Uses `astral-sh/setup-uv`, defaulting to `setup_uv_action()`, to
-        install uv on the runner and configure it to use the given Python
-        version. All subsequent `uv run` and `uv sync` commands will use this
-        version.
-
-        Args:
-            python_version: Python version string to pin, e.g. `"3.13"`.
-
-        Returns:
-            Step using `astral-sh/setup-uv@<ref>`.
-        """
-        return self.step(
-            self.step_setup_package_manager,
-            uses=self.setup_uv_action(),
-            with_={"python-version": python_version},
-        )
-
-    def step_update_dependencies(self) -> dict[str, Any]:
-        """Build a step that upgrades all pinned dependencies.
-
-        Runs `uv lock --upgrade` to update the lock file to the latest
-        versions allowed by the version constraints in `pyproject.toml`.
-
-        Returns:
-            Step that runs `uv lock --upgrade`.
-        """
-        return self.step(
-            self.step_update_dependencies,
-            run=str(PackageManager.I.update_dependencies_args()),
-        )
-
-    def step_install_dependencies(self) -> dict[str, Any]:
-        """Build a step that synchronizes the virtual environment.
-
-        Runs `uv sync` to install all locked dependencies.
-
-        Returns:
-            Step that runs `uv sync`.
-        """
-        return self.step(
-            self.step_install_dependencies,
-            run=str(PackageManager.I.install_dependencies_args()),
-        )
-
-    def step_extract_version(self) -> dict[str, Any]:
-        """Build a step that extracts the current version.
-
-        The project version is extracted and assigned to the `VERSION`
-        variable in the GITHUB_OUTPUT.
-        """
-        return self.step(
-            self.step_extract_version,
-            run=self.assign_command_substitution_output_var(
-                self.version_var(),
-                PackageManager.I.version_short_args(),
-            ),
-        )
-
-    def assign_command_substitution_output_var(self, name: str, args: Args) -> str:
-        """Shell script to assign the output of a command substitution to a variable.
-
-        Args:
-            name: The name of the variable.
-            args: The command substitution arguments.
-
-        Returns:
-            Shell script string that assigns the output of the command substitution to
-            the variable.
-        """
-        var_name = name.upper()
-        shell_assignment = f"{var_name}={self.insert_command_substitution(str(args))}"
-        output_assignment = self.assign_output_var(
-            name,
-            self.insert_parameter_expansion(var_name),
-        )
-        return f"{shell_assignment}\n{output_assignment}"
-
-    def assign_output_var(self, name: str, value: str) -> str:
-        """Shell command to assign a value to a GitHub Actions output variable.
-
-        Args:
-            name: The name of the output variable.
-            value: The value to assign to the output variable.
-
-        Returns:
-            Shell command string to assign the value to the output variable in
-            `GITHUB_OUTPUT`.
-        """
-        return str(
-            Args(
-                "echo",
-                f"{name.lower()}={value}",
-                ">>",
-                self.insert_parameter_expansion("GITHUB_OUTPUT"),
-            ),
-        )
-
-    def repo_token_var(self) -> str:
-        """Return the raw secrets expression for `REPO_TOKEN`.
-
-        Returns:
-            The `"secrets.REPO_TOKEN"` expression string.
-        """
-        return self.secrets_var(RemoteVersionController.I.access_token_key())
-
-    def github_token_var(self) -> str:
-        """Return the raw secrets expression for `GITHUB_TOKEN`.
-
-        Returns:
-            The `"secrets.GITHUB_TOKEN"` expression string.
-        """
-        return self.secrets_var("GITHUB_TOKEN")
-
-    def secrets_var(self, name: str) -> str:
-        """Build the raw GitHub secrets expression for a secret name.
-
-        Args:
-            name: The secret's key name (e.g. `"REPO_TOKEN"`).
-
-        Returns:
-            Raw expression string `"secrets.<name>"` suitable for use
-            inside `${{ ... }}` wrappers.
-        """
-        return f"secrets.{name}"
-
-    def insert_repo_token(self) -> str:
-        """Return the `${{ secrets.REPO_TOKEN }}` expression.
-
-        Returns:
-            GitHub Actions expression for the `REPO_TOKEN` secret.
-        """
-        return self.insert_expression(self.repo_token_var())
-
-    def insert_output_version(self) -> str:
-        """Return the expression that resolves to the project version output variable.
-
-        Inserts the version saved in GITHUB_OUTPUT from the extract version step.
-
-        Returns:
-            GitHub Actions expression for the project version output variable.
-        """
-        return self.insert_output_var(
-            self.step_extract_version,
-            self.version_var(),
-        )
-
-    def insert_output_var(self, step: MethodType, name: str) -> str:
-        """Return the expression that resolves to the output variable of a step.
-
-        Args:
-            step: The step method whose output variable to reference.
-            name: The name of the output variable.
-
-        Returns:
-            GitHub Actions expression for the step's output variable.
-        """
-        return self.insert_expression(
-            f"steps.{self.step_id_from_method(step)}.outputs.{name.lower()}",
-        )
-
-    def insert_version_expansion(self) -> str:
-        """Return the shell parameter expansion for the `VERSION` environment variable.
-
-        Returns:
-            Shell parameter expansion string for the `VERSION` variable: `"${VERSION}"`.
-        """
-        return self.insert_parameter_expansion(self.version_var())
-
-    def version_var(self) -> str:
-        """Return the name of the environment variable that holds the project version.
-
-        Returns:
-            The `"VERSION"` environment variable name.
-        """
-        return "VERSION"
-
-    def insert_github_token(self) -> str:
-        """Return the `${{ secrets.GITHUB_TOKEN }}` expression.
-
-        Returns:
-            GitHub Actions expression for the automatic `GITHUB_TOKEN`
-            secret.
-        """
-        return self.insert_expression(self.github_token_var())
-
-    def insert_matrix_os(self) -> str:
-        """Return the expression that resolves to the current matrix OS value.
-
-        Returns:
-            GitHub Actions expression for `matrix.os`.
-        """
-        return self.insert_expression("matrix.os")
-
-    def insert_matrix_python_version(self) -> str:
-        """Return the expression that resolves to the current matrix Python version.
-
-        Returns:
-            GitHub Actions expression for `matrix.python-version`.
-        """
-        return self.insert_expression("matrix.python-version")
-
-    def insert_github_ref(self) -> str:
-        """Return the expression that resolves to the triggering ref.
-
-        Returns:
-            GitHub Actions expression for `github.ref`.
-        """
-        return self.insert_expression("github.ref")
-
-    def insert_command_substitution(self, command: str) -> str:
-        """Wrap a shell command in command substitution syntax "`$(...)"`."""
-        return self.insert_expansion(f"({command})")
-
-    def insert_parameter_expansion(self, parameter: str) -> str:
-        """Wrap a shell parameter in parameter expansion syntax `"${...}"`."""
-        return self.insert_expansion(f"{{{parameter}}}")
-
     def insert_expansion(self, expansion: str) -> str:
         """Wrap an expansion in basic shell expansion syntax `"$..."`."""
         return f'"${expansion}"'
-
-    def insert_expression(self, var: str) -> str:
-        """Wrap an expression in GitHub Actions `${{ ... }}` syntax.
-
-        Args:
-            var: The raw expression to wrap
-                (e.g. `"secrets.REPO_TOKEN"`).
-
-        Returns:
-            The expression surrounded by `${{ }}` delimiters, e.g.
-            `"${{ secrets.REPO_TOKEN }}"`.
-        """
-        return f"${{{{ {var} }}}}"

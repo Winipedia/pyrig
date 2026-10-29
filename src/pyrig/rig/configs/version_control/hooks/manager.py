@@ -7,7 +7,7 @@ at various git stages.
 from collections import defaultdict
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Any
+from typing import Any, override
 
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.toml import TOMLConfigFile
@@ -27,6 +27,29 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
     Hook installation and updates are integrated into the validation process.
     """
 
+    @override
+    def dependencies(self) -> Iterable[type[ConfigFile[Any]]]:
+        """Return `(PyprojectConfigFile,)`.
+
+        Validating `PyprojectConfigFile` ensures that `prek` and is installed before
+        `validate()` invokes `prek`.
+
+        Returns:
+            Direct `ConfigFile` dependencies for this file.
+        """
+        return (*super().dependencies(), PyprojectConfigFile)
+
+    @override
+    def parent_path(self) -> Path:
+        """Return the project root directory."""
+        return Path()
+
+    @override
+    def stem(self) -> str:
+        """Return `"prek"`, the config filename stem."""
+        return VersionControlHookManager.I.name()
+
+    @override
     def validate(self) -> bool:
         """Validate `prek.toml`.
 
@@ -40,17 +63,7 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         VersionControlHookManager.I.update_args().run()
         return correct
 
-    def dependencies(self) -> Iterable[type[ConfigFile[Any]]]:
-        """Return `(PyprojectConfigFile,)`.
-
-        Validating `PyprojectConfigFile` ensures that `prek` and is installed before
-        `validate()` invokes `prek`.
-
-        Returns:
-            Direct `ConfigFile` dependencies for this file.
-        """
-        return (*super().dependencies(), PyprojectConfigFile)
-
+    @override
     def _configs(self) -> dict[str, Any]:
         """Build the required `prek.toml` structure.
 
@@ -64,17 +77,13 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
             "repos": self.repositories(hooks),
         }
 
-    def parent_path(self) -> Path:
-        """Return the project root directory."""
-        return Path()
-
-    def stem(self) -> str:
-        """Return `"prek"`, the config filename stem."""
-        return VersionControlHookManager.I.name()
-
     def hook_types(self, hooks: list[dict[str, Any]]) -> list[str]:
         """Return the sorted, deduplicated git stages used across all hooks."""
         return sorted({stage for hook in hooks for stage in hook["stages"]})
+
+    def hooks(self) -> list[dict[str, Any]]:
+        """Return every hook configuration entry in the pipeline."""
+        return VersionControlHookTool.subclasses_hooks()
 
     def repositories(self, hooks: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Group hooks into prek's `repos` entries, one per distinct `repo`.
@@ -111,7 +120,3 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         for hook in hooks:
             by_repo[hook.pop("repo")].append(hook)
         return by_repo
-
-    def hooks(self) -> list[dict[str, Any]]:
-        """Return every hook configuration entry in the pipeline."""
-        return VersionControlHookTool.subclasses_hooks()

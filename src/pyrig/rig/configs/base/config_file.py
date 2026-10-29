@@ -5,7 +5,7 @@ from collections.abc import Hashable, Iterable, Iterator
 from functools import cache
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Self
+from typing import Any, Self, override
 
 import typer
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
@@ -50,14 +50,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
     """
 
     @abstractmethod
-    def empty_configs(self) -> ConfigT:
-        """Return an empty configuration structure for this config file type.
-
-        Returns:
-            An empty configuration data structure, such as an empty dict or list.
-        """
-
-    @abstractmethod
     def _configs(self) -> ConfigT:
         """Return the minimum required configuration structure.
 
@@ -70,18 +62,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
 
         Returns:
             Required configuration as a dict or list.
-        """
-
-    @abstractmethod
-    def _dump(self, configs: ConfigT) -> None:
-        """Write `configs` to the file on disk, replacing any existing content.
-
-        Called by `dump()` to persist a config value. Must write `configs` such
-        that a subsequent `_load()` call parses it back into an equivalent
-        structure, or the file will be treated as still incorrect.
-
-        Args:
-            configs: Configuration data to write.
         """
 
     @abstractmethod
@@ -98,11 +78,23 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         """
 
     @abstractmethod
-    def extension(self) -> str:
-        """Return the file extension without the leading dot.
+    def _dump(self, configs: ConfigT) -> None:
+        """Write `configs` to the file on disk, replacing any existing content.
+
+        Called by `dump()` to persist a config value. Must write `configs` such
+        that a subsequent `_load()` call parses it back into an equivalent
+        structure, or the file will be treated as still incorrect.
+
+        Args:
+            configs: Configuration data to write.
+        """
+
+    @abstractmethod
+    def empty_configs(self) -> ConfigT:
+        """Return an empty configuration structure for this config file type.
 
         Returns:
-            The extension string, e.g. `"toml"`, `"yaml"`, or `"py"`.
+            An empty configuration data structure, such as an empty dict or list.
         """
 
     @abstractmethod
@@ -114,6 +106,14 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         """
 
     @abstractmethod
+    def extension(self) -> str:
+        """Return the file extension without the leading dot.
+
+        Returns:
+            The extension string, e.g. `"toml"`, `"yaml"`, or `"py"`.
+        """
+
+    @abstractmethod
     def stem(self) -> str:
         """Return the filename without its extension.
 
@@ -121,15 +121,8 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             The file stem, e.g. `"pyproject"` for `pyproject.toml`.
         """
 
-    def __str__(self) -> str:
-        """Add the file path to the string representation.
-
-        Returns:
-            The class's string representation, followed by the file path in parentheses.
-        """
-        return f"{super().__str__()} ({self.path()})"
-
     @classmethod
+    @override
     def discovery_module(cls) -> ModuleType:
         """Return the `pyrig.rig.configs` package, scoping discovery to config files.
 
@@ -139,6 +132,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         return configs
 
     @classmethod
+    @override
     def merge_key(cls) -> Hashable:
         """Return the file path, so subclasses targeting the same file are merged.
 
@@ -151,26 +145,32 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         """
         return cls().path()
 
+    def __str__(self) -> str:
+        """Add the file path to the string representation.
+
+        Returns:
+            The class's string representation, followed by the file path in parentheses.
+        """
+        return f"{super().__str__()} ({self.path()})"
+
     @classmethod
-    @cache
-    def configs(cls) -> ConfigT:
-        """Return the required configuration structure.
+    def removable_subclasses(cls) -> Iterator[type[Self]]:
+        """Yield config file classes whose files can be safely removed.
 
-        The result is cached per class and reused on every subsequent access.
-
-        Returns:
-            Minimum required configuration as a dict or list.
+        Yields:
+            `ConfigFile` subclasses for which `removable()` returns `True`.
         """
-        return cls()._configs()  # noqa: SLF001
+        return (cf for cf in cls.concrete_leaves() if cf().removable())
 
-    def safe_load(self) -> ConfigT:
-        """Load the file contents if the file exists, or an empty configuration.
+    @classmethod
+    def version_control_ignored_subclasses(cls) -> Iterator[type[Self]]:
+        """Yield config file classes whose files are excluded from version control.
 
-        Returns:
-            Parsed file contents from `load()`, or the result of `empty_configs()`
-            if the file does not exist on disk.
+        Yields:
+            `ConfigFile` subclasses for which `version_control_ignored()`
+            returns `True`.
         """
-        return self.load() if self.path().exists() else self.empty_configs()
+        return (cf for cf in cls.concrete_leaves() if cf().version_control_ignored())
 
     @classmethod
     @cache
@@ -187,14 +187,45 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         return instance._load()
 
     @classmethod
-    def version_control_ignored_subclasses(cls) -> Iterator[type[Self]]:
-        """Yield config file classes whose files are excluded from version control.
+    @cache
+    def configs(cls) -> ConfigT:
+        """Return the required configuration structure.
 
-        Yields:
-            `ConfigFile` subclasses for which `version_control_ignored()`
-            returns `True`.
+        The result is cached per class and reused on every subsequent access.
+
+        Returns:
+            Minimum required configuration as a dict or list.
         """
-        return (cf for cf in cls.concrete_leaves() if cf().version_control_ignored())
+        return cls()._configs()  # noqa: SLF001
+
+    def removable(self) -> bool:
+        """Return whether this config file can be safely removed.
+
+        Defaults to `True` (safe to remove). Override in subclasses whose file
+        is required for the project to function.
+
+        Returns:
+            `True` if the file can be safely removed; `False` otherwise.
+        """
+        return True
+
+    def remove(self) -> bool:
+        """Remove the config file from the filesystem.
+
+        1. Deletes the file if it exists
+        2. Clears the cached loaded configuration.
+        3. Echoes the removed file path.
+
+        Returns:
+            `True` if the file was removed; `False` otherwise.
+        """
+        path = self.path()
+        if path.exists():
+            path.unlink()
+            self.load.cache_clear()
+            typer.echo(f"Removed {self}")
+            return True
+        return False
 
     def validate(self) -> bool:
         """Validate the config file, creating or updating it as needed.
@@ -225,59 +256,16 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             raise RuntimeError(msg)
         return False
 
-    def leaf_dependencies(
-        self,
-    ) -> Iterator[type["ConfigFile[Any]"]]:
-        """Yield the leaf classes for this file's config dependencies.
+    def version_control_ignored(self) -> bool:
+        """Return whether this config file is excluded from version control.
 
-        Dependencies are returned in the order declared by `dependencies()`.
-
-        Yields:
-            Leaf `ConfigFile` subclasses that must be validated before this
-            one.
-        """
-        return (cf.L for cf in self.dependencies())
-
-    def dependencies(
-        self,
-    ) -> Iterable[type["ConfigFile[Any]"]]:
-        """Return config file classes that this file directly depends on.
-
-        Each returned class is validated before this file. Dependencies may
-        themselves declare further dependencies.
+        Defaults to `False` (tracked by version control). Override in
+        subclasses whose file is git-ignored.
 
         Returns:
-            Direct `ConfigFile` dependencies to validate before this one.
+            `True` if the file is git-ignored; `False` otherwise.
         """
-        return ()
-
-    def create_file(self) -> None:
-        """Ensure the config file exists, creating any missing parent directories.
-
-        If the file does not already exist, it is created empty. An already
-        existing file is left with its content untouched. Echoes the file path
-        to stdout either way.
-        """
-        path = self.path()
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.touch()
-        typer.echo(f"Created {self}")
-
-    def path(self) -> Path:
-        """Return the full path to the config file."""
-        return self.parent_path() / self.filename()
-
-    def filename(self) -> str:
-        """Return the filename of the config file, including extension.
-
-        Returns:
-            The config file's filename, e.g. `"config.toml"`.
-        """
-        return f"{self.stem()}{self.extension_separator()}{self.extension()}"
-
-    def extension_separator(self) -> str:
-        """Return the character separating the stem from the extension, `"."`."""
-        return "."
+        return False
 
     def dump(self, configs: ConfigT) -> None:
         """Write configuration to disk and keep the load cache consistent.
@@ -304,28 +292,18 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         """
         return self.path().exists() and self.is_correct()
 
-    def is_correct(self) -> bool:
-        """Return whether the config file passes validation.
+    def leaf_dependencies(
+        self,
+    ) -> Iterator[type["ConfigFile[Any]"]]:
+        """Yield the leaf classes for this file's config dependencies.
 
-        A file is considered correct if it contains at least everything declared
-        in `configs()`; additional keys or items are allowed.
+        Dependencies are returned in the order declared by `dependencies()`.
 
-        Returns:
-            `True` if all required configuration is present in the file.
+        Yields:
+            Leaf `ConfigFile` subclasses that must be validated before this
+            one.
         """
-        return self.configs_is_subset(self.load())
-
-    def configs_is_subset(self, superset: ConfigT) -> bool:
-        """Return whether the current configs are a subset of the given superset.
-
-        Args:
-            superset: The configuration to compare against.
-
-        Returns:
-            `True` if all required configuration in `configs()` is present in the
-            superset.
-        """
-        return structure_is_subset(self.configs(), superset)
+        return (cf.L for cf in self.dependencies())
 
     def merge_configs(self) -> ConfigT:
         """Merge the current file contents into the required configuration.
@@ -348,54 +326,78 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             superset=self.safe_load(),
         )
 
-    def version_control_ignored(self) -> bool:
-        """Return whether this config file is excluded from version control.
+    def create_file(self) -> None:
+        """Ensure the config file exists, creating any missing parent directories.
 
-        Defaults to `False` (tracked by version control). Override in
-        subclasses whose file is git-ignored.
-
-        Returns:
-            `True` if the file is git-ignored; `False` otherwise.
-        """
-        return False
-
-    def remove(self) -> bool:
-        """Remove the config file from the filesystem.
-
-        1. Deletes the file if it exists
-        2. Clears the cached loaded configuration.
-        3. Echoes the removed file path.
-
-        Returns:
-            `True` if the file was removed; `False` otherwise.
+        If the file does not already exist, it is created empty. An already
+        existing file is left with its content untouched. Echoes the file path
+        to stdout either way.
         """
         path = self.path()
-        if path.exists():
-            path.unlink()
-            self.load.cache_clear()
-            typer.echo(f"Removed {self}")
-            return True
-        return False
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.touch()
+        typer.echo(f"Created {self}")
 
-    @classmethod
-    def removable_subclasses(cls) -> Iterator[type[Self]]:
-        """Yield config file classes whose files can be safely removed.
+    def dependencies(
+        self,
+    ) -> Iterable[type["ConfigFile[Any]"]]:
+        """Return config file classes that this file directly depends on.
 
-        Yields:
-            `ConfigFile` subclasses for which `removable()` returns `True`.
-        """
-        return (cf for cf in cls.concrete_leaves() if cf().removable())
-
-    def removable(self) -> bool:
-        """Return whether this config file can be safely removed.
-
-        Defaults to `True` (safe to remove). Override in subclasses whose file
-        is required for the project to function.
+        Each returned class is validated before this file. Dependencies may
+        themselves declare further dependencies.
 
         Returns:
-            `True` if the file can be safely removed; `False` otherwise.
+            Direct `ConfigFile` dependencies to validate before this one.
         """
-        return True
+        return ()
+
+    def is_correct(self) -> bool:
+        """Return whether the config file passes validation.
+
+        A file is considered correct if it contains at least everything declared
+        in `configs()`; additional keys or items are allowed.
+
+        Returns:
+            `True` if all required configuration is present in the file.
+        """
+        return self.configs_is_subset(self.load())
+
+    def safe_load(self) -> ConfigT:
+        """Load the file contents if the file exists, or an empty configuration.
+
+        Returns:
+            Parsed file contents from `load()`, or the result of `empty_configs()`
+            if the file does not exist on disk.
+        """
+        return self.load() if self.path().exists() else self.empty_configs()
+
+    def configs_is_subset(self, superset: ConfigT) -> bool:
+        """Return whether the current configs are a subset of the given superset.
+
+        Args:
+            superset: The configuration to compare against.
+
+        Returns:
+            `True` if all required configuration in `configs()` is present in the
+            superset.
+        """
+        return structure_is_subset(self.configs(), superset)
+
+    def path(self) -> Path:
+        """Return the full path to the config file."""
+        return self.parent_path() / self.filename()
+
+    def filename(self) -> str:
+        """Return the filename of the config file, including extension.
+
+        Returns:
+            The config file's filename, e.g. `"config.toml"`.
+        """
+        return f"{self.stem()}{self.extension_separator()}{self.extension()}"
+
+    def extension_separator(self) -> str:
+        """Return the character separating the stem from the extension, `"."`."""
+        return "."
 
 
 class DictConfigFile(ConfigFile[dict[str, Any]]):
@@ -405,6 +407,7 @@ class DictConfigFile(ConfigFile[dict[str, Any]]):
     work with a concretely typed dict instead of the generic base type.
     """
 
+    @override
     def empty_configs(self) -> dict[str, Any]:
         """Return an empty dictionary.
 
@@ -421,6 +424,7 @@ class ListConfigFile(ConfigFile[list[str]]):
     with a concretely typed list instead of the generic base type.
     """
 
+    @override
     def empty_configs(self) -> list[str]:
         """Return an empty list.
 

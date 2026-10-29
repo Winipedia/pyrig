@@ -1,6 +1,6 @@
 """Security scanner command construction and badge metadata."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
@@ -18,39 +18,7 @@ class SecurityChecker(CheckHookTool):
     common security vulnerabilities.
     """
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the badge image URL for `bandit`."""
-        return f"https://img.shields.io/badge/security-{self.shield_name()}-yellow.svg"
-
-    def link_url(self) -> str:
-        """Return the URL of the `bandit` project page."""
-        return "https://github.com/PyCQA/bandit"
-
-    def name(self) -> str:
-        """Return `'bandit'`."""
-        return "bandit"
-
-    def check_args(self, *args: str) -> Args:
-        """Construct `bandit` arguments.
-
-        No target path is baked in: bandit silently skips a file it can't
-        parse as Python rather than erroring, but still reports the skip
-        and wastes a whole-tree walk doing so, so callers are expected to
-        supply the specific files to check.
-
-        Args:
-            *args: Additional `bandit` arguments, typically the file paths
-                to check.
-
-        Returns:
-            Args for `bandit [args]`.
-        """
-        return self.args(*args)
-
+    @override
     def check_hook(self) -> dict[str, Any]:
         """Return hook metadata for scanning Python source for vulnerabilities.
 
@@ -67,6 +35,44 @@ class SecurityChecker(CheckHookTool):
                 f"--exclude={ProjectTester.I.package_root().as_posix()}",
             ),
         )
+
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the badge image URL for `bandit`."""
+        return f"https://img.shields.io/badge/security-{self.shield_name()}-yellow.svg"
+
+    @override
+    def link_url(self) -> str:
+        """Return the URL of the `bandit` project page."""
+        return "https://github.com/PyCQA/bandit"
+
+    @override
+    def name(self) -> str:
+        """Return `'bandit'`."""
+        return "bandit"
+
+    @override
+    def check_args(self, *args: str) -> Args:
+        """Construct `bandit` arguments.
+
+        No target path is baked in: bandit silently skips a file it can't
+        parse as Python rather than erroring, but still reports the skip
+        and wastes a whole-tree walk doing so, so callers are expected to
+        supply the specific files to check.
+
+        Args:
+            *args: Additional `bandit` arguments, typically the file paths
+                to check.
+
+        Returns:
+            Args for `bandit [args]`.
+        """
+        return self.args(*args)
 
     def check_security(self) -> Args:
         """Return the `Args` this hook's entry runs.

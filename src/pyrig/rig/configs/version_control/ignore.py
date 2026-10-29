@@ -1,6 +1,7 @@
 """Configuration management for `.gitignore` files."""
 
 from pathlib import Path
+from typing import override
 
 from pyrig.core.resources import resource_content
 from pyrig.rig import resources
@@ -19,6 +20,7 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
     `.scratch.py`). Additions already present in the baseline are not duplicated.
     """
 
+    @override
     def content(self) -> str:
         """Build the required content for `.gitignore`.
 
@@ -34,18 +36,22 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         ]
         return self.join_lines([*standard, *additional, ""])
 
+    @override
     def extension(self) -> str:
         """Return an empty string, since `.gitignore` has no extension."""
         return ""
 
+    @override
     def extension_separator(self) -> str:
         """Return an empty string, so no trailing dot is appended to `.gitignore`."""
         return ""
 
+    @override
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
         return Path()
 
+    @override
     def stem(self) -> str:
         """Return `'.gitignore'`, the full filename with no extension to split off."""
         return ".gitignore"

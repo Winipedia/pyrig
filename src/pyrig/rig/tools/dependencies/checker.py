@@ -1,6 +1,6 @@
 """Dependency checker command construction and badge metadata."""
 
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
@@ -18,33 +18,7 @@ class DependencyChecker(CheckHookTool):
     and transitive dependencies.
     """
 
-    def group(self) -> str:
-        """Return `Group.CODE_QUALITY`."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the Shields.io badge URL advertising `deptry`."""
-        return f"https://img.shields.io/badge/dependencies-{self.shield_name()}-blue"
-
-    def link_url(self) -> str:
-        """Return the URL of the `deptry` project page."""
-        return "https://github.com/osprey-oss/deptry"
-
-    def name(self) -> str:
-        """Return `"deptry"`."""
-        return "deptry"
-
-    def check_args(self, *args: str) -> Args:
-        """Build the `deptry` command.
-
-        Args:
-            *args: Additional CLI flags for `deptry`.
-
-        Returns:
-            Args for running `deptry` with the given flags.
-        """
-        return self.args(*args)
-
+    @override
     def check_hook(self) -> dict[str, Any]:
         """Return the hook metadata for checking the project's dependencies.
 
@@ -64,6 +38,38 @@ class DependencyChecker(CheckHookTool):
             types_or=["python", "pyproject"],
             pass_filenames=False,
         )
+
+    @override
+    def group(self) -> str:
+        """Return `Group.CODE_QUALITY`."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the Shields.io badge URL advertising `deptry`."""
+        return f"https://img.shields.io/badge/dependencies-{self.shield_name()}-blue"
+
+    @override
+    def link_url(self) -> str:
+        """Return the URL of the `deptry` project page."""
+        return "https://github.com/osprey-oss/deptry"
+
+    @override
+    def name(self) -> str:
+        """Return `"deptry"`."""
+        return "deptry"
+
+    @override
+    def check_args(self, *args: str) -> Args:
+        """Build the `deptry` command.
+
+        Args:
+            *args: Additional CLI flags for `deptry`.
+
+        Returns:
+            Args for running `deptry` with the given flags.
+        """
+        return self.args(*args)
 
     def check_dependencies(self) -> Args:
         """Return the `Args` this hook's entry runs.

@@ -7,6 +7,28 @@ from pyrig.rig.tools.language.case_conflict import CaseConflictChecker
 class TestCaseConflictChecker:
     """Test class."""
 
+    def test_check_args(self) -> None:
+        """Test method."""
+        result = CaseConflictChecker.I.check_args()
+        assert result == ()
+
+    def test_check_case_conflict(self) -> None:
+        """Test method."""
+        assert CaseConflictChecker.I.check_case_conflict() == ()
+
+    def test_check_hook(self) -> None:
+        """Test method."""
+        # filename checking runs after the general text-fixing chain
+        hook = CaseConflictChecker.I.check_hook()
+        eof_hook = EndOfFileFormatter.I.format_hook()
+        assert hook["priority"] > eof_hook["priority"]
+        assert "types" not in hook
+
+    def test_dev_dependencies(self) -> None:
+        """Test method."""
+        result = CaseConflictChecker.I.dev_dependencies()
+        assert result == ()
+
     def test_group(self) -> None:
         """Test method."""
         result = CaseConflictChecker.I.group()
@@ -31,25 +53,3 @@ class TestCaseConflictChecker:
         """Test method."""
         result = CaseConflictChecker.I.name()
         assert result == "check-case-conflict"
-
-    def test_dev_dependencies(self) -> None:
-        """Test method."""
-        result = CaseConflictChecker.I.dev_dependencies()
-        assert result == ()
-
-    def test_check_args(self) -> None:
-        """Test method."""
-        result = CaseConflictChecker.I.check_args()
-        assert result == ()
-
-    def test_check_hook(self) -> None:
-        """Test method."""
-        # filename checking runs after the general text-fixing chain
-        hook = CaseConflictChecker.I.check_hook()
-        eof_hook = EndOfFileFormatter.I.format_hook()
-        assert hook["priority"] > eof_hook["priority"]
-        assert "types" not in hook
-
-    def test_check_case_conflict(self) -> None:
-        """Test method."""
-        assert CaseConflictChecker.I.check_case_conflict() == ()

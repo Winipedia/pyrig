@@ -10,22 +10,6 @@ from pyrig.rig.configs.version_control.remote.settings import (
 class TestRepositorySettingsConfigFile:
     """Test class."""
 
-    def test_repo_key(self) -> None:
-        """Test method."""
-        assert RepositorySettingsConfigFile.I.repo_key() == "repository"
-
-    def test_rulesets_key(self) -> None:
-        """Test method."""
-        assert RepositorySettingsConfigFile.I.rulesets_key() == "rulesets"
-
-    def test_parent_path(self) -> None:
-        """Test method."""
-        assert RepositorySettingsConfigFile.I.parent_path() == Path(".github")
-
-    def test_stem(self) -> None:
-        """Test method."""
-        assert RepositorySettingsConfigFile.I.stem() == "settings"
-
     def test__configs(self) -> None:
         """Test method."""
         configs = RepositorySettingsConfigFile.I.configs()
@@ -33,13 +17,6 @@ class TestRepositorySettingsConfigFile:
         assert RepositorySettingsConfigFile.I.repo_key() in configs
         assert RepositorySettingsConfigFile.I.rulesets_key() in configs
         assert isinstance(configs[RepositorySettingsConfigFile.I.rulesets_key()], list)
-
-    def test_bypass_actors(self) -> None:
-        """Test method."""
-        actors = RepositorySettingsConfigFile.I.bypass_actors()
-        assert actors == [
-            RepositorySettingsConfigFile.I.admin_bypass_actor(),
-        ]
 
     def test_admin_bypass_actor(self) -> None:
         """Test method."""
@@ -49,18 +26,12 @@ class TestRepositorySettingsConfigFile:
             "bypass_mode": "always",
         }
 
-    def test_required_status_checks(self) -> None:
+    def test_bypass_actors(self) -> None:
         """Test method."""
-        assert RepositorySettingsConfigFile.I.required_status_checks() == [
-            RepositorySettingsConfigFile.I.status_check_health_check(),
+        actors = RepositorySettingsConfigFile.I.bypass_actors()
+        assert actors == [
+            RepositorySettingsConfigFile.I.admin_bypass_actor(),
         ]
-
-    def test_status_check_health_check(self) -> None:
-        """Test method."""
-        assert RepositorySettingsConfigFile.I.status_check_health_check() == {
-            "context": "Health Check",
-            "integration_id": 15368,
-        }
 
     def test_github_actions_status_check(self) -> None:
         """Test method."""
@@ -70,6 +41,32 @@ class TestRepositorySettingsConfigFile:
             "context": "Test",
             "integration_id": 15368,
         }
+
+    def test_parent_path(self) -> None:
+        """Test method."""
+        assert RepositorySettingsConfigFile.I.parent_path() == Path(".github")
+
+    def test_repo_key(self) -> None:
+        """Test method."""
+        assert RepositorySettingsConfigFile.I.repo_key() == "repository"
+
+    def test_required_status_checks(self) -> None:
+        """Test method."""
+        assert RepositorySettingsConfigFile.I.required_status_checks() == [
+            RepositorySettingsConfigFile.I.status_check_health_check(),
+        ]
+
+    def test_rulesets_key(self) -> None:
+        """Test method."""
+        assert RepositorySettingsConfigFile.I.rulesets_key() == "rulesets"
+
+    def test_settings(self) -> None:
+        """Test method."""
+        settings = RepositorySettingsConfigFile.I.settings()
+        assert isinstance(settings, dict)
+        assert RepositorySettingsConfigFile.I.repo_key() in settings
+        assert RepositorySettingsConfigFile.I.rulesets_key() in settings
+        assert isinstance(settings[RepositorySettingsConfigFile.I.rulesets_key()], list)
 
     def test_status_check(self) -> None:
         """Test method."""
@@ -81,10 +78,13 @@ class TestRepositorySettingsConfigFile:
             "integration_id": 42,
         }
 
-    def test_settings(self) -> None:
+    def test_status_check_health_check(self) -> None:
         """Test method."""
-        settings = RepositorySettingsConfigFile.I.settings()
-        assert isinstance(settings, dict)
-        assert RepositorySettingsConfigFile.I.repo_key() in settings
-        assert RepositorySettingsConfigFile.I.rulesets_key() in settings
-        assert isinstance(settings[RepositorySettingsConfigFile.I.rulesets_key()], list)
+        assert RepositorySettingsConfigFile.I.status_check_health_check() == {
+            "context": "Health Check",
+            "integration_id": 15368,
+        }
+
+    def test_stem(self) -> None:
+        """Test method."""
+        assert RepositorySettingsConfigFile.I.stem() == "settings"

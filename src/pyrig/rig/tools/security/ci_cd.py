@@ -1,7 +1,7 @@
 """CI/CD security checker tool wrapper."""
 
 import re
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
@@ -19,26 +19,7 @@ class CICDSecurityChecker(CheckHookTool):
     It implements zizmor and wraps around it.
     """
 
-    def group(self) -> str:
-        """Return the group this tool belongs to."""
-        return Group.CODE_QUALITY
-
-    def image_url(self) -> str:
-        """Return the URL of the shield image."""
-        return "https://img.shields.io/badge/%F0%9F%8C%88-zizmor-white?labelColor=white"
-
-    def link_url(self) -> str:
-        """Return the URL of the tool's homepage or repository."""
-        return "https://github.com/zizmorcore/zizmor"
-
-    def name(self) -> str:
-        """Return the name of the tool."""
-        return "zizmor"
-
-    def check_args(self, *args: str) -> Args:
-        """Return the arguments for the CI/CD security checker."""
-        return self.args(*args)
-
+    @override
     def check_hook(self) -> dict[str, Any]:
         """Return the configuration for the CI/CD security checker hook."""
         return VersionControlHookManager.I.local_hook(
@@ -50,6 +31,31 @@ class CICDSecurityChecker(CheckHookTool):
             files=self.ci_cd_files_pattern(),
             args=Args("--fix", "--persona=auditor", "--strict-collection"),
         )
+
+    @override
+    def group(self) -> str:
+        """Return the group this tool belongs to."""
+        return Group.CODE_QUALITY
+
+    @override
+    def image_url(self) -> str:
+        """Return the URL of the shield image."""
+        return "https://img.shields.io/badge/%F0%9F%8C%88-zizmor-white?labelColor=white"
+
+    @override
+    def link_url(self) -> str:
+        """Return the URL of the tool's homepage or repository."""
+        return "https://github.com/zizmorcore/zizmor"
+
+    @override
+    def name(self) -> str:
+        """Return the name of the tool."""
+        return "zizmor"
+
+    @override
+    def check_args(self, *args: str) -> Args:
+        """Return the arguments for the CI/CD security checker."""
+        return self.args(*args)
 
     def check_ci_cd(self) -> Args:
         """Return the args for running the CI/CD security checker in the hook."""

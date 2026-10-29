@@ -1,7 +1,7 @@
 """Configuration file management for the project's Zensical site."""
 
 from pathlib import Path
-from typing import Any
+from typing import Any, override
 
 from pyrig.rig.configs.base.toml import TOMLConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
@@ -19,6 +19,17 @@ class DocsBuilderConfigFile(TOMLConfigFile):
     Assembles the required configuration from live project metadata.
     """
 
+    @override
+    def parent_path(self) -> Path:
+        """Return the project root directory."""
+        return Path()
+
+    @override
+    def stem(self) -> str:
+        """Return `DocsBuilder.I.name()` as the file stem."""
+        return DocsBuilder.I.name()
+
+    @override
     def _configs(self) -> dict[str, Any]:
         """Assemble the required `zensical.toml` structure from live project state."""
         branch = VersionController.I.default_branch()
@@ -109,11 +120,3 @@ class DocsBuilderConfigFile(TOMLConfigFile):
                 },
             },
         }
-
-    def parent_path(self) -> Path:
-        """Return the project root directory."""
-        return Path()
-
-    def stem(self) -> str:
-        """Return `DocsBuilder.I.name()` as the file stem."""
-        return DocsBuilder.I.name()

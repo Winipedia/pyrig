@@ -1,7 +1,7 @@
 """GitHub Actions workflow generator for the health check CI stage."""
 
 from types import MethodType
-from typing import Any, Literal
+from typing import Any, Literal, override
 
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
@@ -17,6 +17,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
     This workflow runs quality and health checks to ensure the project's integrity.
     """
 
+    @override
     def jobs(self) -> dict[str, Any]:
         """Return all jobs for the health check workflow.
 
@@ -30,10 +31,12 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         jobs.update(self.job_health_check())
         return jobs
 
+    @override
     def stem(self) -> str:
         """Return `"health_check"`, the workflow file's stem."""
         return "health_check"
 
+    @override
     def workflow_triggers(self) -> dict[str, Any]:
         """Return manual, pull request, scheduled, and reusable-workflow triggers.
 
@@ -102,17 +105,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             self.step_aggregate_jobs(),
         ]
 
-    def step_aggregate_jobs(self) -> dict[str, Any]:
-        """Build a no-op step that only echoes a message.
-
-        Returns:
-            Step that echoes an aggregation message.
-        """
-        return self.step(
-            self.step_aggregate_jobs,
-            run="echo 'Aggregating jobs into one job.'",
-        )
-
     def job_health_checks(self) -> dict[str, Any]:
         """Return the single-runner job that applies all code quality checks.
 
@@ -126,36 +118,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             self.job_health_checks,
             permissions=self.permission_contents(),
             steps=self.steps_health_checks(),
-        )
-
-    def steps_health_checks(self) -> list[dict[str, Any]]:
-        """Return the steps for the single-runner quality check job.
-
-        Returns:
-            Steps that install dependencies and run the configured
-            pre-commit hooks.
-        """
-        return [
-            *self.steps_core_installed_setup(update_dependencies=True),
-            self.step_run_version_control_hooks(),
-        ]
-
-    def step_run_version_control_hooks(self) -> dict[str, Any]:
-        """Build a step that runs all pre-commit hooks via prek.
-
-        GH_TOKEN is passed to the environment for zizmor's online behavior.
-
-        Returns:
-            Step that runs the pre-commit hooks.
-        """
-        return self.step(
-            self.step_run_version_control_hooks,
-            run=str(
-                PackageManager.I.run_args(
-                    *VersionControlHookManager.I.run_all_files_all_hooks_args(),
-                ),
-            ),
-            env={"GH_TOKEN": self.insert_github_token()},
         )
 
     def job_matrix_health_checks(self) -> dict[str, Any]:
@@ -175,6 +137,29 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             runs_on=self.insert_matrix_os(),
             steps=self.steps_matrix_health_checks(),
         )
+
+    def step_aggregate_jobs(self) -> dict[str, Any]:
+        """Build a no-op step that only echoes a message.
+
+        Returns:
+            Step that echoes an aggregation message.
+        """
+        return self.step(
+            self.step_aggregate_jobs,
+            run="echo 'Aggregating jobs into one job.'",
+        )
+
+    def steps_health_checks(self) -> list[dict[str, Any]]:
+        """Return the steps for the single-runner quality check job.
+
+        Returns:
+            Steps that install dependencies and run the configured
+            pre-commit hooks.
+        """
+        return [
+            *self.steps_core_installed_setup(update_dependencies=True),
+            self.step_run_version_control_hooks(),
+        ]
 
     def steps_matrix_health_checks(self) -> list[dict[str, Any]]:
         """Return the steps for the matrix test job.
@@ -201,4 +186,22 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         return self.step(
             self.step_run_tests,
             run=run,
+        )
+
+    def step_run_version_control_hooks(self) -> dict[str, Any]:
+        """Build a step that runs all pre-commit hooks via prek.
+
+        GH_TOKEN is passed to the environment for zizmor's online behavior.
+
+        Returns:
+            Step that runs the pre-commit hooks.
+        """
+        return self.step(
+            self.step_run_version_control_hooks,
+            run=str(
+                PackageManager.I.run_args(
+                    *VersionControlHookManager.I.run_all_files_all_hooks_args(),
+                ),
+            ),
+            env={"GH_TOKEN": self.insert_github_token()},
         )

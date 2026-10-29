@@ -8,6 +8,25 @@ from pyrig.rig.tools.security.checker import SecurityChecker
 class TestSecurityChecker:
     """Test class."""
 
+    def test_check_args(self) -> None:
+        """Test method."""
+        result = SecurityChecker.I.check_args("flag1", "flag2")
+        assert result == ("bandit", "flag1", "flag2")
+
+    def test_check_hook(self) -> None:
+        """Test method."""
+        # Bandit runs after Ruff's Python fixer
+        hook = SecurityChecker.I.check_hook()
+        check_hook = PythonLinter.I.check_hook()
+        assert hook["priority"] > check_hook["priority"]
+        assert hook["types"] == ["python"]
+
+    def test_check_security(self) -> None:
+        """Test method."""
+        assert SecurityChecker.I.check_security() == PackageManager.I.run_args(
+            *SecurityChecker.I.check_args(),
+        )
+
     def test_group(self) -> None:
         """Test method."""
         result = SecurityChecker.I.group()
@@ -29,22 +48,3 @@ class TestSecurityChecker:
         """Test method."""
         result = SecurityChecker.I.name()
         assert result == "bandit"
-
-    def test_check_args(self) -> None:
-        """Test method."""
-        result = SecurityChecker.I.check_args("flag1", "flag2")
-        assert result == ("bandit", "flag1", "flag2")
-
-    def test_check_hook(self) -> None:
-        """Test method."""
-        # Bandit runs after Ruff's Python fixer
-        hook = SecurityChecker.I.check_hook()
-        check_hook = PythonLinter.I.check_hook()
-        assert hook["priority"] > check_hook["priority"]
-        assert hook["types"] == ["python"]
-
-    def test_check_security(self) -> None:
-        """Test method."""
-        assert SecurityChecker.I.check_security() == PackageManager.I.run_args(
-            *SecurityChecker.I.check_args(),
-        )

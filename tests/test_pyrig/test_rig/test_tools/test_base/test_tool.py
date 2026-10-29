@@ -17,6 +17,23 @@ from pyrig.rig.tools.testing.project import ProjectTester
 class TestTool:
     """Test class."""
 
+    def test___str__(self) -> None:
+        """Test method."""
+        assert "uv" in str(PackageManager.I)
+
+    def test_args(self) -> None:
+        """Test method."""
+        # Tool is abstract, test through concrete implementation
+        result = PackageManager.I.args("run", "pytest")
+        assert result == ("uv", "run", "pytest")
+
+    def test_badge(self) -> None:
+        """Test method."""
+        result = PackageManager.I.badge()
+        assert isinstance(result, str)
+        assert "uv" in result
+        assert "[![" in result
+
     def test_config_name(self, mocker: MockerFixture) -> None:
         """Test method."""
         assert PackageManager.I.config_name() == "uv"
@@ -29,6 +46,45 @@ class TestTool:
         )
         assert PackageManager.I.config_name() == "my_tool"
         mock.assert_called_once()
+
+    def test_dev_dependencies(self) -> None:
+        """Test method."""
+        result = PackageManager.I.dev_dependencies()
+        assert result == ()
+
+    def test_discovery_module(self) -> None:
+        """Test method."""
+        result = Tool.discovery_module()
+        assert result == tools
+
+    def test_group(self) -> None:
+        """Test method."""
+        result = PackageManager.I.group()
+        assert isinstance(result, str)
+        assert result == "tooling"
+
+    def test_group_order(self) -> None:
+        """Test method."""
+        result = Tool.group_order("project-status")
+        assert isinstance(result, int)
+        assert result == 0
+
+        result = Tool.group_order("code-quality")
+        assert isinstance(result, int)
+        assert result == 1
+
+        result = Tool.group_order("unknown-group")
+        assert isinstance(result, int)
+        assert result == 4  # noqa: PLR2004
+
+    def test_grouped_badges(self) -> None:
+        """Test method."""
+        badges1 = Tool.grouped_badges()
+        assert isinstance(badges1, dict)
+        assert len(badges1) > 0
+        assert all(
+            isinstance(k, str) and isinstance(v, list) for k, v in badges1.items()
+        )
 
     def test_groups(self) -> None:
         """Test method."""
@@ -77,70 +133,15 @@ class TestTool:
                     f"Failed: {response.url}, Status Code: {response.status_code}"
                 )
 
-    def test_version_control_ignore_patterns(self) -> None:
+    def test_merge_key(self) -> None:
         """Test method."""
-        assert PackageManager.I.version_control_ignore_patterns() == (".venv", "dist/")
-
-    def test_subclasses_version_control_ignore_patterns(self) -> None:
-        """Test method."""
-        ignore_paths = Tool.subclasses_version_control_ignore_patterns()
-        for path in (".venv", "dist/", ".coverage", ".pytest_cache/"):
-            assert path in ignore_paths
-
-    def test___str__(self) -> None:
-        """Test method."""
-        assert "uv" in str(PackageManager.I)
-
-    def test_discovery_module(self) -> None:
-        """Test method."""
-        result = Tool.discovery_module()
-        assert result == tools
-
-    def test_group(self) -> None:
-        """Test method."""
-        result = PackageManager.I.group()
-        assert isinstance(result, str)
-        assert result == "tooling"
-
-    def test_badge(self) -> None:
-        """Test method."""
-        result = PackageManager.I.badge()
-        assert isinstance(result, str)
-        assert "uv" in result
-        assert "[![" in result
-
-    def test_grouped_badges(self) -> None:
-        """Test method."""
-        badges1 = Tool.grouped_badges()
-        assert isinstance(badges1, dict)
-        assert len(badges1) > 0
-        assert all(
-            isinstance(k, str) and isinstance(v, list) for k, v in badges1.items()
-        )
-
-    def test_dev_dependencies(self) -> None:
-        """Test method."""
-        result = PackageManager.I.dev_dependencies()
-        assert result == ()
-
-    def test_subclasses_dev_dependencies(self) -> None:
-        """Test method."""
-        deps = Tool.subclasses_dev_dependencies()
-        toml_deps = PyprojectConfigFile.I.project_dev_dependencies()
-        toml_deps_no_versions = tuple(dep.split(">=")[0] for dep in toml_deps)
-
-        assert set(deps).issubset(set(toml_deps_no_versions))
+        assert PackageManager.merge_key() == "uv"
+        assert ProjectTester.merge_key() == "pytest"
 
     def test_name(self) -> None:
         """Test method."""
         # Tool is abstract, test through concrete implementation
         assert PackageManager.I.name() == "uv"
-
-    def test_args(self) -> None:
-        """Test method."""
-        # Tool is abstract, test through concrete implementation
-        result = PackageManager.I.args("run", "pytest")
-        assert result == ("uv", "run", "pytest")
 
     def test_shield_name(self, mocker: MockerFixture) -> None:
         """Test method."""
@@ -172,21 +173,20 @@ class TestTool:
         assert isinstance(result[1], str)
         assert result[1] == "PackageManager"
 
-    def test_group_order(self) -> None:
+    def test_subclasses_dev_dependencies(self) -> None:
         """Test method."""
-        result = Tool.group_order("project-status")
-        assert isinstance(result, int)
-        assert result == 0
+        deps = Tool.subclasses_dev_dependencies()
+        toml_deps = PyprojectConfigFile.I.project_dev_dependencies()
+        toml_deps_no_versions = tuple(dep.split(">=")[0] for dep in toml_deps)
 
-        result = Tool.group_order("code-quality")
-        assert isinstance(result, int)
-        assert result == 1
+        assert set(deps).issubset(set(toml_deps_no_versions))
 
-        result = Tool.group_order("unknown-group")
-        assert isinstance(result, int)
-        assert result == 4  # noqa: PLR2004
-
-    def test_merge_key(self) -> None:
+    def test_subclasses_version_control_ignore_patterns(self) -> None:
         """Test method."""
-        assert PackageManager.merge_key() == "uv"
-        assert ProjectTester.merge_key() == "pytest"
+        ignore_paths = Tool.subclasses_version_control_ignore_patterns()
+        for path in (".venv", "dist/", ".coverage", ".pytest_cache/"):
+            assert path in ignore_paths
+
+    def test_version_control_ignore_patterns(self) -> None:
+        """Test method."""
+        assert PackageManager.I.version_control_ignore_patterns() == (".venv", "dist/")

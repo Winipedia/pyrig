@@ -3,7 +3,7 @@
 import platform
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, override
 
 from packaging.version import Version
 from pyrig_runtime.core.dependencies.distribution import (
@@ -47,19 +47,7 @@ class PyprojectConfigFile(TOMLConfigFile):
     overriding the corresponding accessor method in a subclass.
     """
 
-    def validate(self) -> bool:
-        """Validate the config file, then add missing project dependencies.
-
-        Returns:
-            `True` if this file and its config file dependencies were already
-            correct and no project dependencies needed to be added; `False`
-            if this file or one of its config file dependencies was updated,
-            or project dependencies were added.
-        """
-        correct = super().validate()
-        dependencies = self.add_additional_dependencies()
-        return correct and not dependencies
-
+    @override
     def dependencies(
         self,
     ) -> Iterable[type[ConfigFile[Any]]]:
@@ -77,6 +65,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             PackageInitConfigFile,
         )
 
+    @override
     def merge_configs(self) -> dict[str, Any]:
         """Merge the required configuration structure.
 
@@ -87,17 +76,36 @@ class PyprojectConfigFile(TOMLConfigFile):
         self.merge_build_system_requires(configs)
         return configs
 
-    def merge_build_system_requires(self, configs: dict[str, Any]) -> None:
-        """Set `build-system.requires` in `configs` to the canonical value.
+    @override
+    def parent_path(self) -> Path:
+        """Return the project root directory."""
+        return Path()
 
-        Overwrites any existing value; this key is never left as-is or
-        merged with what the file already had.
+    @override
+    def removable(self) -> bool:
+        """Return `False` to prevent removal of the `pyproject.toml` file."""
+        return False
 
-        Args:
-            configs: The configuration structure to update. Modified in-place.
+    @override
+    def stem(self) -> str:
+        """Return `"pyproject"`."""
+        return "pyproject"
+
+    @override
+    def validate(self) -> bool:
+        """Validate the config file, then add missing project dependencies.
+
+        Returns:
+            `True` if this file and its config file dependencies were already
+            correct and no project dependencies needed to be added; `False`
+            if this file or one of its config file dependencies was updated,
+            or project dependencies were added.
         """
-        configs["build-system"]["requires"] = PackageManager.I.build_system_requires()
+        correct = super().validate()
+        dependencies = self.add_additional_dependencies()
+        return correct and not dependencies
 
+    @override
     def _configs(self) -> dict[str, Any]:
         """Assemble the required `pyproject.toml` structure from live project state.
 
@@ -138,6 +146,135 @@ class PyprojectConfigFile(TOMLConfigFile):
             "tool": deep_sorted_dict(self.tool_configs()),
         }
 
+    def first_supported_python_version(self) -> Version:
+        """Return the minimum Python version required by the project.
+
+        Returns:
+            Lowest inclusive Python version supported by the project.
+
+        Raises:
+            LookupError: If the requires-python constraint has no lower bound.
+        """
+        lower = VersionConstraint(self.requires_python()).find_lower_inclusive()
+        if lower is None:
+            msg = "lower bound for python version is required"
+            raise LookupError(msg)
+        return lower
+
+    def latest_possible_python_version(
+        self,
+        level: Literal["major", "minor", "micro"] = "minor",
+    ) -> Version:
+        """Return the highest Python version allowed by the requires-python constraint.
+
+        When the constraint has no upper bound (e.g., `">=3.10"`), falls back to
+        the latest known stable Python release.
+
+        Args:
+            level: Precision of the returned version. Defaults to `"minor"`
+                (e.g., `Version("3.11")` rather than `Version("3.11.5")`).
+
+        Returns:
+            The highest allowed Python version at the requested precision level.
+        """
+        return leveled_version(
+            VersionConstraint(self.requires_python()).find_upper_inclusive(
+                default=self.latest_python_version(level=level),
+            ),
+            level,
+        )
+
+    def maintainer_name(self) -> str | None:
+        """Read the first maintainer's name from `pyproject.toml`.
+
+        Returns:
+            Name string from `pyproject.toml`, or `None` if absent.
+        """
+        return self.first_maintainer().get("name")
+
+    def supported_python_versions(self) -> tuple[Version, ...]:
+        """Return all Python minor versions within the requires-python range.
+
+        The upper end of an unbounded range is capped at the latest known
+        stable Python release.
+
+        Returns:
+            Tuple of Version objects, one per supported minor version, in
+            ascending order.
+        """
+        return VersionConstraint(self.requires_python()).version_range(
+            level="minor",
+            upper_default=self.latest_python_version(level="minor"),
+        )
+
+    def add_additional_dependencies(self) -> tuple[str, ...]:
+        """Add missing runtime and development project dependencies.
+
+        Compares the project's runtime dependencies against
+        `Pyrigger.I.runtime_dependencies()` and its development dependencies
+        against `Tool.subclasses_dev_dependencies()`. Adds missing entries via
+        the package manager, synchronizes the environment, then reloads and
+        rewrites the file.
+
+        Returns:
+            The dependencies that were added, empty if none were missing.
+        """
+        current_dependencies = set(
+            map(distribution_requirement_as_module_name, self.project_dependencies()),
+        )
+        dependencies = tuple(
+            dependency
+            for dependency in Pyrigger.I.runtime_dependencies()
+            if distribution_requirement_as_module_name(dependency)
+            not in current_dependencies
+        )
+
+        current_dev_dependencies = set(
+            map(
+                distribution_requirement_as_module_name,
+                self.project_dev_dependencies(),
+            ),
+        )
+        dev_dependencies = tuple(
+            dependency
+            for dependency in Tool.subclasses_dev_dependencies()
+            if distribution_requirement_as_module_name(dependency)
+            not in current_dev_dependencies
+        )
+        if dependencies:
+            PackageManager.I.add_args(*dependencies).run()
+        if dev_dependencies:
+            PackageManager.I.add_group_dev_args(*dev_dependencies).run()
+        if dependencies or dev_dependencies:
+            PackageManager.I.install_dependencies().run()
+            self.load.cache_clear()
+            self.dump(self.load())
+
+        return (*dependencies, *dev_dependencies)
+
+    def latest_python_version(
+        self,
+        level: Literal["major", "minor", "micro"] = "minor",
+    ) -> Version:
+        """Return the latest known stable Python version.
+
+        Args:
+            level: Precision of the returned version. Defaults to `"minor"`
+                (e.g., `Version("3.14")`).
+
+        Returns:
+            Latest stable Python version at the requested precision level.
+        """
+        return leveled_version(
+            Version(
+                resource_content(
+                    self.latest_python_version.__name__.upper(),
+                    resources,
+                ).strip(),
+            ),
+            level,
+        )
+
     def maintainers_configs(self) -> list[dict[str, Any]]:
         """Assemble the required `maintainers` section of `pyproject.toml`.
 
@@ -145,24 +282,62 @@ class PyprojectConfigFile(TOMLConfigFile):
         """
         return self.authors_configs()
 
-    def authors_configs(self) -> list[dict[str, Any]]:
-        """Assemble the required `authors` section of `pyproject.toml`."""
-        return [
-            {
-                "name": VersionController.I.repo_owner(),
-                "email": self.maintainer_email(),
-            },
-        ]
+    def merge_build_system_requires(self, configs: dict[str, Any]) -> None:
+        """Set `build-system.requires` in `configs` to the canonical value.
 
-    def url_configs(self) -> dict[str, Any]:
-        """Assemble the required `urls` section of `pyproject.toml`."""
-        return {
-            "Changelog": RemoteVersionController.I.releases_url(),
-            "Documentation": DocsBuilder.I.documentation_url(),
-            "Homepage": RemoteVersionController.I.repo_url(),
-            "Issues": RemoteVersionController.I.issues_url(),
-            "Source": RemoteVersionController.I.repo_url(),
-        }
+        Overwrites any existing value; this key is never left as-is or
+        merged with what the file already had.
+
+        Args:
+            configs: The configuration structure to update. Modified in-place.
+        """
+        configs["build-system"]["requires"] = PackageManager.I.build_system_requires()
+
+    def project_description(self) -> str:
+        """Read the project description from `pyproject.toml`.
+
+        Returns:
+            Description string from `pyproject.toml`. Defaults to uv's initial
+            scaffold value, `"Add your description here"`, if absent.
+        """
+        return (
+            self.safe_load()
+            .get("project", {})
+            .get("description", "Add your description here")
+        )
+
+    def project_version(self) -> str:
+        """Read the project version from `pyproject.toml`.
+
+        Returns:
+            Version string from `pyproject.toml`, or `"0.1.0"` if absent
+            (matching uv's initial scaffold value).
+        """
+        return self.safe_load().get("project", {}).get("version", "0.1.0")
+
+    def requires_python(self) -> str:
+        """Read the requires-python constraint from `pyproject.toml`.
+
+        If the field is absent, defaults to a lower-bound specifier requiring
+        at least the currently running Python version (e.g., `">=3.12"` for
+        Python 3.12).
+
+        Returns:
+            PEP 440 version specifier string (e.g., `">=3.13"`).
+        """
+        return (
+            self.safe_load()
+            .get("project", {})
+            .get(
+                "requires-python",
+                f">={
+                    leveled_version(
+                        Version(platform.python_version()),
+                        level='minor',
+                    )
+                }",
+            )
+        )
 
     def tool_configs(self) -> dict[str, Any]:
         """Assemble the required `tool` section of `pyproject.toml`.
@@ -220,62 +395,24 @@ class PyprojectConfigFile(TOMLConfigFile):
             },
         }
 
-    def parent_path(self) -> Path:
-        """Return the project root directory."""
-        return Path()
+    def url_configs(self) -> dict[str, Any]:
+        """Assemble the required `urls` section of `pyproject.toml`."""
+        return {
+            "Changelog": RemoteVersionController.I.releases_url(),
+            "Documentation": DocsBuilder.I.documentation_url(),
+            "Homepage": RemoteVersionController.I.repo_url(),
+            "Issues": RemoteVersionController.I.issues_url(),
+            "Source": RemoteVersionController.I.repo_url(),
+        }
 
-    def removable(self) -> bool:
-        """Return `False` to prevent removal of the `pyproject.toml` file."""
-        return False
-
-    def stem(self) -> str:
-        """Return `"pyproject"`."""
-        return "pyproject"
-
-    def add_additional_dependencies(self) -> tuple[str, ...]:
-        """Add missing runtime and development project dependencies.
-
-        Compares the project's runtime dependencies against
-        `Pyrigger.I.runtime_dependencies()` and its development dependencies
-        against `Tool.subclasses_dev_dependencies()`. Adds missing entries via
-        the package manager, synchronizes the environment, then reloads and
-        rewrites the file.
-
-        Returns:
-            The dependencies that were added, empty if none were missing.
-        """
-        current_dependencies = set(
-            map(distribution_requirement_as_module_name, self.project_dependencies()),
-        )
-        dependencies = tuple(
-            dependency
-            for dependency in Pyrigger.I.runtime_dependencies()
-            if distribution_requirement_as_module_name(dependency)
-            not in current_dependencies
-        )
-
-        current_dev_dependencies = set(
-            map(
-                distribution_requirement_as_module_name,
-                self.project_dev_dependencies(),
-            ),
-        )
-        dev_dependencies = tuple(
-            dependency
-            for dependency in Tool.subclasses_dev_dependencies()
-            if distribution_requirement_as_module_name(dependency)
-            not in current_dev_dependencies
-        )
-        if dependencies:
-            PackageManager.I.add_args(*dependencies).run()
-        if dev_dependencies:
-            PackageManager.I.add_group_dev_args(*dev_dependencies).run()
-        if dependencies or dev_dependencies:
-            PackageManager.I.install_dependencies().run()
-            self.load.cache_clear()
-            self.dump(self.load())
-
-        return (*dependencies, *dev_dependencies)
+    def authors_configs(self) -> list[dict[str, Any]]:
+        """Assemble the required `authors` section of `pyproject.toml`."""
+        return [
+            {
+                "name": VersionController.I.repo_owner(),
+                "email": self.maintainer_email(),
+            },
+        ]
 
     def project_dependencies(self) -> list[str]:
         """Read the project's runtime dependencies from `pyproject.toml`.
@@ -303,136 +440,6 @@ class PyprojectConfigFile(TOMLConfigFile):
             if that section is absent.
         """
         return self.safe_load().get("tool", {})
-
-    def first_supported_python_version(self) -> Version:
-        """Return the minimum Python version required by the project.
-
-        Returns:
-            Lowest inclusive Python version supported by the project.
-
-        Raises:
-            LookupError: If the requires-python constraint has no lower bound.
-        """
-        lower = VersionConstraint(self.requires_python()).find_lower_inclusive()
-        if lower is None:
-            msg = "lower bound for python version is required"
-            raise LookupError(msg)
-        return lower
-
-    def latest_possible_python_version(
-        self,
-        level: Literal["major", "minor", "micro"] = "minor",
-    ) -> Version:
-        """Return the highest Python version allowed by the requires-python constraint.
-
-        When the constraint has no upper bound (e.g., `">=3.10"`), falls back to
-        the latest known stable Python release.
-
-        Args:
-            level: Precision of the returned version. Defaults to `"minor"`
-                (e.g., `Version("3.11")` rather than `Version("3.11.5")`).
-
-        Returns:
-            The highest allowed Python version at the requested precision level.
-        """
-        return leveled_version(
-            VersionConstraint(self.requires_python()).find_upper_inclusive(
-                default=self.latest_python_version(level=level),
-            ),
-            level,
-        )
-
-    def supported_python_versions(self) -> tuple[Version, ...]:
-        """Return all Python minor versions within the requires-python range.
-
-        The upper end of an unbounded range is capped at the latest known
-        stable Python release.
-
-        Returns:
-            Tuple of Version objects, one per supported minor version, in
-            ascending order.
-        """
-        return VersionConstraint(self.requires_python()).version_range(
-            level="minor",
-            upper_default=self.latest_python_version(level="minor"),
-        )
-
-    def latest_python_version(
-        self,
-        level: Literal["major", "minor", "micro"] = "minor",
-    ) -> Version:
-        """Return the latest known stable Python version.
-
-        Args:
-            level: Precision of the returned version. Defaults to `"minor"`
-                (e.g., `Version("3.14")`).
-
-        Returns:
-            Latest stable Python version at the requested precision level.
-        """
-        return leveled_version(
-            Version(
-                resource_content(
-                    self.latest_python_version.__name__.upper(),
-                    resources,
-                ).strip(),
-            ),
-            level,
-        )
-
-    def requires_python(self) -> str:
-        """Read the requires-python constraint from `pyproject.toml`.
-
-        If the field is absent, defaults to a lower-bound specifier requiring
-        at least the currently running Python version (e.g., `">=3.12"` for
-        Python 3.12).
-
-        Returns:
-            PEP 440 version specifier string (e.g., `">=3.13"`).
-        """
-        return (
-            self.safe_load()
-            .get("project", {})
-            .get(
-                "requires-python",
-                f">={
-                    leveled_version(
-                        Version(platform.python_version()),
-                        level='minor',
-                    )
-                }",
-            )
-        )
-
-    def project_description(self) -> str:
-        """Read the project description from `pyproject.toml`.
-
-        Returns:
-            Description string from `pyproject.toml`. Defaults to uv's initial
-            scaffold value, `"Add your description here"`, if absent.
-        """
-        return (
-            self.safe_load()
-            .get("project", {})
-            .get("description", "Add your description here")
-        )
-
-    def project_version(self) -> str:
-        """Read the project version from `pyproject.toml`.
-
-        Returns:
-            Version string from `pyproject.toml`, or `"0.1.0"` if absent
-            (matching uv's initial scaffold value).
-        """
-        return self.safe_load().get("project", {}).get("version", "0.1.0")
-
-    def maintainer_name(self) -> str | None:
-        """Read the first maintainer's name from `pyproject.toml`.
-
-        Returns:
-            Name string from `pyproject.toml`, or `None` if absent.
-        """
-        return self.first_maintainer().get("name")
 
     def maintainer_email(self) -> str:
         """Read the first maintainer's email from `pyproject.toml`.

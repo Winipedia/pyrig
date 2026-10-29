@@ -53,12 +53,6 @@ class TestVersionControlHookTool:
         # VersionControlHookTool is abstract, test through concrete implementation
         assert MergeConflictChecker.I.hooks() == (MergeConflictChecker.I.check_hook(),)
 
-    def test_subclasses_hooks(self) -> None:
-        """Test method."""
-        hooks = list(VersionControlHookTool.subclasses_hooks())
-        assert len(hooks) > 0
-        assert all(isinstance(hook, dict) for hook in hooks)
-
     def test_sorted_hooks(self) -> None:
         """Test method."""
         hooks = [
@@ -78,3 +72,9 @@ class TestVersionControlHookTool:
         sorted_hooks = VersionControlHookTool.sorted_hooks(hooks)
         assert [hook["id"] for hook in sorted_hooks] == ["a", "a", "a", "b"]
         assert [hook["repo"] for hook in sorted_hooks] == ["b", "a", "c", "a"]
+
+    def test_subclasses_hooks(self) -> None:
+        """Test method."""
+        hooks = list(VersionControlHookTool.subclasses_hooks())
+        assert len(hooks) > 0
+        assert all(isinstance(hook, dict) for hook in hooks)

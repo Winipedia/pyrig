@@ -1,7 +1,7 @@
 """Repository-level settings and protection ruleset configuration for GitHub."""
 
 from pathlib import Path
-from typing import Any
+from typing import Any, override
 
 from pyrig.core.iterate import sorted_dict
 from pyrig.rig.configs.base.json import JSONDictConfigFile
@@ -24,6 +24,17 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
     and protection rulesets to apply to the repository.
     """
 
+    @override
+    def parent_path(self) -> Path:
+        """Return the `RemoteVersionController`'s config directory."""
+        return RemoteVersionController.I.config_dir()
+
+    @override
+    def stem(self) -> str:
+        """Return `"settings"`."""
+        return "settings"
+
+    @override
     def _configs(self) -> dict[str, Any]:
         """Return the repository settings with keys sorted alphabetically.
 
@@ -109,6 +120,18 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
             ],
         }
 
+    def bypass_actors(self) -> list[dict[str, Any]]:
+        """Return the bypass actors.
+
+        Returns:
+            Single-entry list identifying GitHub's fixed Admin repository role.
+        """
+        return [self.admin_bypass_actor()]
+
+    def repo_key(self) -> str:
+        """Return `"repository"`, the top-level key for the repo settings."""
+        return "repository"
+
     def required_status_checks(self) -> list[dict[str, Any]]:
         """Return the status checks required by the branch ruleset.
 
@@ -116,6 +139,24 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
             A list containing the required health-check status check.
         """
         return [self.status_check_health_check()]
+
+    def rulesets_key(self) -> str:
+        """Return `"rulesets"`, the top-level key for the protection rulesets."""
+        return "rulesets"
+
+    def admin_bypass_actor(self) -> dict[str, Any]:
+        """Return the bypass actor dict granting an always-bypass to repository admins.
+
+        5 is GitHub's fixed ID for the Admin repository role.
+
+        Returns:
+            Dict identifying GitHub's fixed Admin repository role.
+        """
+        return {
+            "actor_id": 5,
+            "actor_type": "RepositoryRole",
+            "bypass_mode": "always",
+        }
 
     def status_check_health_check(self) -> dict[str, Any]:
         """Return the GitHub Actions status check for the health workflow.
@@ -159,41 +200,3 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
             "context": job,
             "integration_id": integration_id,
         }
-
-    def bypass_actors(self) -> list[dict[str, Any]]:
-        """Return the bypass actors.
-
-        Returns:
-            Single-entry list identifying GitHub's fixed Admin repository role.
-        """
-        return [self.admin_bypass_actor()]
-
-    def admin_bypass_actor(self) -> dict[str, Any]:
-        """Return the bypass actor dict granting an always-bypass to repository admins.
-
-        5 is GitHub's fixed ID for the Admin repository role.
-
-        Returns:
-            Dict identifying GitHub's fixed Admin repository role.
-        """
-        return {
-            "actor_id": 5,
-            "actor_type": "RepositoryRole",
-            "bypass_mode": "always",
-        }
-
-    def parent_path(self) -> Path:
-        """Return the `RemoteVersionController`'s config directory."""
-        return RemoteVersionController.I.config_dir()
-
-    def stem(self) -> str:
-        """Return `"settings"`."""
-        return "settings"
-
-    def repo_key(self) -> str:
-        """Return `"repository"`, the top-level key for the repo settings."""
-        return "repository"
-
-    def rulesets_key(self) -> str:
-        """Return `"rulesets"`, the top-level key for the protection rulesets."""
-        return "rulesets"

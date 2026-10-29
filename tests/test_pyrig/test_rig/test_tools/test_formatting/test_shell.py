@@ -8,6 +8,33 @@ from pyrig.rig.tools.security.secrets import SecretsChecker
 class TestShellFormatter:
     """Test class."""
 
+    def test_dev_dependencies(self) -> None:
+        """Test method."""
+        result = ShellFormatter.I.dev_dependencies()
+        assert result == ("shfmt-py",)
+
+    def test_dialect(self) -> None:
+        """Test method."""
+        assert ShellFormatter.I.dialect() == "bash"
+
+    def test_format_args(self) -> None:
+        """Test method."""
+        result = ShellFormatter.I.format_args()
+        assert result == ("shfmt",)
+
+    def test_format_hook(self) -> None:
+        """Test method."""
+        # shell formatting runs after the general read-only checks
+        hook = ShellFormatter.I.format_hook()
+        secrets_hook = SecretsChecker.I.check_hook()
+        assert hook["priority"] > secrets_hook["priority"]
+        assert hook["types"] == ["shell"]
+
+    def test_format_shell(self) -> None:
+        """Test method."""
+        base_args = ShellFormatter.I.format_args()
+        assert ShellFormatter.I.format_shell() == PackageManager.I.run_args(*base_args)
+
     def test_group(self) -> None:
         """Test method."""
         result = ShellFormatter.I.group()
@@ -29,30 +56,3 @@ class TestShellFormatter:
         """Test method."""
         result = ShellFormatter.I.name()
         assert result == "shfmt"
-
-    def test_dev_dependencies(self) -> None:
-        """Test method."""
-        result = ShellFormatter.I.dev_dependencies()
-        assert result == ("shfmt-py",)
-
-    def test_format_args(self) -> None:
-        """Test method."""
-        result = ShellFormatter.I.format_args()
-        assert result == ("shfmt",)
-
-    def test_format_hook(self) -> None:
-        """Test method."""
-        # shell formatting runs after the general read-only checks
-        hook = ShellFormatter.I.format_hook()
-        secrets_hook = SecretsChecker.I.check_hook()
-        assert hook["priority"] > secrets_hook["priority"]
-        assert hook["types"] == ["shell"]
-
-    def test_format_shell(self) -> None:
-        """Test method."""
-        base_args = ShellFormatter.I.format_args()
-        assert ShellFormatter.I.format_shell() == PackageManager.I.run_args(*base_args)
-
-    def test_dialect(self) -> None:
-        """Test method."""
-        assert ShellFormatter.I.dialect() == "bash"

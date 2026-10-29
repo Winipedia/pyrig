@@ -2,7 +2,7 @@
 
 from collections.abc import Iterable
 from types import MethodType
-from typing import Any
+from typing import Any, override
 
 from pyrig.rig import resources
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
@@ -19,7 +19,36 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
     Each job runs under its own auto-derived environment.
     """
 
-    def job(  # noqa: PLR0913
+    @override
+    def concurrency_cancel_in_progress(self) -> bool:
+        """Return `False`; a deploy run must not be cancelled mid-publish."""
+        return False
+
+    @override
+    def jobs(self) -> dict[str, Any]:
+        """Build the top-level jobs configuration.
+
+        Returns:
+            Dict containing the repository and documentation jobs.
+        """
+        return {**self.job_repository(), **self.job_documentation()}
+
+    @override
+    def stem(self) -> str:
+        """Return `"deploy"`, the workflow file's stem."""
+        return "deploy"
+
+    @override
+    def workflow_triggers(self) -> dict[str, Any]:
+        """Return a reusable-workflow trigger.
+
+        Returns:
+            Workflow-call trigger configuration.
+        """
+        return self.on_workflow_call()
+
+    @override
+    def job(
         self,
         method: MethodType,
         *,
@@ -68,69 +97,6 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             secrets=secrets,
         )
 
-    def concurrency_cancel_in_progress(self) -> bool:
-        """Return `False`; a deploy run must not be cancelled mid-publish."""
-        return False
-
-    def jobs(self) -> dict[str, Any]:
-        """Build the top-level jobs configuration.
-
-        Returns:
-            Dict containing the repository and documentation jobs.
-        """
-        return {**self.job_repository(), **self.job_documentation()}
-
-    def stem(self) -> str:
-        """Return `"deploy"`, the workflow file's stem."""
-        return "deploy"
-
-    def workflow_triggers(self) -> dict[str, Any]:
-        """Return a reusable-workflow trigger.
-
-        Returns:
-            Workflow-call trigger configuration.
-        """
-        return self.on_workflow_call()
-
-    def job_repository(self) -> dict[str, Any]:
-        """Build the job that applies repository-level configuration.
-
-        Requests `contents: read` to check out the repository; the
-        configuration step itself authenticates separately via `REPO_TOKEN`,
-        not `GITHUB_TOKEN`.
-
-        Returns:
-            Dict mapping the derived job ID to its configuration.
-        """
-        return self.job(
-            self.job_repository,
-            permissions=self.permission_contents(),
-            steps=self.steps_repository(),
-        )
-
-    def steps_repository(self) -> list[dict[str, Any]]:
-        """Build the ordered steps for the repository job.
-
-        Returns:
-            Checkout followed by the repository-configuration step.
-        """
-        return [
-            self.step_checkout_repository(),
-            self.step_configure_repository(),
-        ]
-
-    def step_configure_repository(self) -> dict[str, Any]:
-        """Build a step that applies repository configuration.
-
-        Returns:
-            Repository-configuration step.
-        """
-        return self.step(
-            self.step_configure_repository,
-            run=f"bash {ConfigureRepositoryConfigFile.I.path().as_posix()}",
-            env={"GH_TOKEN": self.insert_repo_token()},
-        )
-
     def job_documentation(self) -> dict[str, Any]:
         """Build the job that builds and deploys the documentation site.
 
@@ -151,6 +117,22 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             steps=self.steps_documentation(),
         )
 
+    def job_repository(self) -> dict[str, Any]:
+        """Build the job that applies repository-level configuration.
+
+        Requests `contents: read` to check out the repository; the
+        configuration step itself authenticates separately via `REPO_TOKEN`,
+        not `GITHUB_TOKEN`.
+
+        Returns:
+            Dict mapping the derived job ID to its configuration.
+        """
+        return self.job(
+            self.job_repository,
+            permissions=self.permission_contents(),
+            steps=self.steps_repository(),
+        )
+
     def steps_documentation(self) -> list[dict[str, Any]]:
         """Build the ordered steps for the documentation job.
 
@@ -166,6 +148,17 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             self.step_deploy_documentation(),
         ]
 
+    def steps_repository(self) -> list[dict[str, Any]]:
+        """Build the ordered steps for the repository job.
+
+        Returns:
+            Checkout followed by the repository-configuration step.
+        """
+        return [
+            self.step_checkout_repository(),
+            self.step_configure_repository(),
+        ]
+
     def step_build_documentation(self) -> dict[str, Any]:
         """Build a step that builds the documentation site into the `site/` directory.
 
@@ -176,14 +169,6 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             self.step_build_documentation,
             run=str(PackageManager.I.run_args(*DocsBuilder.I.build_args())),
         )
-
-    def configure_pages_action(self) -> tuple[str, str, str]:
-        """Return action metadata for `actions/configure-pages`.
-
-        Returns:
-            Tuple of action name, pinned commit SHA, and release tag.
-        """
-        return self.action_from_resource(self.configure_pages_action, resources)
 
     def step_configure_pages(self) -> dict[str, Any]:
         """Build a step that enables GitHub Pages.
@@ -200,13 +185,17 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             with_={"enablement": "true", "token": self.insert_repo_token()},
         )
 
-    def deploy_pages_action(self) -> tuple[str, str, str]:
-        """Return action metadata for `actions/deploy-pages`.
+    def step_configure_repository(self) -> dict[str, Any]:
+        """Build a step that applies repository configuration.
 
         Returns:
-            Tuple of action name, pinned commit SHA, and release tag.
+            Repository-configuration step.
         """
-        return self.action_from_resource(self.deploy_pages_action, resources)
+        return self.step(
+            self.step_configure_repository,
+            run=f"bash {ConfigureRepositoryConfigFile.I.path().as_posix()}",
+            env={"GH_TOKEN": self.insert_repo_token()},
+        )
 
     def step_deploy_documentation(self) -> dict[str, Any]:
         """Build a step that deploys the uploaded Pages artifact to GitHub Pages.
@@ -224,14 +213,6 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             uses=self.deploy_pages_action(),
         )
 
-    def upload_pages_artifact_action(self) -> tuple[str, str, str]:
-        """Return action metadata for `actions/upload-pages-artifact`.
-
-        Returns:
-            Tuple of action name, pinned commit SHA, and release tag.
-        """
-        return self.action_from_resource(self.upload_pages_artifact_action, resources)
-
     def step_upload_documentation(self) -> dict[str, Any]:
         """Build a step that uploads the `site/` directory as a Pages artifact.
 
@@ -246,3 +227,27 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             uses=self.upload_pages_artifact_action(),
             with_={"path": DocsBuilder.I.site_dir().as_posix()},
         )
+
+    def configure_pages_action(self) -> tuple[str, str, str]:
+        """Return action metadata for `actions/configure-pages`.
+
+        Returns:
+            Tuple of action name, pinned commit SHA, and release tag.
+        """
+        return self.action_from_resource(self.configure_pages_action, resources)
+
+    def deploy_pages_action(self) -> tuple[str, str, str]:
+        """Return action metadata for `actions/deploy-pages`.
+
+        Returns:
+            Tuple of action name, pinned commit SHA, and release tag.
+        """
+        return self.action_from_resource(self.deploy_pages_action, resources)
+
+    def upload_pages_artifact_action(self) -> tuple[str, str, str]:
+        """Return action metadata for `actions/upload-pages-artifact`.
+
+        Returns:
+            Tuple of action name, pinned commit SHA, and release tag.
+        """
+        return self.action_from_resource(self.upload_pages_artifact_action, resources)
