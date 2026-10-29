@@ -86,16 +86,6 @@ class LicenseConfigFile(StringConfigFile):
         licenses, _ = cls().analyze_license_text()
         return next(iter(licenses["licenses"]), "LicenseRef-Custom")
 
-    def analyze_license_text(self) -> tuple[dict[str, dict[str, Any]], float]:
-        """Analyze the files text and return the detected licenses and confidence score.
-
-        Returns:
-            A tuple containing:
-            - A dictionary with license information.
-            - A float representing the confidence score.
-        """
-        return analyse_license_text(self.read_content())
-
     def license_badge(self) -> str:
         """Return a Markdown image-link badge for the project license.
 
@@ -110,6 +100,16 @@ class LicenseConfigFile(StringConfigFile):
             link_url=f"{repo_url}/blob/main/{self.stem()}",
             alt_text="License",
         )
+
+    def analyze_license_text(self) -> tuple[dict[str, dict[str, Any]], float]:
+        """Analyze the files text and return the detected licenses and confidence score.
+
+        Returns:
+            A tuple containing:
+            - A dictionary with license information.
+            - A float representing the confidence score.
+        """
+        return analyse_license_text(self.read_content())
 
     def license(self) -> str:
         """Return the MIT license text with year and repository owner substituted."""

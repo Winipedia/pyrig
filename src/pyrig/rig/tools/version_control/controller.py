@@ -113,25 +113,6 @@ class VersionController(Tool):
         """
         return self.args("init", *args)
 
-    def resolve_repo_owner(self) -> str:
-        """Return the repository owner.
-
-        Resolves the repository owner using the following fallback order:
-        1. The name already written to `pyproject.toml`'s first maintainer entry.
-        2. The owner parsed from the remote origin URL.
-        3. The local git `user.name` (normalized).
-
-        Returns:
-            The resolved repository owner.
-        """
-        from pyrig.rig.configs.pyproject import PyprojectConfigFile  # noqa: PLC0415
-
-        return (
-            PyprojectConfigFile.I.maintainer_name()
-            or self.remote_repo_owner()
-            or self.normalized_username()
-        )
-
     def add_args(self, *args: str) -> Args:
         """Build base arguments for `git add`.
 
@@ -165,6 +146,36 @@ class VersionController(Tool):
         """
         return self.config_get_args("user.email", *args)
 
+    def resolve_repo_owner(self) -> str:
+        """Return the repository owner.
+
+        Resolves the repository owner using the following fallback order:
+        1. The name already written to `pyproject.toml`'s first maintainer entry.
+        2. The owner parsed from the remote origin URL.
+        3. The local git `user.name` (normalized).
+
+        Returns:
+            The resolved repository owner.
+        """
+        from pyrig.rig.configs.pyproject import PyprojectConfigFile  # noqa: PLC0415
+
+        return (
+            PyprojectConfigFile.I.maintainer_name()
+            or self.remote_repo_owner()
+            or self.normalized_username()
+        )
+
+    def rev_parse_verify_args(self, *args: str) -> Args:
+        """Build arguments for `git rev-parse --verify`.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for `git rev-parse --verify [args]`.
+        """
+        return self.rev_parse_args("--verify", *args)
+
     def normalized_username(self) -> str:
         """Return the git `user.name` with spaces removed.
 
@@ -197,16 +208,16 @@ class VersionController(Tool):
         # the url left must have the format: owner/repo.git
         return url.split("/")[0]
 
-    def rev_parse_verify_args(self, *args: str) -> Args:
-        """Build arguments for `git rev-parse --verify`.
+    def rev_parse_args(self, *args: str) -> Args:
+        """Build arguments for `git rev-parse`.
 
         Args:
             *args: Additional arguments appended to the command.
 
         Returns:
-            Args for `git rev-parse --verify [args]`.
+            Args for `git rev-parse [args]`.
         """
-        return self.rev_parse_args("--verify", *args)
+        return self.args("rev-parse", *args)
 
     def remote_url(self) -> str:
         """Return the remote origin URL configured for this repository.
@@ -218,17 +229,6 @@ class VersionController(Tool):
         return (
             self.config_remote_origin_url_args().run_cached(check=False).stdout.strip()
         )
-
-    def rev_parse_args(self, *args: str) -> Args:
-        """Build arguments for `git rev-parse`.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for `git rev-parse [args]`.
-        """
-        return self.args("rev-parse", *args)
 
     def username(self) -> str:
         """Return the git `user.name` from the active configuration.

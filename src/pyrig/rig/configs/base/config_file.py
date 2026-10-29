@@ -50,34 +50,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
     """
 
     @abstractmethod
-    def _configs(self) -> ConfigT:
-        """Return the minimum required configuration structure.
-
-        Every concrete subclass must implement this to declare what the file
-        should contain. `validate()` treats the result as the file's required
-        content: it is written verbatim into a newly created file, and
-        otherwise compared against, and merged into, the file's existing
-        contents. Keys or items present on disk but absent from this return
-        value are left untouched.
-
-        Returns:
-            Required configuration as a dict or list.
-        """
-
-    @abstractmethod
-    def _load(self) -> ConfigT:
-        """Parse the file's current on-disk content.
-
-        Used by `load()` to read the file's actual state for comparison and
-        merging against the required configuration. Must return a structure of
-        the same shape `_dump()` writes, so a write made via `_dump()` is read
-        back as an equivalent structure.
-
-        Returns:
-            Parsed configuration as a dict or list.
-        """
-
-    @abstractmethod
     def _dump(self, configs: ConfigT) -> None:
         """Write `configs` to the file on disk, replacing any existing content.
 
@@ -106,6 +78,19 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         """
 
     @abstractmethod
+    def _load(self) -> ConfigT:
+        """Parse the file's current on-disk content.
+
+        Used by `load()` to read the file's actual state for comparison and
+        merging against the required configuration. Must return a structure of
+        the same shape `_dump()` writes, so a write made via `_dump()` is read
+        back as an equivalent structure.
+
+        Returns:
+            Parsed configuration as a dict or list.
+        """
+
+    @abstractmethod
     def extension(self) -> str:
         """Return the file extension without the leading dot.
 
@@ -119,6 +104,21 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
 
         Returns:
             The file stem, e.g. `"pyproject"` for `pyproject.toml`.
+        """
+
+    @abstractmethod
+    def _configs(self) -> ConfigT:
+        """Return the minimum required configuration structure.
+
+        Every concrete subclass must implement this to declare what the file
+        should contain. `validate()` treats the result as the file's required
+        content: it is written verbatim into a newly created file, and
+        otherwise compared against, and merged into, the file's existing
+        contents. Keys or items present on disk but absent from this return
+        value are left untouched.
+
+        Returns:
+            Required configuration as a dict or list.
         """
 
     @classmethod

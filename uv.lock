@@ -787,21 +787,21 @@ wheels = [
 
 [[package]]
 name = "pyorder"
-version = "0.11.7"
+version = "0.12.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "networkx" },
     { name = "pyrig-runtime" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b0/e9/c105423b03f8d0f1bb5c6b93d45ef1e84fb318d39e08226a7738b00a971e/pyorder-0.11.7.tar.gz", hash = "sha256:8dfc8ee3d6d60b89b38183cf5a228f8df9cac9963fbb46f0adb61e4acfc08247", size = 11524, upload-time = "2026-10-29T19:06:41.949Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c7/c7/ca41a7e60b8c42a444b2cbc6e1c14a833335b64a698436b1ef4f5f583cf3/pyorder-0.12.0.tar.gz", hash = "sha256:c4ad7d71e37eb4b57802db36510ad5022e3da14e6af8da79fd6abd72a282cd25", size = 11909, upload-time = "2026-10-29T21:15:37.122Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/81/fa/73b534fbff943987b62ba527e2e870896c1dd6bf4cc7c3792d930861e922/pyorder-0.11.7-py3-none-any.whl", hash = "sha256:2794c03f64ed1a478ce867ec35364bdf3909ff243e6d6551873cfcdad3e3ed7e", size = 13116, upload-time = "2026-10-29T19:06:41.05Z" },
+    { url = "https://files.pythonhosted.org/packages/ab/fc/58d6920ec554f9ee472ef99d136c643b94bfff982e2c3de278a7a866327e/pyorder-0.12.0-py3-none-any.whl", hash = "sha256:257b1902a1ccd2f2fd75c579790fcab15a43fc6ab3a17264b9e0081e4d2755e2", size = 13500, upload-time = "2026-10-29T21:15:35.726Z" },
 ]
 
 [[package]]
 name = "pyrig"
-version = "19.6.15"
+version = "19.6.17"
 source = { editable = "." }
 dependencies = [
     { name = "inquirerpy" },
