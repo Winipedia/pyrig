@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "19.7.0"
+version = "19.7.2"
 description = "A Python project setup and management tool built on infrastructure as code and convention over configuration."
 readme = "README.md"
 requires-python = ">=3.12"
