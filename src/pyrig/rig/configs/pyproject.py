@@ -390,6 +390,7 @@ class PyprojectConfigFile(TOMLConfigFile):
                     "rules": {
                         "ALL": "enable",
                         "key-ordering": "disable",
+                        "yaml-directive": "disable",
                     },
                 },
             },
