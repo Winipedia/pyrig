@@ -28,8 +28,6 @@ from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,
 )
 
-SECRET_EXPRESSION_PATTERN = re.compile(r"secrets\.([A-Za-z0-9_]+)")
-
 
 class WorkflowConfigFile(YMLDictConfigFile):
     """Base class for GitHub Actions workflow configuration files.
@@ -38,11 +36,17 @@ class WorkflowConfigFile(YMLDictConfigFile):
         UBUNTU_LATEST: Runner label for Ubuntu (`"ubuntu-latest"`).
         WINDOWS_LATEST: Runner label for Windows (`"windows-latest"`).
         MACOS_LATEST: Runner label for macOS (`"macos-latest"`).
+        SECRET_EXPRESSION_PATTERN: Regex pattern to match GitHub Actions secret
+            expressions.
+        TIMEOUT_MINUTES_DEFAULT: Default timeout for jobs in minutes (`360`).
     """
 
     UBUNTU_LATEST = "ubuntu-latest"
     WINDOWS_LATEST = "windows-latest"
     MACOS_LATEST = "macos-latest"
+
+    SECRET_EXPRESSION_PATTERN = re.compile(r"secrets\.([A-Za-z0-9_]+)")
+    TIMEOUT_MINUTES_DEFAULT = 360
 
     @abstractmethod
     def workflow_triggers(self) -> dict[str, Any]:
@@ -152,6 +156,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         steps: list[dict[str, Any]] | None = None,
         uses: str | None = None,
         secrets: dict[str, Any] | None = None,
+        timeout_minutes: int = TIMEOUT_MINUTES_DEFAULT,
     ) -> dict[str, Any]:
         """Build a job configuration dict.
 
@@ -180,6 +185,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
             secrets: Named secrets to forward to the called workflow, e.g.
                 built by `used_secrets_mapping()`. Only meaningful together
                 with `uses`.
+            timeout_minutes: Maximum time in minutes that the job can run. Only
+            effective when `uses` is not set. Defaults to `TIMEOUT_MINUTES_DEFAULT`.
 
         Returns:
             Dict mapping the derived job ID to its configuration.
@@ -200,6 +207,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
                 job["secrets"] = deep_sorted_dict(secrets)
         else:
             job["runs-on"] = runs_on
+            job["timeout-minutes"] = timeout_minutes
         if environment is not None:
             job["environment"] = environment
         if strategy is not None:
@@ -658,7 +666,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         names: set[str] = set()
         for leaf in traverse_structure(self.jobs()):
             if isinstance(leaf, str):
-                names.update(SECRET_EXPRESSION_PATTERN.findall(leaf))
+                names.update(self.SECRET_EXPRESSION_PATTERN.findall(leaf))
         names.discard("GITHUB_TOKEN")
         return sorted(names)
 

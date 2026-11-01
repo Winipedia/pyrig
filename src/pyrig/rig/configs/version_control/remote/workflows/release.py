@@ -91,6 +91,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             needs=self.job_publish_needs(),
             permissions=self.permission_contents(write=True),
             steps=self.steps_publish(),
+            timeout_minutes=30,
         )
 
     def job_publish_needs(self) -> tuple[MethodType, ...]:

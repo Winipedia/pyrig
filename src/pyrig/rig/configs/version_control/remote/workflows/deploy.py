@@ -61,6 +61,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         steps: list[dict[str, Any]] | None = None,
         uses: str | None = None,
         secrets: dict[str, Any] | None = None,
+        timeout_minutes: int = WorkflowConfigFile.TIMEOUT_MINUTES_DEFAULT,
     ) -> dict[str, Any]:
         """Build a deployment job with an environment derived from its ID.
 
@@ -79,6 +80,8 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             steps: Ordered list of job steps.
             uses: Reference to a reusable workflow instead of job steps.
             secrets: Named secrets to forward to a called workflow.
+            timeout_minutes: Maximum time in minutes that the job can run. Only
+                effective when `uses` is not set. Defaults to `TIMEOUT_MINUTES_DEFAULT`.
 
         Returns:
             A single job configuration keyed by its derived job ID.
@@ -95,6 +98,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             steps=steps,
             uses=uses,
             secrets=secrets,
+            timeout_minutes=timeout_minutes,
         )
 
     def job_documentation(self) -> dict[str, Any]:
@@ -115,6 +119,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
                 **self.permission_pages(write=True),
             },
             steps=self.steps_documentation(),
+            timeout_minutes=60,
         )
 
     def job_repository(self) -> dict[str, Any]:
@@ -131,6 +136,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             self.job_repository,
             permissions=self.permission_contents(),
             steps=self.steps_repository(),
+            timeout_minutes=10,
         )
 
     def steps_documentation(self) -> list[dict[str, Any]]:

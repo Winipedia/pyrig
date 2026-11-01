@@ -85,6 +85,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             self.job_health_check,
             needs=self.job_health_check_needs(),
             steps=self.steps_aggregate_jobs(),
+            timeout_minutes=1,
         )
 
     def job_health_check_needs(self) -> tuple[MethodType, ...]:
@@ -118,6 +119,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             self.job_health_checks,
             permissions=self.permission_contents(),
             steps=self.steps_health_checks(),
+            timeout_minutes=60,
         )
 
     def job_matrix_health_checks(self) -> dict[str, Any]:
@@ -136,6 +138,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             permissions=self.permission_contents(),
             runs_on=self.insert_matrix_os(),
             steps=self.steps_matrix_health_checks(),
+            timeout_minutes=120,
         )
 
     def step_aggregate_jobs(self) -> dict[str, Any]:

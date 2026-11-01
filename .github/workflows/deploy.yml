@@ -19,6 +19,7 @@
     "permissions":
       "contents": "read"
     "runs-on": "ubuntu-latest"
+    "timeout-minutes": 10
     "environment": "repository"
     "steps":
       -
@@ -41,6 +42,7 @@
       "id-token": "write"  # required
       "pages": "write"  # required
     "runs-on": "ubuntu-latest"
+    "timeout-minutes": 60
     "environment": "documentation"
     "steps":
       -
@@ -91,6 +93,7 @@
       "contents": "read"
       "id-token": "write"  # required
     "runs-on": "ubuntu-latest"
+    "timeout-minutes": 60
     "environment": "package"
     "steps":
       -
