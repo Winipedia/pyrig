@@ -2,7 +2,7 @@
 
 import re
 from abc import abstractmethod
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from pathlib import Path
 from types import MethodType, ModuleType
 from typing import Any, override
@@ -36,6 +36,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         UBUNTU_LATEST: Runner label for Ubuntu (`"ubuntu-latest"`).
         WINDOWS_LATEST: Runner label for Windows (`"windows-latest"`).
         MACOS_LATEST: Runner label for macOS (`"macos-latest"`).
+        JOB_ID_KEY: Internal key storing a job's ID before workflow assembly.
         SECRET_EXPRESSION_PATTERN: Regex pattern to match GitHub Actions secret
             expressions.
         TIMEOUT_MINUTES_DEFAULT: Default timeout for jobs in minutes (`360`).
@@ -45,6 +46,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     WINDOWS_LATEST = "windows-latest"
     MACOS_LATEST = "macos-latest"
 
+    JOB_ID_KEY = "job_id"
     SECRET_EXPRESSION_PATTERN = re.compile(r"secrets\.([A-Za-z0-9_]+)")
     TIMEOUT_MINUTES_DEFAULT = 360
 
@@ -57,11 +59,11 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
 
     @abstractmethod
-    def jobs(self) -> dict[str, Any]:
+    def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return the jobs that make up this workflow.
 
         Returns:
-            Dict mapping job IDs to their configurations.
+            Tuple of callables that return individual job configurations.
         """
 
     @override
@@ -75,7 +77,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
         Returns:
             Top-level workflow configuration with `name`, `on`,
-            `permissions`, `concurrency`, `defaults`, `env`, `run-name`, and
+            `permissions`, `concurrency`, `defaults`, `run-name`, and
             `jobs` keys populated from the overridable methods. The default
             permissions policy denies all `GITHUB_TOKEN` access.
         """
@@ -86,7 +88,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             "concurrency": self.concurrency(),
             "defaults": self.defaults(),
             "run-name": self.run_name(),
-            "jobs": self.jobs(),
+            "jobs": self.jobs_configs(),
         }
 
     def insert_github_token(self) -> str:
@@ -157,7 +159,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         uses: str | None = None,
         secrets: dict[str, Any] | None = None,
         timeout_minutes: int = TIMEOUT_MINUTES_DEFAULT,
-    ) -> dict[str, dict[str, Any]]:
+    ) -> dict[str, Any]:
         """Build a job configuration dict.
 
         Args:
@@ -186,13 +188,16 @@ class WorkflowConfigFile(YMLDictConfigFile):
                 built by `used_secrets_mapping()`. Only meaningful together
                 with `uses`.
             timeout_minutes: Maximum time in minutes that the job can run. Only
-            effective when `uses` is not set. Defaults to `TIMEOUT_MINUTES_DEFAULT`.
+                effective when `uses` is not set. Defaults to `TIMEOUT_MINUTES_DEFAULT`.
 
         Returns:
-            A single job configuration keyed by its derived job ID.
+            A single job configuration containing its derived ID under `JOB_ID_KEY`.
         """
         job_id = self.job_id_from_method(method)
-        job = {"name": self.name_from_id(job_id)}
+        job = {
+            self.JOB_ID_KEY: job_id,
+            "name": self.name_from_id(job_id),
+        }
         if permissions is not None:
             job["permissions"] = self.documented_permissions(
                 deep_sorted_dict(permissions),
@@ -214,7 +219,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             job["strategy"] = strategy
         if steps is not None:
             job["steps"] = steps
-        return {job_id: job}
+        return job
 
     def job_id_from_method(self, method: MethodType) -> str:
         """Generate a job identifier from a `job_*` method name.
@@ -398,7 +403,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Permission names mapped to their highest requested levels.
         """
         permissions: dict[str, str] = {}
-        for job in self.jobs().values():
+        for job in self.jobs_configs().values():
             for name, level in job.get("permissions", {}).items():
                 if name not in permissions or level == "write":
                     permissions[name] = level
@@ -664,7 +669,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Distinct secret names in sorted order.
         """
         names: set[str] = set()
-        for leaf in traverse_structure(self.jobs()):
+        for leaf in traverse_structure(self.jobs_configs()):
             if isinstance(leaf, str):
                 names.update(self.SECRET_EXPRESSION_PATTERN.findall(leaf))
         names.discard("GITHUB_TOKEN")
@@ -709,6 +714,18 @@ class WorkflowConfigFile(YMLDictConfigFile):
             GitHub Actions expression for `github.ref`.
         """
         return self.insert_expression("github.ref")
+
+    def jobs_configs(self) -> dict[str, dict[str, Any]]:
+        """Assemble the workflow's jobs from the callables returned by `jobs()`.
+
+        Returns:
+            Job configurations keyed by ID, without the internal `JOB_ID_KEY` field.
+        """
+        return {
+            job_id: job_dict
+            for job in self.jobs()
+            for job_id, job_dict in self.job_by_id(job).items()
+        }
 
     def matrix(self, matrix: dict[str, list[Any]]) -> dict[str, Any]:
         """Return the matrix configuration.
@@ -871,6 +888,22 @@ class WorkflowConfigFile(YMLDictConfigFile):
             `"${{ secrets.REPO_TOKEN }}"`.
         """
         return f"${{{{ {var} }}}}"
+
+    def job_by_id(
+        self,
+        job: Callable[[], dict[str, Any]],
+    ) -> dict[str, dict[str, Any]]:
+        """Call a job builder and move its internal ID to the mapping key.
+
+        Args:
+            job: Callable returning a job configuration containing `JOB_ID_KEY`.
+                The key is removed from the returned dictionary in place.
+
+        Returns:
+            A single-entry mapping from the job ID to its configuration.
+        """
+        dict_ = job()
+        return {dict_.pop(self.JOB_ID_KEY): dict_}
 
     def setup_uv_action(self) -> tuple[str, str, str]:
         """Return action metadata for `astral-sh/setup-uv`.

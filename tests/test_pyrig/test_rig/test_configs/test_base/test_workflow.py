@@ -299,7 +299,8 @@ class TestWorkflowConfigFile:
     def test_job(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().job(self.test_job, steps=[])
-        assert len(result) == 1, "Expected job to have one key"
+        assert result["job_id"] == "test-job"
+        assert result["steps"] == []
 
         # Test with if_condition set
         result = my_test_workflow().job(
@@ -307,15 +308,14 @@ class TestWorkflowConfigFile:
             steps=[],
             if_condition="condition",
         )
-        job_config = next(iter(result.values()))
-        assert job_config["if"] == "condition"
+        assert result["if"] == "condition"
 
         # Test with job=None (line 222->224 False branch)
         result = my_test_workflow().job(
             self.test_job,
             runs_on="ubuntu-latest",
         )
-        assert len(result) == 1, "Expected job to have one key"
+        assert result["job_id"] == "test-job"
 
         # Test with steps=None (line 234->236 False branch)
         result = my_test_workflow().job(
@@ -323,9 +323,8 @@ class TestWorkflowConfigFile:
             runs_on="ubuntu-latest",
             steps=None,
         )
-        assert len(result) == 1, "Expected job to have one key"
-        job_config = next(iter(result.values()))
-        assert "steps" not in job_config
+        assert result["job_id"] == "test-job"
+        assert "steps" not in result
 
         # Test with uses set: only runs-on must not be applied
         result = my_test_workflow().job(
@@ -335,12 +334,11 @@ class TestWorkflowConfigFile:
             strategy={"matrix": {}},
             steps=[{"name": "unused"}],
         )
-        job_config = next(iter(result.values()))
-        assert job_config["uses"] == "$/.github/workflows/other.yml"
-        assert "runs-on" not in job_config
-        assert job_config["strategy"] == {"matrix": {}}
-        assert job_config["steps"] == [{"name": "unused"}]
-        assert "secrets" not in job_config
+        assert result["uses"] == "$/.github/workflows/other.yml"
+        assert "runs-on" not in result
+        assert result["strategy"] == {"matrix": {}}
+        assert result["steps"] == [{"name": "unused"}]
+        assert "secrets" not in result
 
         # Test with uses and named secrets set
         result = my_test_workflow().job(
@@ -348,8 +346,14 @@ class TestWorkflowConfigFile:
             uses="$/.github/workflows/other.yml",
             secrets={"TOKEN": "${{ secrets.TOKEN }}"},
         )
-        job_config = next(iter(result.values()))
-        assert job_config["secrets"] == {"TOKEN": "${{ secrets.TOKEN }}"}
+        assert result["secrets"] == {"TOKEN": "${{ secrets.TOKEN }}"}
+
+    def test_job_by_id(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        job = {"job_id": "test", "steps": []}
+        assert workflow.job_by_id(lambda: job) == {"test": {"steps": []}}
+        assert "job_id" not in job
 
     def test_job_id_from_method(self) -> None:
         """Test method."""
@@ -360,8 +364,21 @@ class TestWorkflowConfigFile:
 
     def test_jobs(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_workflow().jobs()
-        assert "test_job" in result, "Expected 'test_job' in jobs"
+        jobs = my_test_workflow().jobs()
+        assert isinstance(jobs, tuple)
+        assert [job()["job_id"] for job in jobs] == ["test"]
+
+    def test_jobs_configs(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        assert workflow.jobs_configs() == {
+            "test": {
+                "name": "Test",
+                "runs-on": "ubuntu-latest",
+                "timeout-minutes": workflow.TIMEOUT_MINUTES_DEFAULT,
+                "steps": [{"name": "Test Step", "run": "echo test"}],
+            },
+        }
 
     def test_matrix(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -438,11 +455,14 @@ class TestWorkflowConfigFile:
             """Test workflow whose steps reference a secret."""
 
             @override
-            def jobs(self) -> dict[str, Any]:
+            def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
                 """Return a job referencing `TOKEN`."""
-                return {
-                    "job_a": {"steps": [{"env": {"TOKEN": "${{ secrets.TOKEN }}"}}]},
-                }
+                return (
+                    lambda: {
+                        "job_id": "job_a",
+                        "steps": [{"env": {"TOKEN": "${{ secrets.TOKEN }}"}}],
+                    },
+                )
 
         result = WithSecretUsage().on_workflow_call()
         assert result == {"workflow_call": {"secrets": {"TOKEN": {"required": True}}}}
@@ -679,13 +699,19 @@ class TestWorkflowConfigFile:
             """Test workflow with jobs requesting overlapping permissions."""
 
             @override
-            def jobs(self) -> dict[str, Any]:
+            def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
                 """Return jobs with overlapping and write-escalating permissions."""
-                return {
-                    "job_a": {"permissions": {"pages": "write", "contents": "read"}},
-                    "job_b": {"permissions": {"contents": "read"}},
-                    "job_c": {},
-                }
+                return (
+                    lambda: {
+                        "job_id": "job_a",
+                        "permissions": {"pages": "write", "contents": "read"},
+                    },
+                    lambda: {
+                        "job_id": "job_b",
+                        "permissions": {"contents": "read"},
+                    },
+                    lambda: {"job_id": "job_c"},
+                )
 
         result = WithJobs().used_permissions()
         assert result == {"contents": "read", "pages": "write"}
@@ -708,18 +734,22 @@ class TestWorkflowConfigFile:
             """Test workflow whose steps reference secrets."""
 
             @override
-            def jobs(self) -> dict[str, Any]:
+            def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
                 """Return a job with secrets, GITHUB_TOKEN, and a non-string leaf."""
-                return {
-                    "job_a": {
+                return (
+                    lambda: {
+                        "job_id": "job_a",
                         "continue-on-error": True,
                         "steps": [
                             {"env": {"TOKEN": "${{ secrets.TOKEN }}"}},
                             {"with": {"gh-token": "${{ secrets.GITHUB_TOKEN }}"}},
                         ],
                     },
-                    "job_b": {"if": "${{ secrets.TOKEN != '' }}"},
-                }
+                    lambda: {
+                        "job_id": "job_b",
+                        "if": "${{ secrets.TOKEN != '' }}",
+                    },
+                )
 
         result = WithSecretUsage().used_secrets()
         assert result == ["TOKEN"]
@@ -736,11 +766,14 @@ class TestWorkflowConfigFile:
             """Test workflow whose steps reference a secret."""
 
             @override
-            def jobs(self) -> dict[str, Any]:
+            def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
                 """Return a job referencing `TOKEN`."""
-                return {
-                    "job_a": {"steps": [{"env": {"TOKEN": "${{ secrets.TOKEN }}"}}]},
-                }
+                return (
+                    lambda: {
+                        "job_id": "job_a",
+                        "steps": [{"env": {"TOKEN": "${{ secrets.TOKEN }}"}}],
+                    },
+                )
 
         result = WithSecretUsage().used_secrets_mapping()
         assert result == {"TOKEN": "${{ secrets.TOKEN }}"}
@@ -798,13 +831,15 @@ def my_test_workflow(
             return {"workflow_dispatch": {}}
 
         @override
-        def jobs(self) -> dict[str, Any]:
+        def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
             """Get the workflow jobs."""
-            return {
-                "test_job": {
-                    "runs-on": "ubuntu-latest",
-                    "steps": [{"name": "Test Step", "run": "echo test"}],
-                },
-            }
+            return (self.job_test,)
+
+        def job_test(self) -> dict[str, Any]:
+            """Build the test job."""
+            return self.job(
+                self.job_test,
+                steps=[{"name": "Test Step", "run": "echo test"}],
+            )
 
     return MyTestWorkflowConfigFileClass

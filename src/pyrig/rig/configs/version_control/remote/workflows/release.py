@@ -1,5 +1,6 @@
 """Workflow configuration for automated GitHub release creation."""
 
+from collections.abc import Callable
 from types import MethodType
 from typing import Any, override
 
@@ -24,18 +25,18 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         return False
 
     @override
-    def jobs(self) -> dict[str, Any]:
+    def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return all jobs for the release workflow.
 
         Returns:
-            Dict containing the health check, publish, and deploy jobs, in
-            dependency order.
+            Tuple of health check, publish, and deploy job builders, in dependency
+            order.
         """
-        return {
-            **self.job_health_check(),
-            **self.job_publish(),
-            **self.job_deploy(),
-        }
+        return (
+            self.job_health_check,
+            self.job_publish,
+            self.job_deploy,
+        )
 
     @override
     def stem(self) -> str:
@@ -51,7 +52,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.on_push()
 
-    def job_deploy(self) -> dict[str, dict[str, Any]]:
+    def job_deploy(self) -> dict[str, Any]:
         """Return the deployment job configuration.
 
         Returns:
@@ -82,13 +83,13 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """
         return DeployWorkflowConfigFile.I.used_permissions() or None
 
-    def job_publish(self) -> dict[str, dict[str, Any]]:
+    def job_publish(self) -> dict[str, Any]:
         """Return the job that creates the version tag and GitHub release.
 
         Requires the health check job to have passed first.
 
         Returns:
-            Job configuration dict keyed by the job ID, containing the
+            Job configuration with publishing prerequisites, permissions, and
             ordered release steps.
         """
         return self.job(
@@ -130,7 +131,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             self.step_create_release(),
         ]
 
-    def job_health_check(self) -> dict[str, dict[str, Any]]:
+    def job_health_check(self) -> dict[str, Any]:
         """Return the health check job configuration.
 
         Returns:

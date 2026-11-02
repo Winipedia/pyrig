@@ -50,24 +50,21 @@ class TestDeployWorkflowConfigFile:
         workflow = DeployWorkflowConfigFile()
 
         result = workflow.job(self.test_job, steps=[])
-        assert len(result) == 1, "Expected job to have one key"
-        job_config = next(iter(result.values()))
-        assert job_config["environment"] == "test-job"
+        assert result["job_id"] == "test-job"
+        assert result["environment"] == "test-job"
 
         result = workflow.job(
             self.test_job,
             environment="custom",
             steps=[],
         )
-        job_config = next(iter(result.values()))
-        assert job_config["environment"] == "custom"
+        assert result["environment"] == "custom"
 
     def test_job_documentation(self) -> None:
         """Test method."""
         result = DeployWorkflowConfigFile.I.job_documentation()
-        assert len(result) == 1
-        job_name = next(iter(result.keys()))
-        assert "steps" in result[job_name]
+        assert result["job_id"] == "documentation"
+        assert "steps" in result
 
     def test_job_documentation_permissions(self) -> None:
         """Test method."""
@@ -80,11 +77,10 @@ class TestDeployWorkflowConfigFile:
     def test_job_repository(self) -> None:
         """Test method."""
         result = DeployWorkflowConfigFile.I.job_repository()
-        assert len(result) == 1
-        job_name = next(iter(result.keys()))
-        assert "steps" in result[job_name]
-        assert result[job_name]["environment"] == job_name
-        assert result[job_name]["permissions"] == {"contents": "read"}
+        assert result["job_id"] == "repository"
+        assert "steps" in result
+        assert result["environment"] == result["job_id"]
+        assert result["permissions"] == {"contents": "read"}
 
     def test_job_repository_permissions(self) -> None:
         """Test method."""
@@ -94,8 +90,10 @@ class TestDeployWorkflowConfigFile:
 
     def test_jobs(self) -> None:
         """Test method."""
-        result = DeployWorkflowConfigFile.I.jobs()
-        assert {"repository", "documentation"} <= set(result)
+        workflow = DeployWorkflowConfigFile.I
+        assert {workflow.job_repository, workflow.job_documentation} <= set(
+            workflow.jobs(),
+        )
 
     def test_stem(self) -> None:
         """Test method."""

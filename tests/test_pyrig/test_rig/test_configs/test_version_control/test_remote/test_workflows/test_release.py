@@ -22,12 +22,11 @@ class TestReleaseWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().job_deploy()
-        assert len(result) == 1, "Expected job to have one key"
-        job_config = next(iter(result.values()))
-        assert job_config["uses"] == "$/.github/workflows/deploy.yml"
-        assert job_config["secrets"] == {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"}
-        assert "needs" in job_config, "Expected 'needs' in job"
-        assert "environment" not in job_config
+        assert result["job_id"] == "deploy"
+        assert result["uses"] == "$/.github/workflows/deploy.yml"
+        assert result["secrets"] == {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"}
+        assert "needs" in result, "Expected 'needs' in job"
+        assert "environment" not in result
 
     def test_job_deploy_needs(self) -> None:
         """Test method."""
@@ -49,19 +48,17 @@ class TestReleaseWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().job_health_check()
-        assert len(result) == 1, "Expected job to have one key"
-        job_config = next(iter(result.values()))
-        assert job_config["uses"] == "$/.github/workflows/health_check.yml"
-        assert job_config["secrets"] == {
-            "CODECOV_TOKEN": "${{ secrets.CODECOV_TOKEN }}",
-        }
-        assert "environment" not in job_config
+        assert result["job_id"] == "health-check"
+        assert result["uses"] == "$/.github/workflows/health_check.yml"
+        assert "secrets" not in result
+        assert "environment" not in result
 
     def test_job_health_check_permissions(self) -> None:
         """Test method."""
         assert ReleaseWorkflowConfigFile.I.job_health_check_permissions() == {
             "actions": "read",
             "contents": "read",
+            "id-token": "write",
             "security-events": "write",
         }
 
@@ -71,11 +68,10 @@ class TestReleaseWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().job_publish()
-        assert len(result) == 1, "Expected job to have one key"
-        job_name = next(iter(result.keys()))
-        assert "steps" in result[job_name], "Expected 'steps' in job"
-        assert "needs" in result[job_name], "Expected 'needs' in job"
-        assert "environment" not in result[job_name]
+        assert result["job_id"] == "publish"
+        assert "steps" in result, "Expected 'steps' in job"
+        assert "needs" in result, "Expected 'needs' in job"
+        assert "environment" not in result
 
     def test_job_publish_needs(self) -> None:
         """Test method."""
@@ -94,8 +90,12 @@ class TestReleaseWorkflowConfigFile:
         my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
-        result = my_test_release_workflow().jobs()
-        assert len(result) > 0, "Expected jobs to be non-empty"
+        workflow = my_test_release_workflow()
+        assert workflow.jobs() == (
+            workflow.job_health_check,
+            workflow.job_publish,
+            workflow.job_deploy,
+        )
 
     def test_stem(self) -> None:
         """Test method."""

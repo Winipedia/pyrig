@@ -22,10 +22,9 @@ class TestHealthCheckWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_health_check_workflow().job_health_check()
-        assert len(result) == 1, "Expected job to have one key"
-        job_name = next(iter(result.keys()))
-        assert "steps" in result[job_name], "Expected 'steps' in job"
-        assert "needs" in result[job_name], "Expected 'needs' in job"
+        assert result["job_id"] == "health-check"
+        assert "steps" in result, "Expected 'steps' in job"
+        assert "needs" in result, "Expected 'needs' in job"
 
     def test_job_health_check_needs(self) -> None:
         """Test method."""
@@ -42,9 +41,8 @@ class TestHealthCheckWorkflowConfigFile:
     def test_job_health_checks(self) -> None:
         """Test method."""
         result = HealthCheckWorkflowConfigFile().job_health_checks()
-        assert len(result) == 1, "Expected job to have one key"
-        job_name = next(iter(result.keys()))
-        assert "steps" in result[job_name], "Expected 'steps' in job"
+        assert result["job_id"] == "health-checks"
+        assert "steps" in result, "Expected 'steps' in job"
 
     def test_job_health_checks_permissions(self) -> None:
         """Test method."""
@@ -58,11 +56,10 @@ class TestHealthCheckWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_health_check_workflow().job_matrix_health_checks()
-        assert len(result) == 1, "Expected job to have one key"
-        job_name = next(iter(result.keys()))
-        assert "steps" in result[job_name], "Expected 'steps' in job"
-        assert "strategy" in result[job_name], "Expected 'strategy' in job"
-        assert "runs-on" in result[job_name], "Expected 'runs-on' in job"
+        assert result["job_id"] == "matrix-health-checks"
+        assert "steps" in result, "Expected 'steps' in job"
+        assert "strategy" in result, "Expected 'strategy' in job"
+        assert "runs-on" in result, "Expected 'runs-on' in job"
 
     def test_job_matrix_health_checks_permissions(self) -> None:
         """Test method."""
@@ -76,8 +73,12 @@ class TestHealthCheckWorkflowConfigFile:
         my_test_health_check_workflow: type[HealthCheckWorkflowConfigFile],
     ) -> None:
         """Test method."""
-        result = my_test_health_check_workflow().jobs()
-        assert len(result) > 0, "Expected jobs to be non-empty"
+        workflow = my_test_health_check_workflow()
+        assert workflow.jobs() == (
+            workflow.job_health_checks,
+            workflow.job_matrix_health_checks,
+            workflow.job_health_check,
+        )
 
     def test_stem(self) -> None:
         """Test method."""

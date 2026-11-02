@@ -1,5 +1,6 @@
 """GitHub Actions workflow generator for the health check CI stage."""
 
+from collections.abc import Callable
 from types import MethodType
 from typing import Any, Literal, override
 
@@ -18,18 +19,18 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
     """
 
     @override
-    def jobs(self) -> dict[str, Any]:
+    def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return all jobs for the health check workflow.
 
         Returns:
-            Dict combining the quality-check job, the matrix test job, and
-            the job that aggregates their results.
+            Tuple of builders for the quality-check job, the matrix test job,
+            and the job that aggregates their results.
         """
-        jobs: dict[str, Any] = {}
-        jobs.update(self.job_health_checks())
-        jobs.update(self.job_matrix_health_checks())
-        jobs.update(self.job_health_check())
-        return jobs
+        return (
+            self.job_health_checks,
+            self.job_matrix_health_checks,
+            self.job_health_check,
+        )
 
     @override
     def stem(self) -> str:
@@ -70,7 +71,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """
         return 0, 1, "*", "*", "*"
 
-    def job_health_check(self) -> dict[str, dict[str, Any]]:
+    def job_health_check(self) -> dict[str, Any]:
         """Return the fan-in aggregation job.
 
         Depends on the other two jobs completing successfully; its outcome
@@ -115,7 +116,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             self.step_aggregate_jobs(),
         ]
 
-    def job_health_checks(self) -> dict[str, dict[str, Any]]:
+    def job_health_checks(self) -> dict[str, Any]:
         """Return the single-runner job that applies all code quality checks.
 
         Runs on a single Ubuntu runner (no matrix) and runs every configured
@@ -131,7 +132,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             timeout_minutes=60,
         )
 
-    def job_matrix_health_checks(self) -> dict[str, dict[str, Any]]:
+    def job_matrix_health_checks(self) -> dict[str, Any]:
         """Return the matrix job that runs the test suite across environments.
 
         Uses a strategy matrix combining the default operating systems with

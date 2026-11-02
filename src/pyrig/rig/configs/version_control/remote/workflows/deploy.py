@@ -1,6 +1,6 @@
 """Deployment workflow configuration."""
 
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from types import MethodType
 from typing import Any, override
 
@@ -25,13 +25,16 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return False
 
     @override
-    def jobs(self) -> dict[str, Any]:
-        """Build the top-level jobs configuration.
+    def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
+        """Return the deployment job builders.
 
         Returns:
-            Dict containing the repository and documentation jobs.
+            Tuple containing the repository and documentation job builders.
         """
-        return {**self.job_repository(), **self.job_documentation()}
+        return (
+            self.job_repository,
+            self.job_documentation,
+        )
 
     @override
     def stem(self) -> str:
@@ -62,7 +65,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         uses: str | None = None,
         secrets: dict[str, Any] | None = None,
         timeout_minutes: int = WorkflowConfigFile.TIMEOUT_MINUTES_DEFAULT,
-    ) -> dict[str, dict[str, Any]]:
+    ) -> dict[str, Any]:
         """Build a deployment job with an environment derived from its ID.
 
         Args:
@@ -84,7 +87,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
                 effective when `uses` is not set. Defaults to `TIMEOUT_MINUTES_DEFAULT`.
 
         Returns:
-            A single job configuration keyed by its derived job ID.
+            Deployment job configuration with the requested settings and environment.
         """
         environment = environment or self.job_id_from_method(method)
         return super().job(
@@ -101,11 +104,11 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             timeout_minutes=timeout_minutes,
         )
 
-    def job_documentation(self) -> dict[str, dict[str, Any]]:
+    def job_documentation(self) -> dict[str, Any]:
         """Build the job that builds and deploys the documentation site.
 
         Returns:
-            Dict mapping the derived job ID to its configuration.
+            Job configuration for building and deploying the documentation site.
         """
         return self.job(
             self.job_documentation,
@@ -114,11 +117,11 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             timeout_minutes=60,
         )
 
-    def job_repository(self) -> dict[str, dict[str, Any]]:
+    def job_repository(self) -> dict[str, Any]:
         """Build the job that applies repository-level configuration.
 
         Returns:
-            Dict mapping the derived job ID to its configuration.
+            Job configuration for applying repository-level settings.
         """
         return self.job(
             self.job_repository,
