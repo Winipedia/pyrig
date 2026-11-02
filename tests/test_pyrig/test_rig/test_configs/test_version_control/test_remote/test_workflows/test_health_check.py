@@ -35,12 +35,22 @@ class TestHealthCheckWorkflowConfigFile:
             HealthCheckWorkflowConfigFile.I.job_matrix_health_checks,
         )
 
+    def test_job_health_check_permissions(self) -> None:
+        """Test method."""
+        assert HealthCheckWorkflowConfigFile.I.job_health_check_permissions() is None
+
     def test_job_health_checks(self) -> None:
         """Test method."""
         result = HealthCheckWorkflowConfigFile().job_health_checks()
         assert len(result) == 1, "Expected job to have one key"
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name], "Expected 'steps' in job"
+
+    def test_job_health_checks_permissions(self) -> None:
+        """Test method."""
+        assert HealthCheckWorkflowConfigFile().job_health_checks_permissions() == {
+            "contents": "read",
+        }
 
     def test_job_matrix_health_checks(
         self,
@@ -53,6 +63,13 @@ class TestHealthCheckWorkflowConfigFile:
         assert "steps" in result[job_name], "Expected 'steps' in job"
         assert "strategy" in result[job_name], "Expected 'strategy' in job"
         assert "runs-on" in result[job_name], "Expected 'runs-on' in job"
+
+    def test_job_matrix_health_checks_permissions(self) -> None:
+        """Test method."""
+        assert (
+            HealthCheckWorkflowConfigFile().job_matrix_health_checks_permissions()
+            == {"contents": "read"}
+        )
 
     def test_jobs(
         self,

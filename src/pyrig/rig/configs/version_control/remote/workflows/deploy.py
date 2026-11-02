@@ -62,7 +62,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         uses: str | None = None,
         secrets: dict[str, Any] | None = None,
         timeout_minutes: int = WorkflowConfigFile.TIMEOUT_MINUTES_DEFAULT,
-    ) -> dict[str, Any]:
+    ) -> dict[str, dict[str, Any]]:
         """Build a deployment job with an environment derived from its ID.
 
         Args:
@@ -101,43 +101,59 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             timeout_minutes=timeout_minutes,
         )
 
-    def job_documentation(self) -> dict[str, Any]:
+    def job_documentation(self) -> dict[str, dict[str, Any]]:
         """Build the job that builds and deploys the documentation site.
-
-        Requests `contents: read` to check out the repository, plus
-        `pages: write` and `id-token: write` permissions at the job level,
-        required by the GitHub Pages deployment API.
 
         Returns:
             Dict mapping the derived job ID to its configuration.
         """
         return self.job(
             self.job_documentation,
-            permissions={
-                **self.permission_contents(),
-                **self.permission_id_token(write=True),
-                **self.permission_pages(write=True),
-            },
+            permissions=self.job_documentation_permissions(),
             steps=self.steps_documentation(),
             timeout_minutes=60,
         )
 
-    def job_repository(self) -> dict[str, Any]:
+    def job_repository(self) -> dict[str, dict[str, Any]]:
         """Build the job that applies repository-level configuration.
-
-        Requests `contents: read` to check out the repository; the
-        configuration step itself authenticates separately via `REPO_TOKEN`,
-        not `GITHUB_TOKEN`.
 
         Returns:
             Dict mapping the derived job ID to its configuration.
         """
         return self.job(
             self.job_repository,
-            permissions=self.permission_contents(),
+            permissions=self.job_repository_permissions(),
             steps=self.steps_repository(),
             timeout_minutes=10,
         )
+
+    def job_documentation_permissions(self) -> dict[str, Any]:
+        """Return the permissions for the documentation job.
+
+        Requests `contents: read` to check out the repository, plus
+        `pages: write` and `id-token: write`, required by the GitHub Pages
+        deployment API.
+
+        Returns:
+            Permissions mapping for the documentation job.
+        """
+        return {
+            **self.permission_contents(),
+            **self.permission_id_token(write=True),
+            **self.permission_pages(write=True),
+        }
+
+    def job_repository_permissions(self) -> dict[str, Any]:
+        """Return the permissions for the repository job.
+
+        Requests `contents: read` to check out the repository; the
+        configuration step itself authenticates separately via `REPO_TOKEN`,
+        not `GITHUB_TOKEN`.
+
+        Returns:
+            Permissions mapping for the repository job.
+        """
+        return self.permission_contents()
 
     def steps_documentation(self) -> list[dict[str, Any]]:
         """Build the ordered steps for the documentation job.

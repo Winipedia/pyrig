@@ -70,7 +70,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """
         return 0, 1, "*", "*", "*"
 
-    def job_health_check(self) -> dict[str, Any]:
+    def job_health_check(self) -> dict[str, dict[str, Any]]:
         """Return the fan-in aggregation job.
 
         Depends on the other two jobs completing successfully; its outcome
@@ -84,6 +84,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         return self.job(
             self.job_health_check,
             needs=self.job_health_check_needs(),
+            permissions=self.job_health_check_permissions(),
             steps=self.steps_aggregate_jobs(),
             timeout_minutes=1,
         )
@@ -96,6 +97,14 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """
         return (self.job_health_checks, self.job_matrix_health_checks)
 
+    def job_health_check_permissions(self) -> dict[str, Any] | None:
+        """Return the permissions for the fan-in aggregation job.
+
+        Returns:
+            `None`, since the aggregation job does not require permissions.
+        """
+        return None
+
     def steps_aggregate_jobs(self) -> list[dict[str, Any]]:
         """Return the steps for the fan-in aggregation job.
 
@@ -106,7 +115,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             self.step_aggregate_jobs(),
         ]
 
-    def job_health_checks(self) -> dict[str, Any]:
+    def job_health_checks(self) -> dict[str, dict[str, Any]]:
         """Return the single-runner job that applies all code quality checks.
 
         Runs on a single Ubuntu runner (no matrix) and runs every configured
@@ -117,12 +126,12 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.job(
             self.job_health_checks,
-            permissions=self.permission_contents(),
+            permissions=self.job_health_checks_permissions(),
             steps=self.steps_health_checks(),
             timeout_minutes=60,
         )
 
-    def job_matrix_health_checks(self) -> dict[str, Any]:
+    def job_matrix_health_checks(self) -> dict[str, dict[str, Any]]:
         """Return the matrix job that runs the test suite across environments.
 
         Uses a strategy matrix combining the default operating systems with
@@ -135,7 +144,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         return self.job(
             self.job_matrix_health_checks,
             strategy=self.strategy_matrix_os_and_python_version(),
-            permissions=self.permission_contents(),
+            permissions=self.job_matrix_health_checks_permissions(),
             runs_on=self.insert_matrix_os(),
             steps=self.steps_matrix_health_checks(),
             timeout_minutes=120,
@@ -151,6 +160,22 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             self.step_aggregate_jobs,
             run="echo 'Aggregating jobs into one job.'",
         )
+
+    def job_health_checks_permissions(self) -> dict[str, Any]:
+        """Return the permissions for the quality check job.
+
+        Returns:
+            Permissions mapping granting `contents: read`.
+        """
+        return self.permission_contents()
+
+    def job_matrix_health_checks_permissions(self) -> dict[str, Any]:
+        """Return the permissions for the matrix test job.
+
+        Returns:
+            Permissions mapping granting `contents: read`.
+        """
+        return self.permission_contents()
 
     def steps_health_checks(self) -> list[dict[str, Any]]:
         """Return the steps for the single-runner quality check job.

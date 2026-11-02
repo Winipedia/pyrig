@@ -35,6 +35,14 @@ class TestReleaseWorkflowConfigFile:
             ReleaseWorkflowConfigFile.I.job_publish,
         )
 
+    def test_job_deploy_permissions(self) -> None:
+        """Test method."""
+        assert ReleaseWorkflowConfigFile.I.job_deploy_permissions() == {
+            "contents": "read",
+            "id-token": "write",
+            "pages": "write",
+        }
+
     def test_job_health_check(
         self,
         my_test_release_workflow: type[ReleaseWorkflowConfigFile],
@@ -48,6 +56,14 @@ class TestReleaseWorkflowConfigFile:
             "CODECOV_TOKEN": "${{ secrets.CODECOV_TOKEN }}",
         }
         assert "environment" not in job_config
+
+    def test_job_health_check_permissions(self) -> None:
+        """Test method."""
+        assert ReleaseWorkflowConfigFile.I.job_health_check_permissions() == {
+            "actions": "read",
+            "contents": "read",
+            "security-events": "write",
+        }
 
     def test_job_publish(
         self,
@@ -66,6 +82,12 @@ class TestReleaseWorkflowConfigFile:
         assert ReleaseWorkflowConfigFile.I.job_publish_needs() == (
             ReleaseWorkflowConfigFile.I.job_health_check,
         )
+
+    def test_job_publish_permissions(self) -> None:
+        """Test method."""
+        assert ReleaseWorkflowConfigFile.I.job_publish_permissions() == {
+            "contents": "write",
+        }
 
     def test_jobs(
         self,

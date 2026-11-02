@@ -69,6 +69,14 @@ class TestDeployWorkflowConfigFile:
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name]
 
+    def test_job_documentation_permissions(self) -> None:
+        """Test method."""
+        assert DeployWorkflowConfigFile.I.job_documentation_permissions() == {
+            "contents": "read",
+            "id-token": "write",
+            "pages": "write",
+        }
+
     def test_job_repository(self) -> None:
         """Test method."""
         result = DeployWorkflowConfigFile.I.job_repository()
@@ -77,6 +85,12 @@ class TestDeployWorkflowConfigFile:
         assert "steps" in result[job_name]
         assert result[job_name]["environment"] == job_name
         assert result[job_name]["permissions"] == {"contents": "read"}
+
+    def test_job_repository_permissions(self) -> None:
+        """Test method."""
+        assert DeployWorkflowConfigFile.I.job_repository_permissions() == {
+            "contents": "read",
+        }
 
     def test_jobs(self) -> None:
         """Test method."""

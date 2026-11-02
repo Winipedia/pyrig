@@ -10,10 +10,7 @@
   "schedule":
     -
       "cron": "0 1 * * *"
-  "workflow_call":
-    "secrets":
-      "CODECOV_TOKEN":
-        "required": true
+  "workflow_call": {}
 "permissions": {}
 "concurrency":
   "group": "Health Check-${{ github.ref }}"
@@ -111,6 +108,7 @@
     "name": "Matrix Health Checks"
     "permissions":
       "contents": "read"
+      "id-token": "write"  # required
     "runs-on": "${{ matrix.os }}"
     "timeout-minutes": 120
     "strategy":
@@ -159,9 +157,9 @@
         "uses": "codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5"  # v7.1.1
         "with":
           "files": "coverage.xml"
-          "token": "${{ secrets.CODECOV_TOKEN }}"
           "fail_ci_if_error": "true"
           "skip_validation": "true"
+          "use_oidc": "true"
   "health-check":
     "name": "Health Check"
     "needs":

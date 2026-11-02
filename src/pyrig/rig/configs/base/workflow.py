@@ -157,7 +157,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         uses: str | None = None,
         secrets: dict[str, Any] | None = None,
         timeout_minutes: int = TIMEOUT_MINUTES_DEFAULT,
-    ) -> dict[str, Any]:
+    ) -> dict[str, dict[str, Any]]:
         """Build a job configuration dict.
 
         Args:
@@ -189,7 +189,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             effective when `uses` is not set. Defaults to `TIMEOUT_MINUTES_DEFAULT`.
 
         Returns:
-            Dict mapping the derived job ID to its configuration.
+            A single job configuration keyed by its derived job ID.
         """
         job_id = self.job_id_from_method(method)
         job = {"name": self.name_from_id(job_id)}
