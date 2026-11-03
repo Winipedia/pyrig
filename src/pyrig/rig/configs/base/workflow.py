@@ -765,7 +765,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     def step_checkout_repository(self) -> dict[str, Any]:
         """Build a step that checks out the repository.
 
-        Uses `actions/checkout`, defaulting to `checkout_action()`. It
+        Uses `actions/checkout`, defaulting to `action_checkout()`. It
         authenticates with the automatic `GITHUB_TOKEN`. Credential
         persistence is disabled since no later step needs the checked-out
         git credentials. The containing job must grant at least
@@ -776,7 +776,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.step(
             self.step_checkout_repository,
-            uses=self.checkout_action(),
+            uses=self.action_checkout(),
             with_={"persist-credentials": False},
         )
 
@@ -787,7 +787,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     ) -> dict[str, Any]:
         """Build a step that installs uv and pins the Python version.
 
-        Uses `astral-sh/setup-uv`, defaulting to `setup_uv_action()`, to
+        Uses `astral-sh/setup-uv`, defaulting to `action_setup_uv()`, to
         install uv on the runner and configure it to use the given Python
         version. All subsequent `uv run` and `uv sync` commands will use this
         version.
@@ -800,7 +800,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.step(
             self.step_setup_package_manager,
-            uses=self.setup_uv_action(),
+            uses=self.action_setup_uv(),
             with_={"python-version": python_version},
         )
 
@@ -844,6 +844,22 @@ class WorkflowConfigFile(YMLDictConfigFile):
         name = self.__class__.__name__.removesuffix(WorkflowConfigFile.__name__)
         return " ".join(split_on_uppercase(name))
 
+    def action_checkout(self) -> tuple[str, str, str]:
+        """Return action metadata for `actions/checkout`.
+
+        Returns:
+            Tuple of action name, pinned commit SHA, and release tag.
+        """
+        return self.action_from_resource(self.action_checkout, resources)
+
+    def action_setup_uv(self) -> tuple[str, str, str]:
+        """Return action metadata for `astral-sh/setup-uv`.
+
+        Returns:
+            Tuple of action name, pinned commit SHA, and release tag.
+        """
+        return self.action_from_resource(self.action_setup_uv, resources)
+
     def assign_output_var(self, name: str, value: str) -> str:
         """Shell command to assign a value to a GitHub Actions output variable.
 
@@ -863,14 +879,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
                 self.insert_parameter_expansion("GITHUB_OUTPUT"),
             ),
         )
-
-    def checkout_action(self) -> tuple[str, str, str]:
-        """Return action metadata for `actions/checkout`.
-
-        Returns:
-            Tuple of action name, pinned commit SHA, and release tag.
-        """
-        return self.action_from_resource(self.checkout_action, resources)
 
     def insert_command_substitution(self, command: str) -> str:
         """Wrap a shell command in command substitution syntax "`$(...)"`."""
@@ -904,14 +912,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         dict_ = job()
         return {dict_.pop(self.JOB_ID_KEY): dict_}
-
-    def setup_uv_action(self) -> tuple[str, str, str]:
-        """Return action metadata for `astral-sh/setup-uv`.
-
-        Returns:
-            Tuple of action name, pinned commit SHA, and release tag.
-        """
-        return self.action_from_resource(self.setup_uv_action, resources)
 
     def step(  # noqa: PLR0913
         self,

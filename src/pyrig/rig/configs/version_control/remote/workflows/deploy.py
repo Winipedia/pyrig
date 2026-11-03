@@ -199,14 +199,14 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """Build a step that enables GitHub Pages.
 
         Uses `actions/configure-pages`, defaulting to
-        `configure_pages_action()`.
+        `action_configure_pages()`.
 
         Returns:
             Pages-configuration step using the repository token.
         """
         return self.step(
             self.step_configure_pages,
-            uses=self.configure_pages_action(),
+            uses=self.action_configure_pages(),
             with_={"enablement": "true", "token": self.insert_repo_token()},
         )
 
@@ -225,7 +225,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
     def step_deploy_documentation(self) -> dict[str, Any]:
         """Build a step that deploys the uploaded Pages artifact to GitHub Pages.
 
-        Uses `actions/deploy-pages`, defaulting to `deploy_pages_action()`.
+        Uses `actions/deploy-pages`, defaulting to `action_deploy_pages()`.
 
         Requires the job to have `pages: write` and `id-token: write`
         permissions.
@@ -235,44 +235,44 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.step(
             self.step_deploy_documentation,
-            uses=self.deploy_pages_action(),
+            uses=self.action_deploy_pages(),
         )
 
     def step_upload_documentation(self) -> dict[str, Any]:
         """Build a step that uploads the `site/` directory as a Pages artifact.
 
         Uses `actions/upload-pages-artifact`, defaulting to
-        `upload_pages_artifact_action()`.
+        `action_upload_pages_artifact()`.
 
         Returns:
             Step using `actions/upload-pages-artifact@<ref>`.
         """
         return self.step(
             self.step_upload_documentation,
-            uses=self.upload_pages_artifact_action(),
+            uses=self.action_upload_pages_artifact(),
             with_={"path": DocsBuilder.I.site_dir().as_posix()},
         )
 
-    def configure_pages_action(self) -> tuple[str, str, str]:
+    def action_configure_pages(self) -> tuple[str, str, str]:
         """Return action metadata for `actions/configure-pages`.
 
         Returns:
             Tuple of action name, pinned commit SHA, and release tag.
         """
-        return self.action_from_resource(self.configure_pages_action, resources)
+        return self.action_from_resource(self.action_configure_pages, resources)
 
-    def deploy_pages_action(self) -> tuple[str, str, str]:
+    def action_deploy_pages(self) -> tuple[str, str, str]:
         """Return action metadata for `actions/deploy-pages`.
 
         Returns:
             Tuple of action name, pinned commit SHA, and release tag.
         """
-        return self.action_from_resource(self.deploy_pages_action, resources)
+        return self.action_from_resource(self.action_deploy_pages, resources)
 
-    def upload_pages_artifact_action(self) -> tuple[str, str, str]:
+    def action_upload_pages_artifact(self) -> tuple[str, str, str]:
         """Return action metadata for `actions/upload-pages-artifact`.
 
         Returns:
             Tuple of action name, pinned commit SHA, and release tag.
         """
-        return self.action_from_resource(self.upload_pages_artifact_action, resources)
+        return self.action_from_resource(self.action_upload_pages_artifact, resources)

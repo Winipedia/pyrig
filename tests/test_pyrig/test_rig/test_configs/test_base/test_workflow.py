@@ -31,6 +31,24 @@ class TestWorkflowConfigFile:
         assert "jobs" in result
         assert "permissions" in result
 
+    def test_action_checkout(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        assert workflow.action_checkout() == tuple(
+            resource_content(
+                "ACTION_CHECKOUT",
+                resources,
+            ).splitlines(),
+        )
+
+        action, ref, tag = HealthCheckWorkflowConfigFile.I.action_checkout()
+        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
+            HealthCheckWorkflowConfigFile.I.path(),
+        )
+
     def test_action_from_resource(
         self,
         my_test_workflow: type[WorkflowConfigFile],
@@ -38,10 +56,10 @@ class TestWorkflowConfigFile:
         """Test method."""
         workflow = my_test_workflow()
         assert workflow.action_from_resource(
-            workflow.checkout_action,
+            workflow.action_checkout,
             resources,
         ) == tuple(
-            resource_content("CHECKOUT_ACTION", resources).splitlines(),
+            resource_content("ACTION_CHECKOUT", resources).splitlines(),
         )
 
     def test_action_ref(
@@ -82,6 +100,24 @@ class TestWorkflowConfigFile:
             == "default-uv"
         )
 
+    def test_action_setup_uv(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        assert workflow.action_setup_uv() == tuple(
+            resource_content(
+                "ACTION_SETUP_UV",
+                resources,
+            ).splitlines(),
+        )
+
+        action, ref, tag = HealthCheckWorkflowConfigFile.I.action_setup_uv()
+        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
+            HealthCheckWorkflowConfigFile.I.path(),
+        )
+
     def test_assign_command_substitution_output_var(
         self,
         my_test_workflow: type[WorkflowConfigFile],
@@ -103,24 +139,6 @@ class TestWorkflowConfigFile:
         assert (
             my_test_workflow().assign_output_var("NAME", "value")
             == 'echo name=value >> "${GITHUB_OUTPUT}"'
-        )
-
-    def test_checkout_action(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        workflow = my_test_workflow()
-        assert workflow.checkout_action() == tuple(
-            resource_content(
-                "CHECKOUT_ACTION",
-                resources,
-            ).splitlines(),
-        )
-
-        action, ref, tag = HealthCheckWorkflowConfigFile.I.checkout_action()
-        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
-            HealthCheckWorkflowConfigFile.I.path(),
         )
 
     def test_concurrency(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
@@ -560,24 +578,6 @@ class TestWorkflowConfigFile:
             == "secrets.TEST_TOKEN"
         )
 
-    def test_setup_uv_action(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        workflow = my_test_workflow()
-        assert workflow.setup_uv_action() == tuple(
-            resource_content(
-                "SETUP_UV_ACTION",
-                resources,
-            ).splitlines(),
-        )
-
-        action, ref, tag = HealthCheckWorkflowConfigFile.I.setup_uv_action()
-        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
-            HealthCheckWorkflowConfigFile.I.path(),
-        )
-
     def test_step(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().step(
@@ -604,7 +604,7 @@ class TestWorkflowConfigFile:
         workflow = my_test_workflow()
         result = workflow.step_checkout_repository()
         assert "uses" in result, "Expected 'uses' in step"
-        assert result["uses"] == f"actions/checkout@{workflow.checkout_action()[1]}"
+        assert result["uses"] == f"actions/checkout@{workflow.action_checkout()[1]}"
 
     def test_step_extract_version(
         self,
@@ -640,7 +640,7 @@ class TestWorkflowConfigFile:
         workflow = my_test_workflow()
         result = workflow.step_setup_package_manager(python_version="3.14")
         assert "uses" in result, "Expected 'uses' in step"
-        assert result["uses"] == f"astral-sh/setup-uv@{workflow.setup_uv_action()[1]}"
+        assert result["uses"] == f"astral-sh/setup-uv@{workflow.action_setup_uv()[1]}"
 
     def test_step_update_dependencies(
         self,
