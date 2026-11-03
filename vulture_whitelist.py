@@ -79,11 +79,10 @@ _DEPENDENCY_SUBCLASS_OVERRIDES = (
     DependencySubclass.sort_key,
 )
 _LIBRARY_USAGES = (
-    # https://github.com/Winipedia/pyrig-containers/blob/main/src/pyrig_containers/rig/configs/container_file.py
     PackageManager.install_dependencies_no_dev_args,
-    # https://github.com/Winipedia/pyrig-fixtures/blob/main/src/pyrig_fixtures/rig/tests/fixtures/environment.py
     RemoteVersionController.running_in_ci,
-    # https://github.com/Winipedia/pyrig-executables/blob/main/src/pyrig_executables/rig/configs/version_control/remote/workflows/release.py
+    WorkflowConfigFile.step_download_artifact,
+    WorkflowConfigFile.step_upload_artifact,
     WorkflowConfigFile.strategy_matrix_os,
 )
 _TOOLS = (

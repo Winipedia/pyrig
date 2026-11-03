@@ -61,25 +61,11 @@ class TestDeployWorkflowConfigFile:
         """Test method."""
         assert DeployWorkflowConfigFile.I.concurrency_cancel_in_progress() is False
 
-    def test_job(self) -> None:
-        """Test method."""
-        workflow = DeployWorkflowConfigFile()
-
-        result = workflow.job(self.test_job, steps=[])
-        assert result["job_id"] == "test-job"
-        assert result["environment"] == "test-job"
-
-        result = workflow.job(
-            self.test_job,
-            environment="custom",
-            steps=[],
-        )
-        assert result["environment"] == "custom"
-
     def test_job_documentation(self) -> None:
         """Test method."""
         result = DeployWorkflowConfigFile.I.job_documentation()
         assert result["job_id"] == "documentation"
+        assert result["environment"] == "documentation"
         assert "steps" in result
 
     def test_job_documentation_permissions(self) -> None:
@@ -95,7 +81,7 @@ class TestDeployWorkflowConfigFile:
         result = DeployWorkflowConfigFile.I.job_repository()
         assert result["job_id"] == "repository"
         assert "steps" in result
-        assert result["environment"] == result["job_id"]
+        assert result["environment"] == "repository"
         assert result["permissions"] == {"contents": "read"}
 
     def test_job_repository_permissions(self) -> None:

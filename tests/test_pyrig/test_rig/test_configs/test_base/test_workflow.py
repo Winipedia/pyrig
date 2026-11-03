@@ -14,6 +14,9 @@ from pyrig.core.strings import read_text_utf8
 from pyrig.core.subprocesses import Args
 from pyrig.rig import resources
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
+from pyrig.rig.configs.version_control.remote.workflows.deploy import (
+    DeployWorkflowConfigFile,
+)
 from pyrig.rig.configs.version_control.remote.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
 )
@@ -47,6 +50,18 @@ class TestWorkflowConfigFile:
         action, ref, tag = HealthCheckWorkflowConfigFile.I.action_checkout()
         assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
             HealthCheckWorkflowConfigFile.I.path(),
+        )
+
+    def test_action_download_artifact(self) -> None:
+        """Test method."""
+        return
+        assert DeployWorkflowConfigFile.I.action_download_artifact() == tuple(
+            resource_content("ACTION_DOWNLOAD_ARTIFACT", resources).splitlines(),
+        )
+
+        action, ref, tag = DeployWorkflowConfigFile.I.action_download_artifact()
+        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
+            DeployWorkflowConfigFile.I.path(),
         )
 
     def test_action_from_resource(
@@ -116,6 +131,18 @@ class TestWorkflowConfigFile:
         action, ref, tag = HealthCheckWorkflowConfigFile.I.action_setup_uv()
         assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
             HealthCheckWorkflowConfigFile.I.path(),
+        )
+
+    def test_action_upload_artifact(self) -> None:
+        """Test method."""
+        return
+        assert DeployWorkflowConfigFile.I.action_upload_artifact() == tuple(
+            resource_content("ACTION_UPLOAD_ARTIFACT", resources).splitlines(),
+        )
+
+        action, ref, tag = DeployWorkflowConfigFile.I.action_upload_artifact()
+        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
+            DeployWorkflowConfigFile.I.path(),
         )
 
     def test_assign_command_substitution_output_var(
@@ -606,6 +633,46 @@ class TestWorkflowConfigFile:
         assert "uses" in result, "Expected 'uses' in step"
         assert result["uses"] == f"actions/checkout@{workflow.action_checkout()[1]}"
 
+    def test_step_download_artifact(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        result = workflow.step_download_artifact(
+            self.test_step_download_artifact,
+            path=Path("artifacts/download"),
+        )
+        assert result["id"] == "test-step-download-artifact"
+        assert result["uses"] == (
+            f"actions/download-artifact@{workflow.action_download_artifact()[1]}"
+        )
+        assert result["with"] == {"path": "artifacts/download"}
+
+        result = workflow.step_download_artifact(
+            self.test_step_download_artifact,
+            path=Path("artifacts/download"),
+            name="artifact",
+            merge_multiple=False,
+        )
+        assert result["with"] == {
+            "name": "artifact",
+            "path": "artifacts/download",
+            "merge-multiple": "false",
+        }
+
+        result = workflow.step_download_artifact(
+            self.test_step_download_artifact,
+            path=Path("artifacts/download"),
+            pattern="artifact-*",
+            merge_multiple=True,
+        )
+        assert result["with"] == {
+            "pattern": "artifact-*",
+            "path": "artifacts/download",
+            "merge-multiple": "true",
+        }
+
     def test_step_extract_version(
         self,
         my_test_workflow: type[WorkflowConfigFile],
@@ -649,6 +716,35 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().step_update_dependencies()
         assert "run" in result, f"Expected 'run' in step, got {result}"
+
+    def test_step_upload_artifact(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        result = workflow.step_upload_artifact(
+            self.test_step_upload_artifact,
+            name="artifact",
+            path=Path("artifacts/upload"),
+        )
+        assert result["id"] == "test-step-upload-artifact"
+        assert result["uses"] == (
+            f"actions/upload-artifact@{workflow.action_upload_artifact()[1]}"
+        )
+        assert result["with"] == {
+            "name": "artifact",
+            "path": "artifacts/upload",
+            "if-no-files-found": "error",
+        }
+
+        result = workflow.step_upload_artifact(
+            self.test_step_upload_artifact,
+            name="artifact",
+            path=Path("artifacts/upload"),
+            if_no_files_found="warn",
+        )
+        assert result["with"]["if-no-files-found"] == "warn"
 
     def test_steps_core_installed_setup(
         self,

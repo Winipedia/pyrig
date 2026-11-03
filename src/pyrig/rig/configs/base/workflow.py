@@ -326,6 +326,72 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.permission("pages", write=write)
 
+    def step_download_artifact(
+        self,
+        method: MethodType,
+        *,
+        path: Path,
+        name: str | None = None,
+        pattern: str | None = None,
+        merge_multiple: bool | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that downloads workflow artifacts.
+
+        Args:
+            method: Method representing this step; used to derive its ID and name.
+            path: Destination directory, rendered as a POSIX path.
+            name: Artifact name. When omitted, download all matching artifacts.
+            pattern: Glob pattern for artifact names. Ignored when `name` is set.
+            merge_multiple: Whether to merge artifacts into the destination
+                directory. When `None`, omit the input (the action defaults to false).
+
+        Returns:
+            Step using `actions/download-artifact`.
+        """
+        with_ = {}
+        if name is not None:
+            with_["name"] = name
+        if pattern is not None:
+            with_["pattern"] = pattern
+        with_["path"] = path.as_posix()
+        if merge_multiple is not None:
+            with_["merge-multiple"] = "true" if merge_multiple else "false"
+        return self.step(
+            method,
+            uses=self.action_download_artifact(),
+            with_=with_,
+        )
+
+    def step_upload_artifact(
+        self,
+        method: MethodType,
+        *,
+        name: str,
+        path: Path,
+        if_no_files_found: str = "error",
+    ) -> dict[str, Any]:
+        """Build a step that uploads a file or directory as a workflow artifact.
+
+        Args:
+            method: Method representing this step; used to derive its ID and name.
+            name: Artifact name.
+            path: File or directory to upload, rendered as a POSIX path.
+            if_no_files_found: Action behavior when no files match: `"error"`
+                (default), `"warn"`, or `"ignore"`.
+
+        Returns:
+            Step using `actions/upload-artifact`.
+        """
+        return self.step(
+            method,
+            uses=self.action_upload_artifact(),
+            with_={
+                "name": name,
+                "path": path.as_posix(),
+                "if-no-files-found": if_no_files_found,
+            },
+        )
+
     def steps_core_installed_setup(
         self,
         *,
@@ -427,6 +493,22 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Reference to this workflow at the caller's commit.
         """
         return f"$/{self.path().as_posix()}"
+
+    def action_download_artifact(self) -> tuple[str, str, str]:
+        """Return action metadata for `actions/download-artifact`.
+
+        Returns:
+            Tuple of action name, pinned commit SHA, and release tag.
+        """
+        return self.action_from_resource(self.action_download_artifact, resources)
+
+    def action_upload_artifact(self) -> tuple[str, str, str]:
+        """Return action metadata for `actions/upload-artifact`.
+
+        Returns:
+            Tuple of action name, pinned commit SHA, and release tag.
+        """
+        return self.action_from_resource(self.action_upload_artifact, resources)
 
     def concurrency(self) -> dict[str, Any]:
         """Return the workflow's concurrency setting.

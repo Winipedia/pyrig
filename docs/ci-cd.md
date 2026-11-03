@@ -41,9 +41,6 @@ after `publish` succeeds; since jobs run in dependency order (`needs:`), no
 `if` guard is required — `deploy` never executes unless `publish` (and,
 transitively, `health-check`) succeeded.
 
-Every job in the deploy workflow gets its own GitHub Actions environment,
-named after the job's stable ID automatically.
-
 ---
 
 ## Stage 1 — Health Check
