@@ -85,7 +85,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         return self.job(
             self.job_health_check,
             needs=self.job_health_check_needs(),
-            permissions=self.job_health_check_permissions(),
             steps=self.steps_aggregate_jobs(),
             timeout_minutes=1,
         )
@@ -97,14 +96,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Tuple containing the quality-check job and the matrix test job.
         """
         return (self.job_health_checks, self.job_matrix_health_checks)
-
-    def job_health_check_permissions(self) -> dict[str, Any] | None:
-        """Return the permissions for the fan-in aggregation job.
-
-        Returns:
-            `None`, since the aggregation job does not require permissions.
-        """
-        return None
 
     def steps_aggregate_jobs(self) -> list[dict[str, Any]]:
         """Return the steps for the fan-in aggregation job.

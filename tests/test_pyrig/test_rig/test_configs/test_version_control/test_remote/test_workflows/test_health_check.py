@@ -34,10 +34,6 @@ class TestHealthCheckWorkflowConfigFile:
             HealthCheckWorkflowConfigFile.I.job_matrix_health_checks,
         )
 
-    def test_job_health_check_permissions(self) -> None:
-        """Test method."""
-        assert HealthCheckWorkflowConfigFile.I.job_health_check_permissions() is None
-
     def test_job_health_checks(self) -> None:
         """Test method."""
         result = HealthCheckWorkflowConfigFile().job_health_checks()

@@ -63,7 +63,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             self.job_deploy,
             uses=DeployWorkflowConfigFile.I.workflow_call_reference(),
             needs=self.job_deploy_needs(),
-            permissions=self.job_deploy_permissions(),
+            permissions=self.job_deploy_permissions() or None,
             secrets=secrets,
         )
 
@@ -75,13 +75,13 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """
         return (self.job_publish,)
 
-    def job_deploy_permissions(self) -> dict[str, Any] | None:
+    def job_deploy_permissions(self) -> dict[str, Any]:
         """Return the permissions for the deployment workflow call.
 
         Returns:
-            Permissions used by the deploy workflow, or `None` if it uses none.
+            Permissions used by the deploy workflow, or an empty dict if it uses none.
         """
-        return DeployWorkflowConfigFile.I.used_permissions() or None
+        return DeployWorkflowConfigFile.I.used_permissions()
 
     def job_publish(self) -> dict[str, Any]:
         """Return the job that creates the version tag and GitHub release.
@@ -141,7 +141,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         return self.job(
             self.job_health_check,
             uses=HealthCheckWorkflowConfigFile.I.workflow_call_reference(),
-            permissions=self.job_health_check_permissions(),
+            permissions=self.job_health_check_permissions() or None,
             secrets=secrets,
         )
 
@@ -162,11 +162,11 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             },
         )
 
-    def job_health_check_permissions(self) -> dict[str, Any] | None:
+    def job_health_check_permissions(self) -> dict[str, Any]:
         """Return the permissions for the health check workflow call.
 
         Returns:
-            Permissions used by the health check workflow, or `None` if it
+            Permissions used by the health check workflow, or an empty dict if it
             uses none.
         """
-        return HealthCheckWorkflowConfigFile.I.used_permissions() or None
+        return HealthCheckWorkflowConfigFile.I.used_permissions()
