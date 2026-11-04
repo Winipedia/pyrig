@@ -55,7 +55,6 @@ class TestWorkflowConfigFile:
 
     def test_action_download_artifact(self) -> None:
         """Test method."""
-        return
         assert DeployWorkflowConfigFile.I.action_download_artifact() == tuple(
             resource_content("ACTION_DOWNLOAD_ARTIFACT", resources).splitlines(),
         )
@@ -136,7 +135,6 @@ class TestWorkflowConfigFile:
 
     def test_action_upload_artifact(self) -> None:
         """Test method."""
-        return
         assert DeployWorkflowConfigFile.I.action_upload_artifact() == tuple(
             resource_content("ACTION_UPLOAD_ARTIFACT", resources).splitlines(),
         )
