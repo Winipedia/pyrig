@@ -14,6 +14,7 @@ from pyrig.core.strings import read_text_utf8
 from pyrig.core.subprocesses import Args
 from pyrig.rig import resources
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.version_control.remote.workflows.deploy import (
     DeployWorkflowConfigFile,
 )
@@ -708,6 +709,7 @@ class TestWorkflowConfigFile:
         result = workflow.step_setup_package_manager(python_version="3.14")
         assert "uses" in result, "Expected 'uses' in step"
         assert result["uses"] == f"astral-sh/setup-uv@{workflow.action_setup_uv()[1]}"
+        assert result["with"]["python-version"] == "3.14"
 
     def test_step_update_dependencies(
         self,
@@ -758,6 +760,9 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().steps_core_setup()
         assert len(result) > 0
+        assert result[1]["with"]["python-version"] == str(
+            PyprojectConfigFile.I.latest_possible_python_version(level="minor"),
+        )
 
     def test_strategy(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""

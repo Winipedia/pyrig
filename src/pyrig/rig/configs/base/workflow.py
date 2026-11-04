@@ -714,16 +714,12 @@ class WorkflowConfigFile(YMLDictConfigFile):
         `contents: read` through `permission_contents()`.
 
         Args:
-            python_version: Python version string for `uv`. Defaults to the
-                latest minor version supported by the project.
+            python_version: Python version string for `step_setup_package_manager`.
+                Defaults to the latest minor version supported by the project.
 
         Returns:
             Ordered list of step configuration dicts.
         """
-        if python_version is None:
-            python_version = str(
-                PyprojectConfigFile.I.latest_possible_python_version(level="minor"),
-            )
         return [
             self.step_checkout_repository(),
             self.step_setup_package_manager(python_version=python_version),
@@ -865,7 +861,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     def step_setup_package_manager(
         self,
         *,
-        python_version: str,
+        python_version: str | None = None,
     ) -> dict[str, Any]:
         """Build a step that installs uv and pins the Python version.
 
@@ -876,10 +872,15 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
         Args:
             python_version: Python version string to pin, e.g. `"3.13"`.
+                Defaults to the latest minor version supported by the project.
 
         Returns:
             Step using `astral-sh/setup-uv@<ref>`.
         """
+        if python_version is None:
+            python_version = str(
+                PyprojectConfigFile.I.latest_possible_python_version(level="minor"),
+            )
         return self.step(
             self.step_setup_package_manager,
             uses=self.action_setup_uv(),
