@@ -32,6 +32,7 @@ class TestHealthCheckWorkflowConfigFile:
             HealthCheckWorkflowConfigFile.I.job_analyze,  # ty: ignore[unresolved-attribute]
             HealthCheckWorkflowConfigFile.I.job_health_checks,
             HealthCheckWorkflowConfigFile.I.job_matrix_health_checks,
+            HealthCheckWorkflowConfigFile.I.job_upload_coverage,  # ty: ignore[unresolved-attribute]
         )
 
     def test_job_health_checks(self) -> None:
