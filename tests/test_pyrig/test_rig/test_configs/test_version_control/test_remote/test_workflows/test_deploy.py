@@ -61,17 +61,46 @@ class TestDeployWorkflowConfigFile:
         """Test method."""
         assert DeployWorkflowConfigFile.I.concurrency_cancel_in_progress() is False
 
-    def test_job_documentation(self) -> None:
+    def test_job_build_documentation(self) -> None:
         """Test method."""
-        result = DeployWorkflowConfigFile.I.job_documentation()
-        assert result["job_id"] == "documentation"
-        assert result["environment"] == "documentation"
-        assert "steps" in result
+        workflow = DeployWorkflowConfigFile.I
+        result = workflow.job_build_documentation()
+        assert result["job_id"] == "build-documentation"
+        assert result["permissions"] == {"contents": "read"}
+        assert result["steps"] == workflow.steps_build_documentation()
+        assert "environment" not in result
+        assert "needs" not in result
+        assert "secrets.REPO_TOKEN" not in str(result)
 
-    def test_job_documentation_permissions(self) -> None:
+    def test_job_build_documentation_permissions(self) -> None:
         """Test method."""
-        assert DeployWorkflowConfigFile.I.job_documentation_permissions() == {
+        assert DeployWorkflowConfigFile.I.job_build_documentation_permissions() == {
             "contents": "read",
+        }
+
+    def test_job_deploy_documentation(self) -> None:
+        """Test method."""
+        expected_timeout_minutes = 30
+        workflow = DeployWorkflowConfigFile.I
+        result = workflow.job_deploy_documentation()
+        assert result["job_id"] == "deploy-documentation"
+        assert result["name"] == "Deploy Documentation"
+        assert result["timeout-minutes"] == expected_timeout_minutes
+        assert result["environment"] == "documentation"
+        assert result["needs"] == ["build-documentation"]
+        assert result["permissions"] == {"id-token": "write", "pages": "write"}
+        assert result["steps"] == workflow.steps_deploy_documentation()
+
+    def test_job_deploy_documentation_needs(self) -> None:
+        """Test method."""
+        workflow = DeployWorkflowConfigFile.I
+        assert workflow.job_deploy_documentation_needs() == (
+            workflow.job_build_documentation,
+        )
+
+    def test_job_deploy_documentation_permissions(self) -> None:
+        """Test method."""
+        assert DeployWorkflowConfigFile.I.job_deploy_documentation_permissions() == {
             "id-token": "write",
             "pages": "write",
         }
@@ -93,9 +122,19 @@ class TestDeployWorkflowConfigFile:
     def test_jobs(self) -> None:
         """Test method."""
         workflow = DeployWorkflowConfigFile.I
-        assert {workflow.job_repository, workflow.job_documentation} <= set(
+        assert {
+            workflow.job_repository,
+            workflow.job_build_documentation,
+            workflow.job_deploy_documentation,
+        } <= set(
             workflow.jobs(),
         )
+        generated = workflow.jobs_configs()
+        persisted = workflow.load()["jobs"]
+        assert "documentation" not in persisted
+        for job_id in ("build-documentation", "deploy-documentation"):
+            assert persisted[job_id] == generated[job_id]
+        assert persisted["repository"] == generated["repository"]
 
     def test_stem(self) -> None:
         """Test method."""
@@ -139,10 +178,22 @@ class TestDeployWorkflowConfigFile:
             f"{DeployWorkflowConfigFile.I.action_upload_pages_artifact()[1]}"
         )
 
-    def test_steps_documentation(self) -> None:
+    def test_steps_build_documentation(self) -> None:
         """Test method."""
-        result = DeployWorkflowConfigFile.I.steps_documentation()
-        assert len(result) > 0
+        workflow = DeployWorkflowConfigFile.I
+        assert workflow.steps_build_documentation() == [
+            *workflow.steps_core_installed_setup(),
+            workflow.step_build_documentation(),
+            workflow.step_upload_documentation(),
+        ]
+
+    def test_steps_deploy_documentation(self) -> None:
+        """Test method."""
+        workflow = DeployWorkflowConfigFile.I
+        assert workflow.steps_deploy_documentation() == [
+            workflow.step_configure_pages(),
+            workflow.step_deploy_documentation(),
+        ]
 
     def test_steps_repository(self) -> None:
         """Test method."""

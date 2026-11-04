@@ -89,15 +89,17 @@ Three jobs run in dependency order:
 
 **Trigger:** `workflow_call` only, invoked by `release.yml`'s `deploy` job.
 
-Two jobs run in this final stage:
+Three core jobs run in this final stage:
 
 - **`repository`** — applies repository settings and protection rulesets,
   and more, all via the GitHub API. Requires `contents: read` at the job
   level; the configuration step itself authenticates separately via the
   `REPO_TOKEN` secret.
-- **`documentation`** — builds the documentation site and deploys it to
-  GitHub Pages. This job requires `contents: read`, `pages: write`, and
-  `id-token: write` permissions at the job level.
+- **`build-documentation`** — builds the documentation site and uploads it
+  as a Pages artifact. Requires only `contents: read` permissions.
+- **`deploy-documentation`** — runs only after `build-documentation` succeeds
+  (`needs:`) and deploys the artifact to GitHub Pages. Requires `pages: write`
+  and `id-token: write` permissions at the job level.
 
 !!! warning "Important"
     If your repository is private, the published docs site is still publicly accessible.

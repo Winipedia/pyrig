@@ -1,6 +1,7 @@
 """Deployment workflow configuration."""
 
 from collections.abc import Callable
+from types import MethodType
 from typing import Any, override
 
 from pyrig.rig import resources
@@ -25,11 +26,12 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """Return the deployment job builders.
 
         Returns:
-            Tuple containing the repository and documentation job builders.
+            Tuple containing repository, documentation build, and deployment builders.
         """
         return (
             self.job_repository,
-            self.job_documentation,
+            self.job_build_documentation,
+            self.job_deploy_documentation,
         )
 
     @override
@@ -46,18 +48,19 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.on_workflow_call()
 
-    def job_documentation(self) -> dict[str, Any]:
-        """Build the job that builds and deploys the documentation site.
+    def job_deploy_documentation(self) -> dict[str, Any]:
+        """Build the job that deploys the uploaded documentation site.
 
         Returns:
-            Job configuration for building and deploying the documentation site.
+            Job configuration for deploying the Pages artifact after the build.
         """
         return self.job(
-            self.job_documentation,
+            self.job_deploy_documentation,
+            needs=self.job_deploy_documentation_needs(),
             environment="documentation",
-            permissions=self.job_documentation_permissions(),
-            steps=self.steps_documentation(),
-            timeout_minutes=60,
+            permissions=self.job_deploy_documentation_permissions(),
+            steps=self.steps_deploy_documentation(),
+            timeout_minutes=30,
         )
 
     def job_repository(self) -> dict[str, Any]:
@@ -74,18 +77,24 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             timeout_minutes=10,
         )
 
-    def job_documentation_permissions(self) -> dict[str, Any]:
-        """Return the permissions for the documentation job.
+    def job_deploy_documentation_needs(self) -> tuple[MethodType, ...]:
+        """Return the documentation build prerequisite for deployment.
 
-        Requests `contents: read` to check out the repository, plus
-        `pages: write` and `id-token: write`, required by the GitHub Pages
-        deployment API.
+        Returns:
+            Tuple containing the documentation build job.
+        """
+        return (self.job_build_documentation,)
+
+    def job_deploy_documentation_permissions(self) -> dict[str, Any]:
+        """Return the permissions for the documentation deployment job.
+
+        Requests only `pages: write` and `id-token: write`, required by the
+        GitHub Pages deployment API. No repository checkout is needed.
 
         Returns:
             Permissions mapping for the documentation job.
         """
         return {
-            **self.permission_contents(),
             **self.permission_id_token(write=True),
             **self.permission_pages(write=True),
         }
@@ -102,18 +111,14 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.permission_contents()
 
-    def steps_documentation(self) -> list[dict[str, Any]]:
-        """Build the ordered steps for the documentation job.
+    def steps_deploy_documentation(self) -> list[dict[str, Any]]:
+        """Build the ordered steps for the documentation deployment job.
 
         Returns:
-            Ordered list of step dicts: environment setup, build the
-            documentation, enable Pages, upload the artifact, deploy it.
+            Pages enablement followed by deployment of the uploaded artifact.
         """
         return [
-            *self.steps_core_installed_setup(),
-            self.step_build_documentation(),
             self.step_configure_pages(),
-            self.step_upload_documentation(),
             self.step_deploy_documentation(),
         ]
 
@@ -128,15 +133,17 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             self.step_configure_repository(),
         ]
 
-    def step_build_documentation(self) -> dict[str, Any]:
-        """Build a step that builds the documentation site into the `site/` directory.
+    def job_build_documentation(self) -> dict[str, Any]:
+        """Build the job that builds and uploads the documentation site.
 
         Returns:
-            Step that runs the documentation build command.
+            Job configuration for building and uploading the Pages artifact.
         """
-        return self.step(
-            self.step_build_documentation,
-            run=str(PackageManager.I.run_args(*DocsBuilder.I.build_args())),
+        return self.job(
+            self.job_build_documentation,
+            permissions=self.job_build_documentation_permissions(),
+            steps=self.steps_build_documentation(),
+            timeout_minutes=60,
         )
 
     def step_configure_pages(self) -> dict[str, Any]:
@@ -151,7 +158,10 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return self.step(
             self.step_configure_pages,
             uses=self.action_configure_pages(),
-            with_={"enablement": "true", "token": self.insert_repo_token()},
+            with_={
+                "enablement": "true",
+                "token": self.insert_repo_token(),
+            },
         )
 
     def step_configure_repository(self) -> dict[str, Any]:
@@ -182,21 +192,6 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             uses=self.action_deploy_pages(),
         )
 
-    def step_upload_documentation(self) -> dict[str, Any]:
-        """Build a step that uploads the `site/` directory as a Pages artifact.
-
-        Uses `actions/upload-pages-artifact`, defaulting to
-        `action_upload_pages_artifact()`.
-
-        Returns:
-            Step using `actions/upload-pages-artifact@<ref>`.
-        """
-        return self.step(
-            self.step_upload_documentation,
-            uses=self.action_upload_pages_artifact(),
-            with_={"path": DocsBuilder.I.site_dir().as_posix()},
-        )
-
     def action_configure_pages(self) -> tuple[str, str, str]:
         """Return action metadata for `actions/configure-pages`.
 
@@ -212,6 +207,52 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             Tuple of action name, pinned commit SHA, and release tag.
         """
         return self.action_from_resource(self.action_deploy_pages, resources)
+
+    def job_build_documentation_permissions(self) -> dict[str, Any]:
+        """Return read-only checkout permissions for the documentation build.
+
+        Returns:
+            Permissions mapping granting `contents: read`.
+        """
+        return self.permission_contents()
+
+    def steps_build_documentation(self) -> list[dict[str, Any]]:
+        """Build the ordered steps for the documentation build job.
+
+        Returns:
+            Environment setup, documentation build, and Pages artifact upload.
+        """
+        return [
+            *self.steps_core_installed_setup(),
+            self.step_build_documentation(),
+            self.step_upload_documentation(),
+        ]
+
+    def step_build_documentation(self) -> dict[str, Any]:
+        """Build a step that builds the documentation site into the `site/` directory.
+
+        Returns:
+            Step that runs the documentation build command.
+        """
+        return self.step(
+            self.step_build_documentation,
+            run=str(PackageManager.I.run_args(*DocsBuilder.I.build_args())),
+        )
+
+    def step_upload_documentation(self) -> dict[str, Any]:
+        """Build a step that uploads the `site/` directory as a Pages artifact.
+
+        Uses `actions/upload-pages-artifact`, defaulting to
+        `action_upload_pages_artifact()`.
+
+        Returns:
+            Step using `actions/upload-pages-artifact@<ref>`.
+        """
+        return self.step(
+            self.step_upload_documentation,
+            uses=self.action_upload_pages_artifact(),
+            with_={"path": DocsBuilder.I.site_dir().as_posix()},
+        )
 
     def action_upload_pages_artifact(self) -> tuple[str, str, str]:
         """Return action metadata for `actions/upload-pages-artifact`.

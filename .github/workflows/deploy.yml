@@ -35,15 +35,12 @@
         "run": "bash .github/configure.sh"
         "env":
           "GH_TOKEN": "${{ secrets.REPO_TOKEN }}"
-  "documentation":
-    "name": "Documentation"
+  "build-documentation":
+    "name": "Build Documentation"
     "permissions":
       "contents": "read"
-      "id-token": "write"  # required
-      "pages": "write"  # required
     "runs-on": "ubuntu-latest"
     "timeout-minutes": 60
-    "environment": "documentation"
     "steps":
       -
         "name": "Checkout Repository"
@@ -68,6 +65,24 @@
         "id": "build-documentation"
         "run": "uv run zensical build"
       -
+        "name": "Upload Documentation"
+        "id": "upload-documentation"
+        # ryl disable-line rule:line-length
+        "uses": "actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9"  # v5.0.0
+        "with":
+          "path": "site"
+  "deploy-documentation":
+    "name": "Deploy Documentation"
+    "permissions":
+      "id-token": "write"  # required
+      "pages": "write"  # required
+    "needs":
+      - "build-documentation"
+    "runs-on": "ubuntu-latest"
+    "timeout-minutes": 30
+    "environment": "documentation"
+    "steps":
+      -
         "name": "Configure Pages"
         "id": "configure-pages"
         # ryl disable-line rule:line-length
@@ -75,13 +90,6 @@
         "with":
           "enablement": "true"
           "token": "${{ secrets.REPO_TOKEN }}"
-      -
-        "name": "Upload Documentation"
-        "id": "upload-documentation"
-        # ryl disable-line rule:line-length
-        "uses": "actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9"  # v5.0.0
-        "with":
-          "path": "site"
       -
         "name": "Deploy Documentation"
         "id": "deploy-documentation"
