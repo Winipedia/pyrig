@@ -93,7 +93,7 @@ class TestArgs:
         """Test method."""
         args = Args("uv", "run", "pytest")
         result = args.multiline()
-        assert result == "uv \\\nrun \\\npytest"
+        assert result == "uv \\\n  run \\\n  pytest"
 
     def test_run(self, mocker: MockerFixture) -> None:
         """Test method."""

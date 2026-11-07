@@ -27,7 +27,7 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     @override
     def required_env_vars(self) -> tuple[str, ...]:
         """Return the required names: `GH_TOKEN` and `GITHUB_REPOSITORY`."""
-        return ("GH_TOKEN", self.repo_variable())
+        return (*super().required_env_vars(), "GH_TOKEN", self.repo_variable())
 
     @override
     def script(self) -> str:

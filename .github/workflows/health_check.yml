@@ -57,13 +57,13 @@
         "id": "check-alerts"
         "run": |-
           gh \
-          api \
-          "repos/${GITHUB_REPOSITORY}/code-scanning/alerts" \
-          --method=GET \
-          --raw-field="ref=${GITHUB_REF}" \
-          --raw-field=state=open \
-          --raw-field=tool_name=CodeQL \
-          --jq='if . != [] then error("Alerts found") end'
+            api \
+            "repos/${GITHUB_REPOSITORY}/code-scanning/alerts" \
+            --method=GET \
+            --raw-field="ref=${GITHUB_REF}" \
+            --raw-field=state=open \
+            --raw-field=tool_name=CodeQL \
+            --jq='if . != [] then error("Alerts found") end'
         "env":
           "GH_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
   "health-checks":

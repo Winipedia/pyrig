@@ -25,8 +25,8 @@ class Args(tuple[str, ...]):
         'git commit --message=my commit message'
         >>> print(args.multiline())
         git \
-        commit \
-        --message=my commit message
+          commit \
+          --message=my commit message
     """
 
     __slots__ = ()
@@ -55,15 +55,16 @@ class Args(tuple[str, ...]):
     def multiline(self) -> str:
         r"""Return the command as a backslash-continued, multiline string.
 
-        Each token gets its own line, joined by a trailing backslash. Unlike
-        `__str__`, which is the right default for a short command, this suits
-        printing or writing a long command to a shell script, where a single
-        space-separated line would run off the screen.
+        Each token gets its own line, with continuation lines indented by two
+        spaces and joined by a trailing backslash. Unlike `__str__`, which is
+        the right default for a short command, this suits printing or writing a
+        long command to a shell script, where a single space-separated line
+        would run off the screen.
 
         Returns:
-            The tokens joined by `" \\\n"`.
+            The tokens joined by `" \\\n  "`.
         """
-        return " \\\n".join(self)
+        return " \\\n  ".join(self)
 
     def run(self, *args: str, check: bool = True) -> subprocess.CompletedProcess[Any]:
         """Execute the command with any extra positional arguments appended.
