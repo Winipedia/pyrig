@@ -4,6 +4,7 @@ from collections.abc import Callable
 from types import MethodType
 from typing import Any, override
 
+from pyrig.core.subprocesses import Args
 from pyrig.rig import resources
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.version_control.remote.configure import (
@@ -171,11 +172,14 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         Returns:
             Repository-configuration step.
         """
-        dialect = ShellFormatter.I.dialect()
-        file = ConfigureRepositoryConfigFile.I.path().as_posix()
         return self.step(
             self.step_configure_repository,
-            run=f"{dialect} {file}",
+            run=str(
+                Args(
+                    ShellFormatter.I.dialect(),
+                    ConfigureRepositoryConfigFile.I.path().as_posix(),
+                ),
+            ),
             env={"GH_TOKEN": self.insert_repo_token()},
         )
 
