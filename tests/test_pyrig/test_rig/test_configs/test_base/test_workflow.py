@@ -896,9 +896,10 @@ class TestWorkflowConfigFile:
         result = workflow.workflow_call_reference()
         assert result == f"$/{workflow.path().as_posix()}"
 
-    def test_workflow_name(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+    def test_workflow_name(self) -> None:
         """Test method."""
-        assert my_test_workflow().workflow_name() == "Test Workflow"
+        assert HealthCheckWorkflowConfigFile().workflow_name() == "Health Check"
+        assert DeployWorkflowConfigFile().workflow_name() == "Deploy"
 
     def test_workflow_triggers(
         self,
