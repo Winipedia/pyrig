@@ -599,6 +599,11 @@ class TestWorkflowConfigFile:
             == "secrets.TEST_TOKEN"
         )
 
+    def test_stem(self) -> None:
+        """Test that workflow stems are derived in kebab-case."""
+        assert HealthCheckWorkflowConfigFile.I.stem() == "health-check"
+        assert DeployWorkflowConfigFile.I.stem() == "deploy"
+
     def test_step(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().step(
@@ -893,8 +898,7 @@ class TestWorkflowConfigFile:
 
     def test_workflow_name(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_workflow().workflow_name()
-        assert len(result) > 0, "Expected workflow name to be non-empty"
+        assert my_test_workflow().workflow_name() == "Test Workflow"
 
     def test_workflow_triggers(
         self,

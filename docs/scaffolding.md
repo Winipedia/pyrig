@@ -25,7 +25,7 @@ my-project/
 │   │   ├── config.yml                      # Issue template chooser configuration
 │   │   └── feature_request.yml             # Feature request issue form
 │   ├── workflows/
-│   │   ├── health_check.yml                # CI: tests, linting, hooks, dependency audit
+│   │   ├── health-check.yml                # CI: tests, linting, hooks, dependency audit
 │   │   ├── release.yml                     # CD: tagging, GitHub release
 │   │   └── deploy.yml                      # CD: repo settings/rulesets, documentation deployment
 │   ├── CODEOWNERS                          # Wildcard code ownership rule for the repo owner

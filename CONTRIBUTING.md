@@ -41,4 +41,4 @@ to avoid duplicates.
 - Reference related issues in the description.
 - Keep changes focused and atomic.
 - Update documentation.
-- All checks in [CI](https://github.com/Winipedia/pyrig/actions/workflows/health_check.yml) must pass before merge.
+- All checks in [CI](https://github.com/Winipedia/pyrig/actions/workflows/health-check.yml) must pass before merge.

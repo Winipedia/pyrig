@@ -43,7 +43,7 @@ class TestContributingConfigFile:
         result = ContributingConfigFile.I.pull_request_section()
         assert result.startswith("## Pull Requests")
         assert (
-            "https://github.com/Winipedia/pyrig/actions/workflows/health_check.yml"
+            "https://github.com/Winipedia/pyrig/actions/workflows/health-check.yml"
             in result
         )
 

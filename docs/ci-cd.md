@@ -45,7 +45,7 @@ transitively, `health-check`) succeeded.
 
 ## Stage 1 — Health Check
 
-**File:** `.github/workflows/health_check.yml`
+**File:** `.github/workflows/health-check.yml`
 
 This workflow executes tests and other general health checks. It has four
 triggers: manual dispatch, every pull request, a nightly schedule, and
@@ -65,7 +65,7 @@ the release pipeline, gating `publish`.
 
 Three jobs run in dependency order:
 
-- **`health-check`** — calls `health_check.yml` as a reusable workflow.
+- **`health-check`** — calls `health-check.yml` as a reusable workflow.
 - **`publish`** — runs only if `health-check` succeeds (`needs:`). Creates a
   GitHub Release with auto-generated release notes, tagging the current
   commit in the same call.
@@ -137,6 +137,8 @@ Override the methods that need changing — jobs, triggers, steps, permissions,
 or environment variables. The `WorkflowConfigFile` base class provides
 composable helpers for common patterns (matrix strategies, step builders,
 trigger constructors) so custom workflows stay concise and consistent with
-the generated ones.
+the generated ones. By default, workflow filenames use the class name without
+the `WorkflowConfigFile` suffix, converted to kebab-case
+(`HealthCheckWorkflowConfigFile` becomes `health-check.yml`).
 
 Run `pyrig sync` after any change to update or regenerate the workflow files.

@@ -49,7 +49,7 @@ class TestReleaseWorkflowConfigFile:
         """Test method."""
         result = my_test_release_workflow().job_health_check()
         assert result["job_id"] == "health-check"
-        assert result["uses"] == "$/.github/workflows/health_check.yml"
+        assert result["uses"] == "$/.github/workflows/health-check.yml"
         assert "secrets" not in result
         assert "environment" not in result
 
@@ -96,10 +96,6 @@ class TestReleaseWorkflowConfigFile:
             workflow.job_publish,
             workflow.job_deploy,
         )
-
-    def test_stem(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile().stem() == "release"
 
     def test_step_create_release(
         self,

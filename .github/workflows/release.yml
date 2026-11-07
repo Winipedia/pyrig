@@ -17,7 +17,7 @@
       "contents": "read"
       "id-token": "write"  # required
       "security-events": "write"  # required
-    "uses": "$/.github/workflows/health_check.yml"
+    "uses": "$/.github/workflows/health-check.yml"
   "publish":
     "name": "Publish"
     "permissions":

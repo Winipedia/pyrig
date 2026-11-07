@@ -33,11 +33,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         )
 
     @override
-    def stem(self) -> str:
-        """Return `"health_check"`, the workflow file's stem."""
-        return "health_check"
-
-    @override
     def workflow_triggers(self) -> dict[str, Any]:
         """Return manual, pull request, scheduled, and reusable-workflow triggers.
 

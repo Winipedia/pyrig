@@ -89,6 +89,19 @@ class WorkflowConfigFile(YMLDictConfigFile):
             "jobs": self.jobs_configs(),
         }
 
+    @override
+    def stem(self) -> str:
+        """Return the generated workflow file stem.
+
+        The stem is the workflow class name without its `WorkflowConfigFile`
+        suffix, converted to kebab-case.
+        """
+        return "-".join(
+            split_on_uppercase(
+                self.__class__.__name__.removesuffix(WorkflowConfigFile.__name__),
+            ),
+        ).lower()
+
     def insert_github_token(self) -> str:
         """Return the `${{ secrets.GITHUB_TOKEN }}` expression.
 
@@ -905,17 +918,18 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return "VERSION"
 
     def workflow_name(self) -> str:
-        """Derive a human-readable name from the class name.
-
-        Removes the `WorkflowConfigFile` suffix and splits the remainder on
-        uppercase letters to produce a space-separated title.
+        """Return a human-readable title derived from the workflow file stem.
 
         Returns:
             Workflow name, e.g. `"Health Check"` for
-            `HealthCheckWorkflowConfigFile`.
+            `health-check`.
         """
-        name = self.__class__.__name__.removesuffix(WorkflowConfigFile.__name__)
-        return " ".join(split_on_uppercase(name))
+        return reformat_name(
+            self.stem(),
+            split_on="-",
+            join_on=" ",
+            capitalize=True,
+        )
 
     def action_checkout(self) -> tuple[str, str, str]:
         """Return action metadata for `actions/checkout`.

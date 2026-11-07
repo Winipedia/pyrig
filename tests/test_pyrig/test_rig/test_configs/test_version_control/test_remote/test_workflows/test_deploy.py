@@ -136,10 +136,6 @@ class TestDeployWorkflowConfigFile:
             assert persisted[job_id] == generated[job_id]
         assert persisted["repository"] == generated["repository"]
 
-    def test_stem(self) -> None:
-        """Test method."""
-        assert DeployWorkflowConfigFile.I.stem() == "deploy"
-
     def test_step_build_documentation(self) -> None:
         """Test method."""
         result = DeployWorkflowConfigFile.I.step_build_documentation()
