@@ -15,9 +15,6 @@
 "concurrency":
   "group": "Health Check-${{ github.ref }}"
   "cancel-in-progress": true
-"defaults":
-  "run":
-    "shell": "bash"
 "run-name": "Health Check"
 "jobs":
   "analyze":
