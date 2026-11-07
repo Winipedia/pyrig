@@ -10,6 +10,7 @@ from pyrig.rig.configs.version_control.remote.configure import (
     ConfigureRepositoryConfigFile,
 )
 from pyrig.rig.tools.docs.builder import DocsBuilder
+from pyrig.rig.tools.formatting.shell import ShellFormatter
 from pyrig.rig.tools.packages.manager import PackageManager
 
 
@@ -170,9 +171,11 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         Returns:
             Repository-configuration step.
         """
+        dialect = ShellFormatter.I.dialect()
+        file = ConfigureRepositoryConfigFile.I.path().as_posix()
         return self.step(
             self.step_configure_repository,
-            run=f"bash {ConfigureRepositoryConfigFile.I.path().as_posix()}",
+            run=f"{dialect} {file}",
             env={"GH_TOKEN": self.insert_repo_token()},
         )
 
