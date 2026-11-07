@@ -9,9 +9,6 @@
 "concurrency":
   "group": "Deploy-${{ github.ref }}"
   "cancel-in-progress": false
-"defaults":
-  "run":
-    "shell": "bash"
 "run-name": "Deploy"
 "jobs":
   "repository":

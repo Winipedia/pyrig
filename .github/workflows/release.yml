@@ -8,9 +8,6 @@
 "concurrency":
   "group": "Release-${{ github.ref }}"
   "cancel-in-progress": false
-"defaults":
-  "run":
-    "shell": "bash"
 "run-name": "Release"
 "jobs":
   "health-check":

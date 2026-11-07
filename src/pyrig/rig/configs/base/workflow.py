@@ -20,7 +20,6 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig import resources
 from pyrig.rig.configs.base.yaml import YMLDictConfigFile, commented_map
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.tools.formatting.shell import ShellFormatter
 from pyrig.rig.tools.linting.yaml import YAMLLinter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
@@ -77,8 +76,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
         Returns:
             Top-level workflow configuration with `name`, `on`,
-            `permissions`, `concurrency`, `defaults`, `run-name`, and
-            `jobs` keys populated from the overridable methods. The default
+            `permissions`, `concurrency`, `run-name`, and `jobs` keys
+            populated from the overridable methods. The default
             permissions policy denies all `GITHUB_TOKEN` access.
         """
         return {
@@ -86,7 +85,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             "on": self.workflow_triggers(),
             "permissions": self.permissions(),
             "concurrency": self.concurrency(),
-            "defaults": self.defaults(),
             "run-name": self.run_name(),
             "jobs": self.jobs_configs(),
         }
@@ -524,14 +522,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             "group": f"{self.workflow_name()}-{self.insert_github_ref()}",
             "cancel-in-progress": self.concurrency_cancel_in_progress(),
         }
-
-    def defaults(self) -> dict[str, Any]:
-        """Return the default settings applied to every step in the workflow.
-
-        Returns:
-            Dict of default settings.
-        """
-        return {"run": {"shell": ShellFormatter.I.dialect()}}
 
     def documented_permissions(self, permissions: dict[str, str]) -> CommentedMap:
         """Return `permissions` as a documented `CommentedMap`.

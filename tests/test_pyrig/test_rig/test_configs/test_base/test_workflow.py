@@ -34,6 +34,7 @@ class TestWorkflowConfigFile:
         assert "concurrency" in result
         assert "jobs" in result
         assert "permissions" in result
+        assert "defaults" not in result
 
     def test_action_checkout(
         self,
@@ -180,12 +181,6 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Test method."""
         assert my_test_workflow().concurrency_cancel_in_progress() is True
-
-    def test_defaults(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().defaults()
-        assert "run" in result, "Expected 'run' in defaults"
-        assert result["run"]["shell"] == "bash", "Expected shell to be 'bash'"
 
     def test_documented_permissions(
         self,
