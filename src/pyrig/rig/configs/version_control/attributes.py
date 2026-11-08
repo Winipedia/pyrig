@@ -4,21 +4,16 @@ from pathlib import Path
 from typing import override
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
-from pyrig.rig.tools.packages.manager import PackageManager
+from pyrig.rig.tools.formatting.shell import ShellFormatter
 from pyrig.rig.tools.version_control.controller import VersionController
-from pyrig.rig.tools.version_control.remote.controller import (
-    RemoteVersionController,
-)
 
 
 class VersionControllerAttributesConfigFile(StringConfigFile):
     """Config file manager for `.gitattributes`.
 
     Declares the git attributes that apply to any project regardless of what
-    it does: line-ending normalization, excluding version-control and GitHub
-    bookkeeping files from `git archive` output, heading- and def-aware diff
-    drivers for Markdown and Python files, and marking the package manager's
-    lock file as generated.
+    it does: line-ending normalization and language-aware diff drivers for
+    Markdown, Python, and shell files.
     """
 
     @override
@@ -26,22 +21,13 @@ class VersionControllerAttributesConfigFile(StringConfigFile):
         """Return the required `.gitattributes` content.
 
         Returns:
-            The baseline attribute rules, followed by a rule marking the
-            package manager's lock file as generated, and the rules
-            excluding version-control and GitHub metadata from `git
-            archive` output.
+            The baseline attribute rules for line endings and diff drivers.
         """
         return f"""* text=auto eol={VersionController.I.end_of_line()}
 
 *.md diff=markdown
 *.py diff=python
-*.pyi diff=python
-
-{PackageManager.I.lock_file().as_posix()} linguist-generated=true
-
-.gitattributes  export-ignore
-.gitignore      export-ignore
-/{RemoteVersionController.I.config_dir().as_posix()}/**     export-ignore
+*.sh diff={ShellFormatter.I.dialect()}
 """
 
     @override
