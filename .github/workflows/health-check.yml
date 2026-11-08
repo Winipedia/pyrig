@@ -17,55 +17,6 @@
   "cancel-in-progress": true
 "run-name": "Health Check"
 "jobs":
-  "analyze":
-    "name": "Analyze"
-    "permissions":
-      "actions": "read"  # required
-      "contents": "read"
-      "security-events": "write"  # required
-    "runs-on": "ubuntu-latest"
-    "timeout-minutes": 90
-    "strategy":
-      "matrix":
-        "language":
-          - "python"
-          - "actions"
-      "fail-fast": true
-    "steps":
-      -
-        "name": "Checkout Repository"
-        "id": "checkout-repository"
-        # ryl disable-line rule:line-length
-        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1
-        "with":
-          "persist-credentials": false
-      -
-        "name": "Initialize Codeql"
-        "id": "initialize-codeql"
-        # ryl disable-line rule:line-length
-        "uses": "github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370"  # v4.39.1
-        "with":
-          "languages": "${{ matrix.language }}"
-          "config-file": ".github/codeql.yml"
-      -
-        "name": "Analyze Code"
-        "id": "analyze-code"
-        # ryl disable-line rule:line-length
-        "uses": "github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370"  # v4.39.1
-      -
-        "name": "Check Alerts"
-        "id": "check-alerts"
-        "run": |-
-          gh \
-            api \
-            "repos/${GITHUB_REPOSITORY}/code-scanning/alerts" \
-            --method=GET \
-            --raw-field="ref=${GITHUB_REF}" \
-            --raw-field=state=open \
-            --raw-field=tool_name=CodeQL \
-            --jq='if . != [] then error("Alerts found") end'
-        "env":
-          "GH_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
   "health-checks":
     "name": "Health Checks"
     "permissions":
@@ -182,13 +133,29 @@
           "directory": "coverage-reports"
           "fail_ci_if_error": "true"
           "use_oidc": "true"
+  "codeql":
+    "name": "Codeql"
+    "permissions":
+      "actions": "read"  # required
+      "contents": "read"
+      "security-events": "write"  # required
+    "uses": "$/.github/workflows/codeql.yml"
+  "scorecard":
+    "name": "Scorecard"
+    "permissions":
+      "actions": "read"  # required
+      "contents": "read"
+      "id-token": "write"  # required
+      "security-events": "write"  # required
+    "uses": "$/.github/workflows/scorecard.yml"
   "health-check":
     "name": "Health Check"
     "needs":
-      - "analyze"
       - "health-checks"
       - "matrix-health-checks"
       - "upload-coverage"
+      - "codeql"
+      - "scorecard"
     "runs-on": "ubuntu-latest"
     "timeout-minutes": 1
     "steps":

@@ -84,7 +84,7 @@ class RepositorySettingsConfigFile(JSONDictConfigFile):
                         {
                             "type": "pull_request",
                             "parameters": {
-                                "required_approving_review_count": 1,
+                                "required_approving_review_count": 2,
                                 "dismiss_stale_reviews_on_push": True,
                                 "required_reviewers": [],
                                 "require_code_owner_review": True,

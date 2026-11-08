@@ -2,7 +2,7 @@
 
 from collections.abc import Callable
 from types import MethodType
-from typing import Any, Literal, override
+from typing import Any, Literal, cast, override
 
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
@@ -23,12 +23,10 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """Return all jobs for the health check workflow.
 
         Returns:
-            Tuple of builders for the quality-check job, the matrix test job,
-            and the job that aggregates their results.
+            Health-check job builders followed by the aggregation job builder.
         """
         return (
-            self.job_health_checks,
-            self.job_matrix_health_checks,
+            *self.jobs_health_check(),
             self.job_health_check,
         )
 
@@ -69,13 +67,13 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
     def job_health_check(self) -> dict[str, Any]:
         """Return the fan-in aggregation job.
 
-        Depends on the other two jobs completing successfully; its outcome
-        is relied on elsewhere as the sole indicator of whether the health
-        check as a whole passed.
+        Depends on all registered health-check jobs completing successfully.
+        Its outcome is relied on elsewhere as the sole indicator of whether
+        the health check as a whole passed.
 
         Returns:
-            Job configuration with `needs` set to both sibling jobs and a
-            single aggregation step.
+            Job configuration with `needs` set to the registered health-check
+            jobs and a single aggregation step.
         """
         return self.job(
             self.job_health_check,
@@ -85,12 +83,8 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         )
 
     def job_health_check_needs(self) -> tuple[MethodType, ...]:
-        """Return the upstream jobs required before the aggregate job runs.
-
-        Returns:
-            Tuple containing the quality-check job and the matrix test job.
-        """
-        return (self.job_health_checks, self.job_matrix_health_checks)
+        """Return the registered health-check jobs as aggregation dependencies."""
+        return cast("tuple[MethodType, ...]", self.jobs_health_check())
 
     def steps_aggregate_jobs(self) -> list[dict[str, Any]]:
         """Return the steps for the fan-in aggregation job.
@@ -101,6 +95,24 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         return [
             self.step_aggregate_jobs(),
         ]
+
+    def jobs_health_check(self) -> tuple[Callable[[], dict[str, Any]], ...]:
+        """Return the job builders whose results the health check aggregates."""
+        return (
+            self.job_health_checks,
+            self.job_matrix_health_checks,
+        )
+
+    def step_aggregate_jobs(self) -> dict[str, Any]:
+        """Build a no-op step that only echoes a message.
+
+        Returns:
+            Step that echoes an aggregation message.
+        """
+        return self.step(
+            self.step_aggregate_jobs,
+            run="echo 'Aggregating jobs into one job.'",
+        )
 
     def job_health_checks(self) -> dict[str, Any]:
         """Return the single-runner job that applies all code quality checks.
@@ -137,18 +149,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             timeout_minutes=120,
         )
 
-    def step_aggregate_jobs(self) -> dict[str, Any]:
-        """Build a no-op step that only echoes a message.
-
-        Returns:
-            Step that echoes an aggregation message.
-        """
-        return self.step(
-            self.step_aggregate_jobs,
-            run="echo 'Aggregating jobs into one job.'",
-        )
-
-    def job_health_checks_permissions(self) -> dict[str, Any]:
+    def job_health_checks_permissions(self) -> dict[str, str]:
         """Return the permissions for the quality check job.
 
         Returns:
@@ -156,7 +157,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.permission_contents()
 
-    def job_matrix_health_checks_permissions(self) -> dict[str, Any]:
+    def job_matrix_health_checks_permissions(self) -> dict[str, str]:
         """Return the permissions for the matrix test job.
 
         Returns:

@@ -53,13 +53,12 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         Returns:
             Reusable job configuration that runs after publishing.
         """
-        secrets = DeployWorkflowConfigFile.I.used_secrets_mapping() or None
         return self.job(
             self.job_deploy,
             uses=DeployWorkflowConfigFile.I.workflow_call_reference(),
             needs=self.job_deploy_needs(),
             permissions=self.job_deploy_permissions() or None,
-            secrets=secrets,
+            secrets=DeployWorkflowConfigFile.I.used_secrets_mapping() or None,
         )
 
     def job_deploy_needs(self) -> tuple[MethodType, ...]:
@@ -70,7 +69,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """
         return (self.job_publish,)
 
-    def job_deploy_permissions(self) -> dict[str, Any]:
+    def job_deploy_permissions(self) -> dict[str, str]:
         """Return the permissions for the deployment workflow call.
 
         Returns:
@@ -103,7 +102,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """
         return (self.job_health_check,)
 
-    def job_publish_permissions(self) -> dict[str, Any]:
+    def job_publish_permissions(self) -> dict[str, str]:
         """Return the permissions for the publish job.
 
         Requests `contents: write`, required to create the version tag and
@@ -132,12 +131,11 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         Returns:
             Reusable job configuration with its required permissions and secrets.
         """
-        secrets = HealthCheckWorkflowConfigFile.I.used_secrets_mapping() or None
         return self.job(
             self.job_health_check,
             uses=HealthCheckWorkflowConfigFile.I.workflow_call_reference(),
             permissions=self.job_health_check_permissions() or None,
-            secrets=secrets,
+            secrets=HealthCheckWorkflowConfigFile.I.used_secrets_mapping() or None,
         )
 
     def step_create_release(self) -> dict[str, Any]:
@@ -157,7 +155,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             },
         )
 
-    def job_health_check_permissions(self) -> dict[str, Any]:
+    def job_health_check_permissions(self) -> dict[str, str]:
         """Return the permissions for the health check workflow call.
 
         Returns:

@@ -82,7 +82,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """
         return (self.job_build_documentation,)
 
-    def job_deploy_documentation_permissions(self) -> dict[str, Any]:
+    def job_deploy_documentation_permissions(self) -> dict[str, str]:
         """Return the permissions for the documentation deployment job.
 
         Requests only `pages: write` and `id-token: write`, required by the
@@ -96,7 +96,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             **self.permission_pages(write=True),
         }
 
-    def job_repository_permissions(self) -> dict[str, Any]:
+    def job_repository_permissions(self) -> dict[str, str]:
         """Return the permissions for the repository job.
 
         Requests `contents: read` to check out the repository; the
@@ -210,7 +210,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.action_from_resource(self.action_deploy_pages, resources)
 
-    def job_build_documentation_permissions(self) -> dict[str, Any]:
+    def job_build_documentation_permissions(self) -> dict[str, str]:
         """Return read-only checkout permissions for the documentation build.
 
         Returns:

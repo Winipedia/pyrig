@@ -128,7 +128,7 @@ to prevent it from being updated by the pipeline.
 
 ## Customizing the Pipeline
 
-All three workflow files are managed `ConfigFile` instances, so they can be
+All workflow files are managed `ConfigFile` instances, so they can be
 extended or overridden in the same way as any other managed file in pyrig.
 Run `pyrig mk subcls` and search for the workflow class you want to change
 (`HealthCheckWorkflowConfigFile`, `ReleaseWorkflowConfigFile`, or

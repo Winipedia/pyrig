@@ -24,16 +24,12 @@ class TestHealthCheckWorkflowConfigFile:
         result = my_test_health_check_workflow().job_health_check()
         assert result["job_id"] == "health-check"
         assert "steps" in result, "Expected 'steps' in job"
-        assert "needs" in result, "Expected 'needs' in job"
+        assert result["needs"] == ["health-checks", "matrix-health-checks"]
 
     def test_job_health_check_needs(self) -> None:
         """Test method."""
-        assert HealthCheckWorkflowConfigFile.I.job_health_check_needs() == (
-            HealthCheckWorkflowConfigFile.I.job_analyze,  # ty: ignore[unresolved-attribute]
-            HealthCheckWorkflowConfigFile.I.job_health_checks,
-            HealthCheckWorkflowConfigFile.I.job_matrix_health_checks,
-            HealthCheckWorkflowConfigFile.I.job_upload_coverage,  # ty: ignore[unresolved-attribute]
-        )
+        workflow = HealthCheckWorkflowConfigFile.I
+        assert workflow.job_health_check_needs() == workflow.jobs_health_check()
 
     def test_job_health_checks(self) -> None:
         """Test method."""
@@ -75,6 +71,14 @@ class TestHealthCheckWorkflowConfigFile:
             workflow.job_health_checks,
             workflow.job_matrix_health_checks,
             workflow.job_health_check,
+        )
+
+    def test_jobs_health_check(self) -> None:
+        """Test method."""
+        workflow = HealthCheckWorkflowConfigFile()
+        assert workflow.jobs_health_check() == (
+            workflow.job_health_checks,
+            workflow.job_matrix_health_checks,
         )
 
     def test_step_aggregate_jobs(
