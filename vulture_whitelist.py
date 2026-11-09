@@ -80,6 +80,7 @@ _DEPENDENCY_SUBCLASS_OVERRIDES = (
 )
 _LIBRARY_USAGES = (
     PackageManager.install_dependencies_no_dev_args,
+    RemoteVersionController.file_url,
     RemoteVersionController.running_in_ci,
     WorkflowConfigFile.step_download_artifact,
     WorkflowConfigFile.step_upload_artifact,

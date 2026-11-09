@@ -155,6 +155,17 @@ class RemoteVersionController(Tool):
         """Return the configuration file path for dependabot."""
         return self.config_dir() / "dependabot.yml"
 
+    def file_url(self, path: Path) -> str:
+        """Construct the GitHub URL for a file in the repository.
+
+        Args:
+            path: Path to the file relative to the repository root.
+
+        Returns:
+            URL in the format `https://github.com/{owner}/{repo}/blob/{branch}/{path}`.
+        """
+        return f"{self.repo_url()}/blob/{VersionController.I.default_branch()}/{path}"
+
     def issues_url(self) -> str:
         """Construct the GitHub issues URL.
 

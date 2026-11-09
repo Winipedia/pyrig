@@ -1,5 +1,7 @@
 """module."""
 
+from pathlib import Path
+
 from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,
 )
@@ -123,6 +125,13 @@ class TestRemoteVersionController:
         """Test method."""
         result = RemoteVersionController.I.dev_dependencies()
         assert result == ()
+
+    def test_file_url(self) -> None:
+        """Test method."""
+        assert (
+            RemoteVersionController.I.file_url(Path("README.md"))
+            == "https://github.com/Winipedia/pyrig/blob/main/README.md"
+        )
 
     def test_group(self) -> None:
         """Test method."""
