@@ -2,7 +2,7 @@
 
 from abc import abstractmethod
 from collections import defaultdict
-from collections.abc import Hashable
+from collections.abc import Hashable, Iterator
 from types import ModuleType
 from typing import override
 
@@ -43,6 +43,10 @@ class Tool(DependencySubclass):
     """
 
     @abstractmethod
+    def name(self) -> str:
+        """Return the executable name for this tool's CLI command (e.g. `"git"`)."""
+
+    @abstractmethod
     def group(self) -> str:
         """Return the `Group` constant this tool's badge is categorized under."""
 
@@ -69,10 +73,6 @@ class Tool(DependencySubclass):
                     coverage percentage.
             2. Official project page or repository.
         """
-
-    @abstractmethod
-    def name(self) -> str:
-        """Return the executable name for this tool's CLI command (e.g. `"git"`)."""
 
     @classmethod
     @override
@@ -110,7 +110,7 @@ class Tool(DependencySubclass):
 
     @classmethod
     def grouped_badges(cls) -> defaultdict[str, list[str]]:
-        """Return every concrete tool's badge, grouped by its `Group` category.
+        """Return every concrete tool's badges, grouped by `Group` category.
 
         Returns:
             Mapping from each group name to the Markdown badge strings of the
@@ -120,8 +120,8 @@ class Tool(DependencySubclass):
         subclasses = cls.sorted_subclasses(cls.concrete_leaves())
         groups: defaultdict[str, list[str]] = defaultdict(list)
         for subclass in subclasses:
-            tool = subclass()
-            groups[tool.group()].append(tool.badge())
+            for group, badge in subclass().badges_markdown():
+                groups[group].append(badge)
         return groups
 
     @classmethod
@@ -192,17 +192,21 @@ class Tool(DependencySubclass):
         """
         return Args(self.name(), *args)
 
-    def badge(self) -> str:
-        """Return the Markdown badge string for this tool.
+    def badges_markdown(self) -> Iterator[tuple[str, str]]:
+        """Yield each badge as a `(group, Markdown)` pair.
 
         Returns:
-            A Markdown string in the form `[![ClassName](image_url)](link_url)`.
+            An iterator of group names and their rendered Markdown badges.
         """
-        return linked_badge_markdown(
-            image_url=self.image_url(),
-            link_url=self.link_url(),
-            alt_text=self.__class__.__name__,
-        )
+        for group, image_url, link_url, alt_text in self.badges():
+            yield (
+                group,
+                linked_badge_markdown(
+                    image_url=image_url,
+                    link_url=link_url,
+                    alt_text=alt_text,
+                ),
+            )
 
     def config_name(self) -> str:
         """Return the normalized config name for this tool.
@@ -251,6 +255,25 @@ class Tool(DependencySubclass):
             File paths to ignore. Empty by default.
         """
         return ()
+
+    def badges(self) -> tuple[tuple[str, str, str, str], ...]:
+        """Return badge metadata for this tool.
+
+        Override to provide multiple badges. Each badge is a tuple of
+        `(group, image_url, link_url, alt_text)`.
+
+        Returns:
+            Badge metadata tuples. By default, contains this tool's single badge.
+        """
+        return (self.badge(),)
+
+    def badge(self) -> tuple[str, str, str, str]:
+        """Return this tool's badge metadata.
+
+        Returns:
+            A tuple of `(group, image_url, link_url, alt_text)`.
+        """
+        return self.group(), self.image_url(), self.link_url(), self.__class__.__name__
 
 
 class Group:

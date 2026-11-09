@@ -28,11 +28,28 @@ class TestTool:
         assert result == ("uv", "run", "pytest")
 
     def test_badge(self) -> None:
-        """Test method."""
+        """Test the default badge metadata."""
         result = PackageManager.I.badge()
-        assert isinstance(result, str)
-        assert "uv" in result
-        assert "[![" in result
+        assert result == (
+            PackageManager.I.group(),
+            PackageManager.I.image_url(),
+            PackageManager.I.link_url(),
+            "PackageManager",
+        )
+
+    def test_badges(self) -> None:
+        """Test that the default badge collection contains one badge."""
+        assert PackageManager.I.badges() == (PackageManager.I.badge(),)
+
+    def test_badges_markdown(self) -> None:
+        """Test that badge metadata is rendered as grouped Markdown."""
+        group, image_url, link_url, alt_text = PackageManager.I.badge()
+        assert tuple(PackageManager.I.badges_markdown()) == (
+            (
+                group,
+                f"[![{alt_text}]({image_url})]({link_url})",
+            ),
+        )
 
     def test_config_name(self, mocker: MockerFixture) -> None:
         """Test method."""
