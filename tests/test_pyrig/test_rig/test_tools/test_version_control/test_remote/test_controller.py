@@ -52,27 +52,27 @@ class TestRemoteVersionController:
         result = RemoteVersionController.I.args("release")
         assert tuple(result) == ("gh", "release")
 
-    def test_ci_cd_dir(self) -> None:
+    def test_ci_cd_badge(self) -> None:
         """Test method."""
-        assert RemoteVersionController.I.ci_cd_dir().as_posix() == ".github/workflows"
-
-    def test_cicd_badge(self) -> None:
-        """Test method."""
-        result = RemoteVersionController.I.cicd_badge_url("health-check", "CI")
+        result = RemoteVersionController.I.ci_cd_badge_url("health-check", "CI")
         expected = "https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/health-check.yml?label=CI&logo=github"
         assert result == expected, f"Expected {expected}, got {result}"
 
-    def test_cicd_badge_url(self) -> None:
+    def test_ci_cd_badge_url(self) -> None:
         """Test method."""
-        result = RemoteVersionController.I.cicd_badge_url("health-check", "CI")
+        result = RemoteVersionController.I.ci_cd_badge_url("health-check", "CI")
         assert (
             result
             == "https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/health-check.yml?label=CI&logo=github"
         )
 
-    def test_cicd_url(self) -> None:
+    def test_ci_cd_dir(self) -> None:
         """Test method."""
-        result = RemoteVersionController.I.cicd_url("health-check")
+        assert RemoteVersionController.I.ci_cd_dir().as_posix() == ".github/workflows"
+
+    def test_ci_cd_url(self) -> None:
+        """Test method."""
+        result = RemoteVersionController.I.ci_cd_url("health-check")
         assert (
             result
             == "https://github.com/Winipedia/pyrig/actions/workflows/health-check.yml"

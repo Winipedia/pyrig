@@ -211,7 +211,7 @@ class BadgesConfigFile(MarkdownConfigFile):
                 None,
             ),
             (
-                RemoteVersionController.I.cicd_badge(
+                RemoteVersionController.I.ci_cd_badge(
                     HealthCheckWorkflowConfigFile.I.stem(),
                     "CI",
                 ),
@@ -219,7 +219,7 @@ class BadgesConfigFile(MarkdownConfigFile):
                 0,
             ),
             (
-                RemoteVersionController.I.cicd_badge(
+                RemoteVersionController.I.ci_cd_badge(
                     ReleaseWorkflowConfigFile.I.stem(),
                     "CD",
                 ),

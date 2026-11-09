@@ -109,7 +109,7 @@ By participating in this project, you agree to abide by its
             The `## Pull Requests` section, with the CI link derived from
             the project's own configuration.
         """
-        cicd_url = RemoteVersionController.I.cicd_url(
+        ci_cd_url = RemoteVersionController.I.ci_cd_url(
             HealthCheckWorkflowConfigFile.I.stem(),
         )
         return f"""## Pull Requests
@@ -117,7 +117,7 @@ By participating in this project, you agree to abide by its
 - Reference related issues in the description.
 - Keep changes focused and atomic.
 - Update documentation.
-- All checks in [CI]({cicd_url}) must pass before merge."""
+- All checks in [CI]({ci_cd_url}) must pass before merge."""
 
     def security_notice_section(self) -> str:
         """Return the security-vulnerability callout.
