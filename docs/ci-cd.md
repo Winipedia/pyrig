@@ -137,8 +137,6 @@ Override the methods that need changing — jobs, triggers, steps, permissions,
 or environment variables. The `WorkflowConfigFile` base class provides
 composable helpers for common patterns (matrix strategies, step builders,
 trigger constructors) so custom workflows stay concise and consistent with
-the generated ones. By default, workflow filenames use the class name without
-the `WorkflowConfigFile` suffix, converted to kebab-case
-(`HealthCheckWorkflowConfigFile` becomes `health-check.yml`).
+the generated ones.
 
 Run `pyrig sync` after any change to update or regenerate the workflow files.

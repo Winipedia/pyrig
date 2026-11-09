@@ -1,7 +1,5 @@
 """Utilities for working with strings and text files."""
 
-import re
-from collections.abc import Iterator
 from pathlib import Path
 from typing import IO, Any
 
@@ -89,30 +87,6 @@ def reformat_name(
     if capitalize:
         parts = (part.capitalize() for part in parts)
     return join_on.join(parts)
-
-
-def split_on_uppercase(string: str) -> Iterator[str]:
-    """Split a string at uppercase letter boundaries.
-
-    Splits just before every ASCII uppercase letter (A-Z). Empty substrings
-    produced by the split are omitted.
-
-    Args:
-        string: The string to split (e.g., `"MyClassName"`).
-
-    Yields:
-        Non-empty substrings, in order. Each substring starts either at the
-        beginning of the original string or just before an uppercase letter.
-
-    Examples:
-        >>> list(split_on_uppercase("HelloWorld"))
-        ['Hello', 'World']
-        >>> list(split_on_uppercase("XMLParser"))
-        ['X', 'M', 'L', 'Parser']
-        >>> list(split_on_uppercase("alllowercase"))
-        ['alllowercase']
-    """
-    return (s for s in re.split(r"(?=[A-Z])", string) if s)
 
 
 def write_text_utf8(path: Path, content: str) -> int:

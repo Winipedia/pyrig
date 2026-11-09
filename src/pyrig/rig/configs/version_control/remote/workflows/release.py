@@ -39,6 +39,11 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         )
 
     @override
+    def stem(self) -> str:
+        """Return the workflow file stem, `release`."""
+        return "release"
+
+    @override
     def workflow_triggers(self) -> dict[str, Any]:
         """Return a `push` trigger for the default branch.
 

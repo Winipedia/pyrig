@@ -81,6 +81,10 @@ class TestHealthCheckWorkflowConfigFile:
             workflow.job_matrix_health_checks,
         )
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert HealthCheckWorkflowConfigFile.I.stem() == "health-check"
+
     def test_step_aggregate_jobs(
         self,
         my_test_health_check_workflow: type[HealthCheckWorkflowConfigFile],

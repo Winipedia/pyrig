@@ -37,6 +37,11 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         )
 
     @override
+    def stem(self) -> str:
+        """Return the workflow file stem, `deploy`."""
+        return "deploy"
+
+    @override
     def workflow_triggers(self) -> dict[str, Any]:
         """Return a reusable-workflow trigger.
 

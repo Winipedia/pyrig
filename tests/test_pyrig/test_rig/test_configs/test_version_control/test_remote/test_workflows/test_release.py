@@ -97,6 +97,10 @@ class TestReleaseWorkflowConfigFile:
             workflow.job_deploy,
         )
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert ReleaseWorkflowConfigFile.I.stem() == "release"
+
     def test_step_create_release(
         self,
         my_test_release_workflow: type[ReleaseWorkflowConfigFile],

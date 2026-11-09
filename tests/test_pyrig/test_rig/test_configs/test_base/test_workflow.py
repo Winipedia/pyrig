@@ -21,6 +21,9 @@ from pyrig.rig.configs.version_control.remote.workflows.deploy import (
 from pyrig.rig.configs.version_control.remote.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
 )
+from pyrig.rig.configs.version_control.remote.workflows.release import (
+    ReleaseWorkflowConfigFile,
+)
 
 
 class TestWorkflowConfigFile:
@@ -600,9 +603,10 @@ class TestWorkflowConfigFile:
         )
 
     def test_stem(self) -> None:
-        """Test that workflow stems are derived in kebab-case."""
+        """Test the explicit workflow file stems."""
         assert HealthCheckWorkflowConfigFile.I.stem() == "health-check"
         assert DeployWorkflowConfigFile.I.stem() == "deploy"
+        assert ReleaseWorkflowConfigFile.I.stem() == "release"
 
     def test_step(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""

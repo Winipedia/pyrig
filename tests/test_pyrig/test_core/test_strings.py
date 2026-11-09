@@ -8,7 +8,6 @@ from pyrig.core.strings import (
     open_path_with_utf8,
     read_text_utf8,
     reformat_name,
-    split_on_uppercase,
     write_text_utf8,
 )
 from pyrig.rig.tools.packages.manager import PackageManager
@@ -92,40 +91,6 @@ def test_reformat_name() -> None:
         == "SomePackage"
     )
     assert reformat_name("__lead_trail__", split_on="_", join_on="-") == "lead-trail"
-
-
-def test_split_on_uppercase() -> None:
-    """Test function."""
-    # Test with simple string
-    result = list(split_on_uppercase("HelloWorld"))
-    assert result == ["Hello", "World"]
-
-    # Test with multiple uppercase letters
-    result = list(split_on_uppercase("SplitCamelCase"))
-    assert result == ["Split", "Camel", "Case"], (
-        f"Expected ['Split', 'Camel', 'Case'], got {result}"
-    )
-
-    # Test with all uppercase
-    result = list(split_on_uppercase("ALLUPPERCASE"))
-    assert result == list("ALLUPPERCASE"), (
-        f"Expected {list('ALLUPPERCASE')}, got {result}"
-    )
-
-    # Test with all lowercase
-    result = list(split_on_uppercase("alllowercase"))
-    assert result == ["alllowercase"]
-
-    # test with numbers
-    result = list(split_on_uppercase("split1Camel2Case"))
-    assert result == ["split1", "Camel2", "Case"], (
-        f"Expected ['split1', 'Camel2', 'Case'], got {result}"
-    )
-
-    # entire sentence
-    result = list(split_on_uppercase("Split some Camel Case"))
-    expected = ["Split some ", "Camel ", "Case"]
-    assert result == expected
 
 
 def test_write_text_utf8(tmp_path: Path) -> None:

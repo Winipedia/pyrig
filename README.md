@@ -6,11 +6,13 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/health-check.yml?label=CI&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/health-check.yml)
 [![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/release.yml?label=CD&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/release.yml)
 [![ProjectTester](https://codecov.io/gh/Winipedia/pyrig/branch/main/graph/badge.svg)](https://codecov.io/gh/Winipedia/pyrig)
+[![SecurityPracticesChecker](https://api.scorecard.dev/projects/github.com/Winipedia/pyrig/badge)](https://scorecard.dev/viewer/?uri=github.com/Winipedia/pyrig)
 <!-- code-quality -->
 [![ByteOrderMarkerFormatter](https://img.shields.io/badge/BOM-fix--byte--order--marker-orange)](https://prek.j178.dev/reference/built-in-hooks/#fix-byte-order-marker)
 [![CICDLinter](https://img.shields.io/badge/CI/CD-actionlint-blue)](https://github.com/rhysd/actionlint)
 [![CICDSecurityChecker](https://img.shields.io/badge/%F0%9F%8C%88-zizmor-white?labelColor=white)](https://github.com/zizmorcore/zizmor)
 [![CaseConflictChecker](https://img.shields.io/badge/case--conflict-check--case--conflict-blue)](https://prek.j178.dev/reference/built-in-hooks/#check-case-conflict)
+[![CodeAnalyzer](https://img.shields.io/badge/code%20analysis-CodeQL-181717?logo=github)](https://codeql.github.com/docs/)
 [![DeadCodeChecker](https://img.shields.io/badge/dead--code-vulture-blue)](https://github.com/jendrikseipp/vulture)
 [![DependencyChecker](https://img.shields.io/badge/dependencies-deptry-blue)](https://github.com/osprey-oss/deptry)
 [![EndOfFileFormatter](https://img.shields.io/badge/EOF-end--of--file--fixer-orange)](https://prek.j178.dev/reference/built-in-hooks/#end-of-file-fixer)
@@ -44,7 +46,6 @@
 [![PackageIndex](https://img.shields.io/pypi/v/pyrig?logo=pypi&logoColor=white)](https://pypi.org/project/pyrig)
 [![ProgrammingLanguage](https://img.shields.io/pypi/pyversions/pyrig)](https://www.python.org)
 [![License](https://img.shields.io/github/license/Winipedia/pyrig)](https://github.com/Winipedia/pyrig/blob/main/LICENSE)
-
 <!-- rumdl-disable MD013 -->
 ---
 
@@ -53,7 +54,6 @@
 ---
 
 <!-- rumdl-enable MD013 -->
-
 ## What is pyrig?
 
 pyrig is a package and tool that **rigs up** Python projects with

@@ -14,7 +14,6 @@ from pyrig.core.iterate import deep_sorted_dict, traverse_structure
 from pyrig.core.resources import resource_content
 from pyrig.core.strings import (
     reformat_name,
-    split_on_uppercase,
 )
 from pyrig.core.subprocesses import Args
 from pyrig.rig import resources
@@ -88,19 +87,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             "run-name": self.run_name(),
             "jobs": self.jobs_configs(),
         }
-
-    @override
-    def stem(self) -> str:
-        """Return the generated workflow file stem.
-
-        The stem is the workflow class name without its `WorkflowConfigFile`
-        suffix, converted to kebab-case.
-        """
-        return "-".join(
-            split_on_uppercase(
-                self.__class__.__name__.removesuffix(WorkflowConfigFile.__name__),
-            ),
-        ).lower()
 
     def insert_github_token(self) -> str:
         """Return the `${{ secrets.GITHUB_TOKEN }}` expression.
