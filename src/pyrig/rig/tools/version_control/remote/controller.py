@@ -5,7 +5,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import override
 
-from pyrig.core.strings import make_linked_badge_markdown
+from pyrig.core.strings import linked_badge_markdown
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.packages.manager import PackageManager
@@ -120,7 +120,7 @@ class RemoteVersionController(Tool):
         """
         badge_url = self.cicd_badge_url(workflow_name, label)
         cicd_url = self.cicd_url(workflow_name)
-        return make_linked_badge_markdown(
+        return linked_badge_markdown(
             image_url=badge_url,
             link_url=cicd_url,
             alt_text=label,

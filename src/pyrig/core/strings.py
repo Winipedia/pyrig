@@ -11,7 +11,7 @@ def is_multiline(string: str) -> bool:
     return "\n" in string
 
 
-def make_linked_badge_markdown(
+def linked_badge_markdown(
     image_url: str,
     link_url: str,
     alt_text: str,

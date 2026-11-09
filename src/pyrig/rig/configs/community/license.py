@@ -18,7 +18,7 @@ from pyrig.core.resources import (
     resource_content,
 )
 from pyrig.core.strings import (
-    make_linked_badge_markdown,
+    linked_badge_markdown,
 )
 from pyrig.rig import resources
 from pyrig.rig.configs.base.string_ import StringConfigFile
@@ -95,7 +95,7 @@ class LicenseConfigFile(StringConfigFile):
         """
         badge_url = self.license_badge_url()
         repo_url = RemoteVersionController.I.repo_url()
-        return make_linked_badge_markdown(
+        return linked_badge_markdown(
             image_url=badge_url,
             link_url=f"{repo_url}/blob/main/{self.stem()}",
             alt_text="License",

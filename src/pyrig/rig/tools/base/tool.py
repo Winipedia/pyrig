@@ -10,7 +10,7 @@ from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.strings import kebab_to_snake_case
 from pyrig_runtime.core.wrappers import safe_call
 
-from pyrig.core.strings import make_linked_badge_markdown
+from pyrig.core.strings import linked_badge_markdown
 from pyrig.core.subprocesses import Args
 from pyrig.rig import tools
 
@@ -198,7 +198,7 @@ class Tool(DependencySubclass):
         Returns:
             A Markdown string in the form `[![ClassName](image_url)](link_url)`.
         """
-        return make_linked_badge_markdown(
+        return linked_badge_markdown(
             image_url=self.image_url(),
             link_url=self.link_url(),
             alt_text=self.__class__.__name__,

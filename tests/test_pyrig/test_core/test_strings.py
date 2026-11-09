@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pyrig.core.strings import (
     is_multiline,
-    make_linked_badge_markdown,
+    linked_badge_markdown,
     open_path_with_utf8,
     read_text_utf8,
     reformat_name,
@@ -26,9 +26,9 @@ second line""")
     assert is_multiline("""One line only""") is False
 
 
-def test_make_linked_badge_markdown() -> None:
+def test_linked_badge_markdown() -> None:
     """Test function."""
-    result = make_linked_badge_markdown(
+    result = linked_badge_markdown(
         image_url="https://example.com/badge.svg",
         link_url="https://example.com/",
         alt_text="Example Badge",
