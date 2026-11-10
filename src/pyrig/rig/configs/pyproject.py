@@ -252,6 +252,10 @@ class PyprojectConfigFile(TOMLConfigFile):
 
         return (*dependencies, *dev_dependencies)
 
+    def authors_configs(self) -> list[dict[str, Any]]:
+        """Assemble the required `authors` section of `pyproject.toml`."""
+        return self.maintainers_configs()
+
     def latest_python_version(
         self,
         level: Literal["major", "minor", "micro"] = "minor",
@@ -274,13 +278,6 @@ class PyprojectConfigFile(TOMLConfigFile):
             ),
             level,
         )
-
-    def maintainers_configs(self) -> list[dict[str, Any]]:
-        """Assemble the required `maintainers` section of `pyproject.toml`.
-
-        Identical to `authors`.
-        """
-        return self.authors_configs()
 
     def merge_build_system_requires(self, configs: dict[str, Any]) -> None:
         """Set `build-system.requires` in `configs` to the canonical value.
@@ -406,8 +403,8 @@ class PyprojectConfigFile(TOMLConfigFile):
             "Source": RemoteVersionController.I.repo_url(),
         }
 
-    def authors_configs(self) -> list[dict[str, Any]]:
-        """Assemble the required `authors` section of `pyproject.toml`."""
+    def maintainers_configs(self) -> list[dict[str, Any]]:
+        """Assemble the required `maintainers` section of `pyproject.toml`."""
         return [
             {
                 "name": VersionController.I.repo_owner(),
