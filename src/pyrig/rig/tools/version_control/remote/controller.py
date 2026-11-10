@@ -73,7 +73,7 @@ class RemoteVersionController(Tool):
         return "REPO_TOKEN"
 
     def action_path(self) -> Path:
-        """Return the name of a custom Github action file."""
+        """Return the file name of a custom GitHub Action definition."""
         return Path("action.yml")
 
     def api_method_input_args(
@@ -280,15 +280,19 @@ class RemoteVersionController(Tool):
         Returns:
             URL in the format `https://github.com/{owner}/{repo}`.
         """
-        return f"{self.url_base()}/{self.repository()}"
+        return f"{self.profile_url()}/{PackageManager.I.project_name()}"
 
     def repository(self) -> str:
-        """Return `"owner/repo"` for this repository.
+        """Return the full repository name in the format `{owner}/{repo}`."""
+        return f"{VersionController.I.repo_owner()}/{PackageManager.I.project_name()}"
+
+    def profile_url(self) -> str:
+        """Construct the GitHub profile URL for the repository owner.
 
         Returns:
-            The repository owner and project name joined with `/`.
+            URL in the format `https://github.com/{owner}`.
         """
-        return f"{VersionController.I.repo_owner()}/{PackageManager.I.project_name()}"
+        return f"{self.url_base()}/{VersionController.I.repo_owner()}"
 
     def url_base(self) -> str:
         """Return `'https://github.com'` as GitHub's base URL."""

@@ -166,6 +166,10 @@ class TestRemoteVersionController:
         result = RemoteVersionController.I.name()
         assert result == "github"
 
+    def test_profile_url(self) -> None:
+        """Test method."""
+        assert RemoteVersionController.I.profile_url() == "https://github.com/Winipedia"
+
     def test_release_args(self) -> None:
         """Test method."""
         result = RemoteVersionController.I.release_args("create")
