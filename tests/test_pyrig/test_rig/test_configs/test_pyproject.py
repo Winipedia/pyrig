@@ -269,6 +269,12 @@ class TestPyprojectConfigFile:
         )
         assert PyprojectConfigFile.I.maintainer_name() == "Winipedia"
 
+    def test_maintainers(self) -> None:
+        """Test method."""
+        assert PyprojectConfigFile.I.maintainers()
+        assert isinstance(PyprojectConfigFile.I.maintainers(), list)
+        assert all(isinstance(m, dict) for m in PyprojectConfigFile.I.maintainers())
+
     def test_maintainers_configs(self) -> None:
         """Test method."""
         for author in PyprojectConfigFile.I.authors_configs():

@@ -455,4 +455,13 @@ class PyprojectConfigFile(TOMLConfigFile):
             Dictionary containing the first maintainer's information from
             `pyproject.toml`, or an empty dictionary if absent.
         """
-        return self.safe_load().get("project", {}).get("maintainers", [{}])[0]
+        return self.maintainers()[0]
+
+    def maintainers(self) -> list[dict[str, str]]:
+        """Read all maintainers' information from `pyproject.toml`.
+
+        Returns:
+            List of dictionaries containing maintainers' information from
+            `pyproject.toml`, or list containing an empty dictionary if absent.
+        """
+        return self.safe_load().get("project", {}).get("maintainers", [{}])
