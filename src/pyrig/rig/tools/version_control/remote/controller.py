@@ -164,7 +164,9 @@ class RemoteVersionController(Tool):
         Returns:
             URL in the format `https://github.com/{owner}/{repo}/blob/{branch}/{path}`.
         """
-        return f"{self.repo_url()}/blob/{VersionController.I.default_branch()}/{path}"
+        branch = VersionController.I.default_branch()
+        posix_path = path.as_posix()
+        return f"{self.repo_url()}/blob/{branch}/{posix_path}"
 
     def issues_url(self) -> str:
         """Construct the GitHub issues URL.

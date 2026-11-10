@@ -132,6 +132,10 @@ class TestRemoteVersionController:
             RemoteVersionController.I.file_url(Path("README.md"))
             == "https://github.com/Winipedia/pyrig/blob/main/README.md"
         )
+        assert (
+            RemoteVersionController.I.file_url(Path("docs/index.md"))
+            == "https://github.com/Winipedia/pyrig/blob/main/docs/index.md"
+        )
 
     def test_group(self) -> None:
         """Test method."""
