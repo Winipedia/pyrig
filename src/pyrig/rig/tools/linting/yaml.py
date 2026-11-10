@@ -71,20 +71,31 @@ class YAMLLinter(CheckHookTool):
         """Return `'ryl'`, the executable name for this tool's CLI command."""
         return "ryl"
 
-    def disable_line_line_length(self) -> str:
-        """Return a comment string to disable the `line-length` rule for this line."""
-        return self.disable_line("line-length")
+    def disable_line_length(self, *, line: bool = True, comment: bool = False) -> str:
+        """Return directive text to disable the `line-length` rule.
 
-    def disable_line(self, rule: str) -> str:
-        """Return a comment string to disable a specific rule for this line.
+        Args:
+            line: Whether to disable the rule only for the current line.
+            comment: Whether to prefix the directive with `# `.
+
+        Returns:
+            Directive text, optionally prefixed as a YAML comment.
+        """
+        return self.disable("line-length", line=line, comment=comment)
+
+    def disable(self, rule: str, *, line: bool = True, comment: bool = False) -> str:
+        """Return directive text to disable a rule for a line or file.
 
         Args:
             rule: Name of the ryl rule to disable (e.g. `"line-length"`).
+            line: Whether to disable the rule only for the current line.
+            comment: Whether to prefix the directive with `# `.
 
         Returns:
-            The `disable-line` directive comment for `rule`.
+            Directive text, optionally prefixed as a YAML comment.
         """
-        return self.directive(f"disable-line rule:{rule}")
+        scope = f"disable{'-line' if line else ''}"
+        return self.directive(f"{scope} rule:{rule}", comment=comment)
 
     def lint_yaml(self) -> Args:
         """Return the `Args` this hook's entry runs.
@@ -94,13 +105,15 @@ class YAMLLinter(CheckHookTool):
         """
         return PackageManager.I.run_args(*self.check_args())
 
-    def directive(self, directive: str) -> str:
-        """Return an inline directive comment for this tool.
+    def directive(self, directive: str, *, comment: bool = False) -> str:
+        """Return directive text, optionally prefixed as a YAML comment.
 
         Args:
             directive: Directive text (e.g. `"disable-line rule:colons"`).
+            comment: Whether to prefix the text with `# `.
 
         Returns:
-            The comment `# ryl <directive>`.
+            The directive text, optionally prefixed with `# `.
         """
-        return f"# {self.name()} {directive}"
+        prefix = "# " if comment else ""
+        return f"{prefix}{self.name()} {directive}"

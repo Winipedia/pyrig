@@ -1037,9 +1037,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             action, ref, tag = uses
             step["uses"] = self.uses(action, ref)
             comments["uses"] = tag
-            comments_before["uses"] = (
-                YAMLLinter.I.disable_line_line_length().removeprefix("# ")
-            )
+            comments_before["uses"] = YAMLLinter.I.disable_line_length()
         if with_ is not None:
             step["with"] = with_
         if env is not None:

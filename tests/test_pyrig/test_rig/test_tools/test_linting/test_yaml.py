@@ -24,19 +24,31 @@ class TestYAMLLinter:
 
     def test_directive(self) -> None:
         """Test method."""
-        directive = YAMLLinter.I.directive("some_directive")
-        assert directive == "# ryl some_directive"
-
-    def test_disable_line(self) -> None:
-        """Test method."""
-        directive = YAMLLinter.I.disable_line("some-rule")
-        assert directive == "# ryl disable-line rule:some-rule"
-
-    def test_disable_line_line_length(self) -> None:
-        """Test method."""
+        assert YAMLLinter.I.directive("some_directive") == "ryl some_directive"
         assert (
-            YAMLLinter.I.disable_line_line_length()
-            == "# ryl disable-line rule:line-length"
+            YAMLLinter.I.directive("some_directive", comment=True)
+            == "# ryl some_directive"
+        )
+
+    def test_disable(self) -> None:
+        """Test method."""
+        assert YAMLLinter.I.disable("some-rule") == "ryl disable-line rule:some-rule"
+        assert (
+            YAMLLinter.I.disable("some-rule", line=False)
+            == "ryl disable rule:some-rule"
+        )
+        assert (
+            YAMLLinter.I.disable("some-rule", comment=True)
+            == "# ryl disable-line rule:some-rule"
+        )
+
+    def test_disable_line_length(self) -> None:
+        """Test method."""
+        assert YAMLLinter.I.disable_line_length() == (
+            "ryl disable-line rule:line-length"
+        )
+        assert YAMLLinter.I.disable_line_length(comment=True) == (
+            "# ryl disable-line rule:line-length"
         )
 
     def test_group(self) -> None:
