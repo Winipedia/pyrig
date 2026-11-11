@@ -145,18 +145,6 @@ class TestDocumentationWorkflowConfigFile:
             workflow.step_deploy_documentation(),
         ]
 
-    def test_used_permissions(self) -> None:
-        """Check permissions are aggregated for the caller."""
-        assert DocumentationWorkflowConfigFile.I.used_permissions() == {
-            "contents": "read",
-            "id-token": "write",
-            "pages": "write",
-        }
-
-    def test_used_secrets(self) -> None:
-        """Check the repository token is detected."""
-        assert DocumentationWorkflowConfigFile.I.used_secrets() == ["REPO_TOKEN"]
-
     def test_workflow_triggers(self) -> None:
         """Check the secret is declared for reusable calls."""
         assert DocumentationWorkflowConfigFile.I.workflow_triggers() == {

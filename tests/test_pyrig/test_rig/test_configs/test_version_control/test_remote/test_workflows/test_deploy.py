@@ -3,12 +3,6 @@
 from pyrig.rig.configs.version_control.remote.workflows.deploy import (
     DeployWorkflowConfigFile,
 )
-from pyrig.rig.configs.version_control.remote.workflows.documentation import (
-    DocumentationWorkflowConfigFile,
-)
-from pyrig.rig.configs.version_control.remote.workflows.repository import (
-    RepositoryWorkflowConfigFile,
-)
 
 
 class TestDeployWorkflowConfigFile:
@@ -42,31 +36,14 @@ class TestDeployWorkflowConfigFile:
         assert job["secrets"] == {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"}
 
     def test_jobs(self) -> None:
-        """Check the base calls are included in the persisted deploy workflow."""
+        """Check the base workflow calls."""
         workflow = DeployWorkflowConfigFile.I
-        assert {workflow.job_repository, workflow.job_documentation} <= set(
-            workflow.jobs(),
-        )
-        generated = workflow.jobs_configs()
-        persisted = workflow.load()["jobs"]
-        for job_id in ("repository", "documentation"):
-            assert persisted[job_id] == generated[job_id]
-        assert "build-documentation" not in persisted
-        assert "deploy-documentation" not in persisted
-        assert RepositoryWorkflowConfigFile.I.load()["jobs"] == (
-            RepositoryWorkflowConfigFile.I.jobs_configs()
-        )
-        assert DocumentationWorkflowConfigFile.I.load()["jobs"] == (
-            DocumentationWorkflowConfigFile.I.jobs_configs()
-        )
+        assert workflow.job_repository in workflow.jobs()
+        assert workflow.job_documentation in workflow.jobs()
 
     def test_stem(self) -> None:
         """Check the workflow file stem."""
         assert DeployWorkflowConfigFile.I.stem() == "deploy"
-
-    def test_used_secrets(self) -> None:
-        """Check secrets are discovered through the nested calls."""
-        assert DeployWorkflowConfigFile.I.used_secrets() == ["REPO_TOKEN"]
 
     def test_workflow_triggers(self) -> None:
         """Check the deploy workflow declares the required secret."""

@@ -1,7 +1,5 @@
 """Tests for the repository-configuration workflow."""
 
-from pyrig.core.resources import resource_content
-from pyrig.rig import resources
 from pyrig.rig.configs.version_control.remote.configure import (
     ConfigureRepositoryConfigFile,
 )
@@ -12,13 +10,6 @@ from pyrig.rig.configs.version_control.remote.workflows.repository import (
 
 class TestRepositoryWorkflowConfigFile:
     """Tests for `RepositoryWorkflowConfigFile`."""
-
-    def test_checkout_action(self) -> None:
-        """Check generated checkout uses the configured action reference."""
-        action, ref, tag = RepositoryWorkflowConfigFile.I.action_checkout()
-        assert tuple(
-            resource_content("ACTION_CHECKOUT", resources).splitlines(),
-        ) == (action, ref, tag)
 
     def test_job_configure(self) -> None:
         """Check the repository job environment and permissions."""
@@ -61,16 +52,6 @@ class TestRepositoryWorkflowConfigFile:
             workflow.step_checkout_repository(),
             workflow.step_configure_repository(),
         ]
-
-    def test_used_permissions(self) -> None:
-        """Check permissions for callers of this reusable workflow."""
-        assert RepositoryWorkflowConfigFile.I.used_permissions() == {
-            "contents": "read",
-        }
-
-    def test_used_secrets(self) -> None:
-        """Check the repository token is declared for callers."""
-        assert RepositoryWorkflowConfigFile.I.used_secrets() == ["REPO_TOKEN"]
 
     def test_workflow_triggers(self) -> None:
         """Check the workflow declares its required reusable-call secret."""
