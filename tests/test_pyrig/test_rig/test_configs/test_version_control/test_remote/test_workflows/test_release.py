@@ -34,14 +34,6 @@ class TestReleaseWorkflowConfigFile:
             ReleaseWorkflowConfigFile.I.job_publish,
         )
 
-    def test_job_deploy_permissions(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.job_deploy_permissions() == {
-            "contents": "read",
-            "id-token": "write",
-            "pages": "write",
-        }
-
     def test_job_health_check(
         self,
         my_test_release_workflow: type[ReleaseWorkflowConfigFile],
@@ -50,17 +42,14 @@ class TestReleaseWorkflowConfigFile:
         result = my_test_release_workflow().job_health_check()
         assert result["job_id"] == "health-check"
         assert result["uses"] == "$/.github/workflows/health-check.yml"
-        assert "secrets" not in result
-        assert "environment" not in result
-
-    def test_job_health_check_permissions(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.job_health_check_permissions() == {
+        assert result["permissions"] == {
             "actions": "read",
             "contents": "read",
             "id-token": "write",
             "security-events": "write",
         }
+        assert "secrets" not in result
+        assert "environment" not in result
 
     def test_job_publish(
         self,

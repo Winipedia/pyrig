@@ -142,93 +142,33 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.insert_parameter_expansion(self.version_var())
 
-    def job(  # noqa: PLR0913
+    def job_workflow_call(
         self,
         method: MethodType,
         *,
-        needs: Iterable[MethodType] | None = None,
-        strategy: dict[str, Any] | None = None,
-        permissions: dict[str, Any] | None = None,
-        if_condition: str | None = None,
-        runs_on: str = UBUNTU_LATEST,
-        environment: str | None = None,
-        steps: list[dict[str, Any]] | None = None,
-        uses: str | None = None,
-        secrets: dict[str, Any] | None = None,
-        timeout_minutes: int = TIMEOUT_MINUTES_DEFAULT,
+        workflow: type["WorkflowConfigFile"],
+        **kwargs: Any,  # noqa: ANN401
     ) -> dict[str, Any]:
-        """Build a job configuration dict.
+        """Build a job that calls another workflow and forwards its requirements.
 
         Args:
             method: Method representing this job; its name is used to derive
                 the job ID.
-            needs: Job methods that must complete before this job starts.
-                Each method is converted to a kebab-case job ID.
-            strategy: Matrix or other strategy configuration. Valid together
-                with `uses` (e.g. a matrix-driven reusable-workflow call).
-            permissions: Job-level permissions override. When `uses` is set,
-                this is the ceiling on what the called workflow's own jobs
-                may request.
-            runs_on: Runner label. Defaults to `ubuntu-latest`. Not applied
-                when `uses` is set, since GitHub disallows combining the two.
-            if_condition: GitHub Actions conditional expression controlling
-                whether the job runs.
-            environment: GitHub Actions deployment environment associated with
-                the job. Omitted when `None`.
-            steps: Ordered list of step configurations. Not valid together
-                with `uses`; passing both is the caller's mistake to avoid.
-            uses: Reference to a reusable workflow to call instead of
-                running steps directly, e.g. one built by
-                `workflow_call_reference()`. When set, `runs_on` is not
-                applied.
-            secrets: Named secrets to forward to the called workflow, e.g.
-                built by `used_secrets_mapping()`. Only meaningful together
-                with `uses`.
-            timeout_minutes: Maximum time in minutes that the job can run. Only
-                effective when `uses` is not set. Defaults to `TIMEOUT_MINUTES_DEFAULT`.
+            workflow: Workflow configuration class to call.
+            **kwargs: Additional arguments forwarded to `job()`.
 
         Returns:
-            A single job configuration containing its derived ID under `JOB_ID_KEY`.
+            Job configuration with the called workflow's reference,
+            permissions, and secrets.
         """
-        job_id = self.job_id_from_method(method)
-        job = {
-            self.JOB_ID_KEY: job_id,
-            "name": self.name_from_id(job_id),
-        }
-        if permissions is not None:
-            job["permissions"] = self.documented_permissions(
-                deep_sorted_dict(permissions),
-            )
-        if if_condition is not None:
-            job["if"] = if_condition
-        if needs is not None:
-            job["needs"] = [self.job_id_from_method(m) for m in needs]
-        if uses is not None:
-            job["uses"] = uses
-            if secrets is not None:
-                job["secrets"] = deep_sorted_dict(secrets)
-        else:
-            job["runs-on"] = runs_on
-            job["timeout-minutes"] = timeout_minutes
-        if environment is not None:
-            job["environment"] = environment
-        if strategy is not None:
-            job["strategy"] = strategy
-        if steps is not None:
-            job["steps"] = steps
-        return job
-
-    def job_id_from_method(self, method: MethodType) -> str:
-        """Generate a job identifier from a `job_*` method name.
-
-        Args:
-            method: The job method whose name provides the source text.
-
-        Returns:
-            Identifier string in kebab-case, e.g. `"do-something"` from
-            `job_do_something`.
-        """
-        return self.id_from_method(method, prefix=self.job.__name__)
+        workflow_instance = workflow.I
+        return self.job(
+            method,
+            uses=workflow_instance.workflow_call_reference(),
+            secrets=workflow_instance.used_secrets_mapping() or None,
+            permissions=workflow_instance.used_permissions() or None,
+            **kwargs,
+        )
 
     def on_pull_request(self, types: list[str] | None = None) -> dict[str, Any]:
         """Create a `pull_request` trigger.
@@ -527,28 +467,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             "cancel-in-progress": self.concurrency_cancel_in_progress(),
         }
 
-    def documented_permissions(self, permissions: dict[str, str]) -> CommentedMap:
-        """Return `permissions` as a documented `CommentedMap`.
-
-        zizmor's `undocumented-permissions` audit requires an explanatory
-        comment on any permission entry other than `contents: read`.
-
-        Args:
-            permissions: Mapping of permission name to `"read"` or `"write"`.
-
-        Returns:
-            Equivalent `CommentedMap`; every entry except `contents: read`
-            carries an inline comment.
-        """
-        return commented_map(
-            permissions,
-            comments={
-                k: self.permission_comment()
-                for k in permissions
-                if (k, permissions[k]) != ("contents", "read")
-            },
-        )
-
     def github_token_var(self) -> str:
         """Return the raw secrets expression for `GITHUB_TOKEN`.
 
@@ -570,6 +488,94 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return self.insert_expression(
             f"steps.{self.step_id_from_method(step)}.outputs.{name.lower()}",
         )
+
+    def job(  # noqa: PLR0913
+        self,
+        method: MethodType,
+        *,
+        needs: Iterable[MethodType] | None = None,
+        strategy: dict[str, Any] | None = None,
+        permissions: dict[str, Any] | None = None,
+        if_condition: str | None = None,
+        runs_on: str = UBUNTU_LATEST,
+        environment: str | None = None,
+        steps: list[dict[str, Any]] | None = None,
+        uses: str | None = None,
+        secrets: dict[str, Any] | None = None,
+        timeout_minutes: int = TIMEOUT_MINUTES_DEFAULT,
+    ) -> dict[str, Any]:
+        """Build a job configuration dict.
+
+        Args:
+            method: Method representing this job; its name is used to derive
+                the job ID.
+            needs: Job methods that must complete before this job starts.
+                Each method is converted to a kebab-case job ID.
+            strategy: Matrix or other strategy configuration. Valid together
+                with `uses` (e.g. a matrix-driven reusable-workflow call).
+            permissions: Job-level permissions override. When `uses` is set,
+                this is the ceiling on what the called workflow's own jobs
+                may request.
+            runs_on: Runner label. Defaults to `ubuntu-latest`. Not applied
+                when `uses` is set, since GitHub disallows combining the two.
+            if_condition: GitHub Actions conditional expression controlling
+                whether the job runs.
+            environment: GitHub Actions deployment environment associated with
+                the job. Omitted when `None`.
+            steps: Ordered list of step configurations. Not valid together
+                with `uses`; passing both is the caller's mistake to avoid.
+            uses: Reference to a reusable workflow to call instead of
+                running steps directly, e.g. one built by
+                `workflow_call_reference()`. When set, `runs_on` is not
+                applied.
+            secrets: Named secrets to forward to the called workflow, e.g.
+                built by `used_secrets_mapping()`. Only meaningful together
+                with `uses`.
+            timeout_minutes: Maximum time in minutes that the job can run. Only
+                effective when `uses` is not set. Defaults to `TIMEOUT_MINUTES_DEFAULT`.
+
+        Returns:
+            A single job configuration containing its derived ID under `JOB_ID_KEY`.
+        """
+        job_id = self.job_id_from_method(method)
+        job = {
+            self.JOB_ID_KEY: job_id,
+            "name": self.name_from_id(job_id),
+        }
+        if permissions is not None:
+            job["permissions"] = self.documented_permissions(
+                deep_sorted_dict(permissions),
+            )
+        if if_condition is not None:
+            job["if"] = if_condition
+        if needs is not None:
+            job["needs"] = [self.job_id_from_method(m) for m in needs]
+        if uses is not None:
+            job["uses"] = uses
+            if secrets is not None:
+                job["secrets"] = deep_sorted_dict(secrets)
+        else:
+            job["runs-on"] = runs_on
+            job["timeout-minutes"] = timeout_minutes
+        if environment is not None:
+            job["environment"] = environment
+        if strategy is not None:
+            job["strategy"] = strategy
+        if steps is not None:
+            job["steps"] = steps
+        return job
+
+    def job_id_from_method(self, method: MethodType) -> str:
+        """Generate a job identifier from a `job_*` method name.
+
+        Args:
+            method: The job method whose name provides the source text.
+
+        Returns:
+            Identifier string in kebab-case, e.g. `"do-something"` from
+            `job_do_something`.
+        """
+        return self.id_from_method(method, prefix=self.job.__name__)
 
     def matrix_os(
         self,
@@ -780,6 +786,28 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return True
 
+    def documented_permissions(self, permissions: dict[str, str]) -> CommentedMap:
+        """Return `permissions` as a documented `CommentedMap`.
+
+        zizmor's `undocumented-permissions` audit requires an explanatory
+        comment on any permission entry other than `contents: read`.
+
+        Args:
+            permissions: Mapping of permission name to `"read"` or `"write"`.
+
+        Returns:
+            Equivalent `CommentedMap`; every entry except `contents: read`
+            carries an inline comment.
+        """
+        return commented_map(
+            permissions,
+            comments={
+                k: self.permission_comment()
+                for k in permissions
+                if (k, permissions[k]) != ("contents", "read")
+            },
+        )
+
     def insert_github_ref(self) -> str:
         """Return the expression that resolves to the triggering ref.
 
@@ -825,14 +853,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             The matrix configuration, unchanged by default.
         """
         return matrix
-
-    def permission_comment(self) -> str:
-        """Return the comment attached to every documented permission entry.
-
-        Returns:
-            `"required"`.
-        """
-        return "required"
 
     def secrets_var(self, name: str) -> str:
         """Build the raw GitHub secrets expression for a secret name.
@@ -1002,6 +1022,14 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         dict_ = job()
         return {dict_.pop(self.JOB_ID_KEY): dict_}
+
+    def permission_comment(self) -> str:
+        """Return the comment attached to every documented permission entry.
+
+        Returns:
+            `"required"`.
+        """
+        return "required"
 
     def step(  # noqa: PLR0913
         self,

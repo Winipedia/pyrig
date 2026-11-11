@@ -417,6 +417,29 @@ class TestWorkflowConfigFile:
         )
         assert result == "health-check"
 
+    def test_job_workflow_call(
+        self,
+    ) -> None:
+        """Test method."""
+        workflow = ReleaseWorkflowConfigFile.I
+        result = workflow.job_workflow_call(
+            workflow.job_deploy,
+            workflow=DeployWorkflowConfigFile,
+            needs=workflow.job_deploy_needs(),
+        )
+        assert result == {
+            "job_id": "deploy",
+            "name": "Deploy",
+            "permissions": {
+                "contents": "read",
+                "id-token": "write",
+                "pages": "write",
+            },
+            "needs": ["publish"],
+            "uses": "$/.github/workflows/deploy.yml",
+            "secrets": {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"},
+        }
+
     def test_jobs(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         jobs = my_test_workflow().jobs()
