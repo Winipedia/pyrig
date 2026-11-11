@@ -107,6 +107,9 @@ groups = [
   "all",
 ]
 priority = 9
+args = [
+  "--exclude-files=^\\.bestpractices\\.json$",
+]
 
 [[repos.hooks]]
 id = "check-test-naming"

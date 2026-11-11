@@ -1,0 +1,151 @@
+---
+# ryl disable rule:line-length
+"header":
+  "last-reviewed": "2026-11-11"
+  "last-updated": "2026-11-11"
+  "schema-version": "2.2.0"
+  "url": "https://github.com/Winipedia/pyrig/blob/main/security-insights.yml"
+"project":
+  "administrators":
+    -
+      "email": "winipedia@gmx.de"
+      "name": "Winipedia"
+      "primary": true
+      "social": "https://github.com/Winipedia"
+  "documentation":
+    "code-of-conduct": "https://github.com/Winipedia/pyrig/blob/main/CODE_OF_CONDUCT.md"
+    "detailed-guide": "https://Winipedia.github.io/pyrig"
+    "quickstart-guide": "https://github.com/Winipedia/pyrig/blob/main/README.md"
+    "release-process": "https://github.com/Winipedia/pyrig/blob/main/.github/workflows/release.yml"
+    "support-policy": "https://github.com/Winipedia/pyrig/blob/main/SECURITY.md"
+  "homepage": "https://github.com/Winipedia/pyrig"
+  "name": "pyrig"
+  "repositories":
+    -
+      "comment": "A Python project setup and management tool built on infrastructure
+        as code and convention over configuration."
+      "name": "pyrig"
+      "url": "https://github.com/Winipedia/pyrig"
+  "vulnerability-reporting":
+    "bug-bounty-available": false
+    "contact":
+      "email": "winipedia@gmx.de"
+      "name": "Winipedia"
+      "primary": true
+      "social": "https://github.com/Winipedia"
+    "in-scope":
+      - "Vulnerabilities in this project's own code."
+    "out-of-scope":
+      - "Report dependency vulnerabilities to that project."
+    "policy": "https://github.com/Winipedia/pyrig/blob/main/SECURITY.md"
+    "reports-accepted": true
+"repository":
+  "accepts-automated-change-request": true
+  "accepts-change-request": true
+  "bug-fixes-only": false
+  "core-team":
+    -
+      "email": "winipedia@gmx.de"
+      "name": "Winipedia"
+      "primary": true
+      "social": "https://github.com/Winipedia"
+  "documentation":
+    "contributing-guide": "https://github.com/Winipedia/pyrig/blob/main/CONTRIBUTING.md"
+    "review-policy": "https://github.com/Winipedia/pyrig/blob/main/CONTRIBUTING.md"
+    "security-policy": "https://github.com/Winipedia/pyrig/blob/main/SECURITY.md"
+  "license":
+    "expression": "MIT"
+    "url": "https://github.com/Winipedia/pyrig/blob/main/LICENSE"
+  "no-third-party-packages": false
+  "release":
+    "automated-pipeline": true
+    "changelog": "https://github.com/Winipedia/pyrig/releases"
+    "distribution-points":
+      -
+        "comment": "GitHub releases."
+        "uri": "https://github.com/Winipedia/pyrig/releases"
+      -
+        "comment": "Describes additional distribution points."
+        "uri": "https://github.com/Winipedia/pyrig/blob/main/.github/workflows/deploy.yml"
+  "security":
+    "assessments":
+      "self":
+        "comment": "Changes require human review and are gated by automated checks,
+          including dependency vulnerability auditing, static security analysis, and
+          secret scanning."
+        "evidence": "https://github.com/Winipedia/pyrig/blob/main/.github/workflows/health-check.yml"
+        "name": "Security controls"
+    "champions":
+      -
+        "email": "winipedia@gmx.de"
+        "name": "Winipedia"
+        "primary": true
+        "social": "https://github.com/Winipedia"
+    "tools":
+      -
+        "integration":
+          "adhoc": true
+          "ci": false
+          "release": false
+        "name": "Dependabot"
+        "results": {}
+        "rulesets":
+          - "https://github.com/Winipedia/pyrig/blob/main/.github/dependabot.yml"
+        "type": "SCA"
+      -
+        "integration":
+          "adhoc": true
+          "ci": true
+          "release": true
+        "name": "bandit"
+        "results": {}
+        "rulesets":
+          - "https://github.com/Winipedia/pyrig/blob/main/pyproject.toml"
+          - "https://github.com/Winipedia/pyrig/blob/main/prek.toml"
+        "type": "SAST"
+      -
+        "integration":
+          "adhoc": true
+          "ci": true
+          "release": true
+        "name": "detect-secrets"
+        "results": {}
+        "rulesets":
+          - "https://github.com/Winipedia/pyrig/blob/main/pyproject.toml"
+          - "https://github.com/Winipedia/pyrig/blob/main/prek.toml"
+        "type": "secret"
+      -
+        "integration":
+          "adhoc": true
+          "ci": true
+          "release": true
+        "name": "scorecard"
+        "results": {}
+        "rulesets":
+          - "https://github.com/Winipedia/pyrig/blob/main/.github/workflows/security-practices.yml"
+        "type": "other"
+      -
+        "integration":
+          "adhoc": true
+          "ci": true
+          "release": true
+        "name": "uv"
+        "results": {}
+        "rulesets":
+          - "https://github.com/Winipedia/pyrig/blob/main/pyproject.toml"
+          - "https://github.com/Winipedia/pyrig/blob/main/prek.toml"
+        "type": "SCA"
+      -
+        "integration":
+          "adhoc": true
+          "ci": true
+          "release": true
+        "name": "zizmor"
+        "results": {}
+        "rulesets":
+          - "https://github.com/Winipedia/pyrig/blob/main/pyproject.toml"
+          - "https://github.com/Winipedia/pyrig/blob/main/prek.toml"
+        "type": "SAST"
+  "status": "active"
+  "url": "https://github.com/Winipedia/pyrig"
+...
