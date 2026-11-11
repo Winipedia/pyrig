@@ -15,23 +15,9 @@
     "name": "Repository"
     "permissions":
       "contents": "read"
-    "runs-on": "ubuntu-latest"
-    "timeout-minutes": 10
-    "environment": "repository"
-    "steps":
-      -
-        "name": "Checkout Repository"
-        "id": "checkout-repository"
-        # ryl disable-line rule:line-length
-        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1
-        "with":
-          "persist-credentials": false
-      -
-        "name": "Configure Repository"
-        "id": "configure-repository"
-        "run": "bash .github/configure.sh"
-        "env":
-          "GH_TOKEN": "${{ secrets.REPO_TOKEN }}"
+    "uses": "$/.github/workflows/repository.yml"
+    "secrets":
+      "REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"
   "build-documentation":
     "name": "Build Documentation"
     "permissions":

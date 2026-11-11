@@ -3,11 +3,11 @@
 from pyrig.core.resources import resource_content
 from pyrig.core.strings import read_text_utf8
 from pyrig.rig import resources
-from pyrig.rig.configs.version_control.remote.configure import (
-    ConfigureRepositoryConfigFile,
-)
 from pyrig.rig.configs.version_control.remote.workflows.deploy import (
     DeployWorkflowConfigFile,
+)
+from pyrig.rig.configs.version_control.remote.workflows.repository import (
+    RepositoryWorkflowConfigFile,
 )
 
 
@@ -107,17 +107,13 @@ class TestDeployWorkflowConfigFile:
 
     def test_job_repository(self) -> None:
         """Test method."""
-        result = DeployWorkflowConfigFile.I.job_repository()
+        workflow = DeployWorkflowConfigFile.I
+        result = workflow.job_repository()
         assert result["job_id"] == "repository"
-        assert "steps" in result
-        assert result["environment"] == "repository"
+        assert result["name"] == "Repository"
+        assert result["uses"] == "$/.github/workflows/repository.yml"
         assert result["permissions"] == {"contents": "read"}
-
-    def test_job_repository_permissions(self) -> None:
-        """Test method."""
-        assert DeployWorkflowConfigFile.I.job_repository_permissions() == {
-            "contents": "read",
-        }
+        assert result["secrets"] == {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"}
 
     def test_jobs(self) -> None:
         """Test method."""
@@ -135,6 +131,8 @@ class TestDeployWorkflowConfigFile:
         for job_id in ("build-documentation", "deploy-documentation"):
             assert persisted[job_id] == generated[job_id]
         assert persisted["repository"] == generated["repository"]
+        repository_workflow = RepositoryWorkflowConfigFile.I
+        assert repository_workflow.load()["jobs"] == repository_workflow.jobs_configs()
 
     def test_stem(self) -> None:
         """Test method."""
@@ -153,13 +151,6 @@ class TestDeployWorkflowConfigFile:
             "actions/configure-pages@"
             f"{DeployWorkflowConfigFile.I.action_configure_pages()[1]}"
         )
-
-    def test_step_configure_repository(self) -> None:
-        """Test method."""
-        result = DeployWorkflowConfigFile.I.step_configure_repository()
-        path = ConfigureRepositoryConfigFile.I.path().as_posix()
-        assert result["run"] == f"bash {path}"
-        assert result["env"]["GH_TOKEN"]
 
     def test_step_deploy_documentation(self) -> None:
         """Test method."""
@@ -194,11 +185,6 @@ class TestDeployWorkflowConfigFile:
             workflow.step_configure_pages(),
             workflow.step_deploy_documentation(),
         ]
-
-    def test_steps_repository(self) -> None:
-        """Test method."""
-        result = DeployWorkflowConfigFile.I.steps_repository()
-        assert len(result) > 0
 
     def test_used_secrets(self) -> None:
         """Test method."""

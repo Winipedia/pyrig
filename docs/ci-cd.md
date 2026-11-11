@@ -9,8 +9,8 @@ automatically by the `pyrig sync` pre-commit hook, just like any other managed f
 ## Pipeline Overview
 
 `release.yml` is the only workflow triggered by a push to the default branch.
-It calls the other two workflows as **reusable workflows** (`workflow_call`),
-running them as jobs in sequence:
+It calls the health check and deploy workflows as **reusable workflows**
+(`workflow_call`), running them as jobs in sequence:
 
 ```text
                 Push to default branch
@@ -40,6 +40,7 @@ doubling as both a PR gate and a reusable job called from `release.yml`.
 after `publish` succeeds; since jobs run in dependency order (`needs:`), no
 `if` guard is required — `deploy` never executes unless `publish` (and,
 transitively, `health-check`) succeeded.
+Deploy also calls `repository.yml` as a nested reusable workflow.
 
 ---
 
@@ -91,15 +92,26 @@ Three jobs run in dependency order:
 
 Three core jobs run in this final stage:
 
-- **`repository`** — applies repository settings and protection rulesets,
-  and more, all via the GitHub API. Requires `contents: read` at the job
-  level; the configuration step itself authenticates separately via the
-  `REPO_TOKEN` secret.
+- **`repository`** — calls `repository.yml` as a reusable workflow to apply
+  repository settings and protection rulesets via the GitHub API. The call
+  forwards `REPO_TOKEN` and grants `contents: read`.
 - **`build-documentation`** — builds the documentation site and uploads it
   as a Pages artifact. Requires only `contents: read` permissions.
 - **`deploy-documentation`** — runs only after `build-documentation` succeeds
   (`needs:`) and deploys the artifact to GitHub Pages. Requires `pages: write`
   and `id-token: write` permissions at the job level.
+
+### Repository configuration
+
+**File:** `.github/workflows/repository.yml`
+
+**Trigger:** `workflow_call` only, invoked by the deploy workflow.
+
+The `configure` job checks out the repository, then runs
+`.github/configure.sh` using `.github/settings.json`. It uses the `repository`
+environment and `contents: read` for checkout. The script authenticates to
+the GitHub API separately using `REPO_TOKEN`, which is forwarded from release
+through deploy to the repository workflow.
 
 !!! warning "Important"
     If your repository is private, the published docs site is still publicly accessible.
@@ -130,9 +142,8 @@ to prevent it from being updated by the pipeline.
 
 All workflow files are managed `ConfigFile` instances, so they can be
 extended or overridden in the same way as any other managed file in pyrig.
-Run `pyrig mk subcls` and search for the workflow class you want to change
-(`HealthCheckWorkflowConfigFile`, `ReleaseWorkflowConfigFile`, or
-`DeployWorkflowConfigFile`) to generate a correctly placed subclass skeleton.
+Run `pyrig mk subcls` and search for the workflow class you want to change to
+generate a correctly placed subclass skeleton.
 Override the methods that need changing — jobs, triggers, steps, permissions,
 or environment variables. The `WorkflowConfigFile` base class provides
 composable helpers for common patterns (matrix strategies, step builders,

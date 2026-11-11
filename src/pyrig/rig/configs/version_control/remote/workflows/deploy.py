@@ -4,14 +4,12 @@ from collections.abc import Callable
 from types import MethodType
 from typing import Any, override
 
-from pyrig.core.subprocesses import Args
 from pyrig.rig import resources
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
-from pyrig.rig.configs.version_control.remote.configure import (
-    ConfigureRepositoryConfigFile,
+from pyrig.rig.configs.version_control.remote.workflows.repository import (
+    RepositoryWorkflowConfigFile,
 )
 from pyrig.rig.tools.docs.builder import DocsBuilder
-from pyrig.rig.tools.formatting.shell import ShellFormatter
 from pyrig.rig.tools.packages.manager import PackageManager
 
 
@@ -66,17 +64,10 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         )
 
     def job_repository(self) -> dict[str, Any]:
-        """Build the job that applies repository-level configuration.
-
-        Returns:
-            Job configuration for applying repository-level settings.
-        """
-        return self.job(
+        """Return the reusable repository-configuration job."""
+        return self.job_workflow_call(
             self.job_repository,
-            environment="repository",
-            permissions=self.job_repository_permissions(),
-            steps=self.steps_repository(),
-            timeout_minutes=10,
+            workflow=RepositoryWorkflowConfigFile,
         )
 
     def job_deploy_documentation_needs(self) -> tuple[MethodType, ...]:
@@ -101,18 +92,6 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             **self.permission_pages(write=True),
         }
 
-    def job_repository_permissions(self) -> dict[str, str]:
-        """Return the permissions for the repository job.
-
-        Requests `contents: read` to check out the repository; the
-        configuration step itself authenticates separately via `REPO_TOKEN`,
-        not `GITHUB_TOKEN`.
-
-        Returns:
-            Permissions mapping for the repository job.
-        """
-        return self.permission_contents()
-
     def steps_deploy_documentation(self) -> list[dict[str, Any]]:
         """Build the ordered steps for the documentation deployment job.
 
@@ -122,17 +101,6 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return [
             self.step_configure_pages(),
             self.step_deploy_documentation(),
-        ]
-
-    def steps_repository(self) -> list[dict[str, Any]]:
-        """Build the ordered steps for the repository job.
-
-        Returns:
-            Checkout followed by the repository-configuration step.
-        """
-        return [
-            self.step_checkout_repository(),
-            self.step_configure_repository(),
         ]
 
     def job_build_documentation(self) -> dict[str, Any]:
@@ -164,23 +132,6 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
                 "enablement": "true",
                 "token": self.insert_repo_token(),
             },
-        )
-
-    def step_configure_repository(self) -> dict[str, Any]:
-        """Build a step that applies repository configuration.
-
-        Returns:
-            Repository-configuration step.
-        """
-        return self.step(
-            self.step_configure_repository,
-            run=str(
-                Args(
-                    ShellFormatter.I.dialect(),
-                    ConfigureRepositoryConfigFile.I.path().as_posix(),
-                ),
-            ),
-            env={"GH_TOKEN": self.insert_repo_token()},
         )
 
     def step_deploy_documentation(self) -> dict[str, Any]:
