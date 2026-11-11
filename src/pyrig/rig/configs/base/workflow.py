@@ -510,15 +510,20 @@ class WorkflowConfigFile(YMLDictConfigFile):
     def concurrency(self) -> dict[str, Any]:
         """Return the workflow's concurrency setting.
 
-        Groups runs by this generated workflow's name and ref so that
-        superseded runs are queued or cancelled without colliding with a
-        caller when this workflow is reused.
+        Groups runs by this workflow's name, caller workflow, and ref. Including
+        the caller workflow keeps reusable workflows isolated from their caller
+        and from calls made by other workflows.
 
         Returns:
             Dict of concurrency settings.
         """
+        workflow_name, github_workflow, github_ref = (
+            self.workflow_name(),
+            self.insert_github_workflow(),
+            self.insert_github_ref(),
+        )
         return {
-            "group": f"{self.workflow_name()}-{self.insert_github_ref()}",
+            "group": f"{workflow_name}-{github_workflow}-{github_ref}",
             "cancel-in-progress": self.concurrency_cancel_in_progress(),
         }
 
@@ -765,9 +770,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Return whether superseded runs of this workflow should be cancelled.
 
         Override to `False` for workflows that mutate external state (e.g.
-        publishing a release or package) and therefore shouldn't be
-        interrupted mid-run; such runs are still serialized via the shared
-        concurrency group, just not cancelled.
+        publishing a release or package) and therefore shouldn't be interrupted
+        mid-run. By default, a newer run cancels an active run in the same
+        concurrency group; GitHub also replaces an existing pending run when a
+        newer run is queued in that group.
 
         Returns:
             `True` by default.
@@ -781,6 +787,17 @@ class WorkflowConfigFile(YMLDictConfigFile):
             GitHub Actions expression for `github.ref`.
         """
         return self.insert_expression("github.ref")
+
+    def insert_github_workflow(self) -> str:
+        """Return the expression that resolves to the calling workflow's name.
+
+        For a reusable workflow, this resolves to the top-level caller's
+        workflow name, not the reusable workflow's own name.
+
+        Returns:
+            GitHub Actions expression for `github.workflow`.
+        """
+        return self.insert_expression("github.workflow")
 
     def jobs_configs(self) -> dict[str, dict[str, Any]]:
         """Assemble the workflow's jobs from the callables returned by `jobs()`.

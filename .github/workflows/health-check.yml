@@ -13,7 +13,7 @@
   "workflow_call": {}
 "permissions": {}
 "concurrency":
-  "group": "Health Check-${{ github.ref }}"
+  "group": "Health Check-${{ github.workflow }}-${{ github.ref }}"
   "cancel-in-progress": true
 "run-name": "Health Check"
 "jobs":

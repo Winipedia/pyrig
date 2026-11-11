@@ -175,7 +175,10 @@ class TestWorkflowConfigFile:
         """Test method."""
         workflow = my_test_workflow()
         result = workflow.concurrency()
-        assert result["group"] == f"{workflow.workflow_name()}-${{{{ github.ref }}}}"
+        assert result["group"] == (
+            f"{workflow.workflow_name()}-${{{{ github.workflow }}}}-"
+            "${{ github.ref }}"
+        )
         assert result["cancel-in-progress"] is True
 
     def test_concurrency_cancel_in_progress(
@@ -273,6 +276,16 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().insert_github_token()
         assert result == "${{ secrets.GITHUB_TOKEN }}", (
             f"Expected '${{{{ secrets.GITHUB_TOKEN }}}}', got {result}"
+        )
+
+    def test_insert_github_workflow(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().insert_github_workflow()
+        assert result == "${{ github.workflow }}", (
+            f"Expected '${{{{ github.workflow }}}}', got {result}"
         )
 
     def test_insert_matrix_os(self, my_test_workflow: type[WorkflowConfigFile]) -> None:

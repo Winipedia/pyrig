@@ -6,7 +6,7 @@
       - "main"
 "permissions": {}
 "concurrency":
-  "group": "Release-${{ github.ref }}"
+  "group": "Release-${{ github.workflow }}-${{ github.ref }}"
   "cancel-in-progress": false
 "run-name": "Release"
 "jobs":
