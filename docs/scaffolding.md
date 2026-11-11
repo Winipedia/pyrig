@@ -27,8 +27,9 @@ my-project/
 │   ├── workflows/
 │   │   ├── health-check.yml                # CI: tests, linting, hooks, dependency audit
 │   │   ├── release.yml                     # CD: tagging, GitHub release
-│   │   ├── deploy.yml                      # CD: repository call and documentation deployment
-│   │   └── repository.yml                  # Reusable repository settings/rulesets workflow
+│   │   ├── deploy.yml                      # CD: repository and documentation calls
+│   │   ├── repository.yml                  # Reusable repository settings/rulesets workflow
+│   │   └── documentation.yml               # Reusable documentation build and deployment
 │   ├── CODEOWNERS                          # Wildcard code ownership rule for the repo owner
 │   ├── configure.sh                        # Repository configuration script
 │   ├── pull_request_template.md            # Pull request description template

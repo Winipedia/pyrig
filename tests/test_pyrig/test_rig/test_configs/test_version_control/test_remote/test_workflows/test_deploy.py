@@ -1,10 +1,10 @@
-"""module."""
+"""Tests for the deployment workflow."""
 
-from pyrig.core.resources import resource_content
-from pyrig.core.strings import read_text_utf8
-from pyrig.rig import resources
 from pyrig.rig.configs.version_control.remote.workflows.deploy import (
     DeployWorkflowConfigFile,
+)
+from pyrig.rig.configs.version_control.remote.workflows.documentation import (
+    DocumentationWorkflowConfigFile,
 )
 from pyrig.rig.configs.version_control.remote.workflows.repository import (
     RepositoryWorkflowConfigFile,
@@ -12,187 +12,64 @@ from pyrig.rig.configs.version_control.remote.workflows.repository import (
 
 
 class TestDeployWorkflowConfigFile:
-    """Test class."""
-
-    def test_action_configure_pages(self) -> None:
-        """Test method."""
-        assert DeployWorkflowConfigFile.I.action_configure_pages() == (
-            tuple(
-                resource_content(
-                    "ACTION_CONFIGURE_PAGES",
-                    resources,
-                ).splitlines(),
-            )
-        )
-
-        action, ref, tag = DeployWorkflowConfigFile.I.action_configure_pages()
-        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
-            DeployWorkflowConfigFile.I.path(),
-        )
-
-    def test_action_deploy_pages(self) -> None:
-        """Test method."""
-        assert DeployWorkflowConfigFile.I.action_deploy_pages() == (
-            tuple(resource_content("ACTION_DEPLOY_PAGES", resources).splitlines())
-        )
-
-        action, ref, tag = DeployWorkflowConfigFile.I.action_deploy_pages()
-        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
-            DeployWorkflowConfigFile.I.path(),
-        )
-
-    def test_action_upload_pages_artifact(self) -> None:
-        """Test method."""
-        assert DeployWorkflowConfigFile.I.action_upload_pages_artifact() == (
-            tuple(
-                resource_content(
-                    "ACTION_UPLOAD_PAGES_ARTIFACT",
-                    resources,
-                ).splitlines(),
-            )
-        )
-
-        action, ref, tag = DeployWorkflowConfigFile.I.action_upload_pages_artifact()
-        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
-            DeployWorkflowConfigFile.I.path(),
-        )
+    """Tests for the deployment workflow calls."""
 
     def test_concurrency_cancel_in_progress(self) -> None:
-        """Test method."""
+        """Check deployments are not cancelled while publishing."""
         assert DeployWorkflowConfigFile.I.concurrency_cancel_in_progress() is False
 
-    def test_job_build_documentation(self) -> None:
-        """Test method."""
-        workflow = DeployWorkflowConfigFile.I
-        result = workflow.job_build_documentation()
-        assert result["job_id"] == "build-documentation"
-        assert result["permissions"] == {"contents": "read"}
-        assert result["steps"] == workflow.steps_build_documentation()
-        assert "environment" not in result
-        assert "needs" not in result
-        assert "secrets.REPO_TOKEN" not in str(result)
-
-    def test_job_build_documentation_permissions(self) -> None:
-        """Test method."""
-        assert DeployWorkflowConfigFile.I.job_build_documentation_permissions() == {
+    def test_job_documentation(self) -> None:
+        """Check the documentation call forwards its permissions and secrets."""
+        job = DeployWorkflowConfigFile.I.job_documentation()
+        assert job["job_id"] == "documentation"
+        assert job["uses"] == "$/.github/workflows/documentation.yml"
+        assert job["permissions"] == {
             "contents": "read",
-        }
-
-    def test_job_deploy_documentation(self) -> None:
-        """Test method."""
-        expected_timeout_minutes = 30
-        workflow = DeployWorkflowConfigFile.I
-        result = workflow.job_deploy_documentation()
-        assert result["job_id"] == "deploy-documentation"
-        assert result["name"] == "Deploy Documentation"
-        assert result["timeout-minutes"] == expected_timeout_minutes
-        assert result["environment"] == "documentation"
-        assert result["needs"] == ["build-documentation"]
-        assert result["permissions"] == {"id-token": "write", "pages": "write"}
-        assert result["steps"] == workflow.steps_deploy_documentation()
-
-    def test_job_deploy_documentation_needs(self) -> None:
-        """Test method."""
-        workflow = DeployWorkflowConfigFile.I
-        assert workflow.job_deploy_documentation_needs() == (
-            workflow.job_build_documentation,
-        )
-
-    def test_job_deploy_documentation_permissions(self) -> None:
-        """Test method."""
-        assert DeployWorkflowConfigFile.I.job_deploy_documentation_permissions() == {
             "id-token": "write",
             "pages": "write",
         }
+        assert job["secrets"] == {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"}
+        assert "runs-on" not in job
+        assert "environment" not in job
+        assert "steps" not in job
 
     def test_job_repository(self) -> None:
-        """Test method."""
-        workflow = DeployWorkflowConfigFile.I
-        result = workflow.job_repository()
-        assert result["job_id"] == "repository"
-        assert result["name"] == "Repository"
-        assert result["uses"] == "$/.github/workflows/repository.yml"
-        assert result["permissions"] == {"contents": "read"}
-        assert result["secrets"] == {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"}
+        """Check the repository workflow call."""
+        job = DeployWorkflowConfigFile.I.job_repository()
+        assert job["job_id"] == "repository"
+        assert job["uses"] == "$/.github/workflows/repository.yml"
+        assert job["permissions"] == {"contents": "read"}
+        assert job["secrets"] == {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"}
 
     def test_jobs(self) -> None:
-        """Test method."""
+        """Check the base calls are included in the persisted deploy workflow."""
         workflow = DeployWorkflowConfigFile.I
-        assert {
-            workflow.job_repository,
-            workflow.job_build_documentation,
-            workflow.job_deploy_documentation,
-        } <= set(
+        assert {workflow.job_repository, workflow.job_documentation} <= set(
             workflow.jobs(),
         )
         generated = workflow.jobs_configs()
         persisted = workflow.load()["jobs"]
-        assert "documentation" not in persisted
-        for job_id in ("build-documentation", "deploy-documentation"):
+        for job_id in ("repository", "documentation"):
             assert persisted[job_id] == generated[job_id]
-        assert persisted["repository"] == generated["repository"]
-        repository_workflow = RepositoryWorkflowConfigFile.I
-        assert repository_workflow.load()["jobs"] == repository_workflow.jobs_configs()
+        assert "build-documentation" not in persisted
+        assert "deploy-documentation" not in persisted
+        assert RepositoryWorkflowConfigFile.I.load()["jobs"] == (
+            RepositoryWorkflowConfigFile.I.jobs_configs()
+        )
+        assert DocumentationWorkflowConfigFile.I.load()["jobs"] == (
+            DocumentationWorkflowConfigFile.I.jobs_configs()
+        )
 
     def test_stem(self) -> None:
-        """Test method."""
+        """Check the workflow file stem."""
         assert DeployWorkflowConfigFile.I.stem() == "deploy"
 
-    def test_step_build_documentation(self) -> None:
-        """Test method."""
-        result = DeployWorkflowConfigFile.I.step_build_documentation()
-        assert "run" in result, f"Expected 'run' in step, got {result}"
-
-    def test_step_configure_pages(self) -> None:
-        """Test method."""
-        result = DeployWorkflowConfigFile.I.step_configure_pages()
-        assert "uses" in result, f"Expected 'uses' in step, got {result}"
-        assert result["uses"] == (
-            "actions/configure-pages@"
-            f"{DeployWorkflowConfigFile.I.action_configure_pages()[1]}"
-        )
-
-    def test_step_deploy_documentation(self) -> None:
-        """Test method."""
-        result = DeployWorkflowConfigFile.I.step_deploy_documentation()
-        assert "uses" in result, f"Expected 'uses' in step, got {result}"
-        assert result["uses"] == (
-            f"actions/deploy-pages@{DeployWorkflowConfigFile.I.action_deploy_pages()[1]}"
-        )
-
-    def test_step_upload_documentation(self) -> None:
-        """Test method."""
-        result = DeployWorkflowConfigFile.I.step_upload_documentation()
-        assert "uses" in result, f"Expected 'uses' in step, got {result}"
-        assert result["uses"] == (
-            "actions/upload-pages-artifact@"
-            f"{DeployWorkflowConfigFile.I.action_upload_pages_artifact()[1]}"
-        )
-
-    def test_steps_build_documentation(self) -> None:
-        """Test method."""
-        workflow = DeployWorkflowConfigFile.I
-        assert workflow.steps_build_documentation() == [
-            *workflow.steps_core_installed_setup(),
-            workflow.step_build_documentation(),
-            workflow.step_upload_documentation(),
-        ]
-
-    def test_steps_deploy_documentation(self) -> None:
-        """Test method."""
-        workflow = DeployWorkflowConfigFile.I
-        assert workflow.steps_deploy_documentation() == [
-            workflow.step_configure_pages(),
-            workflow.step_deploy_documentation(),
-        ]
-
     def test_used_secrets(self) -> None:
-        """Test method."""
+        """Check secrets are discovered through the nested calls."""
         assert DeployWorkflowConfigFile.I.used_secrets() == ["REPO_TOKEN"]
 
     def test_workflow_triggers(self) -> None:
-        """Test method."""
-        result = DeployWorkflowConfigFile.I.workflow_triggers()
-        assert "workflow_call" in result, "Expected 'workflow_call' in triggers"
-        assert result["workflow_call"]["secrets"] == {"REPO_TOKEN": {"required": True}}
-        assert "release" not in result
+        """Check the deploy workflow declares the required secret."""
+        assert DeployWorkflowConfigFile.I.workflow_triggers() == {
+            "workflow_call": {"secrets": {"REPO_TOKEN": {"required": True}}},
+        }

@@ -25,6 +25,11 @@ class TestReleaseWorkflowConfigFile:
         assert result["job_id"] == "deploy"
         assert result["uses"] == "$/.github/workflows/deploy.yml"
         assert result["secrets"] == {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"}
+        assert result["permissions"] == {
+            "contents": "read",
+            "id-token": "write",
+            "pages": "write",
+        }
         assert "needs" in result, "Expected 'needs' in job"
         assert "environment" not in result
 

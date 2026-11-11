@@ -542,23 +542,23 @@ class WorkflowConfigFile(YMLDictConfigFile):
             self.JOB_ID_KEY: job_id,
             "name": self.name_from_id(job_id),
         }
+        if environment is not None:
+            job["environment"] = environment
         if permissions is not None:
             job["permissions"] = self.documented_permissions(
                 deep_sorted_dict(permissions),
             )
-        if if_condition is not None:
-            job["if"] = if_condition
+        if uses is not None and secrets is not None:
+            job["secrets"] = deep_sorted_dict(secrets)
         if needs is not None:
             job["needs"] = [self.job_id_from_method(m) for m in needs]
+        if if_condition is not None:
+            job["if"] = if_condition
         if uses is not None:
             job["uses"] = uses
-            if secrets is not None:
-                job["secrets"] = deep_sorted_dict(secrets)
         else:
             job["runs-on"] = runs_on
             job["timeout-minutes"] = timeout_minutes
-        if environment is not None:
-            job["environment"] = environment
         if strategy is not None:
             job["strategy"] = strategy
         if steps is not None:

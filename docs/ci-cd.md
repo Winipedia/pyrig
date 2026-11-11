@@ -40,7 +40,8 @@ doubling as both a PR gate and a reusable job called from `release.yml`.
 after `publish` succeeds; since jobs run in dependency order (`needs:`), no
 `if` guard is required — `deploy` never executes unless `publish` (and,
 transitively, `health-check`) succeeded.
-Deploy also calls `repository.yml` as a nested reusable workflow.
+Deploy also calls `repository.yml` and `documentation.yml` as nested
+reusable workflows.
 
 ---
 
@@ -90,16 +91,14 @@ Three jobs run in dependency order:
 
 **Trigger:** `workflow_call` only, invoked by `release.yml`'s `deploy` job.
 
-Three core jobs run in this final stage:
+Two core jobs run in this final stage:
 
 - **`repository`** — calls `repository.yml` as a reusable workflow to apply
   repository settings and protection rulesets via the GitHub API. The call
   forwards `REPO_TOKEN` and grants `contents: read`.
-- **`build-documentation`** — builds the documentation site and uploads it
-  as a Pages artifact. Requires only `contents: read` permissions.
-- **`deploy-documentation`** — runs only after `build-documentation` succeeds
-  (`needs:`) and deploys the artifact to GitHub Pages. Requires `pages: write`
-  and `id-token: write` permissions at the job level.
+- **`documentation`** — calls `documentation.yml` as a reusable workflow to
+  build and deploy the site. The call forwards `REPO_TOKEN` and grants
+  `contents: read`, `pages: write`, and `id-token: write`.
 
 ### Repository configuration
 
@@ -112,6 +111,19 @@ The `configure` job checks out the repository, then runs
 environment and `contents: read` for checkout. The script authenticates to
 the GitHub API separately using `REPO_TOKEN`, which is forwarded from release
 through deploy to the repository workflow.
+
+### Documentation deployment
+
+**File:** `.github/workflows/documentation.yml`
+
+**Trigger:** `workflow_call` only, invoked by the deploy workflow.
+
+The `build` job checks out the project, builds the site, and uploads a Pages
+artifact with `contents: read`. The `deploy` job runs only after `build`
+succeeds, enables GitHub Pages using `REPO_TOKEN`, and deploys the artifact.
+It uses the `documentation` environment and requires `pages: write` and
+`id-token: write`. Release and deploy forward the secret and permissions to
+the nested workflow.
 
 !!! warning "Important"
     If your repository is private, the published docs site is still publicly accessible.

@@ -96,7 +96,7 @@ Fine-grained tokens
 2. Under Repository permissions, set:
    - Administration: Read and write (for applying repository settings,
      protection rulesets, and more in the repository workflow called by deploy)
-   - Pages: Read and write (for enabling GitHub Pages in the deploy workflow)
+   - Pages: Read and write (for enabling GitHub Pages in the documentation workflow)
 3. Generate token
 4. **Copy token immediately** (you won't see it again)
 5. Add token to your repository secrets as `REPO_TOKEN`

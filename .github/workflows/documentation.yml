@@ -1,0 +1,74 @@
+---
+"name": "Documentation"
+"on":
+  "workflow_call":
+    "secrets":
+      "REPO_TOKEN":
+        "required": true
+"permissions": {}
+"concurrency":
+  "group": "Documentation-${{ github.workflow }}-${{ github.ref }}"
+  "cancel-in-progress": false
+"run-name": "Documentation"
+"jobs":
+  "build":
+    "name": "Build"
+    "permissions":
+      "contents": "read"
+    "runs-on": "ubuntu-latest"
+    "timeout-minutes": 60
+    "steps":
+      -
+        "name": "Checkout Repository"
+        "id": "checkout-repository"
+        # ryl disable-line rule:line-length
+        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1
+        "with":
+          "persist-credentials": false
+      -
+        "name": "Setup Package Manager"
+        "id": "setup-package-manager"
+        # ryl disable-line rule:line-length
+        "uses": "astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2"  # v10.3.3
+        "with":
+          "python-version": "3.15"
+      -
+        "name": "Install Dependencies"
+        "id": "install-dependencies"
+        "run": "uv sync"
+      -
+        "name": "Build Documentation"
+        "id": "build-documentation"
+        "run": "uv run zensical build"
+      -
+        "name": "Upload Documentation"
+        "id": "upload-documentation"
+        # ryl disable-line rule:line-length
+        "uses": "actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9"  # v5.0.0
+        "with":
+          "path": "site"
+  "deploy":
+    "name": "Deploy"
+    "environment": "documentation"
+    "permissions":
+      "id-token": "write"  # required
+      "pages": "write"  # required
+    "needs":
+      - "build"
+    "runs-on": "ubuntu-latest"
+    "timeout-minutes": 30
+    "steps":
+      -
+        "name": "Configure Pages"
+        "id": "configure-pages"
+        # ryl disable-line rule:line-length
+        "uses": "actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d"  # v6.0.0
+        "with":
+          "enablement": "true"
+          "token": "${{ secrets.REPO_TOKEN }}"
+      -
+        "name": "Deploy Documentation"
+        "id": "deploy-documentation"
+        # ryl disable-line rule:line-length
+        "uses": "actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346"  # v5.0.1
+...
