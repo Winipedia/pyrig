@@ -50,7 +50,8 @@ class TestRepositoryWorkflowConfigFile:
         """Check the configuration script receives the repository token."""
         workflow = RepositoryWorkflowConfigFile.I
         step = workflow.step_configure_repository()
-        assert step["run"] == f"bash {ConfigureRepositoryConfigFile.I.path()}"
+        path = ConfigureRepositoryConfigFile.I.path().as_posix()
+        assert step["run"] == f"bash {path}"
         assert step["env"]["GH_TOKEN"] == workflow.insert_repo_token()
 
     def test_steps_configure(self) -> None:
