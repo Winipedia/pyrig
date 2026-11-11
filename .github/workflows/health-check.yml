@@ -109,12 +109,20 @@
   "upload-coverage":
     "name": "Upload Coverage"
     "permissions":
+      "contents": "read"
       "id-token": "write"  # required
     "needs":
       - "matrix-health-checks"
     "runs-on": "ubuntu-latest"
     "timeout-minutes": 30
     "steps":
+      -
+        "name": "Checkout Repository"
+        "id": "checkout-repository"
+        # ryl disable-line rule:line-length
+        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1
+        "with":
+          "persist-credentials": false
       -
         "name": "Download Coverage Reports"
         "id": "download-coverage-reports"
@@ -133,13 +141,6 @@
           "directory": "coverage-reports"
           "fail_ci_if_error": "true"
           "use_oidc": "true"
-  "code-analysis":
-    "name": "Code Analysis"
-    "permissions":
-      "actions": "read"  # required
-      "contents": "read"
-      "security-events": "write"  # required
-    "uses": "$/.github/workflows/code-analysis.yml"
   "security-practices":
     "name": "Security Practices"
     "permissions":
@@ -148,14 +149,21 @@
       "id-token": "write"  # required
       "security-events": "write"  # required
     "uses": "$/.github/workflows/security-practices.yml"
+  "code-analysis":
+    "name": "Code Analysis"
+    "permissions":
+      "actions": "read"  # required
+      "contents": "read"
+      "security-events": "write"  # required
+    "uses": "$/.github/workflows/code-analysis.yml"
   "health-check":
     "name": "Health Check"
     "needs":
       - "health-checks"
       - "matrix-health-checks"
       - "upload-coverage"
-      - "code-analysis"
       - "security-practices"
+      - "code-analysis"
     "runs-on": "ubuntu-latest"
     "timeout-minutes": 1
     "steps":
