@@ -7,6 +7,9 @@ from pathlib import Path
 from typing import Any, override
 
 import pytest
+from pyrig_pypi.rig.configs.version_control.remote.workflows.package import (
+    PackageWorkflowConfigFile,
+)
 from ruamel.yaml.comments import CommentedMap
 
 from pyrig.core.resources import resource_content
@@ -59,13 +62,13 @@ class TestWorkflowConfigFile:
 
     def test_action_download_artifact(self) -> None:
         """Test method."""
-        assert DeployWorkflowConfigFile.I.action_download_artifact() == tuple(
+        assert PackageWorkflowConfigFile.I.action_download_artifact() == tuple(
             resource_content("ACTION_DOWNLOAD_ARTIFACT", resources).splitlines(),
         )
 
-        action, ref, tag = DeployWorkflowConfigFile.I.action_download_artifact()
+        action, ref, tag = PackageWorkflowConfigFile.I.action_download_artifact()
         assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
-            DeployWorkflowConfigFile.I.path(),
+            PackageWorkflowConfigFile.I.path(),
         )
 
     def test_action_from_resource(
@@ -139,13 +142,13 @@ class TestWorkflowConfigFile:
 
     def test_action_upload_artifact(self) -> None:
         """Test method."""
-        assert DeployWorkflowConfigFile.I.action_upload_artifact() == tuple(
+        assert PackageWorkflowConfigFile.I.action_upload_artifact() == tuple(
             resource_content("ACTION_UPLOAD_ARTIFACT", resources).splitlines(),
         )
 
-        action, ref, tag = DeployWorkflowConfigFile.I.action_upload_artifact()
+        action, ref, tag = PackageWorkflowConfigFile.I.action_upload_artifact()
         assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
-            DeployWorkflowConfigFile.I.path(),
+            PackageWorkflowConfigFile.I.path(),
         )
 
     def test_assign_command_substitution_output_var(
