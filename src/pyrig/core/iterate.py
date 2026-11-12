@@ -1,6 +1,7 @@
 """Utilities for iterables and nested data structures."""
 
 from collections.abc import Hashable, Iterable, Iterator, KeysView
+from functools import cache
 from itertools import chain
 from typing import Any, cast, overload
 
@@ -219,7 +220,7 @@ def dict_insert[K, V](
     dict_.update(items)
 
 
-def match_list_items(subset: list[Any], superset: list[Any]) -> list[bool]:
+def match_list_items(subset: list[Any], superset: list[Any]) -> tuple[bool, ...]:
     """Check whether each `subset` item is satisfied by a distinct `superset` item.
 
     An item satisfies another using the same nested subset semantics as
@@ -228,31 +229,49 @@ def match_list_items(subset: list[Any], superset: list[Any]) -> list[bool]:
     times in `subset` requires that many distinct matches in `superset`
     rather than being satisfied by a single occurrence.
 
+    Tries unused matches before rearranging earlier assignments, and caches
+    pair comparisons for this call so nested structures are not rechecked.
+
     Args:
         subset: Items to find matches for.
         superset: Items to match against. Not modified.
 
     Returns:
-        One entry per item in `subset`, in order: `True` if a distinct,
-        not-yet-matched `superset` item satisfies it, `False` otherwise.
+        A tuple with one boolean per item in `subset`, indicating whether it
+        has a distinct match. Maximizes matches, favoring earlier subset items.
 
     Examples:
         >>> match_list_items(["", ""], [""])
-        [True, False]
+        (True, False)
         >>> match_list_items(["", "a", ""], ["", "z"])
-        [True, False, False]
+        (True, False, False)
     """
-    pool = list(superset)
-    matched: list[bool] = []
-    for sub_val in subset:
-        for index, other in enumerate(pool):
-            if structure_is_subset(sub_val, other):
-                del pool[index]
-                matched.append(True)
-                break
-        else:
-            matched.append(False)
-    return matched
+    matched_subset_by_superset: list[int | None] = [None] * len(superset)
+
+    @cache
+    def can_match(subset_index: int, superset_index: int) -> bool:
+        return structure_is_subset(subset[subset_index], superset[superset_index])
+
+    def assign(subset_index: int, seen: set[int]) -> bool:
+        """Find a match, moving an earlier item to another match if necessary."""
+        for superset_index, previous in enumerate(matched_subset_by_superset):
+            if previous is None and can_match(subset_index, superset_index):
+                matched_subset_by_superset[superset_index] = subset_index
+                return True
+
+        for superset_index, previous in enumerate(matched_subset_by_superset):
+            if superset_index in seen or not can_match(
+                subset_index,
+                superset_index,
+            ):
+                continue
+            seen.add(superset_index)
+            if previous is not None and assign(previous, seen):
+                matched_subset_by_superset[superset_index] = subset_index
+                return True
+        return False
+
+    return tuple(assign(index, set()) for index in range(len(subset)))
 
 
 @overload

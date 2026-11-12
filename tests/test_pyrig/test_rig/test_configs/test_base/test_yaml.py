@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import Any, override
 
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 from ruamel.yaml.comments import CommentedMap
 
 from pyrig.rig.configs.base.yaml import (
@@ -59,6 +61,15 @@ def test_represent_str(
     multi_line = represent_str(dumper.representer, "line1\nline2")
     assert multi_line.style == "|", "Expected a literal block scalar"
     assert multi_line.value == "line1\nline2", "Expected the value to be unchanged"
+
+
+@given(text=st.text(max_size=100))
+def test_represent_str_preserves_generated_text(text: str) -> None:
+    """Test scalar style selection and value preservation for arbitrary text."""
+    node = represent_str(YAMLConfigFile.dumper().representer, text)
+
+    assert node.value == text
+    assert node.style == ("|" if "\n" in text else '"')
 
 
 class TestEmitter:

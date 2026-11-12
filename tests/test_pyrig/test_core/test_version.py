@@ -1,6 +1,8 @@
 """module."""
 
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 from packaging.version import Version
 
 from pyrig.core.version import VersionConstraint, leveled_version
@@ -24,6 +26,19 @@ def test_leveled_version() -> None:
     new_version = leveled_version(version, "micro")
     expected = Version("3.8.1")
     assert new_version == expected
+
+
+@given(lower_minor=st.integers(min_value=0, max_value=20), span=st.integers(1, 10))
+def test_version_range_enumerates_bounded_minor_versions(
+    lower_minor: int,
+    span: int,
+) -> None:
+    """Test bounded same-major constraints across generated minor versions."""
+    upper_minor = lower_minor + span
+    constraint = VersionConstraint(f">=3.{lower_minor},<3.{upper_minor}")
+    expected = tuple(Version(f"3.{minor}") for minor in range(lower_minor, upper_minor))
+
+    assert constraint.version_range(level="minor") == expected
 
 
 class TestVersionConstraint:

@@ -2,6 +2,9 @@
 
 from typing import Any
 
+from hypothesis import given
+from hypothesis import strategies as st
+
 from pyrig.core.iterate import (
     both_dicts,
     both_dicts_or_lists,
@@ -107,18 +110,30 @@ def test_iterator_has_items() -> None:
 def test_match_list_items() -> None:
     """Test function."""
     # a value present once can satisfy only one occurrence in subset.
-    assert match_list_items(["", ""], [""]) == [True, False]
+    assert match_list_items(["", ""], [""]) == (True, False)
 
     # each superset item is matched by at most one subset item.
-    assert match_list_items(["", "a", ""], ["", "z"]) == [True, False, False]
+    assert match_list_items(["", "a", ""], ["", "z"]) == (True, False, False)
 
     # order does not matter, and every subset item gets a distinct match.
-    assert match_list_items([1, 2], [2, 1, 3]) == [True, True]
+    assert match_list_items([1, 2], [2, 1, 3]) == (True, True)
 
     # nested subset semantics still apply per matched item.
-    assert match_list_items([{"a": 1}], [{"a": 1, "b": 2}]) == [True]
+    assert match_list_items([{"a": 1}], [{"a": 1, "b": 2}]) == (True,)
 
-    assert match_list_items([], []) == []
+    assert match_list_items(
+        [{"a": 1}, {"a": 1, "b": 2}],
+        [{"a": 1, "b": 2}, {"a": 1}],
+    ) == (True, True)
+
+    assert match_list_items([], []) == ()
+
+
+def test_match_list_items_matches_duplicate_occurrences() -> None:
+    """Each duplicate occurrence requires its own available item."""
+    items = [1] * 100
+    assert match_list_items(items, items) == (True,) * len(items)
+    assert match_list_items(items, items[:-1]) == (True,) * 99 + (False,)
 
 
 def test_merge_structures() -> None:
@@ -164,6 +179,63 @@ def test_merge_structures() -> None:
     }
 
 
+@given(
+    subset=st.dictionaries(
+        keys=st.sampled_from(("a", "b", "c")),
+        values=st.integers(),
+        max_size=3,
+    ),
+    superset=st.dictionaries(
+        keys=st.sampled_from(("a", "b", "c")),
+        values=st.integers(),
+        max_size=3,
+    ),
+)
+def test_merge_structures_preserves_subset_values_and_adds_missing_keys(
+    subset: dict[str, int],
+    superset: dict[str, int],
+) -> None:
+    """Test generated primitive mappings with subset values taking precedence."""
+    expected = {**superset, **subset}
+
+    assert merge_structures(subset, superset) == expected
+
+
+@given(
+    subset=st.lists(
+        st.dictionaries(
+            keys=st.sampled_from(("a", "b")),
+            values=st.integers(min_value=-1, max_value=1),
+            max_size=2,
+        ),
+        max_size=4,
+    ),
+    superset=st.lists(
+        st.dictionaries(
+            keys=st.sampled_from(("a", "b")),
+            values=st.integers(min_value=-1, max_value=1),
+            max_size=2,
+        ),
+        max_size=4,
+    ),
+)
+def test_nested_list_matching_finds_maximum_distinct_matches(
+    subset: list[Any],
+    superset: list[Any],
+) -> None:
+    """Test nested subset matching where broad matches must not block narrow ones."""
+    matches = match_list_items(subset, superset)
+    expected_count = maximum_matching_count(subset, superset)
+
+    assert sum(matches) == expected_count
+    assert matches == tuple(
+        maximum_matching_count(subset[: index + 1], superset)
+        > maximum_matching_count(subset[:index], superset)
+        for index in range(len(subset))
+    )
+    assert structure_is_subset(subset, superset) is (expected_count == len(subset))
+
+
 def test_sorted_dict() -> None:
     """Test function."""
     unsorted = {"b": 2, "a": 1, "c": 3}
@@ -201,3 +273,24 @@ def test_traverse_structure() -> None:
     """Test function."""
     result = list(traverse_structure({"a": [1, {"b": 2}], "c": 3}))
     assert result == [1, 2, 3]
+
+
+def maximum_matching_count(subset: list[Any], superset: list[Any]) -> int:
+    """Return the largest number of subset items that can be matched."""
+    if not subset or not superset:
+        return 0
+
+    unmatched_count = maximum_matching_count(subset[1:], superset)
+    matched_count = max(
+        (
+            1
+            + maximum_matching_count(
+                subset[1:],
+                [*superset[:index], *superset[index + 1 :]],
+            )
+            for index, candidate in enumerate(superset)
+            if structure_is_subset(subset[0], candidate)
+        ),
+        default=0,
+    )
+    return max(unmatched_count, matched_count)
