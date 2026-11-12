@@ -1,5 +1,6 @@
 """module."""
 
+from copy import deepcopy
 from typing import Any
 
 from hypothesis import given
@@ -71,6 +72,35 @@ def test_deep_sorted_dict() -> None:
 
     assert sorted_dict == unsorted  # values are unchanged
     assert sorted_dict is not unsorted
+
+
+@given(
+    value=st.recursive(
+        st.one_of(st.none(), st.integers(), st.text(max_size=10)),
+        lambda children: st.one_of(
+            st.lists(children, max_size=4),
+            st.dictionaries(st.text(max_size=5), children, max_size=4),
+        ),
+        max_leaves=20,
+    ),
+)
+def test_deep_sorted_dict_preserves_nested_values(value: object) -> None:
+    """Sorting preserves nested values and orders every mapping without mutation."""
+    original = deepcopy(value)
+    result = deep_sorted_dict(value)
+
+    def check_order(item: object) -> None:
+        if isinstance(item, dict):
+            assert list(item) == sorted(item)
+            for child in item.values():
+                check_order(child)
+        elif isinstance(item, list):
+            for child in item:
+                check_order(child)
+
+    assert result == original
+    assert value == original
+    check_order(result)
 
 
 def test_dict_insert() -> None:

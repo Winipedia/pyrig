@@ -5,6 +5,8 @@ from pathlib import Path
 from typing import Any, override
 
 import pytest
+from hypothesis import HealthCheck, given, settings
+from hypothesis import strategies as st
 
 from pyrig.rig.configs.base.json import JSONDictConfigFile
 
@@ -31,6 +33,35 @@ class TestJSONConfigFile:
         """Test method."""
         extension = my_test_json_config_file().extension()
         assert extension == "json"
+
+    @settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
+    @given(
+        config=st.dictionaries(
+            st.text(max_size=10),
+            st.recursive(
+                st.one_of(
+                    st.none(),
+                    st.booleans(),
+                    st.integers(),
+                    st.text(max_size=20),
+                ),
+                lambda children: st.one_of(
+                    st.lists(children, max_size=4),
+                    st.dictionaries(st.text(max_size=10), children, max_size=4),
+                ),
+                max_leaves=20,
+            ),
+            max_size=4,
+        ),
+    )
+    def test_round_trip_generated_configs(
+        self,
+        my_test_json_config_file: type[JSONDictConfigFile],
+        config: dict[str, Any],
+    ) -> None:
+        """Each dump replaces the fixture's file and clears its cached load."""
+        my_test_json_config_file().dump(config)
+        assert my_test_json_config_file.load() == config
 
 
 class TestJSONDictConfigFile:

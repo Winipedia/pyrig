@@ -69,7 +69,25 @@ def test_represent_str_preserves_generated_text(text: str) -> None:
     node = represent_str(YAMLConfigFile.dumper().representer, text)
 
     assert node.value == text
-    assert node.style == ("|" if "\n" in text else '"')
+    literal = "\n" in text
+    assert node.style == ("|" if literal else '"')
+
+
+@given(
+    text=st.text(
+        alphabet=st.characters(
+            blacklist_categories=("Cc", "Cs"),
+            blacklist_characters="\r",
+            whitelist_characters="\n",
+        ),
+        max_size=100,
+    ),
+)
+def test_yaml_round_trip_generated_text(text: str) -> None:
+    """Serialized quoted and multiline strings load without changing their value."""
+    buffer = io.StringIO()
+    YAMLConfigFile.dumper().dump({"value": text}, buffer)
+    assert YAMLConfigFile.loader().load(buffer.getvalue()) == {"value": text}
 
 
 class TestEmitter:
