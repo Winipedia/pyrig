@@ -165,7 +165,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return self.job(
             method,
             uses=workflow_instance.workflow_call_reference(),
-            secrets=workflow_instance.used_secrets_mapping() or None,
+            secrets=workflow_instance.secrets_used_mapping() or None,
             permissions=workflow_instance.permissions_used() or None,
             **kwargs,
         )
@@ -216,7 +216,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             Workflow-call configuration declaring required secrets.
         """
-        secret_names = self.used_secrets()
+        secret_names = self.secrets_used()
         trigger: dict[str, Any] = {}
         if secret_names:
             trigger["secrets"] = {name: {"required": True} for name in secret_names}
@@ -275,6 +275,17 @@ class WorkflowConfigFile(YMLDictConfigFile):
                 if name not in permissions or level == "write":
                     permissions[name] = level
         return deep_sorted_dict(permissions)
+
+    def secrets_used_mapping(self) -> dict[str, str]:
+        """Return the secret mapping required to call this workflow.
+
+        Returns:
+            Referenced secret names mapped to caller expressions.
+        """
+        return {
+            name: self.insert_expression(self.secrets_var(name))
+            for name in self.secrets_used()
+        }
 
     def step_download_artifact(
         self,
@@ -412,17 +423,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             },
         )
 
-    def used_secrets_mapping(self) -> dict[str, str]:
-        """Return the secret mapping required to call this workflow.
-
-        Returns:
-            Referenced secret names mapped to caller expressions.
-        """
-        return {
-            name: self.insert_expression(self.secrets_var(name))
-            for name in self.used_secrets()
-        }
-
     def workflow_call_reference(self) -> str:
         """Return a same-repository reusable-workflow reference.
 
@@ -529,7 +529,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
                 `workflow_call_reference()`. When set, `runs_on` is not
                 applied.
             secrets: Named secrets to forward to the called workflow, e.g.
-                built by `used_secrets_mapping()`. Only meaningful together
+                built by `secrets_used_mapping()`. Only meaningful together
                 with `uses`.
             timeout_minutes: Maximum time in minutes that the job can run. Only
                 effective when `uses` is not set. Defaults to `TIMEOUT_MINUTES_DEFAULT`.
@@ -662,6 +662,19 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.workflow_name()
 
+    def secrets_used(self) -> list[str]:
+        """Return non-default secrets referenced by this workflow.
+
+        Returns:
+            Distinct secret names in sorted order.
+        """
+        names: set[str] = set()
+        for leaf in traverse_structure(self.jobs_configs()):
+            if isinstance(leaf, str):
+                names.update(self.SECRET_EXPRESSION_PATTERN.findall(leaf))
+        names.discard("GITHUB_TOKEN")
+        return sorted(names)
+
     def step_extract_version(self) -> dict[str, Any]:
         """Build a step that extracts the current version.
 
@@ -739,19 +752,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Strategy configuration with matrix.
         """
         return self.strategy(strategy={"matrix": matrix})
-
-    def used_secrets(self) -> list[str]:
-        """Return non-default secrets referenced by this workflow.
-
-        Returns:
-            Distinct secret names in sorted order.
-        """
-        names: set[str] = set()
-        for leaf in traverse_structure(self.jobs_configs()):
-            if isinstance(leaf, str):
-                names.update(self.SECRET_EXPRESSION_PATTERN.findall(leaf))
-        names.discard("GITHUB_TOKEN")
-        return sorted(names)
 
     def assign_command_substitution_output_var(self, name: str, args: Args) -> str:
         """Shell script to assign the output of a command substitution to a variable.

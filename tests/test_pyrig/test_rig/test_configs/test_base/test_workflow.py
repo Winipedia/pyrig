@@ -662,6 +662,67 @@ class TestWorkflowConfigFile:
             "Expected run name to match workflow name"
         )
 
+    def test_secrets_used(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        assert my_test_workflow().secrets_used() == []
+
+    def test_secrets_used_discovered(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+
+        class WithSecretUsage(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
+            """Test workflow whose steps reference secrets."""
+
+            @override
+            def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
+                """Return a job with secrets, GITHUB_TOKEN, and a non-string leaf."""
+                return (
+                    lambda: {
+                        "job_id": "job_a",
+                        "continue-on-error": True,
+                        "steps": [
+                            {"env": {"TOKEN": "${{ secrets.TOKEN }}"}},
+                            {"with": {"gh-token": "${{ secrets.GITHUB_TOKEN }}"}},
+                        ],
+                    },
+                    lambda: {
+                        "job_id": "job_b",
+                        "if": "${{ secrets.TOKEN != '' }}",
+                    },
+                )
+
+        result = WithSecretUsage().secrets_used()
+        assert result == ["TOKEN"]
+
+    def test_secrets_used_mapping(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().secrets_used_mapping()
+        assert result == {}
+
+        class WithSecretUsage(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
+            """Test workflow whose steps reference a secret."""
+
+            @override
+            def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
+                """Return a job referencing `TOKEN`."""
+                return (
+                    lambda: {
+                        "job_id": "job_a",
+                        "steps": [{"env": {"TOKEN": "${{ secrets.TOKEN }}"}}],
+                    },
+                )
+
+        result = WithSecretUsage().secrets_used_mapping()
+        assert result == {"TOKEN": "${{ secrets.TOKEN }}"}
+
     def test_secrets_var(self) -> None:
         """Test method."""
         assert (
@@ -858,67 +919,6 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().strategy_matrix_os_and_python_version()
         assert "matrix" in result, "Expected 'matrix' in strategy"
-
-    def test_used_secrets(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        assert my_test_workflow().used_secrets() == []
-
-    def test_used_secrets_discovered(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-
-        class WithSecretUsage(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
-            """Test workflow whose steps reference secrets."""
-
-            @override
-            def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
-                """Return a job with secrets, GITHUB_TOKEN, and a non-string leaf."""
-                return (
-                    lambda: {
-                        "job_id": "job_a",
-                        "continue-on-error": True,
-                        "steps": [
-                            {"env": {"TOKEN": "${{ secrets.TOKEN }}"}},
-                            {"with": {"gh-token": "${{ secrets.GITHUB_TOKEN }}"}},
-                        ],
-                    },
-                    lambda: {
-                        "job_id": "job_b",
-                        "if": "${{ secrets.TOKEN != '' }}",
-                    },
-                )
-
-        result = WithSecretUsage().used_secrets()
-        assert result == ["TOKEN"]
-
-    def test_used_secrets_mapping(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().used_secrets_mapping()
-        assert result == {}
-
-        class WithSecretUsage(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
-            """Test workflow whose steps reference a secret."""
-
-            @override
-            def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
-                """Return a job referencing `TOKEN`."""
-                return (
-                    lambda: {
-                        "job_id": "job_a",
-                        "steps": [{"env": {"TOKEN": "${{ secrets.TOKEN }}"}}],
-                    },
-                )
-
-        result = WithSecretUsage().used_secrets_mapping()
-        assert result == {"TOKEN": "${{ secrets.TOKEN }}"}
 
     def test_uses(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
