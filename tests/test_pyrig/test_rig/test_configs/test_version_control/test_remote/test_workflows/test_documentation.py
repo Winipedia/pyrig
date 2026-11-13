@@ -56,12 +56,6 @@ class TestDocumentationWorkflowConfigFile:
         assert "needs" not in job
         assert "secrets.REPO_TOKEN" not in str(job)
 
-    def test_job_build_permissions(self) -> None:
-        """Check the build only needs checkout permission."""
-        assert DocumentationWorkflowConfigFile.I.job_build_permissions() == {
-            "contents": "read",
-        }
-
     def test_job_deploy(self) -> None:
         """Check deployment runs after building and uses the Pages environment."""
         workflow = DocumentationWorkflowConfigFile.I
@@ -79,17 +73,23 @@ class TestDocumentationWorkflowConfigFile:
         workflow = DocumentationWorkflowConfigFile.I
         assert workflow.job_deploy_needs() == (workflow.job_build,)
 
-    def test_job_deploy_permissions(self) -> None:
-        """Check the Pages deployment permissions."""
-        assert DocumentationWorkflowConfigFile.I.job_deploy_permissions() == {
-            "id-token": "write",
-            "pages": "write",
-        }
-
     def test_jobs(self) -> None:
         """Check both documentation jobs are present."""
         workflow = DocumentationWorkflowConfigFile.I
         assert workflow.jobs() == (workflow.job_build, workflow.job_deploy)
+
+    def test_permissions_job_build(self) -> None:
+        """Check the build only needs checkout permission."""
+        assert DocumentationWorkflowConfigFile.I.permissions_job_build() == {
+            "contents": "read",
+        }
+
+    def test_permissions_job_deploy(self) -> None:
+        """Check the Pages deployment permissions."""
+        assert DocumentationWorkflowConfigFile.I.permissions_job_deploy() == {
+            "id-token": "write",
+            "pages": "write",
+        }
 
     def test_stem(self) -> None:
         """Check the workflow filename."""

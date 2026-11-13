@@ -73,12 +73,6 @@ class TestReleaseWorkflowConfigFile:
             ReleaseWorkflowConfigFile.I.job_health_check,
         )
 
-    def test_job_publish_permissions(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.job_publish_permissions() == {
-            "contents": "write",
-        }
-
     def test_jobs(
         self,
         my_test_release_workflow: type[ReleaseWorkflowConfigFile],
@@ -90,6 +84,12 @@ class TestReleaseWorkflowConfigFile:
             workflow.job_publish,
             workflow.job_deploy,
         )
+
+    def test_permissions_job_publish(self) -> None:
+        """Test method."""
+        assert ReleaseWorkflowConfigFile.I.permissions_job_publish() == {
+            "contents": "write",
+        }
 
     def test_stem(self) -> None:
         """Test method."""

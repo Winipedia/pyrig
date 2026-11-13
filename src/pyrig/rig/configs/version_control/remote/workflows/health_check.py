@@ -130,7 +130,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.job(
             self.job_health_checks,
-            permissions=self.job_health_checks_permissions(),
+            permissions=self.permissions_job_health_checks(),
             steps=self.steps_health_checks(),
             timeout_minutes=60,
         )
@@ -148,13 +148,13 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         return self.job(
             self.job_matrix_health_checks,
             strategy=self.strategy_matrix_os_and_python_version(),
-            permissions=self.job_matrix_health_checks_permissions(),
+            permissions=self.permissions_job_matrix_health_checks(),
             runs_on=self.insert_matrix_os(),
             steps=self.steps_matrix_health_checks(),
             timeout_minutes=120,
         )
 
-    def job_health_checks_permissions(self) -> dict[str, str]:
+    def permissions_job_health_checks(self) -> dict[str, str]:
         """Return the permissions for the quality check job.
 
         Returns:
@@ -162,7 +162,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.permission_contents()
 
-    def job_matrix_health_checks_permissions(self) -> dict[str, str]:
+    def permissions_job_matrix_health_checks(self) -> dict[str, str]:
         """Return the permissions for the matrix test job.
 
         Returns:

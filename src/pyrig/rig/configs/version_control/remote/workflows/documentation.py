@@ -39,7 +39,7 @@ class DocumentationWorkflowConfigFile(WorkflowConfigFile):
             self.job_deploy,
             needs=self.job_deploy_needs(),
             environment=self.stem(),
-            permissions=self.job_deploy_permissions(),
+            permissions=self.permissions_job_deploy(),
             steps=self.steps_deploy(),
             timeout_minutes=30,
         )
@@ -48,7 +48,7 @@ class DocumentationWorkflowConfigFile(WorkflowConfigFile):
         """Return the documentation build prerequisite."""
         return (self.job_build,)
 
-    def job_deploy_permissions(self) -> dict[str, str]:
+    def permissions_job_deploy(self) -> dict[str, str]:
         """Return the permissions required to deploy GitHub Pages."""
         return {
             **self.permission_id_token(write=True),
@@ -63,7 +63,7 @@ class DocumentationWorkflowConfigFile(WorkflowConfigFile):
         """Build the documentation site and upload its Pages artifact."""
         return self.job(
             self.job_build,
-            permissions=self.job_build_permissions(),
+            permissions=self.permissions_job_build(),
             steps=self.steps_build(),
             timeout_minutes=60,
         )
@@ -91,7 +91,7 @@ class DocumentationWorkflowConfigFile(WorkflowConfigFile):
         """Return action metadata for `actions/deploy-pages`."""
         return self.action_from_resource(self.action_deploy_pages, resources)
 
-    def job_build_permissions(self) -> dict[str, str]:
+    def permissions_job_build(self) -> dict[str, str]:
         """Return read-only repository permissions for checkout."""
         return self.permission_contents()
 

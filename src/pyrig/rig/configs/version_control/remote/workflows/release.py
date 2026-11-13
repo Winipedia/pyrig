@@ -84,7 +84,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         return self.job(
             self.job_publish,
             needs=self.job_publish_needs(),
-            permissions=self.job_publish_permissions(),
+            permissions=self.permissions_job_publish(),
             steps=self.steps_publish(),
             timeout_minutes=30,
         )
@@ -97,7 +97,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """
         return (self.job_health_check,)
 
-    def job_publish_permissions(self) -> dict[str, str]:
+    def permissions_job_publish(self) -> dict[str, str]:
         """Return the permissions for the publish job.
 
         Requests `contents: write`, required to create the version tag and

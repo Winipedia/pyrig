@@ -22,16 +22,16 @@ class TestRepositoryWorkflowConfigFile:
         assert job["timeout-minutes"] == expected_timeout_minutes
         assert job["steps"] == workflow.steps_configure()
 
-    def test_job_configure_permissions(self) -> None:
-        """Check checkout is limited to read-only repository access."""
-        assert RepositoryWorkflowConfigFile.I.job_configure_permissions() == {
-            "contents": "read",
-        }
-
     def test_jobs(self) -> None:
         """Check the workflow includes its configuration job."""
         workflow = RepositoryWorkflowConfigFile.I
         assert workflow.jobs() == (workflow.job_configure,)
+
+    def test_permissions_job_configure(self) -> None:
+        """Check checkout is limited to read-only repository access."""
+        assert RepositoryWorkflowConfigFile.I.permissions_job_configure() == {
+            "contents": "read",
+        }
 
     def test_stem(self) -> None:
         """Check the reusable workflow file name."""

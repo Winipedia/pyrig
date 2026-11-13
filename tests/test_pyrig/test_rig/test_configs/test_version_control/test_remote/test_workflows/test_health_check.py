@@ -37,12 +37,6 @@ class TestHealthCheckWorkflowConfigFile:
         assert result["job_id"] == "health-checks"
         assert "steps" in result, "Expected 'steps' in job"
 
-    def test_job_health_checks_permissions(self) -> None:
-        """Test method."""
-        assert HealthCheckWorkflowConfigFile().job_health_checks_permissions() == {
-            "contents": "read",
-        }
-
     def test_job_matrix_health_checks(
         self,
         my_test_health_check_workflow: type[HealthCheckWorkflowConfigFile],
@@ -53,13 +47,6 @@ class TestHealthCheckWorkflowConfigFile:
         assert "steps" in result, "Expected 'steps' in job"
         assert "strategy" in result, "Expected 'strategy' in job"
         assert "runs-on" in result, "Expected 'runs-on' in job"
-
-    def test_job_matrix_health_checks_permissions(self) -> None:
-        """Test method."""
-        assert (
-            HealthCheckWorkflowConfigFile().job_matrix_health_checks_permissions()
-            == {"contents": "read"}
-        )
 
     def test_jobs(
         self,
@@ -79,6 +66,19 @@ class TestHealthCheckWorkflowConfigFile:
         assert workflow.jobs_health_check() == (
             workflow.job_health_checks,
             workflow.job_matrix_health_checks,
+        )
+
+    def test_permissions_job_health_checks(self) -> None:
+        """Test method."""
+        assert HealthCheckWorkflowConfigFile().permissions_job_health_checks() == {
+            "contents": "read",
+        }
+
+    def test_permissions_job_matrix_health_checks(self) -> None:
+        """Test method."""
+        assert (
+            HealthCheckWorkflowConfigFile().permissions_job_matrix_health_checks()
+            == {"contents": "read"}
         )
 
     def test_stem(self) -> None:

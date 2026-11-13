@@ -34,12 +34,12 @@ class RepositoryWorkflowConfigFile(WorkflowConfigFile):
         return self.job(
             self.job_configure,
             environment=self.stem(),
-            permissions=self.job_configure_permissions(),
+            permissions=self.permissions_job_configure(),
             steps=self.steps_configure(),
             timeout_minutes=10,
         )
 
-    def job_configure_permissions(self) -> dict[str, str]:
+    def permissions_job_configure(self) -> dict[str, str]:
         """Return read-only repository permissions for checkout."""
         return self.permission_contents()
 
