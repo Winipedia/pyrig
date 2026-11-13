@@ -93,7 +93,7 @@ done"""
             endpoint=endpoint,
             method="PUT",
         )
-        return f"""{self.dependency_alerts_func()}() {{
+        return f"""{self.func_dependency_alerts()}() {{
   {api_call}
 }}"""
 
@@ -110,7 +110,7 @@ done"""
             endpoint=endpoint,
             method="PUT",
         )
-        return f"""{self.dependency_security_updates_func()}() {{
+        return f"""{self.func_dependency_security_updates()}() {{
   {api_call}
 }}"""
 
@@ -126,7 +126,7 @@ done"""
             endpoint=endpoint,
             method="PUT",
         )
-        return f"""{self.release_immutability_func()}() {{
+        return f"""{self.func_release_immutability()}() {{
   {api_call}
 }}"""
 
@@ -145,7 +145,7 @@ done"""
             method="PATCH",
             input_="-",
         )
-        return f"""{self.repo_func()}() {{
+        return f"""{self.func_repo()}() {{
   jq '.{repo_key}' {settings_path} | {api_call}
 }}"""
 
@@ -173,7 +173,7 @@ done"""
             method=f'"{method_ref}"',
             input_="-",
         )
-        return rf"""{self.rulesets_func()}() {{
+        return rf"""{self.func_rulesets()}() {{
   local endpoint="repos/{repo_ref}/rulesets"
   jq --compact-output '.{rulesets_key}[]' {settings_path} | while read -r ruleset; do
     id=$({get_ruleset_id_call} \
@@ -184,19 +184,19 @@ done"""
   done
 }}"""
 
-    def dependency_alerts_func(self) -> str:
+    def func_dependency_alerts(self) -> str:
         """Return `"dependency_alerts"`, the function name."""
         return "dependency_alerts"
 
-    def dependency_security_updates_func(self) -> str:
+    def func_dependency_security_updates(self) -> str:
         """Return `"dependency_security_updates"`, the function name."""
         return "dependency_security_updates"
 
-    def release_immutability_func(self) -> str:
+    def func_release_immutability(self) -> str:
         """Return `"release_immutability"`, the function name."""
         return "release_immutability"
 
-    def repo_func(self) -> str:
+    def func_repo(self) -> str:
         """Return `RepositorySettingsConfigFile.I.repo_key()`, the function name.
 
         Named identically to the settings file key it reads, so both stay
@@ -204,14 +204,14 @@ done"""
         """
         return RepositorySettingsConfigFile.I.repo_key()
 
-    def repo_variable(self) -> str:
-        """Return `"GITHUB_REPOSITORY"`, the Actions variable holding `owner/repo`."""
-        return "GITHUB_REPOSITORY"
-
-    def rulesets_func(self) -> str:
+    def func_rulesets(self) -> str:
         """Return `RepositorySettingsConfigFile.I.rulesets_key()`, the function name.
 
         Named identically to the settings file key it reads, so both stay
         in sync automatically.
         """
         return RepositorySettingsConfigFile.I.rulesets_key()
+
+    def repo_variable(self) -> str:
+        """Return `"GITHUB_REPOSITORY"`, the Actions variable holding `owner/repo`."""
+        return "GITHUB_REPOSITORY"
