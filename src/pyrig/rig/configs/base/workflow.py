@@ -166,7 +166,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             method,
             uses=workflow_instance.workflow_call_reference(),
             secrets=workflow_instance.used_secrets_mapping() or None,
-            permissions=workflow_instance.used_permissions() or None,
+            permissions=workflow_instance.permissions_used() or None,
             **kwargs,
         )
 
@@ -262,6 +262,19 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Dict with the "pages" permission set to either "write" or "read".
         """
         return self.permission("pages", write=write)
+
+    def permissions_used(self) -> dict[str, str]:
+        """Return the permissions required by this workflow's jobs.
+
+        Returns:
+            Permission names mapped to their highest requested levels.
+        """
+        permissions: dict[str, str] = {}
+        for job in self.jobs_configs().values():
+            for name, level in job.get("permissions", {}).items():
+                if name not in permissions or level == "write":
+                    permissions[name] = level
+        return deep_sorted_dict(permissions)
 
     def step_download_artifact(
         self,
@@ -398,19 +411,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
                 **self.matrix_python_version(python_versions=python_versions),
             },
         )
-
-    def used_permissions(self) -> dict[str, str]:
-        """Return the permissions required by this workflow's jobs.
-
-        Returns:
-            Permission names mapped to their highest requested levels.
-        """
-        permissions: dict[str, str] = {}
-        for job in self.jobs_configs().values():
-            for name, level in job.get("permissions", {}).items():
-                if name not in permissions or level == "write":
-                    permissions[name] = level
-        return deep_sorted_dict(permissions)
 
     def used_secrets_mapping(self) -> dict[str, str]:
         """Return the secret mapping required to call this workflow.

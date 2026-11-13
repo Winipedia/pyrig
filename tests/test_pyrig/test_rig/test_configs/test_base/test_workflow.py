@@ -616,6 +616,34 @@ class TestWorkflowConfigFile:
         """Test method."""
         assert my_test_workflow().permissions() == {}
 
+    def test_permissions_used(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Test method."""
+
+        class WithJobs(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
+            """Test workflow with jobs requesting overlapping permissions."""
+
+            @override
+            def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
+                """Return jobs with overlapping and write-escalating permissions."""
+                return (
+                    lambda: {
+                        "job_id": "job_a",
+                        "permissions": {"pages": "write", "contents": "read"},
+                    },
+                    lambda: {
+                        "job_id": "job_b",
+                        "permissions": {"contents": "read"},
+                    },
+                    lambda: {"job_id": "job_c"},
+                )
+
+        result = WithJobs().permissions_used()
+        assert result == {"contents": "read", "pages": "write"}
+        assert list(result.keys()) == ["contents", "pages"]
+
     def test_pull_request_event_key(
         self,
         my_test_workflow: type[WorkflowConfigFile],
@@ -830,34 +858,6 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().strategy_matrix_os_and_python_version()
         assert "matrix" in result, "Expected 'matrix' in strategy"
-
-    def test_used_permissions(
-        self,
-        my_test_workflow: type[WorkflowConfigFile],
-    ) -> None:
-        """Test method."""
-
-        class WithJobs(my_test_workflow):  # type: ignore[misc]  # ty: ignore[unsupported-base]
-            """Test workflow with jobs requesting overlapping permissions."""
-
-            @override
-            def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
-                """Return jobs with overlapping and write-escalating permissions."""
-                return (
-                    lambda: {
-                        "job_id": "job_a",
-                        "permissions": {"pages": "write", "contents": "read"},
-                    },
-                    lambda: {
-                        "job_id": "job_b",
-                        "permissions": {"contents": "read"},
-                    },
-                    lambda: {"job_id": "job_c"},
-                )
-
-        result = WithJobs().used_permissions()
-        assert result == {"contents": "read", "pages": "write"}
-        assert list(result.keys()) == ["contents", "pages"]
 
     def test_used_secrets(
         self,
