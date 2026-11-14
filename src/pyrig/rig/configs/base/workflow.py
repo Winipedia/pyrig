@@ -19,6 +19,7 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig import resources
 from pyrig.rig.configs.base.yaml import YMLDictConfigFile, commented_map
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.tools.formatting.shell import ShellFormatter
 from pyrig.rig.tools.linting.yaml import YAMLLinter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
@@ -47,6 +48,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     JOB_ID_KEY = "job_id"
     SECRET_EXPRESSION_PATTERN = re.compile(r"secrets\.([A-Za-z0-9_]+)")
     TIMEOUT_MINUTES_DEFAULT = 360
+    SHELL_DEFAULT = ShellFormatter.I.dialect()
 
     @abstractmethod
     def workflow_triggers(self) -> dict[str, Any]:
@@ -1040,7 +1042,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         uses: tuple[str, str, str] | None = None,
         with_: dict[str, Any] | None = None,
         env: dict[str, Any] | None = None,
-        shell: str = "bash",
+        shell: str = SHELL_DEFAULT,
     ) -> CommentedMap:
         """Build a step configuration dict.
 
@@ -1058,7 +1060,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
                 `("actions/checkout", "<sha>", "v7.0.1")`).
             with_: Input parameters passed to the action.
             env: Step-level environment variables.
-            shell: Shell to use for the `run` command, defaulting to `"bash"`.
+            shell: Shell to use for the `run` command, defaulting to `SHELL_DEFAULT`.
                 Omitted from the step when `run` is not set.
 
         Returns:
