@@ -41,14 +41,17 @@
       -
         "name": "Update Dependencies"
         "id": "update-dependencies"
+        "shell": "bash"
         "run": "uv lock --upgrade"
       -
         "name": "Install Dependencies"
         "id": "install-dependencies"
+        "shell": "bash"
         "run": "uv sync"
       -
         "name": "Run Version Control Hooks"
         "id": "run-version-control-hooks"
+        "shell": "bash"
         "run": "uv run prek run --all-files --group=all"
         "env":
           "GH_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
@@ -88,14 +91,17 @@
       -
         "name": "Update Dependencies"
         "id": "update-dependencies"
+        "shell": "bash"
         "run": "uv lock --upgrade"
       -
         "name": "Install Dependencies"
         "id": "install-dependencies"
+        "shell": "bash"
         "run": "uv sync"
       -
         "name": "Run Tests"
         "id": "run-tests"
+        "shell": "bash"
         "run": "uv run pytest"
       -
         "name": "Upload Coverage Report"
@@ -141,13 +147,6 @@
           "directory": "coverage-reports"
           "fail_ci_if_error": "true"
           "use_oidc": "true"
-  "code-analysis":
-    "name": "Code Analysis"
-    "permissions":
-      "actions": "read"  # required
-      "contents": "read"
-      "security-events": "write"  # required
-    "uses": "$/.github/workflows/code-analysis.yml"
   "security-practices":
     "name": "Security Practices"
     "permissions":
@@ -156,19 +155,27 @@
       "id-token": "write"  # required
       "security-events": "write"  # required
     "uses": "$/.github/workflows/security-practices.yml"
+  "code-analysis":
+    "name": "Code Analysis"
+    "permissions":
+      "actions": "read"  # required
+      "contents": "read"
+      "security-events": "write"  # required
+    "uses": "$/.github/workflows/code-analysis.yml"
   "health-check":
     "name": "Health Check"
     "needs":
       - "health-checks"
       - "matrix-health-checks"
       - "upload-coverage"
-      - "code-analysis"
       - "security-practices"
+      - "code-analysis"
     "runs-on": "ubuntu-latest"
     "timeout-minutes": 1
     "steps":
       -
         "name": "Aggregate Jobs"
         "id": "aggregate-jobs"
+        "shell": "bash"
         "run": "echo 'Aggregating jobs into one job.'"
 ...

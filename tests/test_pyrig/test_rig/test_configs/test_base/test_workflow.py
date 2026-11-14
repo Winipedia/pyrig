@@ -749,6 +749,7 @@ class TestWorkflowConfigFile:
         assert "name" in result
         assert "id" in result
         assert "run" in result
+        assert result["shell"] == "bash"
         assert "if" in result
         assert "uses" in result
         assert "with" in result
@@ -840,6 +841,39 @@ class TestWorkflowConfigFile:
         assert "uses" in result, "Expected 'uses' in step"
         assert result["uses"] == f"astral-sh/setup-uv@{workflow.action_setup_uv()[1]}"
         assert result["with"]["python-version"] == "3.14"
+
+    def test_step_shell_for_run(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Run steps use Bash by default and accept a shell override."""
+        workflow = my_test_workflow()
+        default = workflow.step(self.test_step_shell_for_run, run="echo test")
+        custom = workflow.step(  # noqa: S604
+            self.test_step_shell_for_run,
+            run="print('test')",
+            shell="python",
+        )
+
+        assert default["shell"] == "bash"
+        assert list(default).index("shell") < list(default).index("run")
+        assert custom["shell"] == "python"
+        assert custom["run"] == "print('test')"
+
+    def test_step_shell_omitted_without_run(
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
+    ) -> None:
+        """Action steps do not include a shell, even when one is supplied."""
+        result = my_test_workflow().step(  # noqa: S604
+            self.test_step_shell_omitted_without_run,
+            uses=("action/checkout", "v2", "v2"),
+            shell="python",
+        )
+
+        assert "uses" in result
+        assert "shell" not in result
+        assert "run" not in result
 
     def test_step_update_dependencies(
         self,

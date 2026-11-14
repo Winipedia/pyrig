@@ -35,10 +35,12 @@
       -
         "name": "Install Dependencies"
         "id": "install-dependencies"
+        "shell": "bash"
         "run": "uv sync"
       -
         "name": "Build Documentation"
         "id": "build-documentation"
+        "shell": "bash"
         "run": "uv run zensical build"
       -
         "name": "Upload Documentation"

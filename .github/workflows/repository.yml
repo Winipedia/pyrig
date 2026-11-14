@@ -29,6 +29,7 @@
       -
         "name": "Configure Repository"
         "id": "configure-repository"
+        "shell": "bash"
         "run": "bash .github/configure.sh"
         "env":
           "GH_TOKEN": "${{ secrets.REPO_TOKEN }}"

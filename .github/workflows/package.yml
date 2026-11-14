@@ -32,6 +32,7 @@
       -
         "name": "Build Package"
         "id": "build-package"
+        "shell": "bash"
         "run": "uv build"
       -
         "name": "Upload Distributions"
@@ -71,5 +72,6 @@
       -
         "name": "Publish Package"
         "id": "publish-package"
+        "shell": "bash"
         "run": "uv publish --trusted-publishing=always"
 ...

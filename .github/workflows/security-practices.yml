@@ -53,6 +53,7 @@
       -
         "name": "Check Alerts"
         "id": "check-alerts"
+        "shell": "bash"
         "run": |-
           gh \
             api \

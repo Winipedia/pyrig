@@ -1040,6 +1040,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         uses: tuple[str, str, str] | None = None,
         with_: dict[str, Any] | None = None,
         env: dict[str, Any] | None = None,
+        shell: str = "bash",
     ) -> CommentedMap:
         """Build a step configuration dict.
 
@@ -1057,6 +1058,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
                 `("actions/checkout", "<sha>", "v7.0.1")`).
             with_: Input parameters passed to the action.
             env: Step-level environment variables.
+            shell: Shell to use for the `run` command, defaulting to `"bash"`.
+                Omitted from the step when `run` is not set.
 
         Returns:
             Step configuration dict with at least `name` and `id` set.
@@ -1077,6 +1080,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         if if_condition is not None:
             step["if"] = if_condition
         if run is not None:
+            step["shell"] = shell
             step["run"] = run
         if uses is not None:
             action, ref, tag = uses
