@@ -1306,7 +1306,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "19.37.0"
+version = "19.37.1"
 source = { editable = "." }
 dependencies = [
     { name = "inquirerpy" },
@@ -1487,14 +1487,14 @@ wheels = [
 
 [[package]]
 name = "pyrig-openssf"
-version = "1.3.15"
+version = "1.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/9b/13/adcd92ae131fac95e2389bed21f1087a83ea55331a94c178fd2427c278e0/pyrig_openssf-1.3.15.tar.gz", hash = "sha256:2b77bd446d487829123abeb4887b189f1218de438dc85d81ae715930dec3851c", size = 18933, upload-time = "2026-11-14T19:55:25.173Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/27/66/c8e419ef976f2eea66e68bb1e2a1acba56264a5ca0e273f1241d07171ecf/pyrig_openssf-1.4.0.tar.gz", hash = "sha256:3ce69410b9d06665c9b7308be088bb7f962b055074ff3735dfac1e1dbe3f9400", size = 18949, upload-time = "2026-11-15T23:12:10.079Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9d/4c/96bfafffc26383e9cd4d8f40ecb5f99ae1c9a2446d2641cf0e23172e213b/pyrig_openssf-1.3.15-py3-none-any.whl", hash = "sha256:2a2a088b341e5129a39e10eee519c3da2546ae96a8a0efeb735891ca93e758b0", size = 23589, upload-time = "2026-11-14T19:55:24.208Z" },
+    { url = "https://files.pythonhosted.org/packages/06/78/302a41fe770e95f84a9d32968ed3177814cbe2f9a13a70bef2793741bd80/pyrig_openssf-1.4.0-py3-none-any.whl", hash = "sha256:2f48c3af5c311871b6b16427f13ce4a414b6b7f497acc10badf15d5017d33bd4", size = 23602, upload-time = "2026-11-15T23:12:08.832Z" },
 ]
 
 [[package]]

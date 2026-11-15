@@ -97,6 +97,8 @@
   "floss_license_justification": "See https://github.com/Winipedia/pyrig/blob/main/LICENSE.",
   "floss_license_osi_status": "Met",
   "floss_license_osi_justification": "See https://github.com/Winipedia/pyrig/blob/main/LICENSE.",
+  "governance_status": "Met",
+  "governance_justification": "See https://github.com/Winipedia/pyrig/blob/main/CONTRIBUTING.md.",
   "installation_common_status": "Met",
   "installation_common_justification": "See https://github.com/Winipedia/pyrig/blob/main/pyproject.toml.",
   "installation_development_quick_status": "Met",
