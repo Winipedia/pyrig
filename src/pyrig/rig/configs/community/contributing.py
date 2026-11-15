@@ -1,8 +1,8 @@
 """Configuration management for CONTRIBUTING.md files.
 
 Manages CONTRIBUTING.md using a template covering the code of conduct,
-how to report bugs and suggest features, the development workflow, and
-pull request expectations.
+governance, how to report bugs and suggest features, the development
+workflow, and pull request expectations.
 """
 
 from pathlib import Path
@@ -24,12 +24,10 @@ from pyrig.rig.tools.version_control.remote.controller import (
 class ContributingConfigFile(MarkdownConfigFile):
     """Configuration manager for the project's CONTRIBUTING.md file.
 
-    Generates CONTRIBUTING.md covering the code of conduct, how to report
-    bugs and suggest features, the development workflow, and pull request
-    expectations. Commands and remote URLs are derived from the project's
-    own tool and configuration classes, so nothing is left for downstream
-    users to fill in by hand. Users are free to customize the file after
-    initial generation.
+    Generates CONTRIBUTING.md covering the code of conduct, governance,
+    how to report bugs and suggest features, the development workflow, and
+    pull request expectations. Commands and remote URLs are derived from the
+    project's own tool and configuration classes.
     """
 
     @override
@@ -37,23 +35,25 @@ class ContributingConfigFile(MarkdownConfigFile):
         """Return the complete contributing guide text.
 
         Returns:
-            The welcome message, security notice, code of conduct, ways to
-            contribute, development workflow, and pull request sections
-            joined into a single Markdown document.
+            The welcome message, security notice, code of conduct, governance,
+            ways to contribute, development workflow, and pull request
+            sections joined into a single Markdown document.
         """
         return f"""# Contributing
 
-{self.welcome_section()}
+{self.section_welcome()}
 
-{self.security_notice_section()}
+{self.section_security_notice()}
 
-{self.code_of_conduct_section()}
+{self.section_code_of_conduct()}
 
-{self.ways_to_contribute_section()}
+{self.section_governance()}
 
-{self.development_workflow_section()}
+{self.section_ways_to_contribute()}
 
-{self.pull_request_section()}
+{self.section_development_workflow()}
+
+{self.section_pull_request()}
 """
 
     @override
@@ -66,7 +66,7 @@ class ContributingConfigFile(MarkdownConfigFile):
         """Return `"CONTRIBUTING"` as the filename stem."""
         return "CONTRIBUTING"
 
-    def code_of_conduct_section(self) -> str:
+    def section_code_of_conduct(self) -> str:
         """Return the code-of-conduct section.
 
         Returns:
@@ -78,7 +78,7 @@ class ContributingConfigFile(MarkdownConfigFile):
 By participating in this project, you agree to abide by its
 [Code of Conduct](CODE_OF_CONDUCT.md)."""
 
-    def development_workflow_section(self) -> str:
+    def section_development_workflow(self) -> str:
         """Return the section walking through how to submit a change.
 
         Every command is built from the project's own `Tool` classes
@@ -102,7 +102,13 @@ By participating in this project, you agree to abide by its
 6. Commit your change.
 7. Push your branch and open a pull request."""
 
-    def pull_request_section(self) -> str:
+    def section_governance(self) -> str:
+        """Return the default project decision-making policy."""
+        return """## Governance
+
+The project maintainers make all final decisions."""
+
+    def section_pull_request(self) -> str:
         """Return the section describing what a mergeable pull request needs.
 
         Returns:
@@ -119,7 +125,7 @@ By participating in this project, you agree to abide by its
 - Update documentation.
 - All checks in [CI]({ci_cd_url}) must pass before merge."""
 
-    def security_notice_section(self) -> str:
+    def section_security_notice(self) -> str:
         """Return the security-vulnerability callout.
 
         Points to `SECURITY.md` instead of restating its reporting
@@ -131,7 +137,7 @@ By participating in this project, you agree to abide by its
         return """> **Found a security vulnerability?**
 > Please follow [SECURITY.md](SECURITY.md)."""
 
-    def ways_to_contribute_section(self) -> str:
+    def section_ways_to_contribute(self) -> str:
         """Return the section describing how to report issues and ideas.
 
         Returns:
@@ -154,7 +160,7 @@ to avoid duplicates.
   be discussed first.
 - **Questions** — open an issue if nothing else already answers it."""
 
-    def welcome_section(self) -> str:
+    def section_welcome(self) -> str:
         """Return the opening welcome paragraph.
 
         Returns:

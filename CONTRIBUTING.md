@@ -12,6 +12,10 @@ this project, and helps them address your issue or pull request quickly.
 By participating in this project, you agree to abide by its
 [Code of Conduct](CODE_OF_CONDUCT.md).
 
+## Governance
+
+The project maintainers make all final decisions.
+
 ## Ways to Contribute
 
 Contributions aren't limited to code — reporting bugs, improving
