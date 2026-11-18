@@ -3,6 +3,7 @@
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any
 
 import pyrig_runtime
@@ -14,6 +15,7 @@ from pyrig_runtime.core.dependencies.distribution import (
 )
 from pytest_mock import MockerFixture
 
+from pyrig.core.subprocesses import Args
 from pyrig.rig.configs.community.license import LicenseConfigFile
 from pyrig.rig.configs.package_init import PackageInitConfigFile
 from pyrig.rig.configs.pyproject import (
@@ -439,6 +441,63 @@ class TestPyprojectConfigFile:
             == PyprojectConfigFile.I.tool_configs()
         )
         assert len(PyprojectConfigFile.I.tool_configs()) > 0
+        assert PyprojectConfigFile.I.tool_configs()["typos"]["default"][
+            "extend-ignore-re"
+        ] == [
+            "(?m)^.*spellchecker:disable-line.*$",
+            "(?m)^.*spellchecker:disable-next-line.*\n.*",
+        ]
+
+    @pytest.mark.parametrize("line_ending", [b"\n", b"\r\n"])
+    def test_tool_configs_spellchecker_ignore(
+        self,
+        line_ending: bytes,
+    ) -> None:
+        """Check generated Typos configuration and line-scoped suppression."""
+        ignored = b"colour # spellchecker:disable-line"
+        generic = b"colour // spellchecker:disable-line external"
+        spaced = b"colour # spellchecker: disable-line"  # spellchecker:disable-line
+        unmarked = b"colour"  # spellchecker:disable-line
+        next_line = b"colour # spellchecker:disable-next-line"
+        with TemporaryDirectory(dir=Path.cwd()) as temp_dir:
+            sample_path = Path(temp_dir) / "sample.txt"
+            sample_path.write_bytes(
+                line_ending.join(
+                    (
+                        ignored,
+                        generic,
+                        spaced,
+                        unmarked,
+                        next_line,
+                        unmarked,
+                        unmarked,
+                        next_line,
+                        b"",
+                        unmarked,
+                        next_line,
+                        next_line,
+                        unmarked,
+                    ),
+                ),
+            )
+            Args("typos", "--write-changes", str(sample_path)).run()
+            assert sample_path.read_bytes() == line_ending.join(
+                (
+                    ignored,  # Ignored by the line directive.
+                    generic,  # Ignored regardless of comment style.
+                    b"color # spellchecker: disable-line",  # Space prevents a match.
+                    b"color",  # Checked: no directive.
+                    next_line,  # Ignored by its own next-line directive.
+                    unmarked,  # Ignored by the preceding directive.
+                    b"color",  # Checked: beyond the ignored line.
+                    next_line,  # Ignored with the following blank line.
+                    b"",  # Ignored: the next physical line is blank.
+                    b"color",  # Checked: the blank line used the ignore.
+                    next_line,  # Ignored with the following directive.
+                    next_line,  # Ignored by the preceding directive.
+                    b"color",  # Checked: consecutive matches cannot overlap.
+                ),
+            )
 
     def test_tool_section(self) -> None:
         """Test method."""

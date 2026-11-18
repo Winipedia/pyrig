@@ -25,6 +25,7 @@ from pyrig.rig.configs.package_init import PackageInitConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.dependencies.checker import DependencyChecker
 from pyrig.rig.tools.docs.builder import DocsBuilder
+from pyrig.rig.tools.language.spelling import SpellChecker
 from pyrig.rig.tools.linting.dead_code import DeadCodeChecker
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.linting.yaml import YAMLLinter
@@ -371,7 +372,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             PythonLinter.I.config_name(): {
                 "lint": {
                     "select": ["ALL"],
-                    "ignore": [f"{'C'}PY001"],
+                    "ignore": ["CPY001"],  # spellchecker:disable-line
                     "per-file-ignores": {
                         f"{ProjectTester.I.package_name()}/**/*.py": ["S101"],
                     },
@@ -379,6 +380,15 @@ class PyprojectConfigFile(TOMLConfigFile):
                 },
                 "format": {
                     "docstring-code-format": True,
+                },
+            },
+            SpellChecker.I.config_name(): {
+                "default": {
+                    "extend-ignore-re": [
+                        "(?m)^.*spellchecker:disable-line.*$",
+                        "(?m)^.*spellchecker:disable-next-line.*\n.*",
+                    ],
+                    "locale": "en-us",
                 },
             },
             YAMLLinter.I.config_name(): {

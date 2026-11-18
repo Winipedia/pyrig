@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "19.37.1"
+version = "19.38.0"
 description = "A Python project setup and management tool built on infrastructure as code and convention over configuration."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -169,6 +169,13 @@ strict = true
 ALL = "enable"
 key-ordering = "disable"
 yaml-directive = "disable"
+
+[tool.typos.default]
+extend-ignore-re = [
+  "(?m)^.*spellchecker:disable-line.*$",
+  "(?m)^.*spellchecker:disable-next-line.*\n.*",
+]
+locale = "en-us"
 
 [tool.vulture]
 paths = [

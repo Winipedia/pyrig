@@ -12,7 +12,9 @@ from typing import Any, override
 
 from pyrig_runtime.core.strings import regex_find
 from pyrig_runtime.core.wrappers import safe_call
-from spdx_matcher import analyse_license_text
+from spdx_matcher import (
+    analyse_license_text as analyze_license_text,  # spellchecker:disable-line
+)
 
 from pyrig.core.resources import (
     resource_content,
@@ -102,14 +104,14 @@ class LicenseConfigFile(StringConfigFile):
         )
 
     def analyze_license_text(self) -> tuple[dict[str, dict[str, Any]], float]:
-        """Analyze the files text and return the detected licenses and confidence score.
+        """Analyze this file's text and return detected licenses and confidence.
 
         Returns:
             A tuple containing:
             - A dictionary with license information.
             - A float representing the confidence score.
         """
-        return analyse_license_text(self.read_content())
+        return analyze_license_text(self.read_content())
 
     def license(self) -> str:
         """Return the MIT license text with year and repository owner substituted."""
