@@ -63,6 +63,15 @@ class Pyrigger(VersionControlHookTool):
         return f"https://github.com/Winipedia/{self.name()}"
 
     @override
+    def runtime_dependencies(self) -> tuple[str, ...]:
+        """Return the runtime dependencies the target project must declare.
+
+        Returns:
+            Tuple of runtime dependencies, including `"pyrig-runtime"`.
+        """
+        return (*super().runtime_dependencies(), self.runtime_dependency())
+
+    @override
     def name(self) -> str:
         """Return `"pyrig"`."""
         return snake_to_kebab_case(pyrig.__name__)
@@ -98,14 +107,6 @@ class Pyrigger(VersionControlHookTool):
         ) as progress:
             for step_args, run_kwargs in progress:
                 PackageManager.I.run_args(*step_args).run(**run_kwargs)
-
-    def runtime_dependencies(self) -> tuple[str, ...]:
-        """Return the runtime dependencies the target project must declare.
-
-        Returns:
-            Tuple of runtime dependencies, including `"pyrig-runtime"`.
-        """
-        return (self.runtime_dependency(),)
 
     def remove_config_files(self) -> None:
         """Delete every removable config file that currently exists.

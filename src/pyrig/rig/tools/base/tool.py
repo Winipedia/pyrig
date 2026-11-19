@@ -140,6 +140,21 @@ class Tool(DependencySubclass):
         )
 
     @classmethod
+    def subclasses_runtime_dependencies(cls) -> list[str]:
+        """Return the unique runtime dependency names of every concrete tool, sorted.
+
+        Returns:
+            Sorted list of unique runtime dependency names across all tools.
+        """
+        return sorted(
+            {
+                dep
+                for subclass in cls.concrete_leaves()
+                for dep in subclass().runtime_dependencies()
+            },
+        )
+
+    @classmethod
     def subclasses_version_control_ignore_patterns(cls) -> list[str]:
         """Return the version control ignore paths of every concrete tool, sorted.
 
@@ -231,6 +246,14 @@ class Tool(DependencySubclass):
             tool's executable name.
         """
         return (self.name(),)
+
+    def runtime_dependencies(self) -> tuple[str, ...]:
+        """Return runtime dependency names required by this tool.
+
+        Override in a subclass to declare packages that must be installed in
+        projects using the tool. Defaults to no runtime dependencies.
+        """
+        return ()
 
     def shield_name(self) -> str:
         """Return this tool's name escaped for a shields.io static badge segment.

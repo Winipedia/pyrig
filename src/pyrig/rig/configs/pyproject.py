@@ -30,7 +30,6 @@ from pyrig.rig.tools.linting.dead_code import DeadCodeChecker
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.linting.yaml import YAMLLinter
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.testing.project import ProjectTester
 from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote.controller import (
@@ -212,10 +211,10 @@ class PyprojectConfigFile(TOMLConfigFile):
         """Add missing runtime and development project dependencies.
 
         Compares the project's runtime dependencies against
-        `Pyrigger.I.runtime_dependencies()` and its development dependencies
-        against `Tool.subclasses_dev_dependencies()`. Adds missing entries via
-        the package manager, synchronizes the environment, then reloads and
-        rewrites the file.
+        `Tool.subclasses_runtime_dependencies()` and its development
+        dependencies against `Tool.subclasses_dev_dependencies()`. Adds
+        missing entries via the package manager, synchronizes the environment,
+        then reloads and rewrites the file.
 
         Returns:
             The dependencies that were added, empty if none were missing.
@@ -225,7 +224,7 @@ class PyprojectConfigFile(TOMLConfigFile):
         )
         dependencies = tuple(
             dependency
-            for dependency in Pyrigger.I.runtime_dependencies()
+            for dependency in Tool.subclasses_runtime_dependencies()
             if distribution_requirement_as_module_name(dependency)
             not in current_dependencies
         )
@@ -352,7 +351,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             DependencyChecker.I.config_name(): {
                 "root": PackageManager.I.source_root().as_posix(),
                 "per_rule_ignores": {
-                    "DEP002": sorted(Pyrigger.I.runtime_dependencies()),
+                    "DEP002": sorted(Tool.subclasses_runtime_dependencies()),
                 },
             },
             DeadCodeChecker.I.config_name(): {

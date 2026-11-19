@@ -11,6 +11,7 @@ from pyrig.rig import tools
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.packages.manager import PackageManager
+from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.testing.project import ProjectTester
 
 
@@ -160,6 +161,11 @@ class TestTool:
         # Tool is abstract, test through concrete implementation
         assert PackageManager.I.name() == "uv"
 
+    def test_runtime_dependencies(self) -> None:
+        """Tools may declare zero or more target runtime dependencies."""
+        assert PackageManager.I.runtime_dependencies() == ()
+        assert Pyrigger.I.runtime_dependencies() == ("pyrig-runtime",)
+
     def test_shield_name(self, mocker: MockerFixture) -> None:
         """Test method."""
         assert PackageManager.I.shield_name() == "uv"
@@ -197,6 +203,10 @@ class TestTool:
         toml_deps_no_versions = tuple(dep.split(">=")[0] for dep in toml_deps)
 
         assert set(deps).issubset(set(toml_deps_no_versions))
+
+    def test_subclasses_runtime_dependencies(self) -> None:
+        """Collect runtime dependencies across all concrete tools."""
+        assert Tool.subclasses_runtime_dependencies() == ["pyrig-runtime"]
 
     def test_subclasses_version_control_ignore_patterns(self) -> None:
         """Test method."""

@@ -24,7 +24,6 @@ from pyrig.rig.configs.pyproject import (
 from pyrig.rig.configs.readme import ReadmeConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_control.controller import VersionController
 
 
@@ -58,8 +57,8 @@ class TestPyprojectConfigFile:
             },
         )
         runtime_deps_mock = mocker.patch.object(
-            Pyrigger,
-            Pyrigger.runtime_dependencies.__name__,
+            Tool,
+            Tool.subclasses_runtime_dependencies.__name__,
             return_value=["existing-runtime-dep", "new-runtime-dep"],
         )
         dev_deps_mock = mocker.patch.object(
