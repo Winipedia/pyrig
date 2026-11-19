@@ -112,6 +112,17 @@ class TestPyrigger:
             for step_args, step_kwargs in steps
         )
 
+    def test_step_synchronize_project(self) -> None:
+        """Test method."""
+        assert Pyrigger.I.step_synchronize_project() == (
+            Args("pyrig", "sync"),
+            {"check": False},
+        )
+
+    def test_synchronize_args(self) -> None:
+        """Test method."""
+        assert Pyrigger.I.synchronize_args() == Args("pyrig", "sync")
+
     def test_synchronize_project(self) -> None:
         """Test method."""
         base_args = Pyrigger.I.cmd_args(cmd=sync)

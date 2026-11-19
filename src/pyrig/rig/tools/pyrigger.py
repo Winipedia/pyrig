@@ -132,7 +132,7 @@ class Pyrigger(VersionControlHookTool):
         """
         return (
             (VersionController.I.init_args(), {}),
-            (self.cmd_args(cmd=sync), {"check": False}),
+            self.step_synchronize_project(),
             (VersionController.I.add_all_args(), {}),
             (VersionController.I.commit_with_msg_args(msg=self.setup_commit_msg()), {}),
         )
@@ -150,13 +150,21 @@ class Pyrigger(VersionControlHookTool):
         """Return the commit message for the initial commit."""
         return f"{self.name()}: Initialized project"
 
+    def step_synchronize_project(self) -> tuple[Args, dict[str, Any]]:
+        """Return the step tuple for synchronizing the project during setup."""
+        return (self.synchronize_args(), {"check": False})
+
     def synchronize_project(self) -> Args:
         """Return the `Args` this hook's entry runs.
 
         Returns:
             Args for `uv run pyrig sync`.
         """
-        return PackageManager.I.run_args(*self.cmd_args(cmd=sync))
+        return PackageManager.I.run_args(*self.synchronize_args())
+
+    def synchronize_args(self) -> Args:
+        """Return the `Args` for the `pyrig sync` command."""
+        return self.cmd_args(cmd=sync)
 
     def cmd_args(self, *args: str, cmd: FunctionType) -> Args:
         """Construct `Args` for a top-level pyrig CLI command.
