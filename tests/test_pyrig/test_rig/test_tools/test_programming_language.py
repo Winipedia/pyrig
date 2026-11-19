@@ -95,6 +95,12 @@ class TestProgrammingLanguage:
     ) -> None:
         """Test function."""
         with chdir(tmp_path):
+            root_pycache_path = Path("__pycache__")
+            root_pycache_path.mkdir()
+            assert root_pycache_path.exists()
+            ProgrammingLanguage.I.remove_pycache()
+            assert not root_pycache_path.exists()
+
             package_root_path = PackageManager.I.package_root()
             package_root_path.mkdir(parents=True)
             pycache_path = package_root_path / "__pycache__"

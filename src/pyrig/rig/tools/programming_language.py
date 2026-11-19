@@ -62,17 +62,20 @@ class ProgrammingLanguage(Tool):
         )
 
     def remove_pycache(self) -> None:
-        """Remove all `__pycache__` directories in the project.
+        """Remove the project-root and source/test-tree `__pycache__` directories.
 
-        Covers the package root and tests package root at all depths, echoing
-        each removed path to standard output.
+        Covers the project root and the package and tests roots at all depths,
+        echoing each removed path to standard output.
         """
         roots = (ProjectTester.I.package_root(), PackageManager.I.package_root())
-        for root in roots:
-            for pycache in root.rglob("__pycache__"):
-                if pycache.is_dir():
-                    shutil.rmtree(pycache)
-                    typer.echo(f"Removed {pycache}")
+        pycaches = chain(
+            Path().glob("__pycache__"),
+            (pycache for root in roots for pycache in root.rglob("__pycache__")),
+        )
+        for pycache in pycaches:
+            if pycache.is_dir():
+                shutil.rmtree(pycache)
+                typer.echo(f"Removed {pycache}")
 
     def namespace_package_paths(self) -> Iterator[Path]:
         """Yield project directories that lack an `__init__.py` file.

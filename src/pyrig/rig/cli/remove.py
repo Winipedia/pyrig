@@ -7,7 +7,7 @@ app = typer.Typer(no_args_is_help=True, help="Remove generated project artifacts
 
 @app.command()
 def pyc() -> None:
-    """Remove all `__pycache__` directories from the project's source and test trees.
+    """Remove the project-root and source/test-tree `__pycache__` directories.
 
     Useful for clearing stale bytecode that may cause import errors or
     test-isolation issues after refactors, branch switches, or moving files
