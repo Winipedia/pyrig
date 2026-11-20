@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import override
 
 import pytest
-from pyrig_fixtures.rig.configs.conftest import ConftestConfigFile
+from pyrig_fixtures.rig.configs.fixtures.config import FixturesConfigConfigFile
 
 from pyrig.rig.configs.base.python import PythonConfigFile, PythonPackageConfigFile
 from pyrig.rig.configs.scratch import ScratchConfigFile
@@ -20,13 +20,13 @@ class TestPythonConfigFile:
     def test_extension(self) -> None:
         """Test method."""
         expected = "py"
-        assert issubclass(ConftestConfigFile, PythonConfigFile)
-        actual = ConftestConfigFile().extension()
+        assert issubclass(FixturesConfigConfigFile, PythonConfigFile)
+        actual = FixturesConfigConfigFile().extension()
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_source_root(self) -> None:
         """Test method."""
-        assert ConftestConfigFile.I.source_root() == Path()
+        assert FixturesConfigConfigFile.I.source_root() == Path()
         assert ScratchConfigFile.I.source_root() == Path()
 
     def test_tree(

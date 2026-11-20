@@ -3,7 +3,7 @@
 from pathlib import Path
 from types import ModuleType
 
-from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
+from pyrig_resources.rig.configs.resources.init import ResourcesInitConfigFile
 
 from pyrig.rig.configs.base.init import CopyInitConfigFile
 from pyrig.rig.configs.package_init import PackageInitConfigFile
