@@ -197,6 +197,15 @@ class TestPackageManager:
         result = PackageManager.I.run_args("pytest")
         assert result == ("uv", "run", "pytest")
 
+    def test_run_no_install_args(self) -> None:
+        """Test method."""
+        assert PackageManager.I.run_no_install_args("something") == (
+            "uv",
+            "run",
+            "--no-sync",
+            "something",
+        )
+
     def test_source_root(self) -> None:
         """Test method."""
         assert PackageManager.I.source_root() == Path("src")

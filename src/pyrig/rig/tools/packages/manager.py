@@ -131,16 +131,16 @@ class PackageManager(VersionControlHookTool):
         """
         return self.remove_group_args(*args, group="dev")
 
-    def run_args(self, *args: str) -> Args:
-        """Construct `Args` for `uv run`.
+    def run_no_install_args(self, *args: str) -> Args:
+        """Construct `Args` for `uv run --no-sync`.
 
         Args:
             *args: Command and arguments to run.
 
         Returns:
-            Args for `uv run <args...>`.
+            Args for `uv run --no-sync <args...>`.
         """
-        return self.args("run", *args)
+        return self.run_args("--no-sync", *args)
 
     def version_short_args(self, *args: str) -> Args:
         """Construct `Args` for reading the current project version as a bare string.
@@ -226,6 +226,17 @@ class PackageManager(VersionControlHookTool):
             Args for `uv remove --group=<group> <args...>`.
         """
         return self.remove_args(f"--group={group}", *args)
+
+    def run_args(self, *args: str) -> Args:
+        """Construct `Args` for `uv run`.
+
+        Args:
+            *args: Command and arguments to run.
+
+        Returns:
+            Args for `uv run <args...>`.
+        """
+        return self.args("run", *args)
 
     def source_root(self) -> Path:
         """Return `Path("src")`."""
