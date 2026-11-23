@@ -127,4 +127,4 @@ def my_test_string_config_file(
             """Get the file extension."""
             return "txt"
 
-    return MyTestStringConfigFile
+    return MyTestStringConfigFile  # ty: ignore[unsound-return]

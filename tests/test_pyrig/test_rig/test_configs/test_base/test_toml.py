@@ -95,4 +95,4 @@ def my_test_toml_config_file(
             """Get the config."""
             return {"key": "value"}
 
-    return MyTestTOMLConfigFile
+    return MyTestTOMLConfigFile  # ty: ignore[unsound-return]

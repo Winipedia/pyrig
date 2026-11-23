@@ -24,8 +24,8 @@ class CICDLinter(CheckHookTool):
     def check_hook(self) -> dict[str, Any]:
         """Return the configuration for the CI/CD linter hook."""
         shell_linter_hook = ShellLinter.I.check_hook()
-        shell_linter_entry: str = shell_linter_hook["entry"]
-        shell_linter_args: list[str] = shell_linter_hook["args"]
+        shell_linter_entry = shell_linter_hook["entry"]
+        shell_linter_args = shell_linter_hook["args"]
         return VersionControlHookManager.I.local_hook(
             self.lint_ci_cd,
             priority=VersionControlHookManager.I.deprioritize(

@@ -4,7 +4,7 @@ import logging
 import subprocess  # nosec: B404
 from functools import cache
 from pathlib import Path
-from typing import Any, Self
+from typing import Self, override
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +35,11 @@ class Args(tuple[str, ...]):
         """Create an `Args` instance from individual command-line tokens."""
         return super().__new__(cls, args)
 
+    @override
+    def __str__(self) -> str:
+        """Return the command as a single space-separated string."""
+        return " ".join(self)
+
     def __getnewargs__(self) -> tuple[str, ...]:
         """Return the constructor arguments used to rebuild this instance.
 
@@ -47,10 +52,6 @@ class Args(tuple[str, ...]):
             The individual tokens, so `Args(*tokens)` rebuilds this instance.
         """
         return tuple(self)
-
-    def __str__(self) -> str:
-        """Return the command as a single space-separated string."""
-        return " ".join(self)
 
     def multiline(self) -> str:
         r"""Return the command as a backslash-continued, multiline string.
@@ -66,7 +67,7 @@ class Args(tuple[str, ...]):
         """
         return " \\\n  ".join(self)
 
-    def run(self, *args: str, check: bool = True) -> subprocess.CompletedProcess[Any]:
+    def run(self, *args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
         """Execute the command with any extra positional arguments appended.
 
         Args:
@@ -87,7 +88,7 @@ class Args(tuple[str, ...]):
         self,
         *args: str,
         check: bool = True,
-    ) -> subprocess.CompletedProcess[Any]:
+    ) -> subprocess.CompletedProcess[str]:
         """Execute the command, caching the result for identical arguments.
 
         Args:
@@ -109,7 +110,7 @@ class Args(tuple[str, ...]):
 def run_subprocess_cached(
     *args: str,
     check: bool = True,
-) -> subprocess.CompletedProcess[Any]:
+) -> subprocess.CompletedProcess[str]:
     """Execute a subprocess command and cache the result.
 
     A repeated call with identical arguments returns the cached result

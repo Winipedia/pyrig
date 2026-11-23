@@ -74,6 +74,15 @@ class Tool(DependencySubclass):
             2. Official project page or repository.
         """
 
+    @override
+    def __str__(self) -> str:
+        """Add the tool name to the string representation.
+
+        Returns:
+            The class's string representation followed by the tool name in parentheses.
+        """
+        return f"{super().__str__()} ({self.name()})"
+
     @classmethod
     @override
     def discovery_module(cls) -> ModuleType:
@@ -99,14 +108,6 @@ class Tool(DependencySubclass):
     def sort_key(cls) -> tuple[int, str]:
         """Return a tuple for sorting tools by group and name."""
         return (cls.group_order(cls().group()), cls.__name__)
-
-    def __str__(self) -> str:
-        """Add the tool name to the string representation.
-
-        Returns:
-            The class's string representation followed by the tool name in parentheses.
-        """
-        return f"{super().__str__()} ({self.name()})"
 
     @classmethod
     def grouped_badges(cls) -> defaultdict[str, list[str]]:

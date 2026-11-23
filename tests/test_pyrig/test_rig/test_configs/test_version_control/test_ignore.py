@@ -7,7 +7,6 @@ from pathlib import Path
 import pytest
 import requests
 
-from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.version_control.ignore import (
     VersionControllerIgnoreConfigFile,
 )
@@ -99,7 +98,10 @@ class TestVersionControllerIgnoreConfigFile:
 
 @pytest.fixture
 def my_test_gitignore_config_file(
-    config_file_factory: Callable[[type[ConfigFile]], type[ConfigFile]],
+    config_file_factory: Callable[
+        [type[VersionControllerIgnoreConfigFile]],
+        type[VersionControllerIgnoreConfigFile],
+    ],
 ) -> type[VersionControllerIgnoreConfigFile]:
     """Create a test gitignore config file class with tmp_path."""
 
@@ -108,4 +110,4 @@ def my_test_gitignore_config_file(
     ):
         """Test gitignore config file with tmp_path override."""
 
-    return MyTestVersionControllerIgnoreConfigFile
+    return MyTestVersionControllerIgnoreConfigFile  # ty: ignore[unsound-return]

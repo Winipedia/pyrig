@@ -122,4 +122,4 @@ def my_test_python_package_config_file(
             """Get the content string."""
             return '"""Test content."""'
 
-    return MyTestPythonPackageConfigFile
+    return MyTestPythonPackageConfigFile  # ty: ignore[unsound-return]

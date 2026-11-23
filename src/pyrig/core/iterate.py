@@ -329,7 +329,7 @@ def structure_is_subset(subset: Any, superset: Any) -> bool:
         )
     if both_lists(subset, superset):
         return all(match_list_items(subset, superset))
-    return subset == superset
+    return bool(subset == superset)
 
 
 def both_dicts(a: object, b: object) -> bool:

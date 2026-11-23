@@ -3,7 +3,7 @@
 import platform
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Literal, override
+from typing import Any, Literal, cast, override
 
 from packaging.version import Version
 from pyrig_runtime.core.dependencies.distribution import (
@@ -31,6 +31,7 @@ from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.linting.yaml import YAMLLinter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.testing.project import ProjectTester
+from pyrig.rig.tools.typing.checker import TypeChecker
 from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,
@@ -297,10 +298,11 @@ class PyprojectConfigFile(TOMLConfigFile):
             Description string from `pyproject.toml`. Defaults to uv's initial
             scaffold value, `"Add your description here"`, if absent.
         """
-        return (
+        return cast(
+            "str",
             self.safe_load()
             .get("project", {})
-            .get("description", "Add your description here")
+            .get("description", "Add your description here"),
         )
 
     def project_version(self) -> str:
@@ -310,7 +312,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             Version string from `pyproject.toml`, or `"0.1.0"` if absent
             (matching uv's initial scaffold value).
         """
-        return self.safe_load().get("project", {}).get("version", "0.1.0")
+        return cast("str", self.safe_load().get("project", {}).get("version", "0.1.0"))
 
     def requires_python(self) -> str:
         """Read the requires-python constraint from `pyproject.toml`.
@@ -322,7 +324,8 @@ class PyprojectConfigFile(TOMLConfigFile):
         Returns:
             PEP 440 version specifier string (e.g., `">=3.13"`).
         """
-        return (
+        return cast(
+            "str",
             self.safe_load()
             .get("project", {})
             .get(
@@ -333,7 +336,7 @@ class PyprojectConfigFile(TOMLConfigFile):
                         level='minor',
                     )
                 }",
-            )
+            ),
         )
 
     def tool_configs(self) -> dict[str, Any]:
@@ -390,6 +393,11 @@ class PyprojectConfigFile(TOMLConfigFile):
                     "locale": "en-us",
                 },
             },
+            TypeChecker.I.config_name(): {
+                "rules": {
+                    "all": "error",
+                },
+            },
             YAMLLinter.I.config_name(): {
                 "lint": {
                     "strict": True,
@@ -428,7 +436,10 @@ class PyprojectConfigFile(TOMLConfigFile):
             List of dependency strings from `pyproject.toml`, or an empty list
             if absent.
         """
-        return self.safe_load().get("project", {}).get("dependencies", [])
+        return cast(
+            "list[str]",
+            self.safe_load().get("project", {}).get("dependencies", []),
+        )
 
     def project_dev_dependencies(self) -> list[str]:
         """Read the project's development dependencies from `pyproject.toml`.
@@ -437,7 +448,10 @@ class PyprojectConfigFile(TOMLConfigFile):
             List of dependency strings from `dependency-groups.dev`, or an empty
             list if that section is absent.
         """
-        return self.safe_load().get("dependency-groups", {}).get("dev", [])
+        return cast(
+            "list[str]",
+            self.safe_load().get("dependency-groups", {}).get("dev", []),
+        )
 
     def tool_section(self) -> dict[str, Any]:
         """Read the `tool` section from `pyproject.toml`.
@@ -473,4 +487,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             List of dictionaries containing maintainers' information from
             `pyproject.toml`, or list containing an empty dictionary if absent.
         """
-        return self.safe_load().get("project", {}).get("maintainers", [{}])
+        return cast(
+            "list[dict[str, str]]",
+            self.safe_load().get("project", {}).get("maintainers", [{}]),
+        )

@@ -121,6 +121,15 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             Required configuration as a dict or list.
         """
 
+    @override
+    def __str__(self) -> str:
+        """Add the file path to the string representation.
+
+        Returns:
+            The class's string representation, followed by the file path in parentheses.
+        """
+        return f"{super().__str__()} ({self.path()})"
+
     @classmethod
     @override
     def discovery_module(cls) -> ModuleType:
@@ -144,14 +153,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             Path to the configuration file.
         """
         return cls().path()
-
-    def __str__(self) -> str:
-        """Add the file path to the string representation.
-
-        Returns:
-            The class's string representation, followed by the file path in parentheses.
-        """
-        return f"{super().__str__()} ({self.path()})"
 
     @classmethod
     def removable_subclasses(cls) -> Iterator[type[Self]]:

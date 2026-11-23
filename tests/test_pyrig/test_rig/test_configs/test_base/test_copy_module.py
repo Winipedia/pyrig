@@ -178,7 +178,7 @@ def my_test_copy_module_config_file(
             with chdir(tmp_path):
                 super()._dump(configs)
 
-    return MyTestCopyModuleConfigFile
+    return MyTestCopyModuleConfigFile  # ty: ignore[unsound-return]
 
 
 @pytest.fixture
@@ -207,4 +207,4 @@ def my_test_copy_module_only_docstring_config_file(
             """Get the source module."""
             return module
 
-    return MyTestCopyModuleDocstringConfigFile
+    return MyTestCopyModuleDocstringConfigFile  # ty: ignore[unsound-return]

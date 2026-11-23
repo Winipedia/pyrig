@@ -5,7 +5,7 @@ from abc import abstractmethod
 from collections.abc import Callable, Iterable
 from pathlib import Path
 from types import MethodType, ModuleType
-from typing import Any, override
+from typing import Any, cast, override
 
 from pyrig_runtime.core.strings import snake_to_kebab_case
 from ruamel.yaml.comments import CommentedMap
@@ -1212,7 +1212,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             (step for step in steps if step.get("uses", "").startswith(prefix)),
             {"uses": f"{prefix}{default}"},
         )
-        return step["uses"].removeprefix(prefix)
+        return cast("str", step["uses"]).removeprefix(prefix)
 
     def insert_expansion(self, expansion: str) -> str:
         """Wrap an expansion in basic shell expansion syntax `"$..."`."""

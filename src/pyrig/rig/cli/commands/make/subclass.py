@@ -3,6 +3,7 @@
 from importlib import import_module
 from itertools import chain
 from operator import itemgetter
+from typing import cast
 
 from InquirerPy import inquirer
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
@@ -84,7 +85,10 @@ def choose_subclass() -> type[DependencySubclass]:
         key=itemgetter("name"),
     )
 
-    return inquirer.fuzzy(
-        message="Select a class to subclass:",
-        choices=choices,
-    ).execute()
+    return cast(
+        "type[DependencySubclass]",
+        inquirer.fuzzy(
+            message="Select a class to subclass:",
+            choices=choices,
+        ).execute(),
+    )

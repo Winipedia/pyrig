@@ -72,7 +72,7 @@ def test_init_project(
         # aren't found when testing that they're absent.
         venv = os.environ.get("VIRTUAL_ENV")
         monkeypatch.delenv("VIRTUAL_ENV", raising=False)
-        if venv:
+        if venv is not None:
             path_entries = os.environ.get("PATH", "").split(os.pathsep)
             monkeypatch.setenv(
                 "PATH",

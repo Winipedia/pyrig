@@ -273,7 +273,7 @@ class VersionControlHookManager(Tool):
         Returns:
             `hook`'s priority, unchanged.
         """
-        return hook["priority"]
+        return cast("int", hook["priority"])
 
     def name_from_id(self, id_: str) -> str:
         """Derive a hook's display `name` from its id.

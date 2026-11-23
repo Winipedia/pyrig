@@ -92,4 +92,4 @@ def my_test_json_config_file(
             """Get the configs."""
             return {"key": "value"}
 
-    return MyTestJSONDictConfigFile
+    return MyTestJSONDictConfigFile  # ty: ignore[unsound-return]

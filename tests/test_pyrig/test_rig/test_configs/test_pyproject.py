@@ -545,4 +545,4 @@ def my_test_pyproject_config_file(
     class MyTestPyprojectConfigFile(config_file_factory(PyprojectConfigFile)):  # ty: ignore[unsupported-base]
         """Test pyproject config file with tmp_path override."""
 
-    return MyTestPyprojectConfigFile
+    return MyTestPyprojectConfigFile  # ty: ignore[unsound-return]

@@ -117,4 +117,4 @@ def my_test_shell_config_file(
             """Get the script content."""
             return 'greet() {\n  echo "Hello, $1"\n}'
 
-    return MyTestShellConfigFile
+    return MyTestShellConfigFile  # ty: ignore[unsound-return]

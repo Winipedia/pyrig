@@ -1018,4 +1018,4 @@ def my_test_workflow(
                 steps=[{"name": "Test Step", "run": "echo test"}],
             )
 
-    return MyTestWorkflowConfigFileClass
+    return MyTestWorkflowConfigFileClass  # ty: ignore[unsound-return]
