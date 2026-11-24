@@ -5,7 +5,7 @@ from typing import Any, override
 from pyrig.rig.configs.base.issue_template import IssueTemplateConfigFile
 
 
-class ConfigConfigFile(IssueTemplateConfigFile):
+class IssueTemplateConfigFile(IssueTemplateConfigFile):
     """Config file for `.github/ISSUE_TEMPLATE/config.yml`.
 
     Controls GitHub's issue template chooser. The required configuration

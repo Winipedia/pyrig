@@ -26,7 +26,7 @@ from pyrig.rig.configs.version_control.remote.issue_templates.bug_report import 
     BugReportConfigFile,
 )
 from pyrig.rig.configs.version_control.remote.issue_templates.config import (
-    ConfigConfigFile,
+    IssueTemplateConfigFile,
 )
 from pyrig.rig.configs.version_control.remote.issue_templates.feature_request import (
     FeatureRequestConfigFile,
@@ -59,7 +59,7 @@ _CONFIG_FILES = (
     BugReportConfigFile,
     CodeOfConductConfigFile,
     CodeownersConfigFile,
-    ConfigConfigFile,
+    IssueTemplateConfigFile,
     ContributingConfigFile,
     DependencyBotConfigFile,
     DocsBuilderConfigFile,
