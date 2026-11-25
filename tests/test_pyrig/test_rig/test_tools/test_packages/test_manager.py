@@ -73,6 +73,42 @@ class TestPackageManager:
         """Test method."""
         assert PackageManager.I.dist_dir() == Path("dist")
 
+    def test_env_var_compile_bytecode(self) -> None:
+        """Test method."""
+        assert PackageManager.I.env_var_compile_bytecode() == "UV_COMPILE_BYTECODE=1"
+
+    def test_env_var_locked(self) -> None:
+        """Test method."""
+        assert PackageManager.I.env_var_locked() == "UV_LOCKED=1"
+
+    def test_env_var_name_compile_bytecode(self) -> None:
+        """Test method."""
+        assert PackageManager.I.env_var_name_compile_bytecode() == "UV_COMPILE_BYTECODE"
+
+    def test_env_var_name_locked(self) -> None:
+        """Test method."""
+        assert PackageManager.I.env_var_name_locked() == "UV_LOCKED"
+
+    def test_env_var_name_no_group(self) -> None:
+        """Test method."""
+        assert PackageManager.I.env_var_name_no_group() == "UV_NO_GROUP"
+
+    def test_env_var_name_no_install(self) -> None:
+        """Test method."""
+        assert PackageManager.I.env_var_name_no_install() == "UV_NO_SYNC"
+
+    def test_env_var_no_group(self) -> None:
+        """Test method."""
+        assert PackageManager.I.env_var_no_group("test") == "UV_NO_GROUP=test"
+
+    def test_env_var_no_group_dev(self) -> None:
+        """Test method."""
+        assert PackageManager.I.env_var_no_group_dev() == "UV_NO_GROUP=dev"
+
+    def test_env_var_no_install(self) -> None:
+        """Test method."""
+        assert PackageManager.I.env_var_no_install() == "UV_NO_SYNC=1"
+
     def test_group(self) -> None:
         """Test method."""
         result = PackageManager.I.group()
@@ -118,23 +154,6 @@ class TestPackageManager:
             "post-rewrite",
             "pre-push",
         ]
-
-    def test_install_dependencies_no_dev_args(self) -> None:
-        """Test method."""
-        assert PackageManager.I.install_dependencies_no_dev_args("hello") == (
-            "uv",
-            "sync",
-            "--no-group=dev",
-            "hello",
-        )
-
-    def test_install_dependencies_no_group_args(self) -> None:
-        """Test method."""
-        assert PackageManager.I.install_dependencies_no_group_args(
-            "some",
-            "args",
-            group="whatever",
-        ) == ("uv", "sync", "--no-group=whatever", "some", "args")
 
     def test_link_url(self) -> None:
         """Test method."""
@@ -196,15 +215,6 @@ class TestPackageManager:
         """Test method."""
         result = PackageManager.I.run_args("pytest")
         assert result == ("uv", "run", "pytest")
-
-    def test_run_no_install_args(self) -> None:
-        """Test method."""
-        assert PackageManager.I.run_no_install_args("something") == (
-            "uv",
-            "run",
-            "--no-sync",
-            "something",
-        )
 
     def test_source_root(self) -> None:
         """Test method."""

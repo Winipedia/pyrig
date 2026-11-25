@@ -15,8 +15,9 @@ class PackageManager(VersionControlHookTool):
     """`uv` package manager wrapper and source of the project's layout conventions.
 
     Beyond the `*_args` methods that build commands for `uv`, this also exposes
-    the project's name, package name, source layout, and build system
-    configuration, since those follow conventions the package manager defines.
+    environment-variable settings and the project's name, package name, source
+    layout, and build system configuration, since those follow conventions the
+    package manager defines.
 
     Subclass and override `build_system_requires` and `build_backend` to use a
     different build back-end, `source_root` for a different project layout, and
@@ -98,16 +99,21 @@ class PackageManager(VersionControlHookTool):
         """
         return [snake_to_kebab_case(self.build_backend())]
 
-    def install_dependencies_no_dev_args(self, *args: str) -> Args:
-        """Construct `Args` for `uv sync --no-group=dev`.
+    def env_var_compile_bytecode(self) -> str:
+        """Return `UV_COMPILE_BYTECODE=1`."""
+        return f"{self.env_var_name_compile_bytecode()}=1"
 
-        Args:
-            *args: Additional arguments for the sync command.
+    def env_var_locked(self) -> str:
+        """Return `UV_LOCKED=1`."""
+        return f"{self.env_var_name_locked()}=1"
 
-        Returns:
-            Args for `uv sync --no-group=dev <args...>`.
-        """
-        return self.install_dependencies_no_group_args(*args, group="dev")
+    def env_var_no_group_dev(self) -> str:
+        """Return `UV_NO_GROUP=dev`."""
+        return self.env_var_no_group("dev")
+
+    def env_var_no_install(self) -> str:
+        """Return `UV_NO_SYNC=1`."""
+        return f"{self.env_var_name_no_install()}=1"
 
     def lock_file(self) -> Path:
         """Return `Path("uv.lock")`, relative to the project root."""
@@ -131,16 +137,16 @@ class PackageManager(VersionControlHookTool):
         """
         return self.remove_group_args(*args, group="dev")
 
-    def run_no_install_args(self, *args: str) -> Args:
-        """Construct `Args` for `uv run --no-sync`.
+    def run_args(self, *args: str) -> Args:
+        """Construct `Args` for `uv run`.
 
         Args:
             *args: Command and arguments to run.
 
         Returns:
-            Args for `uv run --no-sync <args...>`.
+            Args for `uv run <args...>`.
         """
-        return self.run_args("--no-sync", *args)
+        return self.args("run", *args)
 
     def version_short_args(self, *args: str) -> Args:
         """Construct `Args` for reading the current project version as a bare string.
@@ -196,17 +202,28 @@ class PackageManager(VersionControlHookTool):
         """Return the relative directory where distribution artifacts are stored."""
         return Path("dist")
 
-    def install_dependencies_no_group_args(self, *args: str, group: str) -> Args:
-        """Construct `Args` for `uv sync --no-group=<group>`.
+    def env_var_name_compile_bytecode(self) -> str:
+        """Return the `uv` environment variable name for bytecode compilation."""
+        return "UV_COMPILE_BYTECODE"
+
+    def env_var_name_locked(self) -> str:
+        """Return the `uv` environment variable name for locked operations."""
+        return "UV_LOCKED"
+
+    def env_var_name_no_install(self) -> str:
+        """Return the `uv` environment variable name for disabling sync."""
+        return "UV_NO_SYNC"
+
+    def env_var_no_group(self, group: str) -> str:
+        """Return the environment-variable assignment to exclude a group.
 
         Args:
-            *args: Additional arguments for the sync command.
-            group: The dependency group to exclude from installation.
+            group: The dependency group to exclude.
 
         Returns:
-            Args for `uv sync --no-group=<group> <args...>`.
+            The `UV_NO_GROUP=<group>` assignment.
         """
-        return self.install_dependencies_args(f"--no-group={group}", *args)
+        return f"{self.env_var_name_no_group()}={group}"
 
     def package_name(self) -> str:
         """Return the importable Python package name.
@@ -226,17 +243,6 @@ class PackageManager(VersionControlHookTool):
             Args for `uv remove --group=<group> <args...>`.
         """
         return self.remove_args(f"--group={group}", *args)
-
-    def run_args(self, *args: str) -> Args:
-        """Construct `Args` for `uv run`.
-
-        Args:
-            *args: Command and arguments to run.
-
-        Returns:
-            Args for `uv run <args...>`.
-        """
-        return self.args("run", *args)
 
     def source_root(self) -> Path:
         """Return `Path("src")`."""
@@ -271,6 +277,10 @@ class PackageManager(VersionControlHookTool):
             Args for `uv audit`.
         """
         return self.audit_args()
+
+    def env_var_name_no_group(self) -> str:
+        """Return the `uv` environment variable name for excluding groups."""
+        return "UV_NO_GROUP"
 
     def install_dependencies_hook(self) -> dict[str, Any]:
         """Return the hook metadata for installing dependencies.
