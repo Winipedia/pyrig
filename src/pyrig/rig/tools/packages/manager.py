@@ -99,22 +99,6 @@ class PackageManager(VersionControlHookTool):
         """
         return [snake_to_kebab_case(self.build_backend())]
 
-    def env_var_compile_bytecode(self) -> str:
-        """Return `UV_COMPILE_BYTECODE=1`."""
-        return f"{self.env_var_name_compile_bytecode()}=1"
-
-    def env_var_locked(self) -> str:
-        """Return `UV_LOCKED=1`."""
-        return f"{self.env_var_name_locked()}=1"
-
-    def env_var_no_group_dev(self) -> str:
-        """Return `UV_NO_GROUP=dev`."""
-        return self.env_var_no_group("dev")
-
-    def env_var_no_install(self) -> str:
-        """Return `UV_NO_SYNC=1`."""
-        return f"{self.env_var_name_no_install()}=1"
-
     def lock_file(self) -> Path:
         """Return `Path("uv.lock")`, relative to the project root."""
         return Path("uv.lock")
@@ -125,6 +109,22 @@ class PackageManager(VersionControlHookTool):
         Relative to the project root, e.g. `src/my_project`.
         """
         return self.source_root() / self.package_name()
+
+    def production_environment(self) -> dict[str, str]:
+        """Return uv env settings for a production environment.
+
+        This includes:
+            - Compiling bytecode.
+            - Requiring an up-to-date lockfile.
+            - Excluding the dev dependency group.
+            - Disabling automatic installation.
+        """
+        return {
+            **self.env_var_compile_bytecode(),
+            **self.env_var_locked(),
+            **self.env_var_no_group_dev(),
+            **self.env_var_no_install(),
+        }
 
     def remove_group_dev_args(self, *args: str) -> Args:
         """Construct `Args` for removing packages from the dev dependency group.
@@ -202,28 +202,21 @@ class PackageManager(VersionControlHookTool):
         """Return the relative directory where distribution artifacts are stored."""
         return Path("dist")
 
-    def env_var_name_compile_bytecode(self) -> str:
-        """Return the `uv` environment variable name for bytecode compilation."""
-        return "UV_COMPILE_BYTECODE"
+    def env_var_compile_bytecode(self) -> dict[str, str]:
+        """Return `{"UV_COMPILE_BYTECODE": "1"}`."""
+        return {self.env_var_name_compile_bytecode(): "1"}
 
-    def env_var_name_locked(self) -> str:
-        """Return the `uv` environment variable name for locked operations."""
-        return "UV_LOCKED"
+    def env_var_locked(self) -> dict[str, str]:
+        """Return `{"UV_LOCKED": "1"}`."""
+        return {self.env_var_name_locked(): "1"}
 
-    def env_var_name_no_install(self) -> str:
-        """Return the `uv` environment variable name for disabling sync."""
-        return "UV_NO_SYNC"
+    def env_var_no_group_dev(self) -> dict[str, str]:
+        """Return `{"UV_NO_GROUP": "dev"}`."""
+        return self.env_var_no_group("dev")
 
-    def env_var_no_group(self, group: str) -> str:
-        """Return the environment-variable assignment to exclude a group.
-
-        Args:
-            group: The dependency group to exclude.
-
-        Returns:
-            The `UV_NO_GROUP=<group>` assignment.
-        """
-        return f"{self.env_var_name_no_group()}={group}"
+    def env_var_no_install(self) -> dict[str, str]:
+        """Return `{"UV_NO_SYNC": "1"}`."""
+        return {self.env_var_name_no_install(): "1"}
 
     def package_name(self) -> str:
         """Return the importable Python package name.
@@ -278,9 +271,28 @@ class PackageManager(VersionControlHookTool):
         """
         return self.audit_args()
 
-    def env_var_name_no_group(self) -> str:
-        """Return the `uv` environment variable name for excluding groups."""
-        return "UV_NO_GROUP"
+    def env_var_name_compile_bytecode(self) -> str:
+        """Return the `uv` environment variable name for bytecode compilation."""
+        return "UV_COMPILE_BYTECODE"
+
+    def env_var_name_locked(self) -> str:
+        """Return the `uv` environment variable name for locked operations."""
+        return "UV_LOCKED"
+
+    def env_var_name_no_install(self) -> str:
+        """Return the `uv` environment variable name for disabling sync."""
+        return "UV_NO_SYNC"
+
+    def env_var_no_group(self, group: str) -> dict[str, str]:
+        """Return an environment-variable mapping to exclude a group.
+
+        Args:
+            group: The dependency group to exclude.
+
+        Returns:
+            A dictionary mapping `UV_NO_GROUP` to the group name.
+        """
+        return {self.env_var_name_no_group(): group}
 
     def install_dependencies_hook(self) -> dict[str, Any]:
         """Return the hook metadata for installing dependencies.
@@ -330,6 +342,10 @@ class PackageManager(VersionControlHookTool):
             Args for `uv audit <args...>`.
         """
         return self.args("audit", *args)
+
+    def env_var_name_no_group(self) -> str:
+        """Return the `uv` environment variable name for excluding groups."""
+        return "UV_NO_GROUP"
 
     def install_dependencies(self) -> Args:
         """Return the `Args` this hook's entry runs.

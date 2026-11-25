@@ -79,10 +79,7 @@ _DEPENDENCY_SUBCLASS_OVERRIDES = (
     DependencySubclass.sort_key,
 )
 _LIBRARY_USAGES = (
-    PackageManager.env_var_compile_bytecode,
-    PackageManager.env_var_locked,
-    PackageManager.env_var_no_group_dev,
-    PackageManager.env_var_no_install,
+    PackageManager.production_environment,
     RemoteVersionController.file_url,
     RemoteVersionController.running_in_ci,
     WorkflowConfigFile.step_download_artifact,

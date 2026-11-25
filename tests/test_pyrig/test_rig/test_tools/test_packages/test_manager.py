@@ -75,11 +75,13 @@ class TestPackageManager:
 
     def test_env_var_compile_bytecode(self) -> None:
         """Test method."""
-        assert PackageManager.I.env_var_compile_bytecode() == "UV_COMPILE_BYTECODE=1"
+        assert PackageManager.I.env_var_compile_bytecode() == {
+            "UV_COMPILE_BYTECODE": "1",
+        }
 
     def test_env_var_locked(self) -> None:
         """Test method."""
-        assert PackageManager.I.env_var_locked() == "UV_LOCKED=1"
+        assert PackageManager.I.env_var_locked() == {"UV_LOCKED": "1"}
 
     def test_env_var_name_compile_bytecode(self) -> None:
         """Test method."""
@@ -99,15 +101,15 @@ class TestPackageManager:
 
     def test_env_var_no_group(self) -> None:
         """Test method."""
-        assert PackageManager.I.env_var_no_group("test") == "UV_NO_GROUP=test"
+        assert PackageManager.I.env_var_no_group("test") == {"UV_NO_GROUP": "test"}
 
     def test_env_var_no_group_dev(self) -> None:
         """Test method."""
-        assert PackageManager.I.env_var_no_group_dev() == "UV_NO_GROUP=dev"
+        assert PackageManager.I.env_var_no_group_dev() == {"UV_NO_GROUP": "dev"}
 
     def test_env_var_no_install(self) -> None:
         """Test method."""
-        assert PackageManager.I.env_var_no_install() == "UV_NO_SYNC=1"
+        assert PackageManager.I.env_var_no_install() == {"UV_NO_SYNC": "1"}
 
     def test_group(self) -> None:
         """Test method."""
@@ -176,6 +178,15 @@ class TestPackageManager:
     def test_package_root(self) -> None:
         """Test method."""
         assert PackageManager.I.package_root() == Path("src/pyrig")
+
+    def test_production_environment(self) -> None:
+        """Test method."""
+        assert PackageManager.I.production_environment() == {
+            "UV_COMPILE_BYTECODE": "1",
+            "UV_LOCKED": "1",
+            "UV_NO_GROUP": "dev",
+            "UV_NO_SYNC": "1",
+        }
 
     def test_project_name(self) -> None:
         """Test method."""
