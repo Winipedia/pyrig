@@ -71,8 +71,8 @@ class ShellConfigFile(StringConfigFile):
         return f"#!/usr/bin/env {ShellFormatter.I.dialect()}"
 
     def strict_mode_line(self) -> str:
-        """Return `"set -euo pipefail"`."""
-        return "set -euo pipefail"
+        """Return line that makes the script strict."""
+        return "set -o errexit -o nounset -o pipefail"
 
     def required_env_vars(self) -> tuple[str, ...]:
         """Return names of environment variables the script requires.

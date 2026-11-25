@@ -37,7 +37,7 @@ class TestShellConfigFile:
         """Test method."""
         script = my_test_shell_config_file()
         mocker.patch.object(script, "required_env_vars", return_value=variables)
-        expected = "#!/usr/bin/env bash\nset -euo pipefail"
+        expected = "#!/usr/bin/env bash\nset -o errexit -o nounset -o pipefail"
         if variables:
             expected += '\n\n: "${FIRST:?}"\n: "${SECOND:?}"'
         assert script.global_content() == expected
@@ -90,7 +90,10 @@ class TestShellConfigFile:
         my_test_shell_config_file: type[ShellConfigFile],
     ) -> None:
         """Test method."""
-        assert my_test_shell_config_file().strict_mode_line() == "set -euo pipefail"
+        assert (
+            my_test_shell_config_file().strict_mode_line()
+            == "set -o errexit -o nounset -o pipefail"
+        )
 
 
 @pytest.fixture

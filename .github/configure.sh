@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -o errexit -o nounset -o pipefail
 
 : "${GH_TOKEN:?}"
 : "${GITHUB_REPOSITORY:?}"
