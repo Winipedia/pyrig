@@ -111,17 +111,24 @@ class PackageManager(VersionControlHookTool):
         return self.source_root() / self.package_name()
 
     def production_environment(self) -> dict[str, str]:
-        """Return uv env settings for a production environment.
+        """Return uv settings for a preinstalled production environment.
 
-        This includes:
-            - Compiling bytecode.
-            - Requiring an up-to-date lockfile.
-            - Excluding the dev dependency group.
-            - Disabling automatic installation.
+        The settings are:
+
+        - `UV_COMPILE_BYTECODE=1`: Compile Python files to bytecode during sync.
+        - `UV_LOCKED=1`: Fail sync if the lockfile is missing or out of date.
+        - `UV_NO_EDITABLE=1`: Install the project and editable dependencies
+          as non-editable packages.
+        - `UV_NO_GROUP=dev`: Exclude the dev dependency group, which must exist.
+        - `UV_NO_SYNC=1`: Prevent `uv run` from syncing automatically.
+
+        Sync before running. `UV_NO_SYNC` implies frozen mode, so `uv run`
+        does not check the lockfile or apply the installation settings above.
         """
         return {
             **self.env_var_compile_bytecode(),
             **self.env_var_locked(),
+            **self.env_var_no_editable(),
             **self.env_var_no_group_dev(),
             **self.env_var_no_install(),
         }
@@ -210,6 +217,10 @@ class PackageManager(VersionControlHookTool):
         """Return `{"UV_LOCKED": "1"}`."""
         return {self.env_var_name_locked(): "1"}
 
+    def env_var_no_editable(self) -> dict[str, str]:
+        """Return `{"UV_NO_EDITABLE": "1"}`."""
+        return {self.env_var_name_no_editable(): "1"}
+
     def env_var_no_group_dev(self) -> dict[str, str]:
         """Return `{"UV_NO_GROUP": "dev"}`."""
         return self.env_var_no_group("dev")
@@ -278,6 +289,10 @@ class PackageManager(VersionControlHookTool):
     def env_var_name_locked(self) -> str:
         """Return the `uv` environment variable name for locked operations."""
         return "UV_LOCKED"
+
+    def env_var_name_no_editable(self) -> str:
+        """Return the `uv` environment variable name for non-editable installs."""
+        return "UV_NO_EDITABLE"
 
     def env_var_name_no_install(self) -> str:
         """Return the `uv` environment variable name for disabling sync."""

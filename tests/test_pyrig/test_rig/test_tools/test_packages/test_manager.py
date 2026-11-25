@@ -91,6 +91,10 @@ class TestPackageManager:
         """Test method."""
         assert PackageManager.I.env_var_name_locked() == "UV_LOCKED"
 
+    def test_env_var_name_no_editable(self) -> None:
+        """Test method."""
+        assert PackageManager.I.env_var_name_no_editable() == "UV_NO_EDITABLE"
+
     def test_env_var_name_no_group(self) -> None:
         """Test method."""
         assert PackageManager.I.env_var_name_no_group() == "UV_NO_GROUP"
@@ -98,6 +102,10 @@ class TestPackageManager:
     def test_env_var_name_no_install(self) -> None:
         """Test method."""
         assert PackageManager.I.env_var_name_no_install() == "UV_NO_SYNC"
+
+    def test_env_var_no_editable(self) -> None:
+        """Test method."""
+        assert PackageManager.I.env_var_no_editable() == {"UV_NO_EDITABLE": "1"}
 
     def test_env_var_no_group(self) -> None:
         """Test method."""
@@ -184,6 +192,7 @@ class TestPackageManager:
         assert PackageManager.I.production_environment() == {
             "UV_COMPILE_BYTECODE": "1",
             "UV_LOCKED": "1",
+            "UV_NO_EDITABLE": "1",
             "UV_NO_GROUP": "dev",
             "UV_NO_SYNC": "1",
         }
