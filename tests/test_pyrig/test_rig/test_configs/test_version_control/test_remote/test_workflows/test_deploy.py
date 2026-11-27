@@ -8,10 +8,6 @@ from pyrig.rig.configs.version_control.remote.workflows.deploy import (
 class TestDeployWorkflowConfigFile:
     """Tests for the deployment workflow calls."""
 
-    def test_concurrency_cancel_in_progress(self) -> None:
-        """Check deployments are not cancelled while publishing."""
-        assert DeployWorkflowConfigFile.I.concurrency_cancel_in_progress() is False
-
     def test_job_documentation(self) -> None:
         """Check the documentation call forwards its permissions and secrets."""
         job = DeployWorkflowConfigFile.I.job_documentation()

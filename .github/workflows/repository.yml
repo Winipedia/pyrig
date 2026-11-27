@@ -8,7 +8,7 @@
 "permissions": {}
 "concurrency":
   "group": "Repository-${{ github.workflow }}-${{ github.ref }}"
-  "cancel-in-progress": true
+  "cancel-in-progress": false
 "run-name": "Repository"
 "jobs":
   "configure":

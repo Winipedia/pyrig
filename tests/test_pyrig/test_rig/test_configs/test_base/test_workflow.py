@@ -182,14 +182,14 @@ class TestWorkflowConfigFile:
             f"{workflow.workflow_name()}-${{{{ github.workflow }}}}-"
             "${{ github.ref }}"
         )
-        assert result["cancel-in-progress"] is True
+        assert result["cancel-in-progress"] is False
 
     def test_concurrency_cancel_in_progress(
         self,
         my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
-        assert my_test_workflow().concurrency_cancel_in_progress() is True
+        assert my_test_workflow().concurrency_cancel_in_progress() is False
 
     def test_documented_permissions(
         self,

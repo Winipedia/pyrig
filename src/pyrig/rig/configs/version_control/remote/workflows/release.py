@@ -20,11 +20,6 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     """GitHub Actions workflow configuration for releasing project changes."""
 
     @override
-    def concurrency_cancel_in_progress(self) -> bool:
-        """Return `False`; a release run must not be cancelled mid-publish."""
-        return False
-
-    @override
     def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return all jobs for the release workflow.
 

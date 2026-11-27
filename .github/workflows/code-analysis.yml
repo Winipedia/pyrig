@@ -5,7 +5,7 @@
 "permissions": {}
 "concurrency":
   "group": "Code Analysis-${{ github.workflow }}-${{ github.ref }}"
-  "cancel-in-progress": true
+  "cancel-in-progress": false
 "run-name": "Code Analysis"
 "jobs":
   "analyze":

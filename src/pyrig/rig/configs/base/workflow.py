@@ -777,16 +777,14 @@ class WorkflowConfigFile(YMLDictConfigFile):
     def concurrency_cancel_in_progress(self) -> bool:
         """Return whether superseded runs of this workflow should be cancelled.
 
-        Override to `False` for workflows that mutate external state (e.g.
-        publishing a release or package) and therefore shouldn't be interrupted
-        mid-run. By default, a newer run cancels an active run in the same
-        concurrency group; GitHub also replaces an existing pending run when a
-        newer run is queued in that group.
+        Override to `True` only when an active run can safely be interrupted
+        by a newer run in the same concurrency group. GitHub replaces an
+        existing pending run when a newer run is queued in that group.
 
         Returns:
-            `True` by default.
+            `False` by default.
         """
-        return True
+        return False
 
     def documented_permissions(self, permissions: dict[str, str]) -> CommentedMap:
         """Return `permissions` as a documented `CommentedMap`.

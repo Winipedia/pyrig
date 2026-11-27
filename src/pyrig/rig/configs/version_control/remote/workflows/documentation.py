@@ -14,11 +14,6 @@ class DocumentationWorkflowConfigFile(WorkflowConfigFile):
     """Build and deploy the documentation site to GitHub Pages."""
 
     @override
-    def concurrency_cancel_in_progress(self) -> bool:
-        """Return `False`; documentation deployment must not be cancelled."""
-        return False
-
-    @override
     def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return the documentation build and deploy jobs."""
         return (self.job_build, self.job_deploy)

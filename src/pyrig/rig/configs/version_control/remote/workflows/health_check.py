@@ -19,6 +19,11 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
     """
 
     @override
+    def concurrency_cancel_in_progress(self) -> bool:
+        """Cancel an active health check when a newer run supersedes it."""
+        return True
+
+    @override
     def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return all jobs for the health check workflow.
 

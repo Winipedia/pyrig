@@ -38,11 +38,6 @@ class TestDocumentationWorkflowConfigFile:
         )
         assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(workflow.path())
 
-    def test_concurrency_cancel_in_progress(self) -> None:
-        """Check a deployment cannot be cancelled by a subsequent call."""
-        workflow = DocumentationWorkflowConfigFile.I
-        assert workflow.concurrency_cancel_in_progress() is False
-
     def test_job_build(self) -> None:
         """Check the build job configuration."""
         workflow = DocumentationWorkflowConfigFile.I

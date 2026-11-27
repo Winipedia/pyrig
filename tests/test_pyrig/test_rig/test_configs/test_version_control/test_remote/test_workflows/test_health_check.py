@@ -12,6 +12,12 @@ from pyrig.rig.configs.version_control.remote.workflows.health_check import (
 class TestHealthCheckWorkflowConfigFile:
     """Test class."""
 
+    def test_concurrency_cancel_in_progress(self) -> None:
+        """Test the health check opts into cancellation."""
+        workflow = HealthCheckWorkflowConfigFile.I
+        assert workflow.concurrency_cancel_in_progress() is True
+        assert workflow.concurrency()["cancel-in-progress"] is True
+
     def test_cron_schedule(self) -> None:
         """Test method."""
         assert HealthCheckWorkflowConfigFile().cron_schedule() == (0, 1, "*", "*", "*")

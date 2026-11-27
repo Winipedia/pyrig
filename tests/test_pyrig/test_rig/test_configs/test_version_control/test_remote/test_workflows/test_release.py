@@ -12,10 +12,6 @@ from pyrig.rig.configs.version_control.remote.workflows.release import (
 class TestReleaseWorkflowConfigFile:
     """Test class."""
 
-    def test_concurrency_cancel_in_progress(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.concurrency_cancel_in_progress() is False
-
     def test_job_deploy(
         self,
         my_test_release_workflow: type[ReleaseWorkflowConfigFile],
