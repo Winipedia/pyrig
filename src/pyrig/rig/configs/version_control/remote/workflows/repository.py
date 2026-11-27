@@ -3,12 +3,11 @@
 from collections.abc import Callable
 from typing import Any, override
 
-from pyrig.core.subprocesses import Args
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.version_control.remote.configure import (
     ConfigureRepositoryConfigFile,
 )
-from pyrig.rig.tools.formatting.shell import ShellFormatter
+from pyrig.rig.tools.linting.shell import ShellLinter
 
 
 class RepositoryWorkflowConfigFile(WorkflowConfigFile):
@@ -55,9 +54,8 @@ class RepositoryWorkflowConfigFile(WorkflowConfigFile):
         return self.step(
             self.step_configure_repository,
             run=str(
-                Args(
-                    ShellFormatter.I.dialect(),
-                    ConfigureRepositoryConfigFile.I.path().as_posix(),
+                ShellLinter.I.run_script_args(
+                    file=ConfigureRepositoryConfigFile.I.path(),
                 ),
             ),
             env={"GH_TOKEN": self.insert_repo_token()},

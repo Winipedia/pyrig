@@ -1,10 +1,11 @@
 """Abstract base for shell script (`.sh`) configuration file management."""
 
 from abc import abstractmethod
+from pathlib import Path
 from typing import override
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
-from pyrig.rig.tools.formatting.shell import ShellFormatter
+from pyrig.rig.tools.linting.shell import ShellLinter
 
 
 class ShellConfigFile(StringConfigFile):
@@ -14,7 +15,6 @@ class ShellConfigFile(StringConfigFile):
     checks for any required environment variables.
 
     Subclasses must implement:
-        - `parent_path`: Directory containing the `.sh` file.
         - `stem`: Filename without its extension.
         - `script`: Required shell script content, below the header.
 
@@ -46,6 +46,11 @@ class ShellConfigFile(StringConfigFile):
         """Return the file extension `"sh"`."""
         return "sh"
 
+    @override
+    def parent_path(self) -> Path:
+        """Return the project scripts directory."""
+        return Path("scripts")
+
     def global_content(self) -> str:
         """Return the shebang, strict mode, and any required variable checks."""
         content = f"""{self.shebang_line()}
@@ -68,7 +73,7 @@ class ShellConfigFile(StringConfigFile):
 
     def shebang_line(self) -> str:
         """Return the shebang pinning the interpreter to the shell dialect."""
-        return f"#!/usr/bin/env {ShellFormatter.I.dialect()}"
+        return f"#!/usr/bin/env {ShellLinter.I.dialect()}"
 
     def strict_mode_line(self) -> str:
         """Return line that makes the script strict."""

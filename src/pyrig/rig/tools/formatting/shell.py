@@ -5,6 +5,7 @@ from typing import Any, override
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import FormatHookTool
 from pyrig.rig.tools.base.tool import Group
+from pyrig.rig.tools.linting.shell import ShellLinter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.security.secrets import SecretsChecker
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
@@ -48,7 +49,7 @@ class ShellFormatter(FormatHookTool):
                 "--binary-next-line",
                 "--case-indent",
                 "--indent=2",
-                f"--language-dialect={self.dialect()}",
+                f"--language-dialect={ShellLinter.I.dialect()}",
                 "--simplify",
                 "--write",
             ),
@@ -86,10 +87,6 @@ class ShellFormatter(FormatHookTool):
             Args for `shfmt`.
         """
         return self.args(*args)
-
-    def dialect(self) -> str:
-        """Return the shell dialect this formatter standardizes on."""
-        return "bash"
 
     def format_shell(self) -> Args:
         """Return the `Args` this hook's entry runs.

@@ -1,6 +1,5 @@
 """Shell script that applies repository configuration via the GitHub CLI."""
 
-from pathlib import Path
 from typing import override
 
 from pyrig.rig.configs.base.shell import ShellConfigFile
@@ -18,11 +17,6 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     The generated script requires nonempty `GITHUB_REPOSITORY` and `GH_TOKEN`
     environment variables and is intended to be run directly.
     """
-
-    @override
-    def parent_path(self) -> Path:
-        """Return the `RemoteVersionController`'s config directory."""
-        return RemoteVersionController.I.config_dir()
 
     @override
     def required_env_vars(self) -> tuple[str, ...]:
@@ -45,8 +39,8 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
 
     @override
     def stem(self) -> str:
-        """Return `"configure"`."""
-        return "configure"
+        """Return `"configure-repo"`."""
+        return "configure-repo"
 
     def footer_content(self) -> str:
         """Return the block that runs every function the script defines.

@@ -1,5 +1,8 @@
 """module."""
 
+from pathlib import Path
+
+from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.formatting.shell import ShellFormatter
 from pyrig.rig.tools.linting.shell import ShellLinter
 from pyrig.rig.tools.packages.manager import PackageManager
@@ -33,6 +36,10 @@ class TestShellLinter:
         result = ShellLinter.I.dev_dependencies()
         assert result == ("shellcheck-py",)
 
+    def test_dialect(self) -> None:
+        """Test method."""
+        assert ShellLinter.I.dialect() == "bash"
+
     def test_group(self) -> None:
         """Test method."""
         result = ShellLinter.I.group()
@@ -59,3 +66,16 @@ class TestShellLinter:
         """Test method."""
         result = ShellLinter.I.name()
         assert result == "shellcheck"
+
+    def test_run_script_args(self) -> None:
+        """Test method."""
+        assert ShellLinter.I.run_script_args(file=Path("script.sh")) == Args(
+            "bash",
+            "script.sh",
+        )
+        assert ShellLinter.I.run_script_args(
+            "first",
+            "two words",
+            file=Path("scripts/script.sh"),
+            shell_args=Args("-x"),
+        ) == Args("bash", "-x", "scripts/script.sh", "first", "two words")

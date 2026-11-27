@@ -107,7 +107,7 @@ Two core jobs run in this final stage:
 **Trigger:** `workflow_call` only, invoked by the deploy workflow.
 
 The `configure` job checks out the repository, then runs
-`.github/configure.sh` using `.github/settings.json`. It uses the `repository`
+`scripts/configure-repo.sh` using `.github/settings.json`. It uses the `repository`
 environment and `contents: read` for checkout. The script authenticates to
 the GitHub API separately using `REPO_TOKEN`, which is forwarded from release
 through deploy to the repository workflow.

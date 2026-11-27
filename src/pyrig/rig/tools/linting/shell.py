@@ -1,11 +1,11 @@
 """Wrapper around the ShellCheck shell script linter tool."""
 
+from pathlib import Path
 from typing import Any, override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.hooks import CheckHookTool
 from pyrig.rig.tools.base.tool import Group
-from pyrig.rig.tools.formatting.shell import ShellFormatter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.hooks.manager import VersionControlHookManager
 
@@ -21,6 +21,8 @@ class ShellLinter(CheckHookTool):
             Hook metadata dict for `shellcheck --enable=all
             --check-sourced --external-sources --norc --shell=bash`.
         """
+        from pyrig.rig.tools.formatting.shell import ShellFormatter  # noqa: PLC0415
+
         return VersionControlHookManager.I.local_hook(
             self.lint_shell,
             priority=VersionControlHookManager.I.deprioritize(
@@ -32,7 +34,7 @@ class ShellLinter(CheckHookTool):
                 "--enable=all",
                 "--external-sources",
                 "--norc",
-                f"--shell={ShellFormatter.I.dialect()}",
+                f"--shell={self.dialect()}",
             ),
         )
 
@@ -77,6 +79,35 @@ class ShellLinter(CheckHookTool):
             Args for `shellcheck`.
         """
         return self.args(*args)
+
+    def run_script_args(
+        self,
+        *args: str,
+        file: Path,
+        shell_args: Args | None = None,
+    ) -> Args:
+        """Construct arguments for running a shell script.
+
+        Args:
+            *args: Additional arguments to pass to the shell script.
+            file: The path to the shell script to run.
+            shell_args: Optional pre-constructed shell arguments.
+
+        Returns:
+            Args for running the shell script.
+        """
+        if shell_args is None:
+            shell_args = Args()
+        return Args(
+            self.dialect(),
+            *shell_args,
+            file.as_posix(),
+            *args,
+        )
+
+    def dialect(self) -> str:
+        """Return the shell dialect."""
+        return "bash"
 
     def lint_shell(self) -> Args:
         """Return the `Args` this hook's entry runs.

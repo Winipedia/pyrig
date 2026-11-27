@@ -42,6 +42,7 @@ class TestRepositoryWorkflowConfigFile:
         workflow = RepositoryWorkflowConfigFile.I
         step = workflow.step_configure_repository()
         path = ConfigureRepositoryConfigFile.I.path().as_posix()
+        assert path == "scripts/configure-repo.sh"
         assert step["run"] == f"bash {path}"
         assert step["env"]["GH_TOKEN"] == workflow.insert_repo_token()
 

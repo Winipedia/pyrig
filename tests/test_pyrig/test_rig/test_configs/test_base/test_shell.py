@@ -43,6 +43,13 @@ class TestShellConfigFile:
         assert script.global_content() == expected
         assert script.content() == f"{expected}\n\n{script.script()}"
 
+    def test_parent_path(
+        self,
+        my_test_shell_config_file: type[ShellConfigFile],
+    ) -> None:
+        """Test the shared scripts directory."""
+        assert my_test_shell_config_file().parent_path() == Path("scripts")
+
     @pytest.mark.parametrize(
         ("variables", "expected"),
         [
@@ -109,11 +116,6 @@ def my_test_shell_config_file(
         def stem(self) -> str:
             """Get the stem."""
             return "test_script"
-
-        @override
-        def parent_path(self) -> Path:
-            """Get the parent path."""
-            return Path()
 
         @override
         def script(self) -> str:

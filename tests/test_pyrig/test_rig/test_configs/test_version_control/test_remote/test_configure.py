@@ -1,7 +1,5 @@
 """module."""
 
-from pathlib import Path
-
 from pyrig.rig.configs.version_control.remote.configure import (
     ConfigureRepositoryConfigFile,
 )
@@ -66,10 +64,6 @@ class TestConfigureRepositoryConfigFile:
     def test_func_rulesets(self) -> None:
         """Test method."""
         assert ConfigureRepositoryConfigFile.I.func_rulesets() == "rulesets"
-
-    def test_parent_path(self) -> None:
-        """Test method."""
-        assert ConfigureRepositoryConfigFile.I.parent_path() == Path(".github")
 
     def test_release_immutability_script(self) -> None:
         """Test method."""
@@ -149,4 +143,7 @@ class TestConfigureRepositoryConfigFile:
 
     def test_stem(self) -> None:
         """Test method."""
-        assert ConfigureRepositoryConfigFile.I.stem() == "configure"
+        assert (
+            ConfigureRepositoryConfigFile.I.path().as_posix()
+            == "scripts/configure-repo.sh"
+        )

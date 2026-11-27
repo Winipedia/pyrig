@@ -13,10 +13,6 @@ class TestShellFormatter:
         result = ShellFormatter.I.dev_dependencies()
         assert result == ("shfmt-py",)
 
-    def test_dialect(self) -> None:
-        """Test method."""
-        assert ShellFormatter.I.dialect() == "bash"
-
     def test_format_args(self) -> None:
         """Test method."""
         result = ShellFormatter.I.format_args()

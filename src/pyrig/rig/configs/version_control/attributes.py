@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import override
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
-from pyrig.rig.tools.formatting.shell import ShellFormatter
+from pyrig.rig.tools.linting.shell import ShellLinter
 from pyrig.rig.tools.version_control.controller import VersionController
 
 
@@ -27,7 +27,7 @@ class VersionControllerAttributesConfigFile(StringConfigFile):
 
 *.md diff=markdown
 *.py diff=python
-*.sh diff={ShellFormatter.I.dialect()}
+*.sh diff={ShellLinter.I.dialect()}
 """
 
     @override

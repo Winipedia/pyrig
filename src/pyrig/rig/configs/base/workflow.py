@@ -19,7 +19,7 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig import resources
 from pyrig.rig.configs.base.yaml import YMLDictConfigFile, commented_map
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.tools.formatting.shell import ShellFormatter
+from pyrig.rig.tools.linting.shell import ShellLinter
 from pyrig.rig.tools.linting.yaml import YAMLLinter
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
@@ -48,7 +48,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     JOB_ID_KEY = "job_id"
     SECRET_EXPRESSION_PATTERN = re.compile(r"secrets\.([A-Za-z0-9_]+)")
     TIMEOUT_MINUTES_DEFAULT = 360
-    SHELL_DEFAULT = ShellFormatter.I.dialect()
+    SHELL_DEFAULT = ShellLinter.I.dialect()
 
     @abstractmethod
     def workflow_triggers(self) -> dict[str, Any]:
