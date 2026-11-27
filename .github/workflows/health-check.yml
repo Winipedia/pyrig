@@ -147,13 +147,6 @@
           "directory": "coverage-reports"
           "fail_ci_if_error": "true"
           "use_oidc": "true"
-  "code-analysis":
-    "name": "Code Analysis"
-    "permissions":
-      "actions": "read"  # required
-      "contents": "read"
-      "security-events": "write"  # required
-    "uses": "$/.github/workflows/code-analysis.yml"
   "security-practices":
     "name": "Security Practices"
     "permissions":
@@ -162,14 +155,21 @@
       "id-token": "write"  # required
       "security-events": "write"  # required
     "uses": "$/.github/workflows/security-practices.yml"
+  "code-analysis":
+    "name": "Code Analysis"
+    "permissions":
+      "actions": "read"  # required
+      "contents": "read"
+      "security-events": "write"  # required
+    "uses": "$/.github/workflows/code-analysis.yml"
   "health-check":
     "name": "Health Check"
     "needs":
       - "health-checks"
       - "matrix-health-checks"
       - "upload-coverage"
-      - "code-analysis"
       - "security-practices"
+      - "code-analysis"
     "runs-on": "ubuntu-latest"
     "timeout-minutes": 1
     "steps":
