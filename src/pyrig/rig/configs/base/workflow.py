@@ -768,6 +768,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         self,
         *,
         python_version: str | None = None,
+        enable_cache: bool | None = None,
     ) -> dict[str, Any]:
         """Build a step that installs uv and pins the Python version.
 
@@ -779,6 +780,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Args:
             python_version: Python version string to pin, e.g. `"3.13"`.
                 Defaults to the latest minor version supported by the project.
+            enable_cache: Whether to enable caching for the package manager.
+                Omitted by default, falls back to default behavior of the action.
 
         Returns:
             Step using `astral-sh/setup-uv@<ref>`.
@@ -787,9 +790,12 @@ class WorkflowConfigFile(YMLDictConfigFile):
             python_version = str(
                 PyprojectConfigFile.I.latest_possible_python_version(level="minor"),
             )
+        with_ = {"python-version": python_version}
+        if enable_cache is not None:
+            with_["enable-cache"] = "true" if enable_cache else "false"
         return self.step(
             uses=self.action_setup_uv(),
-            with_={"python-version": python_version},
+            with_=with_,
         )
 
     def strategy(

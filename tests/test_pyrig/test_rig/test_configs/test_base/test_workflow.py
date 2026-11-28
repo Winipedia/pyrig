@@ -839,9 +839,25 @@ class TestWorkflowConfigFile:
         """Test method."""
         workflow = my_test_workflow()
         result = workflow.step_setup_package_manager(python_version="3.14")
-        assert "uses" in result, "Expected 'uses' in step"
         assert result["uses"] == f"astral-sh/setup-uv@{workflow.action_setup_uv()[1]}"
         assert result["with"]["python-version"] == "3.14"
+        assert "enable-cache" not in result["with"]
+
+        result = workflow.step_setup_package_manager(
+            python_version="3.15",
+            enable_cache=True,
+        )
+        assert result["uses"] == f"astral-sh/setup-uv@{workflow.action_setup_uv()[1]}"
+        assert result["with"]["python-version"] == "3.15"
+        assert result["with"]["enable-cache"] == "true"
+
+        result = workflow.step_setup_package_manager(
+            python_version="3.12",
+            enable_cache=False,
+        )
+        assert result["uses"] == f"astral-sh/setup-uv@{workflow.action_setup_uv()[1]}"
+        assert result["with"]["python-version"] == "3.12"
+        assert result["with"]["enable-cache"] == "false"
 
     def test_step_shell_for_run(
         self,
