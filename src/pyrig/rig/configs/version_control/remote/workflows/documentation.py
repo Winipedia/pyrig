@@ -1,7 +1,6 @@
 """Reusable workflow for building and deploying documentation."""
 
 from collections.abc import Callable
-from types import MethodType
 from typing import Any, override
 
 from pyrig.rig import resources
@@ -39,7 +38,7 @@ class DocumentationWorkflowConfigFile(WorkflowConfigFile):
             timeout_minutes=30,
         )
 
-    def job_deploy_needs(self) -> tuple[MethodType, ...]:
+    def job_deploy_needs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return the documentation build prerequisite."""
         return (self.job_build,)
 

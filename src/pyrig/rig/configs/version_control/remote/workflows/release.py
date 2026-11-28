@@ -1,7 +1,6 @@
 """Workflow configuration for automated GitHub release creation."""
 
 from collections.abc import Callable
-from types import MethodType
 from typing import Any, override
 
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
@@ -59,7 +58,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             needs=self.job_deploy_needs(),
         )
 
-    def job_deploy_needs(self) -> tuple[MethodType, ...]:
+    def job_deploy_needs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return the prerequisite job for the deployment workflow call.
 
         Returns:
@@ -84,7 +83,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             timeout_minutes=30,
         )
 
-    def job_publish_needs(self) -> tuple[MethodType, ...]:
+    def job_publish_needs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return the prerequisite job for publishing a release.
 
         Returns:

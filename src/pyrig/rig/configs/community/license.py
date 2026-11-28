@@ -18,6 +18,7 @@ from spdx_matcher import (
 
 from pyrig.core.resources import (
     resource_content,
+    resource_name_from_func,
 )
 from pyrig.core.strings import (
     linked_badge_markdown,
@@ -160,7 +161,10 @@ class LicenseConfigFile(StringConfigFile):
 
     def license_template(self) -> str:
         """Return the raw MIT license template text."""
-        return resource_content(self.license_template.__name__.upper(), resources)
+        return resource_content(
+            resource_name_from_func(self.license_template),
+            resources,
+        )
 
     def year_placeholder(self) -> str:
         """Return the placeholder for the year in the license text.

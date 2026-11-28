@@ -1,10 +1,12 @@
 """Utilities for working with resource files bundled inside a package."""
 
+from collections.abc import Callable
 from importlib.resources import files
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
-from pyrig.core.strings import read_text_utf8
+from pyrig.core.strings import normalize_func_name, read_text_utf8
 
 
 def resource_content(name: str, package: ModuleType) -> str:
@@ -24,6 +26,11 @@ def resource_content(name: str, package: ModuleType) -> str:
     """
     path = resource_path(name, package)
     return read_text_utf8(path)
+
+
+def resource_name_from_func(func: Callable[..., Any]) -> str:
+    """Derive a resource filename from a callable's name."""
+    return normalize_func_name(func)
 
 
 def resource_path(name: str, package: ModuleType) -> Path:

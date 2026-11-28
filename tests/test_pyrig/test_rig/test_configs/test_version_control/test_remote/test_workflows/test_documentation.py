@@ -16,7 +16,7 @@ class TestDocumentationWorkflowConfigFile:
         workflow = DocumentationWorkflowConfigFile.I
         action, ref, tag = workflow.action_configure_pages()
         assert (action, ref, tag) == tuple(
-            resource_content("ACTION_CONFIGURE_PAGES", resources).splitlines(),
+            resource_content("action_configure_pages", resources).splitlines(),
         )
         assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(workflow.path())
 
@@ -25,7 +25,7 @@ class TestDocumentationWorkflowConfigFile:
         workflow = DocumentationWorkflowConfigFile.I
         action, ref, tag = workflow.action_deploy_pages()
         assert (action, ref, tag) == tuple(
-            resource_content("ACTION_DEPLOY_PAGES", resources).splitlines(),
+            resource_content("action_deploy_pages", resources).splitlines(),
         )
         assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(workflow.path())
 
@@ -34,7 +34,7 @@ class TestDocumentationWorkflowConfigFile:
         workflow = DocumentationWorkflowConfigFile.I
         action, ref, tag = workflow.action_upload_pages_artifact()
         assert (action, ref, tag) == tuple(
-            resource_content("ACTION_UPLOAD_PAGES_ARTIFACT", resources).splitlines(),
+            resource_content("action_upload_pages_artifact", resources).splitlines(),
         )
         assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(workflow.path())
 

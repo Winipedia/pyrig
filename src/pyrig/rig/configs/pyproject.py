@@ -14,6 +14,7 @@ from pyrig_runtime.rig.cli import main
 from pyrig.core.iterate import deep_sorted_dict
 from pyrig.core.resources import (
     resource_content,
+    resource_name_from_func,
 )
 from pyrig.core.version import VersionConstraint, leveled_version
 from pyrig.rig import resources
@@ -273,7 +274,7 @@ class PyprojectConfigFile(TOMLConfigFile):
         return leveled_version(
             Version(
                 resource_content(
-                    self.latest_python_version.__name__.upper(),
+                    resource_name_from_func(self.latest_python_version),
                     resources,
                 ).strip(),
             ),

@@ -1,8 +1,7 @@
 """GitHub Actions workflow generator for the health check CI stage."""
 
 from collections.abc import Callable
-from types import MethodType
-from typing import Any, Literal, cast, override
+from typing import Any, Literal, override
 
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
@@ -31,7 +30,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Health-check job builders followed by the aggregation job builder.
         """
         return (
-            *self.jobs_health_check(),
+            *sorted(self.jobs_health_check(), key=self.job_id_from_method),
             self.job_health_check,
         )
 
@@ -92,9 +91,9 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             timeout_minutes=1,
         )
 
-    def job_health_check_needs(self) -> tuple[MethodType, ...]:
+    def job_health_check_needs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return the registered health-check jobs as aggregation dependencies."""
-        return cast("tuple[MethodType, ...]", self.jobs_health_check())
+        return self.jobs_health_check()
 
     def steps_aggregate_jobs(self) -> list[dict[str, Any]]:
         """Return the steps for the fan-in aggregation job.

@@ -1,7 +1,11 @@
 """Utilities for working with strings and text files."""
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import IO, Any
+from typing import IO, TYPE_CHECKING, Any, cast
+
+if TYPE_CHECKING:
+    from types import FunctionType
 
 UTF_8_ENCODING = "utf-8"
 
@@ -27,6 +31,21 @@ def linked_badge_markdown(
         Markdown string in the form `[![alt_text](image_url)](link_url)`.
     """
     return f"[![{alt_text}]({image_url})]({link_url})"
+
+
+def normalize_func_name(func: Callable[..., Any]) -> str:
+    """Return a callable's lowercase name.
+
+    Args:
+        func: Callable with a `__name__` attribute.
+
+    Returns:
+        Lowercase callable name.
+
+    Raises:
+        AttributeError: If the callable has no `__name__` attribute.
+    """
+    return cast("FunctionType", func).__name__.lower()
 
 
 def open_path_with_utf8(path: Path, *, mode: str = "r") -> IO[Any]:

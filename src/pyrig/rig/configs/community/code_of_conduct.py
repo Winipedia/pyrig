@@ -9,6 +9,7 @@ from typing import override
 
 from pyrig.core.resources import (
     resource_content,
+    resource_name_from_func,
 )
 from pyrig.rig import resources
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
@@ -71,7 +72,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
             placeholders intact.
         """
         return resource_content(
-            self.code_of_conduct_template.__name__.upper(),
+            resource_name_from_func(self.code_of_conduct_template),
             resources,
         )
 

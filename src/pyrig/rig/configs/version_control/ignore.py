@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import override
 
-from pyrig.core.resources import resource_content
+from pyrig.core.resources import resource_content, resource_name_from_func
 from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.string_ import StringConfigFile
@@ -80,4 +80,7 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
 
     def standard_ignore_text(self) -> str:
         """Return GitHub's canonical Python gitignore template as a single string."""
-        return resource_content(self.standard_ignore_text.__name__.upper(), resources)
+        return resource_content(
+            resource_name_from_func(self.standard_ignore_text),
+            resources,
+        )

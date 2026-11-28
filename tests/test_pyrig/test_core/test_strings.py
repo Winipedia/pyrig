@@ -5,6 +5,7 @@ from pathlib import Path
 from pyrig.core.strings import (
     is_multiline,
     linked_badge_markdown,
+    normalize_func_name,
     open_path_with_utf8,
     read_text_utf8,
     reformat_name,
@@ -35,6 +36,16 @@ def test_linked_badge_markdown() -> None:
     )
     expected = "[![Example Badge](https://example.com/badge.svg)](https://example.com/)"
     assert result == expected
+
+
+def test_normalize_func_name() -> None:
+    """Test function."""
+
+    def MixedCaseName() -> None:  # noqa: N802
+        pass
+
+    assert normalize_func_name(MixedCaseName) == "mixedcasename"
+    assert normalize_func_name(test_normalize_func_name) == "test_normalize_func_name"
 
 
 def test_open_path_with_utf8(tmp_path: Path) -> None:

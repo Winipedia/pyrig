@@ -4,17 +4,15 @@ import re
 from abc import abstractmethod
 from collections.abc import Callable, Iterable
 from pathlib import Path
-from types import MethodType, ModuleType
+from types import ModuleType
 from typing import Any, cast, override
 
 from pyrig_runtime.core.strings import snake_to_kebab_case
 from ruamel.yaml.comments import CommentedMap
 
 from pyrig.core.iterate import deep_sorted_dict, traverse_structure
-from pyrig.core.resources import resource_content
-from pyrig.core.strings import (
-    reformat_name,
-)
+from pyrig.core.resources import resource_content, resource_name_from_func
+from pyrig.core.strings import normalize_func_name, reformat_name
 from pyrig.core.subprocesses import Args
 from pyrig.rig import resources
 from pyrig.rig.configs.base.yaml import YMLDictConfigFile, commented_map
@@ -146,7 +144,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
     def job_workflow_call(
         self,
-        method: MethodType,
+        method: Callable[[], dict[str, Any]],
         *,
         workflow: type["WorkflowConfigFile"],
         **kwargs: Any,  # noqa: ANN401
@@ -291,7 +289,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
     def step_download_artifact(
         self,
-        method: MethodType,
+        method: Callable[[], dict[str, Any]],
         *,
         path: Path,
         name: str | None = None,
@@ -327,7 +325,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
     def step_upload_artifact(
         self,
-        method: MethodType,
+        method: Callable[[], dict[str, Any]],
         *,
         name: str,
         path: Path,
@@ -477,7 +475,11 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.secrets_var("GITHUB_TOKEN")
 
-    def insert_output_var(self, step: MethodType, name: str) -> str:
+    def insert_output_var(
+        self,
+        step: Callable[[], dict[str, Any]],
+        name: str,
+    ) -> str:
         """Return the expression that resolves to the output variable of a step.
 
         Args:
@@ -493,9 +495,9 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
     def job(  # noqa: PLR0913
         self,
-        method: MethodType,
+        method: Callable[[], dict[str, Any]],
         *,
-        needs: Iterable[MethodType] | None = None,
+        needs: Iterable[Callable[[], dict[str, Any]]] | None = None,
         strategy: dict[str, Any] | None = None,
         permissions: dict[str, Any] | None = None,
         if_condition: str | None = None,
@@ -553,7 +555,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         if uses is not None and secrets is not None:
             job["secrets"] = deep_sorted_dict(secrets)
         if needs is not None:
-            job["needs"] = [self.job_id_from_method(m) for m in needs]
+            job["needs"] = sorted(self.job_id_from_method(m) for m in needs)
         if if_condition is not None:
             job["if"] = if_condition
         if uses is not None:
@@ -567,7 +569,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             job["steps"] = steps
         return job
 
-    def job_id_from_method(self, method: MethodType) -> str:
+    def job_id_from_method(self, method: Callable[[], dict[str, Any]]) -> str:
         """Generate a job identifier from a `job_*` method name.
 
         Args:
@@ -1033,7 +1035,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
     def step(  # noqa: PLR0913
         self,
-        method: MethodType,
+        method: Callable[[], dict[str, Any]],
         *,
         run: str | None = None,
         if_condition: str | None = None,
@@ -1098,7 +1100,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             comments_before=comments_before,
         )
 
-    def step_id_from_method(self, method: MethodType) -> str:
+    def step_id_from_method(self, method: Callable[[], dict[str, Any]]) -> str:
         """Generate a step identifier from a `step_*` method name.
 
         Args:
@@ -1112,13 +1114,13 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
     def action_from_resource(
         self,
-        method: MethodType,
+        method: Callable[[], tuple[str, str, str]],
         package: ModuleType,
     ) -> tuple[str, str, str]:
         """Read action name, pinned ref, and release tag from a resource.
 
         The resource name is derived from the method name, converted to
-        uppercase, and the first three lines provide the action metadata.
+        lowercase, and the first three lines provide the action metadata.
 
         Args:
             method: Action method whose name identifies the resource.
@@ -1128,12 +1130,12 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Tuple of action name, pinned commit SHA, and release tag.
         """
         action, ref, tag, *_ = resource_content(
-            method.__name__.upper(),
+            resource_name_from_func(method),
             package,
         ).splitlines()
         return action, ref, tag
 
-    def id_from_method(self, method: MethodType, prefix: str) -> str:
+    def id_from_method(self, method: Callable[..., object], prefix: str) -> str:
         """Generate a compact identifier from a method name.
 
         Strips the given prefix (plus the underscore joining it to the rest
@@ -1147,7 +1149,9 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Identifier string in kebab-case, e.g. `"do-something"` from
             `job_do_something` with `prefix="job"`.
         """
-        return snake_to_kebab_case(method.__name__.removeprefix(f"{prefix}_"))
+        return snake_to_kebab_case(
+            normalize_func_name(method).removeprefix(f"{prefix}_"),
+        )
 
     def insert_parameter_expansion(self, parameter: str) -> str:
         """Wrap a shell parameter in parameter expansion syntax `"${...}"`."""

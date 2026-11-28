@@ -2,12 +2,11 @@
 
 from collections.abc import Callable, Iterable
 from operator import itemgetter
-from types import MethodType
 from typing import Any, cast, override
 
 from pyrig_runtime.core.strings import snake_to_kebab_case
 
-from pyrig.core.strings import reformat_name
+from pyrig.core.strings import normalize_func_name, reformat_name
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
 
@@ -258,7 +257,7 @@ class VersionControlHookManager(Tool):
             Common id, priority, stages, and groups metadata.
         """
         return {
-            "id": self.id_from_method(cast("MethodType", method)),
+            "id": self.id_from_method(method),
             "priority": priority,
             "stages": sorted(stages),
             "groups": sorted((self.group_all(), *groups)),
@@ -307,7 +306,7 @@ class VersionControlHookManager(Tool):
         """
         return "all"
 
-    def id_from_method(self, method: MethodType) -> str:
+    def id_from_method(self, method: Callable[[], Args]) -> str:
         """Derive a hook's `id` from its entry method's name.
 
         Args:
@@ -316,7 +315,7 @@ class VersionControlHookManager(Tool):
         Returns:
             `method.__name__` converted to kebab-case.
         """
-        return snake_to_kebab_case(method.__name__)
+        return snake_to_kebab_case(normalize_func_name(method))
 
     def run_all_files_args(self, *args: str) -> Args:
         """Build arguments to run hooks against every file in the project.

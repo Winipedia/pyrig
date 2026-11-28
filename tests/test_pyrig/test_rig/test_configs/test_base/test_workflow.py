@@ -50,7 +50,7 @@ class TestWorkflowConfigFile:
         workflow = my_test_workflow()
         assert workflow.action_checkout() == tuple(
             resource_content(
-                "ACTION_CHECKOUT",
+                "action_checkout",
                 resources,
             ).splitlines(),
         )
@@ -63,7 +63,7 @@ class TestWorkflowConfigFile:
     def test_action_download_artifact(self) -> None:
         """Test method."""
         assert PackageWorkflowConfigFile.I.action_download_artifact() == tuple(
-            resource_content("ACTION_DOWNLOAD_ARTIFACT", resources).splitlines(),
+            resource_content("action_download_artifact", resources).splitlines(),
         )
 
         action, ref, tag = PackageWorkflowConfigFile.I.action_download_artifact()
@@ -81,7 +81,7 @@ class TestWorkflowConfigFile:
             workflow.action_checkout,
             resources,
         ) == tuple(
-            resource_content("ACTION_CHECKOUT", resources).splitlines(),
+            resource_content("action_checkout", resources).splitlines(),
         )
 
     def test_action_ref(
@@ -130,7 +130,7 @@ class TestWorkflowConfigFile:
         workflow = my_test_workflow()
         assert workflow.action_setup_uv() == tuple(
             resource_content(
-                "ACTION_SETUP_UV",
+                "action_setup_uv",
                 resources,
             ).splitlines(),
         )
@@ -143,7 +143,7 @@ class TestWorkflowConfigFile:
     def test_action_upload_artifact(self) -> None:
         """Test method."""
         assert PackageWorkflowConfigFile.I.action_upload_artifact() == tuple(
-            resource_content("ACTION_UPLOAD_ARTIFACT", resources).splitlines(),
+            resource_content("action_upload_artifact", resources).splitlines(),
         )
 
         action, ref, tag = PackageWorkflowConfigFile.I.action_upload_artifact()
@@ -356,13 +356,16 @@ class TestWorkflowConfigFile:
 
     def test_job(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_workflow().job(self.test_job, steps=[])
-        assert result["job_id"] == "test-job"
+        result = my_test_workflow().job(
+            HealthCheckWorkflowConfigFile.I.job_health_check,
+            steps=[],
+        )
+        assert result["job_id"] == "health-check"
         assert result["steps"] == []
 
         # Test with if_condition set
         result = my_test_workflow().job(
-            self.test_job,
+            HealthCheckWorkflowConfigFile.I.job_health_check,
             steps=[],
             if_condition="condition",
         )
@@ -370,23 +373,23 @@ class TestWorkflowConfigFile:
 
         # Test with job=None (line 222->224 False branch)
         result = my_test_workflow().job(
-            self.test_job,
+            HealthCheckWorkflowConfigFile.I.job_health_check,
             runs_on="ubuntu-latest",
         )
-        assert result["job_id"] == "test-job"
+        assert result["job_id"] == "health-check"
 
         # Test with steps=None (line 234->236 False branch)
         result = my_test_workflow().job(
-            self.test_job,
+            HealthCheckWorkflowConfigFile.I.job_health_check,
             runs_on="ubuntu-latest",
             steps=None,
         )
-        assert result["job_id"] == "test-job"
+        assert result["job_id"] == "health-check"
         assert "steps" not in result
 
         # Test with uses set: only runs-on must not be applied
         result = my_test_workflow().job(
-            self.test_job,
+            HealthCheckWorkflowConfigFile.I.job_health_check,
             uses="$/.github/workflows/other.yml",
             runs_on="ubuntu-latest",
             strategy={"matrix": {}},
@@ -400,7 +403,7 @@ class TestWorkflowConfigFile:
 
         # Test with uses and named secrets set
         result = my_test_workflow().job(
-            self.test_job,
+            HealthCheckWorkflowConfigFile.I.job_health_check,
             uses="$/.github/workflows/other.yml",
             secrets={"TOKEN": "${{ secrets.TOKEN }}"},
         )
@@ -739,7 +742,7 @@ class TestWorkflowConfigFile:
     def test_step(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().step(
-            self.test_step,
+            my_test_workflow().step_extract_version,
             run="echo test",
             if_condition="condition",
             uses=("action/checkout", "v2", "v2"),
@@ -772,17 +775,17 @@ class TestWorkflowConfigFile:
         """Test method."""
         workflow = my_test_workflow()
         result = workflow.step_download_artifact(
-            self.test_step_download_artifact,
+            workflow.step_extract_version,
             path=Path("artifacts/download"),
         )
-        assert result["id"] == "test-step-download-artifact"
+        assert result["id"] == "extract-version"
         assert result["uses"] == (
             f"actions/download-artifact@{workflow.action_download_artifact()[1]}"
         )
         assert result["with"] == {"path": "artifacts/download"}
 
         result = workflow.step_download_artifact(
-            self.test_step_download_artifact,
+            workflow.step_extract_version,
             path=Path("artifacts/download"),
             name="artifact",
             merge_multiple=False,
@@ -794,7 +797,7 @@ class TestWorkflowConfigFile:
         }
 
         result = workflow.step_download_artifact(
-            self.test_step_download_artifact,
+            workflow.step_extract_version,
             path=Path("artifacts/download"),
             pattern="artifact-*",
             merge_multiple=True,
@@ -848,9 +851,9 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Run steps use Bash by default and accept a shell override."""
         workflow = my_test_workflow()
-        default = workflow.step(self.test_step_shell_for_run, run="echo test")
+        default = workflow.step(workflow.step_extract_version, run="echo test")
         custom = workflow.step(  # noqa: S604
-            self.test_step_shell_for_run,
+            workflow.step_extract_version,
             run="print('test')",
             shell="python",
         )
@@ -866,7 +869,7 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Action steps do not include a shell, even when one is supplied."""
         result = my_test_workflow().step(  # noqa: S604
-            self.test_step_shell_omitted_without_run,
+            my_test_workflow().step_extract_version,
             uses=("action/checkout", "v2", "v2"),
             shell="python",
         )
@@ -890,11 +893,11 @@ class TestWorkflowConfigFile:
         """Test method."""
         workflow = my_test_workflow()
         result = workflow.step_upload_artifact(
-            self.test_step_upload_artifact,
+            workflow.step_extract_version,
             name="artifact",
             path=Path("artifacts/upload"),
         )
-        assert result["id"] == "test-step-upload-artifact"
+        assert result["id"] == "extract-version"
         assert result["uses"] == (
             f"actions/upload-artifact@{workflow.action_upload_artifact()[1]}"
         )
@@ -905,7 +908,7 @@ class TestWorkflowConfigFile:
         }
 
         result = workflow.step_upload_artifact(
-            self.test_step_upload_artifact,
+            workflow.step_extract_version,
             name="artifact",
             path=Path("artifacts/upload"),
             if_no_files_found="warn",
