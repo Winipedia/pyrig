@@ -43,10 +43,9 @@ class TestDocumentationWorkflowConfigFile:
         workflow = DocumentationWorkflowConfigFile.I
         job = workflow.job_build()
         timeout = 60
-        assert job["job_id"] == "build"
         assert job["permissions"] == {"contents": "read"}
         assert job["timeout-minutes"] == timeout
-        assert job["steps"] == workflow.steps_build()
+        assert job["steps"] == workflow.steps_configs(workflow.steps_build())
         assert "environment" not in job
         assert "needs" not in job
         assert "secrets.REPO_TOKEN" not in str(job)
@@ -56,12 +55,11 @@ class TestDocumentationWorkflowConfigFile:
         workflow = DocumentationWorkflowConfigFile.I
         job = workflow.job_deploy()
         timeout = 30
-        assert job["job_id"] == "deploy"
         assert job["environment"] == "documentation"
         assert job["needs"] == ["build"]
         assert job["permissions"] == {"id-token": "write", "pages": "write"}
         assert job["timeout-minutes"] == timeout
-        assert job["steps"] == workflow.steps_deploy()
+        assert job["steps"] == workflow.steps_configs(workflow.steps_deploy())
 
     def test_job_deploy_needs(self) -> None:
         """Check deployment depends on the build."""
@@ -126,19 +124,26 @@ class TestDocumentationWorkflowConfigFile:
     def test_steps_build(self) -> None:
         """Check build and upload run after setup."""
         workflow = DocumentationWorkflowConfigFile.I
-        assert workflow.steps_build() == [
-            *workflow.steps_core_installed_setup(),
-            workflow.step_build_documentation(),
-            workflow.step_upload_documentation(),
+        steps = workflow.steps_build()
+        assert steps[-2:] == (
+            workflow.step_build_documentation,
+            workflow.step_upload_documentation,
+        )
+        assert [workflow.step_id_from_method(step) for step in steps] == [
+            "checkout-repository",
+            "setup-package-manager",
+            "install-dependencies",
+            "build-documentation",
+            "upload-documentation",
         ]
 
     def test_steps_deploy(self) -> None:
         """Check Pages enablement precedes deployment."""
         workflow = DocumentationWorkflowConfigFile.I
-        assert workflow.steps_deploy() == [
-            workflow.step_configure_pages(),
-            workflow.step_deploy_documentation(),
-        ]
+        assert workflow.steps_deploy() == (
+            workflow.step_configure_pages,
+            workflow.step_deploy_documentation,
+        )
 
     def test_workflow_triggers(self) -> None:
         """Check the secret is declared for reusable calls."""

@@ -28,7 +28,6 @@ class TestHealthCheckWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_health_check_workflow().job_health_check()
-        assert result["job_id"] == "health-check"
         assert "steps" in result, "Expected 'steps' in job"
         assert result["needs"] == ["health-checks", "matrix-health-checks"]
 
@@ -40,7 +39,6 @@ class TestHealthCheckWorkflowConfigFile:
     def test_job_health_checks(self) -> None:
         """Test method."""
         result = HealthCheckWorkflowConfigFile().job_health_checks()
-        assert result["job_id"] == "health-checks"
         assert "steps" in result, "Expected 'steps' in job"
 
     def test_job_matrix_health_checks(
@@ -49,7 +47,6 @@ class TestHealthCheckWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_health_check_workflow().job_matrix_health_checks()
-        assert result["job_id"] == "matrix-health-checks"
         assert "steps" in result, "Expected 'steps' in job"
         assert "strategy" in result, "Expected 'strategy' in job"
         assert "runs-on" in result, "Expected 'runs-on' in job"
@@ -97,7 +94,6 @@ class TestHealthCheckWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_health_check_workflow().step_aggregate_jobs()
-        assert "name" in result, "Expected 'name' in step"
         assert "run" in result
 
     def test_step_run_tests(

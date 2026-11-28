@@ -165,11 +165,11 @@
   "health-check":
     "name": "Health Check"
     "needs":
+      - "code-analysis"
       - "health-checks"
       - "matrix-health-checks"
-      - "upload-coverage"
       - "security-practices"
-      - "code-analysis"
+      - "upload-coverage"
     "runs-on": "ubuntu-latest"
     "timeout-minutes": 1
     "steps":

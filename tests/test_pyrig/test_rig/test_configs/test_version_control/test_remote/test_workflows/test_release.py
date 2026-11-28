@@ -18,7 +18,6 @@ class TestReleaseWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().job_deploy()
-        assert result["job_id"] == "deploy"
         assert result["uses"] == "$/.github/workflows/deploy.yml"
         assert result["secrets"] == {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"}
         assert result["permissions"] == {
@@ -41,7 +40,6 @@ class TestReleaseWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().job_health_check()
-        assert result["job_id"] == "health-check"
         assert result["uses"] == "$/.github/workflows/health-check.yml"
         assert result["permissions"] == {
             "actions": "read",
@@ -58,7 +56,6 @@ class TestReleaseWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().job_publish()
-        assert result["job_id"] == "publish"
         assert "steps" in result, "Expected 'steps' in job"
         assert "needs" in result, "Expected 'needs' in job"
         assert "environment" not in result

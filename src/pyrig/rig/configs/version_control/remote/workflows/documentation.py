@@ -30,7 +30,6 @@ class DocumentationWorkflowConfigFile(WorkflowConfigFile):
     def job_deploy(self) -> dict[str, Any]:
         """Deploy the Pages artifact after the build succeeds."""
         return self.job(
-            self.job_deploy,
             needs=self.job_deploy_needs(),
             environment=self.stem(),
             permissions=self.permissions_job_deploy(),
@@ -49,14 +48,13 @@ class DocumentationWorkflowConfigFile(WorkflowConfigFile):
             **self.permission_pages(write=True),
         }
 
-    def steps_deploy(self) -> list[dict[str, Any]]:
+    def steps_deploy(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return Pages enablement and deployment steps."""
-        return [self.step_configure_pages(), self.step_deploy_documentation()]
+        return (self.step_configure_pages, self.step_deploy_documentation)
 
     def job_build(self) -> dict[str, Any]:
         """Build the documentation site and upload its Pages artifact."""
         return self.job(
-            self.job_build,
             permissions=self.permissions_job_build(),
             steps=self.steps_build(),
             timeout_minutes=60,
@@ -65,7 +63,6 @@ class DocumentationWorkflowConfigFile(WorkflowConfigFile):
     def step_configure_pages(self) -> dict[str, Any]:
         """Enable GitHub Pages using the repository token."""
         return self.step(
-            self.step_configure_pages,
             uses=self.action_configure_pages(),
             with_={"enablement": "true", "token": self.insert_repo_token()},
         )
@@ -73,7 +70,6 @@ class DocumentationWorkflowConfigFile(WorkflowConfigFile):
     def step_deploy_documentation(self) -> dict[str, Any]:
         """Deploy the uploaded Pages artifact."""
         return self.step(
-            self.step_deploy_documentation,
             uses=self.action_deploy_pages(),
         )
 
@@ -89,25 +85,23 @@ class DocumentationWorkflowConfigFile(WorkflowConfigFile):
         """Return read-only repository permissions for checkout."""
         return self.permission_contents()
 
-    def steps_build(self) -> list[dict[str, Any]]:
+    def steps_build(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return setup, documentation build, and Pages artifact upload."""
-        return [
+        return (
             *self.steps_core_installed_setup(),
-            self.step_build_documentation(),
-            self.step_upload_documentation(),
-        ]
+            self.step_build_documentation,
+            self.step_upload_documentation,
+        )
 
     def step_build_documentation(self) -> dict[str, Any]:
         """Build the documentation site into the configured site directory."""
         return self.step(
-            self.step_build_documentation,
             run=str(PackageManager.I.run_args(*DocsBuilder.I.build_args())),
         )
 
     def step_upload_documentation(self) -> dict[str, Any]:
         """Upload the documentation site as a Pages artifact."""
         return self.step(
-            self.step_upload_documentation,
             uses=self.action_upload_pages_artifact(),
             with_={"path": DocsBuilder.I.site_dir().as_posix()},
         )

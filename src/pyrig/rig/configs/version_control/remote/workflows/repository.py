@@ -31,7 +31,6 @@ class RepositoryWorkflowConfigFile(WorkflowConfigFile):
     def job_configure(self) -> dict[str, Any]:
         """Configure repository settings."""
         return self.job(
-            self.job_configure,
             environment=self.stem(),
             permissions=self.permissions_job_configure(),
             steps=self.steps_configure(),
@@ -42,17 +41,16 @@ class RepositoryWorkflowConfigFile(WorkflowConfigFile):
         """Return read-only repository permissions for checkout."""
         return self.permission_contents()
 
-    def steps_configure(self) -> list[dict[str, Any]]:
+    def steps_configure(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return checkout and repository-configuration steps."""
-        return [
-            self.step_checkout_repository(),
-            self.step_configure_repository(),
-        ]
+        return (
+            self.step_checkout_repository,
+            self.step_configure_repository,
+        )
 
     def step_configure_repository(self) -> dict[str, Any]:
         """Apply repository settings using the repository token."""
         return self.step(
-            self.step_configure_repository,
             run=str(
                 ShellLinter.I.run_script_args(
                     file=ConfigureRepositoryConfigFile.I.path(),

@@ -30,7 +30,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Health-check job builders followed by the aggregation job builder.
         """
         return (
-            *sorted(self.jobs_health_check(), key=self.job_id_from_method),
+            *self.jobs_health_check(),
             self.job_health_check,
         )
 
@@ -85,7 +85,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             jobs and a single aggregation step.
         """
         return self.job(
-            self.job_health_check,
             needs=self.job_health_check_needs(),
             steps=self.steps_aggregate_jobs(),
             timeout_minutes=1,
@@ -95,15 +94,13 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """Return the registered health-check jobs as aggregation dependencies."""
         return self.jobs_health_check()
 
-    def steps_aggregate_jobs(self) -> list[dict[str, Any]]:
+    def steps_aggregate_jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return the steps for the fan-in aggregation job.
 
         Returns:
-            A single-element list containing the aggregation step.
+            A single-element tuple containing the aggregation step builder.
         """
-        return [
-            self.step_aggregate_jobs(),
-        ]
+        return (self.step_aggregate_jobs,)
 
     def jobs_health_check(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return the job builders whose results the health check aggregates."""
@@ -119,7 +116,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Step that echoes an aggregation message.
         """
         return self.step(
-            self.step_aggregate_jobs,
             run="echo 'Aggregating jobs into one job.'",
         )
 
@@ -133,7 +129,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Job configuration with steps for the full quality check sequence.
         """
         return self.job(
-            self.job_health_checks,
             permissions=self.permissions_job_health_checks(),
             steps=self.steps_health_checks(),
             timeout_minutes=60,
@@ -150,7 +145,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             value, and steps for setup and testing.
         """
         return self.job(
-            self.job_matrix_health_checks,
             strategy=self.strategy_matrix_os_and_python_version(),
             permissions=self.permissions_job_matrix_health_checks(),
             runs_on=self.insert_matrix_os(),
@@ -174,32 +168,32 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.permission_contents()
 
-    def steps_health_checks(self) -> list[dict[str, Any]]:
+    def steps_health_checks(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return the steps for the single-runner quality check job.
 
         Returns:
             Steps that install dependencies and run the configured
             pre-commit hooks.
         """
-        return [
+        return (
             *self.steps_core_installed_setup(update_dependencies=True),
-            self.step_run_version_control_hooks(),
-        ]
+            self.step_run_version_control_hooks,
+        )
 
-    def steps_matrix_health_checks(self) -> list[dict[str, Any]]:
+    def steps_matrix_health_checks(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return the steps for the matrix test job.
 
         Returns:
             Steps that set up the environment for the current matrix OS and
             Python version and run the test suite.
         """
-        return [
+        return (
             *self.steps_core_installed_setup(
                 python_version=self.insert_matrix_python_version(),
                 update_dependencies=True,
             ),
-            self.step_run_tests(),
-        ]
+            self.step_run_tests,
+        )
 
     def step_run_tests(self) -> dict[str, Any]:
         """Build a step that runs the test suite with pytest.
@@ -209,7 +203,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """
         run = str(PackageManager.I.run_args(*ProjectTester.I.test_args()))
         return self.step(
-            self.step_run_tests,
             run=run,
         )
 
@@ -222,7 +215,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Step that runs the pre-commit hooks.
         """
         return self.step(
-            self.step_run_version_control_hooks,
             run=str(
                 PackageManager.I.run_args(
                     *VersionControlHookManager.I.run_all_files_all_hooks_args(),

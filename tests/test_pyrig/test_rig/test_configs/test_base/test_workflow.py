@@ -357,64 +357,55 @@ class TestWorkflowConfigFile:
     def test_job(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().job(
-            HealthCheckWorkflowConfigFile.I.job_health_check,
-            steps=[],
+            steps=(),
         )
-        assert result["job_id"] == "health-check"
         assert result["steps"] == []
 
         # Test with if_condition set
         result = my_test_workflow().job(
-            HealthCheckWorkflowConfigFile.I.job_health_check,
-            steps=[],
+            steps=(),
             if_condition="condition",
         )
         assert result["if"] == "condition"
 
-        # Test with job=None (line 222->224 False branch)
         result = my_test_workflow().job(
-            HealthCheckWorkflowConfigFile.I.job_health_check,
             runs_on="ubuntu-latest",
         )
-        assert result["job_id"] == "health-check"
+        assert result["runs-on"] == "ubuntu-latest"
 
         # Test with steps=None (line 234->236 False branch)
         result = my_test_workflow().job(
-            HealthCheckWorkflowConfigFile.I.job_health_check,
             runs_on="ubuntu-latest",
             steps=None,
         )
-        assert result["job_id"] == "health-check"
         assert "steps" not in result
 
         # Test with uses set: only runs-on must not be applied
         result = my_test_workflow().job(
-            HealthCheckWorkflowConfigFile.I.job_health_check,
             uses="$/.github/workflows/other.yml",
             runs_on="ubuntu-latest",
             strategy={"matrix": {}},
-            steps=[{"name": "unused"}],
+            steps=(my_test_workflow().step_extract_version,),
         )
         assert result["uses"] == "$/.github/workflows/other.yml"
         assert "runs-on" not in result
         assert result["strategy"] == {"matrix": {}}
-        assert result["steps"] == [{"name": "unused"}]
+        assert result["steps"][0]["id"] == "extract-version"
         assert "secrets" not in result
 
         # Test with uses and named secrets set
         result = my_test_workflow().job(
-            HealthCheckWorkflowConfigFile.I.job_health_check,
             uses="$/.github/workflows/other.yml",
             secrets={"TOKEN": "${{ secrets.TOKEN }}"},
         )
         assert result["secrets"] == {"TOKEN": "${{ secrets.TOKEN }}"}
 
-    def test_job_by_id(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+    def test_job_as_dict(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         workflow = my_test_workflow()
-        job = {"job_id": "test", "steps": []}
-        assert workflow.job_by_id(lambda: job) == {"test": {"steps": []}}
-        assert "job_id" not in job
+        job = workflow.job_as_dict(workflow.jobs()[0])
+        assert job == workflow.jobs_configs()
+        assert next(iter(job["test"])) == "name"
 
     def test_job_id_from_method(self) -> None:
         """Test method."""
@@ -429,13 +420,10 @@ class TestWorkflowConfigFile:
         """Test method."""
         workflow = ReleaseWorkflowConfigFile.I
         result = workflow.job_workflow_call(
-            workflow.job_deploy,
             workflow=DeployWorkflowConfigFile,
             needs=workflow.job_deploy_needs(),
         )
         assert result == {
-            "job_id": "deploy",
-            "name": "Deploy",
             "permissions": {
                 "contents": "read",
                 "id-token": "write",
@@ -450,7 +438,7 @@ class TestWorkflowConfigFile:
         """Test method."""
         jobs = my_test_workflow().jobs()
         assert isinstance(jobs, tuple)
-        assert [job()["job_id"] for job in jobs] == ["test"]
+        assert [my_test_workflow().job_id_from_method(job) for job in jobs] == ["test"]
 
     def test_jobs_configs(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -460,7 +448,14 @@ class TestWorkflowConfigFile:
                 "name": "Test",
                 "runs-on": "ubuntu-latest",
                 "timeout-minutes": workflow.TIMEOUT_MINUTES_DEFAULT,
-                "steps": [{"name": "Test Step", "run": "echo test"}],
+                "steps": [
+                    {
+                        "name": "Test Step",
+                        "id": "test-step",
+                        "shell": "bash",
+                        "run": "echo test",
+                    },
+                ],
             },
         }
 
@@ -543,7 +538,6 @@ class TestWorkflowConfigFile:
                 """Return a job referencing `TOKEN`."""
                 return (
                     lambda: {
-                        "job_id": "job_a",
                         "steps": [{"env": {"TOKEN": "${{ secrets.TOKEN }}"}}],
                     },
                 )
@@ -631,17 +625,19 @@ class TestWorkflowConfigFile:
             @override
             def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
                 """Return jobs with overlapping and write-escalating permissions."""
-                return (
-                    lambda: {
-                        "job_id": "job_a",
-                        "permissions": {"pages": "write", "contents": "read"},
-                    },
-                    lambda: {
-                        "job_id": "job_b",
-                        "permissions": {"contents": "read"},
-                    },
-                    lambda: {"job_id": "job_c"},
-                )
+                return (self.job_a, self.job_b, self.job_c)
+
+            def job_a(self) -> dict[str, Any]:
+                """Return write and read permissions."""
+                return {"permissions": {"pages": "write", "contents": "read"}}
+
+            def job_b(self) -> dict[str, Any]:
+                """Return read permission."""
+                return {"permissions": {"contents": "read"}}
+
+            def job_c(self) -> dict[str, Any]:
+                """Return a job without permissions."""
+                return {}
 
         result = WithJobs().permissions_used()
         assert result == {"contents": "read", "pages": "write"}
@@ -684,20 +680,21 @@ class TestWorkflowConfigFile:
             @override
             def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
                 """Return a job with secrets, GITHUB_TOKEN, and a non-string leaf."""
-                return (
-                    lambda: {
-                        "job_id": "job_a",
-                        "continue-on-error": True,
-                        "steps": [
-                            {"env": {"TOKEN": "${{ secrets.TOKEN }}"}},
-                            {"with": {"gh-token": "${{ secrets.GITHUB_TOKEN }}"}},
-                        ],
-                    },
-                    lambda: {
-                        "job_id": "job_b",
-                        "if": "${{ secrets.TOKEN != '' }}",
-                    },
-                )
+                return (self.job_a, self.job_b)
+
+            def job_a(self) -> dict[str, Any]:
+                """Return a job with secret references."""
+                return {
+                    "continue-on-error": True,
+                    "steps": [
+                        {"env": {"TOKEN": "${{ secrets.TOKEN }}"}},
+                        {"with": {"gh-token": "${{ secrets.GITHUB_TOKEN }}"}},
+                    ],
+                }
+
+            def job_b(self) -> dict[str, Any]:
+                """Return a job with a secret condition."""
+                return {"if": "${{ secrets.TOKEN != '' }}"}
 
         result = WithSecretUsage().secrets_used()
         assert result == ["TOKEN"]
@@ -718,7 +715,6 @@ class TestWorkflowConfigFile:
                 """Return a job referencing `TOKEN`."""
                 return (
                     lambda: {
-                        "job_id": "job_a",
                         "steps": [{"env": {"TOKEN": "${{ secrets.TOKEN }}"}}],
                     },
                 )
@@ -742,21 +738,27 @@ class TestWorkflowConfigFile:
     def test_step(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().step(
-            my_test_workflow().step_extract_version,
             run="echo test",
             if_condition="condition",
             uses=("action/checkout", "v2", "v2"),
             with_={"param": "value"},
             env={"ENV_VAR": "value"},
         )
-        assert "name" in result
-        assert "id" in result
         assert "run" in result
         assert result["shell"] == "bash"
         assert "if" in result
         assert "uses" in result
         assert "with" in result
         assert "env" in result
+
+    def test_step_as_dict(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Test method."""
+        workflow = my_test_workflow()
+        step = workflow.step_as_dict(workflow.step_extract_version)
+        assert step["id"] == "extract-version"
+        assert step["name"] == "Extract Version"
+        assert step["run"] == workflow.step_extract_version()["run"]
+        assert list(step)[:2] == ["name", "id"]
 
     def test_step_checkout_repository(
         self,
@@ -775,17 +777,14 @@ class TestWorkflowConfigFile:
         """Test method."""
         workflow = my_test_workflow()
         result = workflow.step_download_artifact(
-            workflow.step_extract_version,
             path=Path("artifacts/download"),
         )
-        assert result["id"] == "extract-version"
         assert result["uses"] == (
             f"actions/download-artifact@{workflow.action_download_artifact()[1]}"
         )
         assert result["with"] == {"path": "artifacts/download"}
 
         result = workflow.step_download_artifact(
-            workflow.step_extract_version,
             path=Path("artifacts/download"),
             name="artifact",
             merge_multiple=False,
@@ -797,7 +796,6 @@ class TestWorkflowConfigFile:
         }
 
         result = workflow.step_download_artifact(
-            workflow.step_extract_version,
             path=Path("artifacts/download"),
             pattern="artifact-*",
             merge_multiple=True,
@@ -851,9 +849,8 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Run steps use Bash by default and accept a shell override."""
         workflow = my_test_workflow()
-        default = workflow.step(workflow.step_extract_version, run="echo test")
+        default = workflow.step(run="echo test")
         custom = workflow.step(  # noqa: S604
-            workflow.step_extract_version,
             run="print('test')",
             shell="python",
         )
@@ -869,7 +866,6 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Action steps do not include a shell, even when one is supplied."""
         result = my_test_workflow().step(  # noqa: S604
-            my_test_workflow().step_extract_version,
             uses=("action/checkout", "v2", "v2"),
             shell="python",
         )
@@ -893,11 +889,9 @@ class TestWorkflowConfigFile:
         """Test method."""
         workflow = my_test_workflow()
         result = workflow.step_upload_artifact(
-            workflow.step_extract_version,
             name="artifact",
             path=Path("artifacts/upload"),
         )
-        assert result["id"] == "extract-version"
         assert result["uses"] == (
             f"actions/upload-artifact@{workflow.action_upload_artifact()[1]}"
         )
@@ -908,12 +902,24 @@ class TestWorkflowConfigFile:
         }
 
         result = workflow.step_upload_artifact(
-            workflow.step_extract_version,
             name="artifact",
             path=Path("artifacts/upload"),
             if_no_files_found="warn",
         )
         assert result["with"]["if-no-files-found"] == "warn"
+
+    def test_steps_configs(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+        """Check IDs, order, and partial arguments."""
+        workflow = my_test_workflow()
+        steps = workflow.steps_core_setup(python_version="3.14")
+        assert steps[1].__name__ == "step_setup_package_manager"  # ty: ignore[missing-attribute]
+        configs = workflow.steps_configs(steps)
+        assert [step["id"] for step in configs] == [
+            "checkout-repository",
+            "setup-package-manager",
+        ]
+        assert configs[1]["name"] == "Setup Package Manager"
+        assert configs[1]["with"]["python-version"] == "3.14"
 
     def test_steps_core_installed_setup(
         self,
@@ -927,7 +933,7 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().steps_core_setup()
         assert len(result) > 0
-        assert result[1]["with"]["python-version"] == str(
+        assert result[1]()["with"]["python-version"] == str(
             PyprojectConfigFile.I.latest_possible_python_version(level="minor"),
         )
 
@@ -1017,8 +1023,11 @@ def my_test_workflow(
         def job_test(self) -> dict[str, Any]:
             """Build the test job."""
             return self.job(
-                self.job_test,
-                steps=[{"name": "Test Step", "run": "echo test"}],
+                steps=(self.step_test_step,),
             )
+
+        def step_test_step(self) -> dict[str, Any]:
+            """Build the test step."""
+            return self.step(run="echo test")
 
     return MyTestWorkflowConfigFileClass  # ty: ignore[unsound-return]

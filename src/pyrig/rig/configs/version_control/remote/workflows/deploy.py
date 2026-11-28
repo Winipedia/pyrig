@@ -33,13 +33,11 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
     def job_documentation(self) -> dict[str, Any]:
         """Return the reusable documentation deployment job."""
         return self.job_workflow_call(
-            self.job_documentation,
             workflow=DocumentationWorkflowConfigFile,
         )
 
     def job_repository(self) -> dict[str, Any]:
         """Return the reusable repository-configuration job."""
         return self.job_workflow_call(
-            self.job_repository,
             workflow=RepositoryWorkflowConfigFile,
         )

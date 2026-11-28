@@ -16,11 +16,10 @@ class TestRepositoryWorkflowConfigFile:
         expected_timeout_minutes = 10
         workflow = RepositoryWorkflowConfigFile.I
         job = workflow.job_configure()
-        assert job["job_id"] == "configure"
         assert job["environment"] == "repository"
         assert job["permissions"] == {"contents": "read"}
         assert job["timeout-minutes"] == expected_timeout_minutes
-        assert job["steps"] == workflow.steps_configure()
+        assert job["steps"] == workflow.steps_configs(workflow.steps_configure())
 
     def test_jobs(self) -> None:
         """Check the workflow includes its configuration job."""
@@ -49,10 +48,10 @@ class TestRepositoryWorkflowConfigFile:
     def test_steps_configure(self) -> None:
         """Check checkout precedes repository configuration."""
         workflow = RepositoryWorkflowConfigFile.I
-        assert workflow.steps_configure() == [
-            workflow.step_checkout_repository(),
-            workflow.step_configure_repository(),
-        ]
+        assert workflow.steps_configure() == (
+            workflow.step_checkout_repository,
+            workflow.step_configure_repository,
+        )
 
     def test_workflow_triggers(self) -> None:
         """Check the workflow declares its required reusable-call secret."""

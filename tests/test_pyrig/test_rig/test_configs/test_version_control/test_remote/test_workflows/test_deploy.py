@@ -11,7 +11,6 @@ class TestDeployWorkflowConfigFile:
     def test_job_documentation(self) -> None:
         """Check the documentation call forwards its permissions and secrets."""
         job = DeployWorkflowConfigFile.I.job_documentation()
-        assert job["job_id"] == "documentation"
         assert job["uses"] == "$/.github/workflows/documentation.yml"
         assert job["permissions"] == {
             "contents": "read",
@@ -26,7 +25,6 @@ class TestDeployWorkflowConfigFile:
     def test_job_repository(self) -> None:
         """Check the repository workflow call."""
         job = DeployWorkflowConfigFile.I.job_repository()
-        assert job["job_id"] == "repository"
         assert job["uses"] == "$/.github/workflows/repository.yml"
         assert job["permissions"] == {"contents": "read"}
         assert job["secrets"] == {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"}
